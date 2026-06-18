@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about What is Machine Learning with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-machine-learning.html">
+  <meta property="og:title" content="What is Machine Learning | BackbenchLearner">
+  <meta property="og:description" content="Learn about What is Machine Learning with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-machine-learning.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is Machine Learning | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about What is Machine Learning with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>What is Machine Learning | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>What is Machine Learning (ML)</h1>
+    <p><strong>Machine Learning</strong> is a subset of AI where models learn patterns from data instead of relying only on hardcoded rules.</p>
+
+    <h2>Core idea</h2>
+    <p>A system improves performance on a task as it sees more experience/data.</p>
+
+    <h2>Main learning types</h2>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Data</th><th>Examples</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Supervised</td><td>Labeled input-output pairs</td><td>Spam detection, price prediction</td></tr>
+        <tr><td>Unsupervised</td><td>No labels</td><td>Clustering, anomaly patterns</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Data] --> B{Labels?}
+    B -- Yes --> C[Supervised training]
+    B -- No --> D[Unsupervised learning]
+    C --> E[Prediction]
+    D --> F[Pattern discovery]
+      </div>
+    </div>
+
+    <h2>Practical workflow</h2>
+    <ol>
+      <li>Collect and clean data.</li>
+      <li>Split into train/test sets.</li>
+      <li>Train a model.</li>
+      <li>Evaluate with proper metrics.</li>
+      <li>Deploy and monitor.</li>
+    </ol>
+
+    <footer>
+      <a href="what-is-ai.html">Previous</a> · <a href="what-is-deep-learning.html">Next: What is Deep Learning</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

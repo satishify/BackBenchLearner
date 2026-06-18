@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Capstone: End-to-End AI Agent Use Case with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/capstone/end-to-end-ai-agent-use-case.html">
+  <meta property="og:title" content="Capstone: End-to-End AI Agent Use Case | BackbenchLearner">
+  <meta property="og:description" content="Learn about Capstone: End-to-End AI Agent Use Case with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/capstone/end-to-end-ai-agent-use-case.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Capstone: End-to-End AI Agent Use Case | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Capstone: End-to-End AI Agent Use Case with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Capstone: End-to-End AI Agent Use Case | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Capstone: One Complete Use Case (All Concepts Together)</h1>
+    <p><strong>Use case:</strong> Build an AI Support Agent for an e-commerce company that answers customer questions, checks order status, and creates return requests safely.</p>
+
+    <h2>1) Problem statement</h2>
+    <p>Customers ask: "Where is my order?", "Can I return this item?", "What is refund policy?"  
+    The company wants fast answers, lower support load, and safe automation.</p>
+
+    <h2>2) Full architecture (combined concepts)</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    U[Customer question] --> P[Prompt layer]
+    P --> L[LLM]
+    P --> R[Retriever]
+    R --> V[Vector DB with policy docs]
+    V --> R
+    R --> L
+    L --> A[Agent planner]
+    A --> T1[Tool: Order API]
+    A --> T2[Tool: Returns API]
+    A --> G[Guardrails]
+    G --> H{High risk action?}
+    H -- Yes --> M[Human approval]
+    H -- No --> O[Execute action]
+    M --> O
+    O --> X[Final answer + action status]
+    X --> Obs[Logs, metrics, traces]
+      </div>
+    </div>
+
+    <h2>3) Where each concept fits</h2>
+    <table>
+      <thead>
+        <tr><th>Concept</th><th>How used in this use case</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>LLM basics</td><td>Generates natural language replies to users</td></tr>
+        <tr><td>Tokens/context</td><td>Controls prompt size, chat history, and doc chunks</td></tr>
+        <tr><td>Prompt engineering</td><td>System prompt defines support tone, policy, and output format</td></tr>
+        <tr><td>Embeddings</td><td>Policy documents converted to vectors for semantic retrieval</td></tr>
+        <tr><td>RAG</td><td>Retrieves latest return/refund rules before answer generation</td></tr>
+        <tr><td>Agentic behavior</td><td>Plans steps and calls tools (order lookup, return creation)</td></tr>
+        <tr><td>Tool calling</td><td>Uses structured function calls with validated parameters</td></tr>
+        <tr><td>Memory</td><td>Short-term: current chat; long-term: user preferences/history</td></tr>
+        <tr><td>Reflection loop</td><td>Checks if output is policy-compliant and complete</td></tr>
+        <tr><td>Guardrails</td><td>Blocks unsafe requests and sensitive data leaks</td></tr>
+        <tr><td>HITL</td><td>Manager approval for high-value refunds</td></tr>
+        <tr><td>Observability</td><td>Tracks accuracy, latency, tool failures, and cost</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4) End-to-end execution example</h2>
+    <p><strong>User:</strong> "I received a damaged product. Can you return it and tell me refund time?"</p>
+    <ol>
+      <li>Agent understands intent: return + policy question.</li>
+      <li>RAG retrieves "damaged item return policy" and "refund SLA."</li>
+      <li>Agent calls Order API to verify order and delivery date.</li>
+      <li>Agent calls Returns API to create return request.</li>
+      <li>Agent validates response and generates final answer with ticket ID.</li>
+      <li>System logs all steps for monitoring and audit.</li>
+    </ol>
+
+    <h2>5) Evaluation checklist for this use case</h2>
+    <ul>
+      <li><strong>Accuracy:</strong> answer matches policy and order data.</li>
+      <li><strong>Latency:</strong> response within target (for example, less than 3 seconds).</li>
+      <li><strong>Cost:</strong> token usage and tool calls within budget.</li>
+      <li><strong>Safety:</strong> no policy violations, no sensitive leakage.</li>
+      <li><strong>Reliability:</strong> handles API timeout with retry/fallback.</li>
+    </ul>
+
+    <h2>6) Why this capstone matters</h2>
+    <p>This one workflow demonstrates how Gen AI + Agentic AI are combined in real products: model reasoning, retrieval, actions, safety controls, and production monitoring.</p>
+
+    <footer>
+      <a href="../build-skills/workflow-automation-concepts.html">Previous: Workflow automation concepts</a> · <a href="../../index.html">Back to Home</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

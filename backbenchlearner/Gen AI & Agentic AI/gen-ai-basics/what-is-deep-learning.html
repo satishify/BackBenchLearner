@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about What is Deep Learning with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-deep-learning.html">
+  <meta property="og:title" content="What is Deep Learning | BackbenchLearner">
+  <meta property="og:description" content="Learn about What is Deep Learning with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-deep-learning.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is Deep Learning | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about What is Deep Learning with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>What is Deep Learning | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>What is Deep Learning</h1>
+    <p><strong>Deep Learning</strong> is a subset of ML that uses multi-layer neural networks to learn complex representations directly from raw data.</p>
+
+    <h2>Why deep learning is powerful</h2>
+    <ul>
+      <li>Learns features automatically (less manual feature engineering).</li>
+      <li>Works very well for text, image, audio, and video.</li>
+      <li>Scales with more data and compute.</li>
+    </ul>
+
+    <h2>Artificial neuron intuition</h2>
+    <p>Each neuron computes a weighted sum + bias, then passes it through an activation function.</p>
+    <p><code>z = Σ(w_i x_i) + b</code> and <code>output = f(z)</code></p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Input layer] --> B[Hidden layer 1]
+    B --> C[Hidden layer 2]
+    C --> D[Output layer]
+      </div>
+    </div>
+
+    <h2>Common use cases</h2>
+    <ul>
+      <li>Image classification and segmentation.</li>
+      <li>Speech recognition and translation.</li>
+      <li>LLMs for text generation and understanding.</li>
+    </ul>
+
+    <footer>
+      <a href="what-is-machine-learning.html">Previous</a> · <a href="what-is-generative-ai.html">Next: What is Generative AI</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

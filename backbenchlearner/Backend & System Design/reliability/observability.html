@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand observability with logs, metrics, and tracing for reliable backend operations.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/observability.html">
+  <meta property="og:title" content="Observability (logs, metrics, tracing) | BackbenchLearner">
+  <meta property="og:description" content="Understand observability with logs, metrics, and tracing for reliable backend operations.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/observability.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Observability (logs, metrics, tracing) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand observability with logs, metrics, and tracing for reliable backend operations.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Observability (logs, metrics, tracing) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Observability (logs, metrics, tracing)</h1>
+
+    <p><strong>Observability</strong> is the ability to understand system behavior from the outside using <strong>logs</strong> (discrete events), <strong>metrics</strong> (aggregated numbers over time), and <strong>tracing</strong> (request flow across services). Together they support debugging, alerting, and performance analysis.</p>
+
+    <h2>Three pillars</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Logs["Logs"]
+        L1[Structured events]
+        L2[Search, filter]
+    end
+    subgraph Metrics["Metrics"]
+        M1[Counters, gauges, histograms]
+        M2[Dashboards, alerts]
+    end
+    subgraph Tracing["Tracing"]
+        T1[Trace ID across services]
+        T2[Latency breakdown]
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Pillar</th><th>What</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Logs</td><td>Event records (timestamp, level, message, context)</td><td>Debugging, audit</td></tr>
+        <tr><td>Metrics</td><td>Numeric aggregates (QPS, latency p99, error rate)</td><td>Dashboards, SLOs, alerting</td></tr>
+        <tr><td>Tracing</td><td>Request path and timing across services (trace/span IDs)</td><td>Latency analysis, dependency map</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Distributed trace</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant G as Gateway
+    participant A as Service A
+    participant B as Service B
+
+    G->>A: request (trace_id=xyz)
+    A->>B: request (same trace_id)
+    B-->>A: response
+    A-->>G: response
+    Note over G,B: One trace_id ties all spans
+      </div>
+    </div>
+
+    <p>Emit <strong>structured logs</strong> (JSON) with correlation IDs. Export <strong>metrics</strong> (Prometheus, StatsD) for RED (rate, errors, duration) or USE. Use <strong>distributed tracing</strong> (OpenTelemetry, Jaeger) with a common trace ID so you can follow a request across services.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="graceful-degradation.html">Prev: Graceful degradation</a> · <a href="deployments.html">Next: Deployments</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare normalization and denormalization approaches for database design and performance.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/normalization-vs-denormalization.html">
+  <meta property="og:title" content="Database normalization vs denormalization | BackbenchLearner">
+  <meta property="og:description" content="Compare normalization and denormalization approaches for database design and performance.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/normalization-vs-denormalization.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Database normalization vs denormalization | BackbenchLearner">
+  <meta name="twitter:description" content="Compare normalization and denormalization approaches for database design and performance.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Database normalization vs denormalization | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Database normalization vs denormalization</h1>
+
+    <p><strong>Normalization</strong> structures data into tables with no (or minimal) redundancy; each fact stored once. <strong>Denormalization</strong> deliberately duplicates or embeds data to speed up reads and simplify queries at the cost of redundancy and update complexity.</p>
+
+    <h2>Normalized: one place per fact</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+erDiagram
+    USERS ||--o{ ORDERS : places
+    USERS {
+        int id
+        string name
+        string email
+    }
+    ORDERS {
+        int id
+        int user_id
+        date created
+    }
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    ORDER_ITEMS {
+        int id
+        int order_id
+        int product_id
+        int qty
+    }
+    PRODUCTS {
+        int id
+        string name
+        decimal price
+    }
+    ORDER_ITEMS }o--|| PRODUCTS : references
+      </div>
+    </div>
+
+    <h2>Denormalized: duplicate for read speed</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph Norm["Normalized"]
+        U[users]
+        O[orders]
+        P[products]
+        U --> O --> P
+    end
+    subgraph Denorm["Denormalized (e.g. read model)"]
+        R[orders_with_user_name_and_product_name]
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Normalization</th><th>Denormalization</th></tr></thead>
+      <tbody>
+        <tr><td>No redundant data; single source of truth</td><td>Redundant data; faster reads, fewer joins</td></tr>
+        <tr><td>Updates in one place</td><td>Updates must propagate to all copies</td></tr>
+        <tr><td>More joins for complex reads</td><td>One table or document per read pattern</td></tr>
+        <tr><td>Good for consistency and write path</td><td>Good for read-heavy, analytics, caches</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>normalized</strong> schema for the canonical write path. Use <strong>denormalization</strong> in read replicas, materialized views, or document/NoSQL read models when you need to optimize for specific queries and can keep duplicates in sync (e.g. via events or ETL).</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="transactions-isolation.html">Prev: Transactions & isolation</a> · <a href="pagination.html">Next: Pagination</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

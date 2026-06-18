@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand sharding and partitioning strategies for scaling large database workloads.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sharding-partitioning.html">
+  <meta property="og:title" content="Sharding & partitioning | BackbenchLearner">
+  <meta property="og:description" content="Understand sharding and partitioning strategies for scaling large database workloads.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sharding-partitioning.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sharding & partitioning | BackbenchLearner">
+  <meta name="twitter:description" content="Understand sharding and partitioning strategies for scaling large database workloads.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Sharding & partitioning | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Sharding & partitioning</h1>
+
+    <p><strong>Partitioning</strong> splits data into subsets (e.g. by range or hash); it can be within one DB (tables/partitions) or across nodes. <strong>Sharding</strong> is horizontal partitioning across multiple DB instances: each shard holds a subset of data so load and storage are distributed.</p>
+
+    <h2>Shards = data split across nodes</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    App[Application]
+    App --> S1[Shard 1\nuser_id 0-333]
+    App --> S2[Shard 2\nuser_id 334-666]
+    App --> S3[Shard 3\nuser_id 667-999]
+    S1 --> D1[(DB1)]
+    S2 --> D2[(DB2)]
+    S3 --> D3[(DB3)]
+      </div>
+    </div>
+
+    <h2>Shard key strategies</h2>
+    <ul>
+      <li><strong>Range</strong> — e.g. user_id 1–1M on shard 1, 1M–2M on shard 2. Simple; can create hot spots if key is sequential.</li>
+      <li><strong>Hash</strong> — <code>shard = hash(user_id) % N</code>. Even distribution; range queries across shards are hard.</li>
+      <li><strong>Directory</strong> — Lookup table maps key → shard. Flexible for rebalancing; extra lookup.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph Range["Range"]
+        R1[Shard A: A-M]
+        R2[Shard B: N-Z]
+    end
+    subgraph Hash["Hash"]
+        H1[hash(id) % 3 = 0]
+        H2[hash(id) % 3 = 1]
+        H3[hash(id) % 3 = 2]
+    end
+      </div>
+    </div>
+
+    <p>Sharding increases write/read capacity and storage but adds complexity: cross-shard queries, rebalancing, and global uniqueness (e.g. IDs) need care. Use when a single node can’t hold the data or serve the load.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="pagination.html">Prev: Pagination</a> · <a href="read-replicas-write-scaling.html">Next: Read replicas & write scaling</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

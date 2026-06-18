@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn load balancing algorithms and how they improve availability and scalability.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/load-balancing.html">
+  <meta property="og:title" content="Load balancing (round-robin, least connections, hashing) | BackbenchLearner">
+  <meta property="og:description" content="Learn load balancing algorithms and how they improve availability and scalability.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/load-balancing.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Load balancing (round-robin, least connections, hashing) | BackbenchLearner">
+  <meta name="twitter:description" content="Learn load balancing algorithms and how they improve availability and scalability.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Load balancing (round-robin, least connections, hashing) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Load balancing (round-robin, least connections, hashing)</h1>
+
+    <p>A <strong>load balancer</strong> distributes incoming requests across multiple servers (replicas) so no single node is overloaded. The <strong>algorithm</strong> decides which backend gets each request: round-robin, least connections, or hash-based (e.g. by client IP or session ID) for stickiness.</p>
+
+    <h2>Where the load balancer sits</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    C[Clients] --> LB[Load Balancer]
+    LB --> S1[Server 1]
+    LB --> S2[Server 2]
+    LB --> S3[Server 3]
+      </div>
+    </div>
+
+    <h2>Algorithms</h2>
+    <table>
+      <thead><tr><th>Algorithm</th><th>How it works</th><th>Use case</th></tr></thead>
+      <tbody>
+        <tr><td>Round-robin</td><td>Rotate: S1, S2, S3, S1, S2, …</td><td>Stateless; even distribution</td></tr>
+        <tr><td>Least connections</td><td>Send to server with fewest active connections</td><td>Long-lived or variable cost requests</td></tr>
+        <tr><td>Hash (e.g. IP or cookie)</td><td>Same key → same server</td><td>Sticky session, local cache</td></tr>
+        <tr><td>Weighted</td><td>Assign more traffic to stronger nodes</td><td>Mixed hardware or capacity</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Visual: round-robin vs hash</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph RR["Round-robin"]
+        R1[Req1→S1] --> R2[Req2→S2] --> R3[Req3→S3] --> R4[Req4→S1]
+    end
+    subgraph Hash["Hash(user_id)"]
+        H1[user_A→S1]
+        H2[user_B→S2]
+        H3[user_A→S1]
+    end
+      </div>
+    </div>
+
+    <p>Use <strong>round-robin</strong> when backends are stateless and equal. Use <strong>least connections</strong> when request cost or duration varies. Use <strong>hashing</strong> when you need the same client/session to hit the same server (and consider consistent hashing for adding/removing nodes).</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="horizontal-vs-vertical-scaling.html">Next: Horizontal vs vertical scaling</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

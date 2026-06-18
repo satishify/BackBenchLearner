@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Tokens, Context Window, Temperature, Top-p with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/tokens-context-window-temperature-top-p.html">
+  <meta property="og:title" content="Tokens, Context Window, Temperature, Top-p | BackbenchLearner">
+  <meta property="og:description" content="Learn about Tokens, Context Window, Temperature, Top-p with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/tokens-context-window-temperature-top-p.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Tokens, Context Window, Temperature, Top-p | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Tokens, Context Window, Temperature, Top-p with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Tokens, Context Window, Temperature, Top-p | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Tokens, Context Window, Temperature, Top-p</h1>
+
+    <h2>Tokens</h2>
+    <p>Models process text as tokens, not full words. A token can be a word, part of a word, punctuation, or symbol.</p>
+    <p><strong>Why it matters:</strong> usage limits and pricing are often token-based.</p>
+
+    <h2>Context window</h2>
+    <p>The context window is the maximum tokens the model can consider in one request (prompt + conversation + retrieved docs + output).</p>
+    <ul>
+      <li>If the window is full, old content is dropped.</li>
+      <li>Long prompts can reduce space for model output.</li>
+    </ul>
+
+    <h2>Temperature</h2>
+    <p>Controls randomness in token selection.</p>
+    <ul>
+      <li>Low temperature: consistent and focused outputs.</li>
+      <li>High temperature: more diverse, creative outputs.</li>
+    </ul>
+
+    <h2>Top-p (nucleus sampling)</h2>
+    <p>Model selects next token from the smallest set whose cumulative probability is at least p.</p>
+    <ul>
+      <li>Lower top-p narrows choices.</li>
+      <li>Higher top-p allows broader choices.</li>
+    </ul>
+
+    <h2>Practical settings</h2>
+    <table>
+      <thead><tr><th>Task</th><th>Temperature</th><th>Top-p</th></tr></thead>
+      <tbody>
+        <tr><td>Policy/compliance answers</td><td>Low</td><td>Low to medium</td></tr>
+        <tr><td>Brainstorming ideas</td><td>Medium to high</td><td>Medium to high</td></tr>
+        <tr><td>Code generation</td><td>Low to medium</td><td>Medium</td></tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <a href="../gen-ai-basics/pretraining-finetuning-inference.html">Previous</a> · <a href="prompt-engineering.html">Next: Prompt engineering</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

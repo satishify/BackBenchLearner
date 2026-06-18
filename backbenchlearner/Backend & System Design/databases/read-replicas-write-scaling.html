@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how read replicas and write scaling patterns improve database throughput.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/read-replicas-write-scaling.html">
+  <meta property="og:title" content="Read replicas & write scaling | BackbenchLearner">
+  <meta property="og:description" content="Learn how read replicas and write scaling patterns improve database throughput.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/read-replicas-write-scaling.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Read replicas & write scaling | BackbenchLearner">
+  <meta name="twitter:description" content="Learn how read replicas and write scaling patterns improve database throughput.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Read replicas & write scaling | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Read replicas & write scaling</h1>
+
+    <p>A <strong>primary</strong> (master) accepts writes and replicates them to <strong>read replicas</strong>. Reads can be served from replicas to scale read capacity; writes go to the primary. <strong>Write scaling</strong> usually means sharding the write path (multiple primaries, each owning a shard) since a single primary has a write limit.</p>
+
+    <h2>Primary + read replicas</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    W[Writes] --> P[(Primary)]
+    P --> |Replication| R1[(Replica 1)]
+    P --> |Replication| R2[(Replica 2)]
+    R1[Replica 1] --> Read1[Reads]
+    R2[Replica 2] --> Read2[Reads]
+      </div>
+    </div>
+
+    <h2>Replication lag</h2>
+    <p>Replicas are eventually consistent: there is a short delay (lag) between write on primary and visibility on replica. Read-after-write consistency requires reading from primary or waiting for replica to catch up.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant P as Primary
+    participant R as Replica
+
+    C->>P: Write
+    P-->>C: OK
+    C->>R: Read (may not see write yet - lag)
+    Note over R: Replication lag: ms to seconds
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Goal</th><th>Approach</th></tr></thead>
+      <tbody>
+        <tr><td>Scale reads</td><td>Add read replicas; route SELECT to replicas</td></tr>
+        <tr><td>Scale writes</td><td>Shard (multiple primaries); each shard takes a subset of writes</td></tr>
+        <tr><td>High availability</td><td>Failover: promote replica to primary if primary fails</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use read replicas when read load is high and slight staleness is acceptable. Use sharding (multiple primaries) when write load exceeds one primary’s capacity.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="sharding-partitioning.html">Prev: Sharding</a> · <a href="duplicate-records.html">Next: Handling duplicate records</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

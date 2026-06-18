@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand exactly-once and at-least-once processing guarantees in distributed systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/exactly-once-vs-at-least-once.html">
+  <meta property="og:title" content="Exactly-once vs at-least-once processing | BackbenchLearner">
+  <meta property="og:description" content="Understand exactly-once and at-least-once processing guarantees in distributed systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/exactly-once-vs-at-least-once.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Exactly-once vs at-least-once processing | BackbenchLearner">
+  <meta name="twitter:description" content="Understand exactly-once and at-least-once processing guarantees in distributed systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Exactly-once vs at-least-once processing | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Exactly-once vs at-least-once processing</h1>
+
+    <p><strong>At-least-once</strong>: every message is processed one or more times (retries can cause duplicates). <strong>Exactly-once</strong>: every message is processed precisely once — no duplicates, no drops. Exactly-once is harder to achieve in distributed systems; at-least-once is simpler but requires idempotent handling of duplicates.</p>
+
+    <h2>At-least-once: retries can duplicate</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant Q as Queue
+    participant C as Consumer
+    participant DB as DB
+
+    Q->>C: Message M
+    C->>DB: Process M
+    DB-->>C: (slow / timeout)
+    C->>Q: (no ack - timeout)
+    Q->>C: Redeliver M
+    C->>DB: Process M again
+    Note over DB: Duplicate if not idempotent
+      </div>
+    </div>
+
+    <h2>Exactly-once: dedupe or transactional outbox</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph E1["Approach 1: Idempotent consumer"]
+        I1[Store processed message IDs]
+        I2[Skip if ID seen]
+    end
+    subgraph E2["Approach 2: Transactional outbox"]
+        O1[Write to DB + outbox in same txn]
+        O2[Relay reads outbox, publishes once]
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Semantic</th><th>Guarantee</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td>At-least-once</td><td>No message lost; may duplicate</td><td>Retry until ack; consumer idempotent</td></tr>
+        <tr><td>Exactly-once</td><td>Processed once</td><td>Idempotency keys, transactional outbox, or system support (e.g. Kafka exactly-once)</td></tr>
+      </tbody>
+    </table>
+
+    <p>Design for <strong>at-least-once</strong> and make consumers <strong>idempotent</strong> (e.g. by message ID or business key). Add exactly-once semantics only where needed (e.g. payments) using deduplication or transactional patterns.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="retries-timeouts-circuit-breakers.html">Next: Retries, timeouts, circuit breakers</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

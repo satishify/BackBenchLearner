@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand the difference between authentication and authorization in backend systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/auth-vs-authorization.html">
+  <meta property="og:title" content="Authentication vs Authorization | BackbenchLearner">
+  <meta property="og:description" content="Understand the difference between authentication and authorization in backend systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/auth-vs-authorization.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Authentication vs Authorization | BackbenchLearner">
+  <meta name="twitter:description" content="Understand the difference between authentication and authorization in backend systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Authentication vs Authorization | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Authentication vs Authorization</h1>
+
+    <p><strong>Authentication</strong> answers “who are you?” — verifying identity (e.g. login, token). <strong>Authorization</strong> answers “what are you allowed to do?” — checking permissions after identity is known.</p>
+
+    <h2>Order of operations</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Request] --> A[Authentication]
+    A --> |Identity?| B{Authenticated?}
+    B -->|No| 401[401 Unauthorized]
+    B -->|Yes| C[Authorization]
+    C --> D{Permitted?}
+    D -->|No| 403[403 Forbidden]
+    D -->|Yes| OK[200 Process]
+      </div>
+    </div>
+
+    <h2>Definitions</h2>
+    <table>
+      <thead><tr><th>Concept</th><th>Question</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Authentication</strong></td><td>Who are you?</td><td>Login, JWT validation, API key, OAuth token</td></tr>
+        <tr><td><strong>Authorization</strong></td><td>What can you do?</td><td>Roles (admin, user), permissions (read:invoice), resource-level (can edit this post?)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>In the request pipeline</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant API as API Gateway / Middleware
+    participant App as Application
+
+    C->>API: Request (e.g. + Bearer token)
+    API->>API: Authenticate → who is this?
+    alt Not authenticated
+        API-->>C: 401 Unauthorized
+    else Authenticated
+        API->>API: Authorize → can they do this action?
+        alt Not allowed
+            API-->>C: 403 Forbidden
+        else Allowed
+            API->>App: Request + user/roles
+            App-->>API: Result
+            API-->>C: 200 OK
+        end
+    end
+      </div>
+    </div>
+
+    <p>Always do <strong>authentication first</strong>. If the user is not authenticated, return <strong>401</strong>. If they are authenticated but not allowed to perform the action, return <strong>403</strong>.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="stateless-vs-stateful.html">Prev: Stateless vs Stateful</a> · <a href="session-vs-jwt.html">Next: Session-based auth vs JWT</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

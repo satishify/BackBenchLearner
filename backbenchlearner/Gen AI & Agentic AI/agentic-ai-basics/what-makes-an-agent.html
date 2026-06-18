@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about What Makes an AI System an Agent with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/what-makes-an-agent.html">
+  <meta property="og:title" content="What Makes an AI System an Agent | BackbenchLearner">
+  <meta property="og:description" content="Learn about What Makes an AI System an Agent with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/what-makes-an-agent.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What Makes an AI System an Agent | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about What Makes an AI System an Agent with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>What Makes an AI System an Agent | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>What Makes an AI System an Agent</h1>
+    <p>An AI agent is a goal-driven system that can decide steps, use tools, and continue execution based on results.</p>
+
+    <h2>Key properties</h2>
+    <ul>
+      <li>Has an explicit goal.</li>
+      <li>Can plan and sequence actions.</li>
+      <li>Can act through tools/APIs.</li>
+      <li>Can observe outcomes and adjust.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Goal] --> B[Plan]
+    B --> C[Act]
+    C --> D[Observe]
+    D --> E[Adjust]
+    E --> B
+      </div>
+    </div>
+
+    <footer>
+      <a href="../core-llm-concepts/hallucinations-and-limitations.html">Previous</a> · <a href="reasoning-planning-tools-memory.html">Next</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

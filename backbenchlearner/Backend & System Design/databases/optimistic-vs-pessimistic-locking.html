@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn optimistic and pessimistic locking techniques to handle concurrent database updates.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/optimistic-vs-pessimistic-locking.html">
+  <meta property="og:title" content="Optimistic vs pessimistic locking | BackbenchLearner">
+  <meta property="og:description" content="Learn optimistic and pessimistic locking techniques to handle concurrent database updates.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/optimistic-vs-pessimistic-locking.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Optimistic vs pessimistic locking | BackbenchLearner">
+  <meta name="twitter:description" content="Learn optimistic and pessimistic locking techniques to handle concurrent database updates.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Optimistic vs pessimistic locking | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Optimistic vs pessimistic locking</h1>
+
+    <p>Both prevent lost updates when two clients modify the same row. <strong>Pessimistic locking</strong> locks the row (or document) for the duration of the transaction so others must wait. <strong>Optimistic locking</strong> doesn’t lock; it checks at update time that the row hasn’t changed (e.g. via a version column) and fails the update if it has, so the client can retry.</p>
+
+    <h2>Pessimistic: lock then read/update</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant T1 as Transaction 1
+    participant T2 as Transaction 2
+    participant DB as Database
+
+    T1->>DB: SELECT ... FOR UPDATE (lock row)
+    DB-->>T1: Row locked
+    T2->>DB: SELECT ... FOR UPDATE (same row)
+    DB-->>T2: Wait...
+    T1->>DB: UPDATE; COMMIT (release lock)
+    DB-->>T2: Now lock granted
+      </div>
+    </div>
+
+    <h2>Optimistic: check version on update</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant T1 as Client A
+    participant T2 as Client B
+    participant DB as Database
+
+    T1->>DB: SELECT (version=1)
+    T2->>DB: SELECT (version=1)
+    T1->>DB: UPDATE SET ... WHERE id=x AND version=1
+    DB-->>T1: OK, version=2
+    T2->>DB: UPDATE SET ... WHERE id=x AND version=1
+    DB-->>T2: 0 rows (version now 2) - conflict
+    Note over T2: Retry: re-read, then update
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Pessimistic</th><th>Optimistic</th></tr></thead>
+      <tbody>
+        <tr><td>Lock</td><td>Hold lock during txn</td><td>No lock; check version/timestamp on write</td></tr>
+        <tr><td>Conflict</td><td>Second writer waits</td><td>Second writer gets 0 rows updated; retry</td></tr>
+        <tr><td>Best for</td><td>High contention, critical sections</td><td>Low contention, high throughput</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>pessimistic</strong> when conflicts are frequent and blocking is acceptable. Use <strong>optimistic</strong> when conflicts are rare and you want to avoid holding locks (e.g. version column + WHERE version=old_version).</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="duplicate-records.html">Prev: Duplicate records</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn sync and async service-to-service communication patterns in distributed systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/service-communication.html">
+  <meta property="og:title" content="Service-to-service communication (sync vs async) | BackbenchLearner">
+  <meta property="og:description" content="Learn sync and async service-to-service communication patterns in distributed systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/service-communication.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Service-to-service communication (sync vs async) | BackbenchLearner">
+  <meta name="twitter:description" content="Learn sync and async service-to-service communication patterns in distributed systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Service-to-service communication (sync vs async) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Service-to-service communication (sync vs async)</h1>
+
+    <p><strong>Synchronous</strong> communication: caller sends a request and waits for the response (e.g. HTTP/gRPC). <strong>Asynchronous</strong>: caller sends a message and doesn’t wait (e.g. queue, event bus); the other service processes later and may reply via another channel.</p>
+
+    <h2>Sync: request–response</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant A as Service A
+    participant B as Service B
+
+    A->>+B: HTTP/gRPC request
+    B->>B: Process
+    B-->>-A: Response
+    Note over A: Blocked until response
+      </div>
+    </div>
+
+    <h2>Async: fire and forget or event</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant A as Service A
+    participant Q as Queue / Bus
+    participant B as Service B
+
+    A->>Q: Publish message
+    Q-->>A: Ack (A continues)
+    Q->>B: Deliver message
+    B->>B: Process (later)
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Sync</th><th>Async</th></tr></thead>
+      <tbody>
+        <tr><td>Coupling</td><td>Caller knows callee, needs to be up</td><td>Decoupled; queue absorbs load</td></tr>
+        <tr><td>Latency</td><td>Wait for response</td><td>No wait; processing later</td></tr>
+        <tr><td>Failure</td><td>Timeout, retry, cascade</td><td>Retry via queue; backpressure</td></tr>
+        <tr><td>Use case</td><td>Need immediate result (e.g. get user)</td><td>Fire-and-forget, events, eventual consistency</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>sync</strong> when the caller needs the result to continue (e.g. auth check, fetch user). Use <strong>async</strong> for notifications, background work, or when you want to decouple and avoid cascading failures.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="microservices-vs-monoliths.html">Prev: Microservices vs monoliths</a> · <a href="message-queues.html">Next: Message queues</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

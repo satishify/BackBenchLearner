@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Workflow Automation Concepts with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/workflow-automation-concepts.html">
+  <meta property="og:title" content="Workflow Automation Concepts | BackbenchLearner">
+  <meta property="og:description" content="Learn about Workflow Automation Concepts with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/workflow-automation-concepts.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Workflow Automation Concepts | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Workflow Automation Concepts with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Workflow Automation Concepts | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Workflow Automation Concepts</h1>
+    <p>Automation workflows connect triggers, AI steps, business rules, and external actions.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Trigger event] --> B[Classify request]
+    B --> C[Retrieve context]
+    C --> D[Generate draft]
+    D --> E{Approval required?}
+    E -- Yes --> F[Human approval]
+    E -- No --> G[Execute action]
+    F --> G
+      </div>
+    </div>
+
+    <h2>Core design points</h2>
+    <ul>
+      <li>Idempotency for safe retries.</li>
+      <li>Timeout and fallback handling.</li>
+      <li>Audit logging of each step.</li>
+      <li>Manual override path for failures.</li>
+    </ul>
+
+    <h2>Example</h2>
+    <p>New support ticket -> classify urgency -> retrieve policy -> draft response -> manager approval for critical cases -> send reply.</p>
+
+    <footer>
+      <a href="basic-python-for-experimentation.html">Previous</a> · <a href="../capstone/end-to-end-ai-agent-use-case.html">Next: End-to-end capstone use case</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

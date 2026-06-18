@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare rate limiting and throttling strategies to protect backend APIs under load.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rate-limiting-vs-throttling.html">
+  <meta property="og:title" content="Rate limiting vs Throttling | BackbenchLearner">
+  <meta property="og:description" content="Compare rate limiting and throttling strategies to protect backend APIs under load.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rate-limiting-vs-throttling.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rate limiting vs Throttling | BackbenchLearner">
+  <meta name="twitter:description" content="Compare rate limiting and throttling strategies to protect backend APIs under load.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Rate limiting vs Throttling | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Rate limiting vs Throttling</h1>
+
+    <p><strong>Rate limiting</strong> caps how many requests are allowed in a window (e.g. 100/minute per user); excess requests are rejected (e.g. 429). <strong>Throttling</strong> slows down or queues requests so they are processed at a maximum rate rather than rejected — the client may wait or get delayed responses.</p>
+
+    <h2>Rate limiting: hard cap, reject excess</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Requests] --> C{Counter &lt; Limit?}
+    C -->|Yes| A[Allow 200]
+    C -->|No| B[Reject 429]
+    A --> Inc[Increment counter]
+    Inc --> Window[Per window e.g. 1 min]
+      </div>
+    </div>
+
+    <h2>Throttling: slow down, don’t reject</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Requests] --> Q[Queue]
+    Q --> R2[Release at max rate]
+    R2 --> P[Process]
+    Note[Client may wait / get delayed response]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Rate limiting</th><th>Throttling</th></tr></thead>
+      <tbody>
+        <tr><td>Excess traffic</td><td>Rejected (429)</td><td>Queued or delayed</td></tr>
+        <tr><td>Client experience</td><td>Clear “too many requests”</td><td>Slower response or backpressure</td></tr>
+        <tr><td>Typical use</td><td>API quotas, abuse prevention</td><td>Protect backend, smooth load</td></tr>
+        <tr><td>Implementation</td><td>Token bucket, sliding window, fixed window</td><td>Queue + worker rate, leaky bucket</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Common rate-limit strategies</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Fixed["Fixed window"]
+        F1[0-60s: count]
+        F2[61-120s: new count]
+    end
+    subgraph Sliding["Sliding window"]
+        S1[Last 60s from now]
+    end
+    subgraph Token["Token bucket"]
+        T1[Tokens refill at rate]
+        T2[Request consumes 1 token]
+    end
+      </div>
+    </div>
+
+    <p>Use <strong>rate limiting</strong> when you want to enforce quotas and fail fast. Use <strong>throttling</strong> when you want to absorb bursts and degrade gracefully instead of rejecting.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="oauth2.html">Prev: OAuth 2.0</a> · <a href="idempotency.html">Next: Idempotency</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

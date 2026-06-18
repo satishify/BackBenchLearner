@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn database transactions and isolation levels to manage consistency and concurrency.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/transactions-isolation.html">
+  <meta property="og:title" content="Transactions & isolation levels | BackbenchLearner">
+  <meta property="og:description" content="Learn database transactions and isolation levels to manage consistency and concurrency.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/transactions-isolation.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Transactions & isolation levels | BackbenchLearner">
+  <meta name="twitter:description" content="Learn database transactions and isolation levels to manage consistency and concurrency.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Transactions & isolation levels | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Transactions & isolation levels</h1>
+
+    <p>A <strong>transaction</strong> groups multiple operations into one unit: either all commit or all roll back. <strong>Isolation level</strong> defines how much one transaction “sees” of other concurrent transactions — from dirty reads to full serializability.</p>
+
+    <h2>Isolation levels (strongest to weakest)</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    S[SERIALIZABLE\nNo phantoms, full isolation]
+    RR[REPEATABLE READ\nSame row read twice = same value]
+    RC[READ COMMITTED\nOnly see committed data]
+    RU[READ UNCOMMITTED\nDirty reads possible]
+    S --> RR --> RC --> RU
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Level</th><th>Dirty read</th><th>Non-repeatable read</th><th>Phantom read</th></tr></thead>
+      <tbody>
+        <tr><td>READ UNCOMMITTED</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>READ COMMITTED</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>REPEATABLE READ</td><td>No</td><td>No</td><td>Yes*</td></tr>
+        <tr><td>SERIALIZABLE</td><td>No</td><td>No</td><td>No</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Anomalies explained</h2>
+    <ul>
+      <li><strong>Dirty read</strong> — You see uncommitted changes from another transaction (they may roll back).</li>
+      <li><strong>Non-repeatable read</strong> — You read a row twice in one transaction; it changes between reads because another txn committed.</li>
+      <li><strong>Phantom read</strong> — You run the same query twice; new rows appear (or disappear) because another txn committed.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant T1 as Transaction 1
+    participant T2 as Transaction 2
+    participant DB as Database
+
+    T1->>DB: SELECT * FROM orders
+    T2->>DB: INSERT order (committed)
+    T1->>DB: SELECT * FROM orders (same query)
+    Note over T1: Phantom: new row appears
+      </div>
+    </div>
+
+    <p>Default in many DBs is <strong>READ COMMITTED</strong>. Use <strong>REPEATABLE READ</strong> or <strong>SERIALIZABLE</strong> when you need consistent reads within a transaction; higher isolation can reduce concurrency (more locking).</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="acid-properties.html">Prev: ACID</a> · <a href="normalization-vs-denormalization.html">Next: Normalization vs denormalization</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

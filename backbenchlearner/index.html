@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BackbenchLearner offers beginner-friendly notes on backend, system design, Gen AI, deep learning, and agentic AI with diagrams and practical examples.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/index.html">
+  <meta property="og:title" content="BackbenchLearner">
+  <meta property="og:description" content="Backend, system design, Gen AI, deep learning, and agentic AI notes with diagrams and examples.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://backbenchlearner.com/index.html">
+  <title>BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f9fc;
+      --surface: #ffffff;
+      --border: #c5d9e8;
+      --text: #1a3d5c;
+      --text-muted: #4a6b82;
+      --link: #0d9488;
+      --link-read: #5c4d8a;
+      --active: #0d9488;
+      --sidebar-bg: #f0fdfa;
+      --sidebar-border: #ccfbf1;
+      --header-bg: linear-gradient(90deg, #4527e0 0%, #7c3aed 55%, #c026d3 100%);
+      --header-bg-solid: #4527e0;
+      --header-text: #f5f3ff;
+      --header-link: #d8d4fe;
+      --header-active-bg: rgba(255, 255, 255, 0.18);
+      --accent-teal: #2dd4bf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-header {
+      background: var(--header-bg);
+      background-color: var(--header-bg-solid);
+      color: var(--header-text);
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      padding: 0.85rem 1.5rem;
+      max-width: 100%;
+    }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    .site-logo {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      line-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+    }
+    .site-logo:hover { opacity: 0.95; }
+    .site-logo img {
+      display: block;
+      height: 96px;
+      width: auto;
+      object-fit: contain;
+    }
+    @media (max-width: 1024px) {
+      .site-logo img { height: 84px; }
+    }
+    @media (max-width: 860px) {
+      .site-logo img { height: 72px; }
+    }
+    @media (max-width: 600px) {
+      .site-logo img { height: 56px; }
+      .site-logo { border-radius: 8px; }
+    }
+    .topic-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+    .topic-nav a {
+      display: inline-block;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--header-link);
+      text-decoration: none;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .topic-nav a:hover {
+      background: var(--header-active-bg);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .topic-nav a.active {
+      background: var(--header-active-bg);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+    }
+    .content-row {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      padding: 1rem 0.85rem;
+      overflow-y: auto;
+    }
+    .sidebar .chapter {
+      margin-top: 0.7rem;
+    }
+    .sidebar .chapter:first-child {
+      margin-top: 0;
+    }
+    .sidebar .chapter-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      padding: 0.2rem 0.1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .sidebar .chapter-toggle:hover {
+      background: rgba(13, 148, 136, 0.10);
+      border-radius: 4px;
+    }
+    .sidebar .chapter-caret {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-left: 0.4rem;
+      transition: transform 0.15s ease;
+    }
+    .sidebar .chapter-toggle[aria-expanded="true"] .chapter-caret {
+      transform: rotate(90deg);
+    }
+    .sidebar .chapter-links {
+      display: none;
+      margin-top: 0.15rem;
+    }
+    .sidebar .chapter-links.expanded {
+      display: block;
+    }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar li { margin: 0; }
+    .sidebar a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      text-decoration: none;
+      color: #0d9488;
+      display: block;
+      padding: 0.2rem 0.3rem;
+      border-radius: 4px;
+      line-height: 1.35;
+    }
+    .sidebar a:hover { background: rgba(13, 148, 136, 0.12); text-decoration: none; }
+    .sidebar a.active {
+      color: var(--active);
+      font-weight: 600;
+      background: rgba(13, 148, 136, 0.18);
+    }
+    .sidebar a.read {
+      color: #5c4d8a !important;
+    }
+    .sidebar a.read.active {
+      color: var(--active) !important;
+    }
+    .sidebar a.read:not(.active):hover {
+      color: #6d5c9e !important;
+      background: rgba(92, 77, 138, 0.12);
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    #welcome {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      max-width: 800px;
+    }
+    #welcome h1 { font-size: 1.75rem; margin: 0 0 0.5rem 0; color: var(--text); }
+    #welcome .tagline { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+    #welcome p[style] { color: var(--text-muted); }
+    #content-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      min-height: 70vh;
+      display: none;
+    }
+    #content-frame.visible { display: block; }
+    .page-footer {
+      flex-shrink: 0;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .seo-discovery {
+      border-top: 1px solid var(--border);
+      background: #fff;
+      padding: 1rem 1.25rem;
+    }
+    .seo-discovery details { max-width: 1200px; }
+    .seo-discovery summary {
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+    .seo-discovery .seo-links {
+      margin-top: 0.75rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.3rem 1.2rem;
+    }
+    .seo-discovery a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #0d9488;
+      text-decoration: none;
+      line-height: 1.35;
+    }
+    .seo-discovery a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-inner">
+      <div class="brand-block">
+        <a href="index.html" class="site-logo" title="BackbenchLearner — Learn. Build. Level Up.">
+          <img src="assets/logo.png" alt="BackbenchLearner — Learn. Build. Level Up." />
+        </a>
+      </div>
+      <nav class="topic-nav" id="topic-nav">
+        <a href="#backend-design" data-topic-id="backend-design" class="active">Backend &amp; System Design</a>
+        <a href="#gen-ai-agentic-ai" data-topic-id="gen-ai-agentic-ai">Gen AI &amp; Agentic AI</a>
+      </nav>
+    </div>
+  </header>
+  <div class="content-row">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div id="welcome">
+        <h1>Backend & System Design Notes</h1>
+        <p class="tagline">Core concepts, databases, caching, distributed systems, and reliability — with diagrams and explanations.</p>
+        <p style="color: var(--text-muted);">Select a topic from the sidebar to open it here.</p>
+      </div>
+      <iframe id="content-frame" name="content-frame" title="Topic content"></iframe>
+    </main>
+  </div>
+  <section class="seo-discovery" aria-label="All lesson links for search indexing">
+    <details>
+      <summary>All Lessons (crawlable links)</summary>
+      <div class="seo-links">
+        <a href="Backend%20%26%20System%20Design/backend/what-is-api.html">Backend: What is an API</a>
+        <a href="Backend%20%26%20System%20Design/databases/sql-vs-nosql.html">Databases: SQL vs NoSQL</a>
+        <a href="Backend%20%26%20System%20Design/caching/what-is-caching.html">Caching: What is caching</a>
+        <a href="Backend%20%26%20System%20Design/distributed/load-balancing.html">Distributed: Load balancing</a>
+        <a href="Backend%20%26%20System%20Design/reliability/exactly-once-vs-at-least-once.html">Reliability: Exactly-once vs at-least-once</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-ai.html">Gen AI Basics: What is AI</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-machine-learning.html">Gen AI Basics: What is Machine Learning</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-deep-learning.html">Gen AI Basics: What is Deep Learning</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-generative-ai.html">Gen AI Basics: What is Generative AI</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">Deep Learning Essentials: Artificial neuron and perceptron</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">Deep Learning Essentials: Activation functions and MLP</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/backpropagation-and-gradient-descent.html">Deep Learning Essentials: Backpropagation and gradient descent</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html">Deep Learning Essentials: Overfitting and bias-variance</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/regularization-techniques.html">Deep Learning Essentials: Regularization techniques</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/tokens-context-window-temperature-top-p.html">Core LLM Concepts: Tokens and sampling</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/rag-retrieval-augmented-generation.html">Core LLM Concepts: RAG</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/what-makes-an-agent.html">Agentic AI Basics: What makes an agent</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/tool-calling-function-calling.html">Agent Design: Tool calling</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/practical-topics/evaluation-metrics.html">Practical Topics: Evaluation metrics</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/build-skills/apis-for-models.html">Build Skills: APIs for models</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">Transformer Architecture: Why transformers</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/self-attention-qkv.html">Transformer Architecture: Self-attention and Q/K/V</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/decoder-masking-cross-attention.html">Transformer Architecture: Decoder masking and cross-attention</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/llm-evolution-and-model-families.html">LLM Models & APIs: LLM evolution</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/structured-outputs-and-validation.html">LLM Models & APIs: Structured outputs</a>
+        <a href="Gen%20AI%20%26%20Agentic%20AI/capstone/end-to-end-ai-agent-use-case.html">Capstone: End-to-end use case</a>
+      </div>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #4a6b82; margin-top: 0.75rem;">
+        Full list is available in <a href="sitemap.xml">sitemap.xml</a>.
+      </p>
+    </details>
+  </section>
+  <footer class="page-footer">© BackbenchLearner 2026</footer>
+  <script>
+    (function() {
+      var READ_STORAGE_KEY = 'backbenchlearner-read';
+      var CURRENT_TOPIC_KEY = 'backbenchlearner-current-topic';
+
+      var TOPICS = {
+        'backend-design': {
+          basePath: 'Backend & System Design',
+          title: 'Backend & System Design Notes',
+          welcomeTitle: 'Backend & System Design Notes',
+          welcomeTagline: 'Core concepts, databases, caching, distributed systems, and reliability — with diagrams and explanations.',
+          sections: [
+            {
+              title: 'Backend & System Design Core Concepts',
+              links: [
+                { hash: 'backend/what-is-api', path: 'backend/what-is-api.html', label: '1. What is an API' },
+                { hash: 'backend/rest-vs-graphql', path: 'backend/rest-vs-graphql.html', label: '2. REST vs GraphQL' },
+                { hash: 'backend/http-methods', path: 'backend/http-methods.html', label: '3. HTTP methods' },
+                { hash: 'backend/http-status-codes', path: 'backend/http-status-codes.html', label: '4. HTTP status codes' },
+                { hash: 'backend/stateless-vs-stateful', path: 'backend/stateless-vs-stateful.html', label: '5. Stateless vs Stateful APIs' },
+                { hash: 'backend/auth-vs-authorization', path: 'backend/auth-vs-authorization.html', label: '6. Authentication vs Authorization' },
+                { hash: 'backend/session-vs-jwt', path: 'backend/session-vs-jwt.html', label: '7. Session-based auth vs JWT' },
+                { hash: 'backend/oauth2', path: 'backend/oauth2.html', label: '8. OAuth 2.0' },
+                { hash: 'backend/rate-limiting-vs-throttling', path: 'backend/rate-limiting-vs-throttling.html', label: '9. Rate limiting vs Throttling' },
+                { hash: 'backend/idempotency', path: 'backend/idempotency.html', label: '10. Idempotency' }
+              ]
+            },
+            {
+              title: 'Databases & Data Handling',
+              links: [
+                { hash: 'databases/sql-vs-nosql', path: 'databases/sql-vs-nosql.html', label: '1. SQL vs NoSQL' },
+                { hash: 'databases/indexes', path: 'databases/indexes.html', label: '2. Indexes' },
+                { hash: 'databases/acid-properties', path: 'databases/acid-properties.html', label: '3. ACID properties' },
+                { hash: 'databases/transactions-isolation', path: 'databases/transactions-isolation.html', label: '4. Transactions & isolation' },
+                { hash: 'databases/normalization-vs-denormalization', path: 'databases/normalization-vs-denormalization.html', label: '5. Normalization vs denormalization' },
+                { hash: 'databases/pagination', path: 'databases/pagination.html', label: '6. Pagination' },
+                { hash: 'databases/sharding-partitioning', path: 'databases/sharding-partitioning.html', label: '7. Sharding & partitioning' },
+                { hash: 'databases/read-replicas-write-scaling', path: 'databases/read-replicas-write-scaling.html', label: '8. Read replicas & write scaling' },
+                { hash: 'databases/duplicate-records', path: 'databases/duplicate-records.html', label: '9. Handling duplicate records' },
+                { hash: 'databases/optimistic-vs-pessimistic-locking', path: 'databases/optimistic-vs-pessimistic-locking.html', label: '10. Optimistic vs pessimistic locking' }
+              ]
+            },
+            {
+              title: 'Caching & Performance',
+              links: [
+                { hash: 'caching/what-is-caching', path: 'caching/what-is-caching.html', label: '1. What is caching' },
+                { hash: 'caching/cache-eviction-strategies', path: 'caching/cache-eviction-strategies.html', label: '2. Cache eviction strategies' },
+                { hash: 'caching/cache-consistency', path: 'caching/cache-consistency.html', label: '3. Cache consistency' },
+                { hash: 'caching/cdn-edge-caching', path: 'caching/cdn-edge-caching.html', label: '4. CDN and edge caching' },
+                { hash: 'caching/cache-can-make-systems-wrong', path: 'caching/cache-can-make-systems-wrong.html', label: '5. Why cache can make systems wrong' }
+              ]
+            },
+            {
+              title: 'Distributed Systems & Scaling',
+              links: [
+                { hash: 'distributed/load-balancing', path: 'distributed/load-balancing.html', label: '1. Load balancing' },
+                { hash: 'distributed/horizontal-vs-vertical-scaling', path: 'distributed/horizontal-vs-vertical-scaling.html', label: '2. Horizontal vs vertical scaling' },
+                { hash: 'distributed/microservices-vs-monoliths', path: 'distributed/microservices-vs-monoliths.html', label: '3. Microservices vs monoliths' },
+                { hash: 'distributed/service-communication', path: 'distributed/service-communication.html', label: '4. Service-to-service communication' },
+                { hash: 'distributed/message-queues', path: 'distributed/message-queues.html', label: '5. Message queues' }
+              ]
+            },
+            {
+              title: 'Reliability & Real-World Problems',
+              links: [
+                { hash: 'reliability/exactly-once-vs-at-least-once', path: 'reliability/exactly-once-vs-at-least-once.html', label: '1. Exactly-once vs at-least-once' },
+                { hash: 'reliability/retries-timeouts-circuit-breakers', path: 'reliability/retries-timeouts-circuit-breakers.html', label: '2. Retries, timeouts, circuit breakers' },
+                { hash: 'reliability/race-conditions', path: 'reliability/race-conditions.html', label: '3. Race conditions' },
+                { hash: 'reliability/distributed-locking', path: 'reliability/distributed-locking.html', label: '4. Distributed locking' },
+                { hash: 'reliability/event-driven-architecture', path: 'reliability/event-driven-architecture.html', label: '5. Event-driven architecture' },
+                { hash: 'reliability/saga-pattern', path: 'reliability/saga-pattern.html', label: '6. Saga pattern' },
+                { hash: 'reliability/graceful-degradation', path: 'reliability/graceful-degradation.html', label: '7. Graceful degradation' },
+                { hash: 'reliability/observability', path: 'reliability/observability.html', label: '8. Observability' },
+                { hash: 'reliability/deployments', path: 'reliability/deployments.html', label: '9. Deployments' },
+                { hash: 'reliability/traffic-spikes', path: 'reliability/traffic-spikes.html', label: '10. Traffic spikes' }
+              ]
+            }
+          ]
+        },
+        'gen-ai-agentic-ai': {
+          basePath: 'Gen AI & Agentic AI',
+          title: 'Gen AI & Agentic AI',
+          welcomeTitle: 'Gen AI & Agentic AI',
+          welcomeTagline: 'Learn Gen AI and Agentic AI in easy language with diagrams and practical examples.',
+          sections: [
+            {
+              title: 'Gen AI Basics',
+              links: [
+                { hash: 'gen-ai-basics/what-is-ai', path: 'gen-ai-basics/what-is-ai.html', label: '1. What is AI' },
+                { hash: 'gen-ai-basics/what-is-machine-learning', path: 'gen-ai-basics/what-is-machine-learning.html', label: '2. What is Machine Learning' },
+                { hash: 'gen-ai-basics/what-is-deep-learning', path: 'gen-ai-basics/what-is-deep-learning.html', label: '3. What is Deep Learning' },
+                { hash: 'gen-ai-basics/what-is-generative-ai', path: 'gen-ai-basics/what-is-generative-ai.html', label: '4. What is Generative AI' },
+                { hash: 'gen-ai-basics/what-are-llms-and-text-generation', path: 'gen-ai-basics/what-are-llms-and-text-generation.html', label: '5. What LLMs are and how they generate text' },
+                { hash: 'gen-ai-basics/ai-ml-deep-learning-genai', path: 'gen-ai-basics/ai-ml-deep-learning-genai.html', label: '6. AI vs ML vs Deep Learning vs Gen AI' },
+                { hash: 'gen-ai-basics/common-model-types', path: 'gen-ai-basics/common-model-types.html', label: '7. Common model types' },
+                { hash: 'gen-ai-basics/pretraining-finetuning-inference', path: 'gen-ai-basics/pretraining-finetuning-inference.html', label: '8. Pretraining, fine-tuning, inference' }
+              ]
+            },
+            {
+              title: 'Deep Learning Essentials',
+              links: [
+                { hash: 'deep-learning-essentials/artificial-neuron-and-perceptron', path: 'deep-learning-essentials/artificial-neuron-and-perceptron.html', label: '1. Artificial neuron and perceptron' },
+                { hash: 'deep-learning-essentials/activation-functions-and-mlp', path: 'deep-learning-essentials/activation-functions-and-mlp.html', label: '2. Activation functions and MLP' },
+                { hash: 'deep-learning-essentials/backpropagation-and-gradient-descent', path: 'deep-learning-essentials/backpropagation-and-gradient-descent.html', label: '3. Backpropagation and gradient descent' },
+                { hash: 'deep-learning-essentials/overfitting-underfitting-bias-variance', path: 'deep-learning-essentials/overfitting-underfitting-bias-variance.html', label: '4. Overfitting, underfitting, bias-variance' },
+                { hash: 'deep-learning-essentials/regularization-techniques', path: 'deep-learning-essentials/regularization-techniques.html', label: '5. Regularization techniques' }
+              ]
+            },
+            {
+              title: 'Core LLM Concepts',
+              links: [
+                { hash: 'core-llm-concepts/tokens-context-window-temperature-top-p', path: 'core-llm-concepts/tokens-context-window-temperature-top-p.html', label: '1. Tokens, context window, temperature, top-p' },
+                { hash: 'core-llm-concepts/prompt-engineering', path: 'core-llm-concepts/prompt-engineering.html', label: '2. Prompt engineering' },
+                { hash: 'core-llm-concepts/embeddings-semantic-search', path: 'core-llm-concepts/embeddings-semantic-search.html', label: '3. Embeddings and semantic search' },
+                { hash: 'core-llm-concepts/rag-retrieval-augmented-generation', path: 'core-llm-concepts/rag-retrieval-augmented-generation.html', label: '4. RAG (Retrieval-Augmented Generation)' },
+                { hash: 'core-llm-concepts/hallucinations-and-limitations', path: 'core-llm-concepts/hallucinations-and-limitations.html', label: '5. Hallucinations and model limitations' }
+              ]
+            },
+            {
+              title: 'Transformer Architecture (Session 2-3)',
+              links: [
+                { hash: 'transformer-architecture/why-transformers', path: 'transformer-architecture/why-transformers.html', label: '1. Why transformers replaced RNN seq2seq' },
+                { hash: 'transformer-architecture/self-attention-qkv', path: 'transformer-architecture/self-attention-qkv.html', label: '2. Self-attention and Q/K/V in detail' },
+                { hash: 'transformer-architecture/positional-encoding-and-mha', path: 'transformer-architecture/positional-encoding-and-mha.html', label: '3. Positional encoding and multi-head attention' },
+                { hash: 'transformer-architecture/decoder-masking-cross-attention', path: 'transformer-architecture/decoder-masking-cross-attention.html', label: '4. Decoder masking and cross-attention' },
+                { hash: 'transformer-architecture/autoregressive-decoding', path: 'transformer-architecture/autoregressive-decoding.html', label: '5. Autoregressive generation and decoding' }
+              ]
+            },
+            {
+              title: 'LLM Models, Prompting & APIs (Session 4-5)',
+              links: [
+                { hash: 'llm-models-and-apis/llm-evolution-and-model-families', path: 'llm-models-and-apis/llm-evolution-and-model-families.html', label: '1. LLM evolution and model families' },
+                { hash: 'llm-models-and-apis/prompting-fundamentals-and-roles', path: 'llm-models-and-apis/prompting-fundamentals-and-roles.html', label: '2. Prompting fundamentals and roles' },
+                { hash: 'llm-models-and-apis/decoding-parameters-and-control', path: 'llm-models-and-apis/decoding-parameters-and-control.html', label: '3. Decoding parameters and output control' },
+                { hash: 'llm-models-and-apis/apis-and-tool-calling', path: 'llm-models-and-apis/apis-and-tool-calling.html', label: '4. OpenAI/Azure/Groq APIs and tool calling' },
+                { hash: 'llm-models-and-apis/structured-outputs-and-validation', path: 'llm-models-and-apis/structured-outputs-and-validation.html', label: '5. Structured outputs, validation, and reliability' }
+              ]
+            },
+            {
+              title: 'Agentic AI Basics',
+              links: [
+                { hash: 'agentic-ai-basics/what-makes-an-agent', path: 'agentic-ai-basics/what-makes-an-agent.html', label: '1. What makes an AI system an agent' },
+                { hash: 'agentic-ai-basics/reasoning-planning-tools-memory', path: 'agentic-ai-basics/reasoning-planning-tools-memory.html', label: '2. Reasoning + planning + tool use + memory' },
+                { hash: 'agentic-ai-basics/chatbot-vs-agent', path: 'agentic-ai-basics/chatbot-vs-agent.html', label: '3. Chatbot vs agent' },
+                { hash: 'agentic-ai-basics/single-vs-multi-agent', path: 'agentic-ai-basics/single-vs-multi-agent.html', label: '4. Single-agent vs multi-agent systems' },
+                { hash: 'agentic-ai-basics/human-in-the-loop-workflows', path: 'agentic-ai-basics/human-in-the-loop-workflows.html', label: '5. Human-in-the-loop workflows' }
+              ]
+            },
+            {
+              title: 'Agent Design Topics',
+              links: [
+                { hash: 'agent-design-topics/task-decomposition', path: 'agent-design-topics/task-decomposition.html', label: '1. Task decomposition' },
+                { hash: 'agent-design-topics/tool-calling-function-calling', path: 'agent-design-topics/tool-calling-function-calling.html', label: '2. Tool calling / function calling' },
+                { hash: 'agent-design-topics/short-term-vs-long-term-memory', path: 'agent-design-topics/short-term-vs-long-term-memory.html', label: '3. Short-term vs long-term memory' },
+                { hash: 'agent-design-topics/reflection-self-correction-loops', path: 'agent-design-topics/reflection-self-correction-loops.html', label: '4. Reflection / self-correction loops' },
+                { hash: 'agent-design-topics/orchestration-workflow-control', path: 'agent-design-topics/orchestration-workflow-control.html', label: '5. Orchestration and workflow control' }
+              ]
+            },
+            {
+              title: 'Practical Topics',
+              links: [
+                { hash: 'practical-topics/use-cases', path: 'practical-topics/use-cases.html', label: '1. Use cases' },
+                { hash: 'practical-topics/evaluation-metrics', path: 'practical-topics/evaluation-metrics.html', label: '2. Evaluation: accuracy, latency, cost, safety' },
+                { hash: 'practical-topics/guardrails-and-security', path: 'practical-topics/guardrails-and-security.html', label: '3. Guardrails and security' },
+                { hash: 'practical-topics/prompt-injection-and-tool-misuse-risks', path: 'practical-topics/prompt-injection-and-tool-misuse-risks.html', label: '4. Prompt injection and tool misuse risks' },
+                { hash: 'practical-topics/monitoring-and-observability', path: 'practical-topics/monitoring-and-observability.html', label: '5. Monitoring and observability' }
+              ]
+            },
+            {
+              title: 'Build Skills',
+              links: [
+                { hash: 'build-skills/apis-for-models', path: 'build-skills/apis-for-models.html', label: '1. APIs for models' },
+                { hash: 'build-skills/vector-databases', path: 'build-skills/vector-databases.html', label: '2. Vector databases' },
+                { hash: 'build-skills/langchain-llamaindex-autogen-crewai', path: 'build-skills/langchain-llamaindex-autogen-crewai.html', label: '3. LangChain, LlamaIndex, AutoGen, CrewAI' },
+                { hash: 'build-skills/basic-python-for-experimentation', path: 'build-skills/basic-python-for-experimentation.html', label: '4. Basic Python for experimentation' },
+                { hash: 'build-skills/workflow-automation-concepts', path: 'build-skills/workflow-automation-concepts.html', label: '5. Workflow automation concepts' }
+              ]
+            },
+            {
+              title: 'Capstone: Combined Use Case',
+              links: [
+                { hash: 'capstone/end-to-end-ai-agent-use-case', path: 'capstone/end-to-end-ai-agent-use-case.html', label: '1. End-to-end use case (all concepts together)' }
+              ]
+            }
+          ]
+        }
+      };
+
+      function getCurrentTopicId() {
+        var id = sessionStorage.getItem(CURRENT_TOPIC_KEY);
+        return (id && TOPICS[id]) ? id : 'backend-design';
+      }
+      function setCurrentTopicId(id) {
+        sessionStorage.setItem(CURRENT_TOPIC_KEY, id);
+      }
+
+      function getReadSet() {
+        try {
+          var raw = sessionStorage.getItem(READ_STORAGE_KEY);
+          return raw ? new Set(JSON.parse(raw)) : new Set();
+        } catch (e) { return new Set(); }
+      }
+      function saveReadSet(set) {
+        try { sessionStorage.setItem(READ_STORAGE_KEY, JSON.stringify(Array.from(set))); } catch (e) {}
+      }
+      function getTopicFromHash() {
+        var h = window.location.hash.slice(1);
+        if (!h) return '';
+        if (h.indexOf('/') !== -1 && TOPICS[h.split('/')[0]]) return h;
+        return h + (h.indexOf('.html') === -1 ? '.html' : '');
+      }
+      function getPathFromHash() {
+        var h = window.location.hash.slice(1);
+        if (!h) return '';
+        if (TOPICS[h]) return '';
+        var topicId = getCurrentTopicId();
+        var topic = TOPICS[topicId];
+        var path = (h.indexOf('.html') === -1) ? h + '.html' : h;
+        if (topic && topic.basePath) path = topic.basePath + '/' + path;
+        return path;
+      }
+
+      function renderSidebar(topicId) {
+        var topic = TOPICS[topicId];
+        var sidebar = document.getElementById('sidebar');
+        if (!topic) {
+          sidebar.innerHTML = '<p style="color: var(--text-muted); padding: 1rem;">No topics yet for this section.</p>';
+          return;
+        }
+        var base = topic.basePath ? topic.basePath + '/' : '';
+        var html = '';
+        topic.sections.forEach(function(section, sectionIndex) {
+          var listId = 'chapter-links-' + topicId + '-' + sectionIndex;
+          html += '<div class="chapter">';
+          html += '<button class="chapter-toggle" type="button" data-list-id="' + listId + '" aria-expanded="false">';
+          html += '<span>' + section.title + '</span><span class="chapter-caret">▶</span>';
+          html += '</button>';
+          html += '<ul class="chapter-links" id="' + listId + '">';
+          section.links.forEach(function(link) {
+            var fullPath = base + link.path;
+            html += '<li><a href="#' + link.hash + '" data-topic="' + fullPath + '">' + link.label + '</a></li>';
+          });
+          html += '</ul></div>';
+        });
+        sidebar.innerHTML = html;
+
+        var toggles = sidebar.querySelectorAll('.chapter-toggle');
+        toggles.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var listId = btn.getAttribute('data-list-id');
+            var list = document.getElementById(listId);
+            if (!list) return;
+            var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!isExpanded));
+            list.classList.toggle('expanded', !isExpanded);
+          });
+        });
+      }
+
+      function expandChapterForPath(path) {
+        if (!path) return;
+        var activeLink = document.querySelector('.sidebar a[data-topic="' + path + '"]');
+        if (!activeLink) return;
+        var chapter = activeLink.closest('.chapter');
+        if (!chapter) return;
+        var btn = chapter.querySelector('.chapter-toggle');
+        var list = chapter.querySelector('.chapter-links');
+        if (btn && list) {
+          btn.setAttribute('aria-expanded', 'true');
+          list.classList.add('expanded');
+        }
+      }
+
+      function setHeaderActive(topicId) {
+        var nav = document.getElementById('topic-nav');
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[data-topic-id]');
+        links.forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('data-topic-id') === topicId);
+        });
+      }
+
+      function showWelcome(topicId) {
+        var topic = TOPICS[topicId];
+        var welcome = document.getElementById('welcome');
+        if (topic && welcome) {
+          welcome.querySelector('h1').textContent = topic.welcomeTitle || topic.title;
+          welcome.querySelector('.tagline').textContent = topic.welcomeTagline || '';
+          welcome.style.display = 'block';
+        }
+      }
+
+      function syncUI() {
+        var path = getPathFromHash();
+        var welcome = document.getElementById('welcome');
+        var frame = document.getElementById('content-frame');
+        var links = document.querySelectorAll('.sidebar a[data-topic]');
+        if (path) {
+          frame.src = path;
+          frame.classList.add('visible');
+          welcome.style.display = 'none';
+          var readSet = getReadSet();
+          readSet.add(path);
+          saveReadSet(readSet);
+        } else {
+          frame.src = '';
+          frame.classList.remove('visible');
+          welcome.style.display = 'block';
+        }
+        links.forEach(function(a) {
+          var t = a.getAttribute('data-topic');
+          a.classList.toggle('active', t === path);
+          a.classList.toggle('read', getReadSet().has(t));
+        });
+        expandChapterForPath(path);
+      }
+
+      function switchTopic(topicId) {
+        if (!TOPICS[topicId]) return;
+        setCurrentTopicId(topicId);
+        setHeaderActive(topicId);
+        renderSidebar(topicId);
+        window.location.hash = '';
+        showWelcome(topicId);
+        document.getElementById('content-frame').src = '';
+        document.getElementById('content-frame').classList.remove('visible');
+        document.getElementById('welcome').style.display = 'block';
+        syncUI();
+      }
+
+      document.getElementById('topic-nav').addEventListener('click', function(e) {
+        var a = e.target.closest('a[data-topic-id]');
+        if (a && !a.classList.contains('active')) {
+          e.preventDefault();
+          switchTopic(a.getAttribute('data-topic-id'));
+        }
+      });
+
+      window.addEventListener('hashchange', syncUI);
+      window.addEventListener('load', function() {
+        var topicId = getCurrentTopicId();
+        setHeaderActive(topicId);
+        renderSidebar(topicId);
+        showWelcome(topicId);
+        syncUI();
+      });
+    })();
+  </script>
+</body>
+</html>
+

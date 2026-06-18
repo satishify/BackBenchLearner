@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn self-attention and Q/K/V with intuitive examples and the scaled dot-product formula.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/self-attention-qkv.html">
+  <meta property="og:title" content="Self-Attention and Q/K/V | BackbenchLearner">
+  <meta property="og:description" content="Learn self-attention and Q/K/V with intuitive examples and the scaled dot-product formula.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/self-attention-qkv.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Self-Attention and Q/K/V | BackbenchLearner">
+  <meta name="twitter:description" content="Learn self-attention and Q/K/V with intuitive examples and the scaled dot-product formula.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Self-Attention and Q/K/V | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Self-Attention and Q, K, V</h1>
+    <p>Self-attention lets every token compare itself to every other token and decide relevance dynamically.</p>
+
+    <h2>Q/K/V intuition</h2>
+    <ul>
+      <li><strong>Query (Q):</strong> what this token is looking for.</li>
+      <li><strong>Key (K):</strong> what each token offers.</li>
+      <li><strong>Value (V):</strong> information to pass if selected.</li>
+    </ul>
+
+    <h2>Core formula</h2>
+    <p><code>Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V</code></p>
+    <p>Scaling by <code>sqrt(d_k)</code> keeps scores numerically stable before softmax.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    X[Token embeddings] --> Q[Q = XWq]
+    X --> K[K = XWk]
+    X --> V[V = XWv]
+    Q --> S[Scaled dot product scores]
+    K --> S
+    S --> A[Softmax weights]
+    A --> O[Weighted sum over V]
+    V --> O
+      </div>
+    </div>
+
+    <h2>Example intuition: pronoun resolution</h2>
+    <p>Sentence: "The animal did not cross the street because it was tired."</p>
+    <p>For token <code>it</code>, attention usually assigns high weight to <code>animal</code> and <code>tired</code>, helping resolve meaning.</p>
+
+    <footer>
+      <a href="why-transformers.html">Previous</a> · <a href="positional-encoding-and-mha.html">Next: Positional encoding and MHA</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

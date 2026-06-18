@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Hallucinations and Model Limitations with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/hallucinations-and-limitations.html">
+  <meta property="og:title" content="Hallucinations and Model Limitations | BackbenchLearner">
+  <meta property="og:description" content="Learn about Hallucinations and Model Limitations with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/hallucinations-and-limitations.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hallucinations and Model Limitations | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Hallucinations and Model Limitations with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Hallucinations and Model Limitations | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Hallucinations and Model Limitations</h1>
+    <p>A hallucination is when a model gives incorrect or fabricated information in a confident tone.</p>
+
+    <h2>Why hallucinations happen</h2>
+    <ul>
+      <li>Model predicts likely text, not guaranteed truth.</li>
+      <li>Prompt lacks context or clear constraints.</li>
+      <li>Requested knowledge is missing or outdated.</li>
+    </ul>
+
+    <h2>Other limitations</h2>
+    <ul>
+      <li>Sensitive to prompt wording.</li>
+      <li>Can fail in multi-step reasoning if not guided.</li>
+      <li>May inherit bias from training data.</li>
+      <li>Can produce non-deterministic outputs.</li>
+    </ul>
+
+    <h2>Mitigation strategies</h2>
+    <ol>
+      <li>Use RAG and reliable source data.</li>
+      <li>Ask for citations and confidence notes.</li>
+      <li>Add validation and post-processing checks.</li>
+      <li>Keep human review for high-impact decisions.</li>
+    </ol>
+
+    <h2>Example</h2>
+    <p>For medical or legal use, never rely only on model output. Always verify with trusted sources and domain experts.</p>
+
+    <footer>
+      <a href="rag-retrieval-augmented-generation.html">Previous</a> · <a href="../agentic-ai-basics/what-makes-an-agent.html">Next: Agentic AI Basics</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

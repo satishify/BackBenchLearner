@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn what an API is and how it enables communication between software systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/what-is-api.html">
+  <meta property="og:title" content="What is an API | BackbenchLearner">
+  <meta property="og:description" content="Learn what an API is and how it enables communication between software systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/what-is-api.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is an API | BackbenchLearner">
+  <meta name="twitter:description" content="Learn what an API is and how it enables communication between software systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>What is an API | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>What is an API</h1>
+
+    <p>An <strong>API (Application Programming Interface)</strong> is a contract that lets one piece of software talk to another. It defines <em>what</em> you can ask for and <em>how</em> to ask — methods, data formats, and rules — so that clients (apps, browsers, other services) can use your backend without knowing its internals.</p>
+
+    <h2>High-level flow</h2>
+    <p>A client sends a structured request (e.g. HTTP); the server interprets it, does work (e.g. DB, business logic), and returns a response. The API is the “surface” between them.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client (App/Browser)
+    participant API as API Layer
+    participant DB as Database / Services
+
+    C->>+API: Request (e.g. GET /users/1)
+    API->>API: Validate, auth, route
+    API->>DB: Query / business logic
+    DB-->>API: Data
+    API-->>-C: Response (JSON, status code)
+      </div>
+    </div>
+
+    <h2>Why APIs matter</h2>
+    <ul>
+      <li><strong>Abstraction</strong> — Hide implementation; expose only operations and data the client needs.</li>
+      <li><strong>Reuse</strong> — One backend can serve web, mobile, partners, internal tools.</li>
+      <li><strong>Decoupling</strong> — Client and server can evolve independently as long as the contract is respected.</li>
+    </ul>
+
+    <h2>Types of APIs (by style)</h2>
+    <ul>
+      <li><strong>REST</strong> — Resource URLs + HTTP methods (GET, POST, etc.).</li>
+      <li><strong>GraphQL</strong> — Single endpoint; client asks for exact fields and shape.</li>
+      <li><strong>gRPC</strong> — Binary, strongly-typed RPC over HTTP/2.</li>
+      <li><strong>WebSocket</strong> — Full-duplex, real-time channel (often used alongside REST).</li>
+    </ul>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="rest-vs-graphql.html">Next: REST vs GraphQL</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

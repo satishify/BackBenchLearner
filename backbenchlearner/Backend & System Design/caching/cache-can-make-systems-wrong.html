@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn why caching can introduce stale data and consistency bugs in distributed systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-can-make-systems-wrong.html">
+  <meta property="og:title" content="Why cache can make systems wrong | BackbenchLearner">
+  <meta property="og:description" content="Learn why caching can introduce stale data and consistency bugs in distributed systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-can-make-systems-wrong.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Why cache can make systems wrong | BackbenchLearner">
+  <meta name="twitter:description" content="Learn why caching can introduce stale data and consistency bugs in distributed systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Why cache can make systems wrong | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Why cache can make systems wrong</h1>
+
+    <p>Caching improves performance but introduces <strong>stale reads</strong>, <strong>inconsistency</strong>, and <strong>complex invalidation</strong>. If used carelessly, users see wrong data, decisions are made on old state, or different parts of the system disagree — so the system can behave “wrong” even though each component is working.</p>
+
+    <h2>Main failure modes</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Problems["Cache can cause"]
+        P1[Stale data shown as truth]
+        P2[Invalidation missed → permanent stale]
+        P3[Thundering herd on expiry]
+        P4[Wrong key / collision]
+    end
+      </div>
+    </div>
+
+    <h2>Examples</h2>
+    <ul>
+      <li><strong>Stale balance</strong> — Cache shows old balance; user thinks they have more (or less) than they do.</li>
+      <li><strong>Missed invalidation</strong> — DB updated, cache not invalidated; reads return old value until TTL.</li>
+      <li><strong>Thundering herd</strong> — Cache expires; many requests hit DB at once; DB overload.</li>
+      <li><strong>Wrong key</strong> — Cache key doesn’t include all inputs (e.g. user id); one user sees another’s data.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant Cache as Cache
+    participant DB as DB
+
+    Note over DB: Balance updated to 100
+    U->>Cache: Get balance (stale 50)
+    Cache-->>U: 50
+    Note over U: User sees wrong balance
+      </div>
+    </div>
+
+    <p><strong>Mitigations:</strong> Don’t cache data that must be exact (e.g. balance after write). Use correct keys (include user/session). Invalidate on write or use short TTL. Use single-flight or lock to avoid thundering herd on miss.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="cdn-edge-caching.html">Prev: CDN and edge caching</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

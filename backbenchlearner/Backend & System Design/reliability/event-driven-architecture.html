@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn event-driven architecture patterns for decoupled and scalable backend systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/event-driven-architecture.html">
+  <meta property="og:title" content="Event-driven architecture | BackbenchLearner">
+  <meta property="og:description" content="Learn event-driven architecture patterns for decoupled and scalable backend systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/event-driven-architecture.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Event-driven architecture | BackbenchLearner">
+  <meta name="twitter:description" content="Learn event-driven architecture patterns for decoupled and scalable backend systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Event-driven architecture | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Event-driven architecture</h1>
+
+    <p>In <strong>event-driven architecture</strong>, services communicate by producing and consuming <strong>events</strong> (something happened: “OrderPlaced,” “UserSignedUp”). Producers publish to a broker (Kafka, etc.); consumers subscribe and react. This decouples producers from consumers and allows multiple consumers to react to the same event.</p>
+
+    <h2>Flow</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    P[Order Service] -->|OrderPlaced| B[Event Bus / Kafka]
+    B --> C1[Inventory Service]
+    B --> C2[Notification Service]
+    B --> C3[Analytics]
+      </div>
+    </div>
+
+    <h2>Benefits and trade-offs</h2>
+    <table>
+      <thead><tr><th>Benefit</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td>Loose coupling</td><td>Eventual consistency; harder to trace</td></tr>
+        <tr><td>Multiple consumers</td><td>Ordering and exactly-once need care</td></tr>
+        <tr><td>Scale consumers independently</td><td>Operational complexity (broker, schemas)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Event vs command</h2>
+    <p><strong>Event</strong> — “Something happened” (past tense). Multiple subscribers. <strong>Command</strong> — “Do this” (imperative). Often one handler. Events are the backbone of event-driven systems; commands can be sent over queues for point-to-point work.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Events["Events (broadcast)"]
+        E1[OrderPlaced]
+        E1 --> S1[Service A]
+        E1 --> S2[Service B]
+    end
+    subgraph Commands["Commands (targeted)"]
+        C1[ProcessPayment] --> S3[Payment Service]
+    end
+      </div>
+    </div>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="distributed-locking.html">Prev: Distributed locking</a> · <a href="saga-pattern.html">Next: Saga pattern</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn idempotency patterns to make backend operations safe for retries and duplicates.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/idempotency.html">
+  <meta property="og:title" content="Idempotency (especially for payments) | BackbenchLearner">
+  <meta property="og:description" content="Learn idempotency patterns to make backend operations safe for retries and duplicates.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/idempotency.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Idempotency (especially for payments) | BackbenchLearner">
+  <meta name="twitter:description" content="Learn idempotency patterns to make backend operations safe for retries and duplicates.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Idempotency (especially for payments) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Idempotency (especially for payments)</h1>
+
+    <p>An operation is <strong>idempotent</strong> if performing it once or multiple times has the same effect. For APIs, that means: same request (identified by an idempotency key) applied once or retried many times produces the same outcome and no duplicate side effects (e.g. one charge, one order).</p>
+
+    <h2>Why it matters for payments</h2>
+    <p>Networks and clients retry. Without idempotency, a double-click or a retry can create two charges or two orders. With an <strong>idempotency key</strong> (client-generated unique ID per logical operation), the server can recognize a repeat and return the same result without re-executing.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant DB as Store
+
+    C->>S: POST /charge Idempotency-Key: key-123, body
+    S->>DB: Has key-123 been seen?
+    alt First time
+        DB-->>S: No
+        S->>S: Process charge
+        S->>DB: Store result for key-123
+        S-->>C: 201 Created (charge id)
+    else Retry / duplicate
+        DB-->>S: Yes, result stored
+        S-->>C: 200 OK (same charge id, no new charge)
+    end
+      </div>
+    </div>
+
+    <h2>Implementing idempotency</h2>
+    <ul>
+      <li><strong>Client</strong> sends a unique <code>Idempotency-Key</code> (UUID or similar) per logical operation.</li>
+      <li><strong>Server</strong> stores (key → response/outcome) in DB or cache with a TTL (e.g. 24h).</li>
+      <li>First request with that key: process and store result. Subsequent requests with same key: return stored result, do not re-run the operation.</li>
+    </ul>
+
+    <h2>What should be idempotent</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Idempotent["Should be idempotent"]
+        I1[Payments / charges]
+        I2[Order creation]
+        I3[Subscription changes]
+        I4[PUT / PATCH / DELETE]
+    end
+    subgraph NonIdempotent["Inherently not"]
+        N1[POST create without key]
+        N2[Send email / notification]
+    end
+      </div>
+    </div>
+
+    <p>Use idempotency keys for any non-idempotent mutation that must not be applied twice: payments, order creation, sign-ups that send email, etc. GET, PUT, DELETE are naturally idempotent; POST and custom actions need a key.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="rate-limiting-vs-throttling.html">Prev: Rate limiting vs Throttling</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

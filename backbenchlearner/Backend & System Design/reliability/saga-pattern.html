@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand the Saga pattern for managing distributed transactions across services.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/saga-pattern.html">
+  <meta property="og:title" content="Saga pattern (distributed transactions) | BackbenchLearner">
+  <meta property="og:description" content="Understand the Saga pattern for managing distributed transactions across services.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/saga-pattern.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Saga pattern (distributed transactions) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand the Saga pattern for managing distributed transactions across services.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Saga pattern (distributed transactions) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Saga pattern (distributed transactions)</h1>
+
+    <p>A <strong>Saga</strong> is a sequence of local transactions across services; if a later step fails, earlier steps are undone via <strong>compensating transactions</strong> (e.g. cancel reservation, refund payment). There is no single ACID transaction across services — consistency is eventual and achieved by compensation.</p>
+
+    <h2>Choreography: each service reacts and emits events</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant O as Order
+    participant P as Payment
+    participant I as Inventory
+
+    O->>P: Reserve payment
+    P-->>O: PaymentReserved
+    O->>I: Reserve stock
+    I-->>O: StockReserved
+    O->>O: Confirm order
+    alt Inventory fails
+        I-->>O: Failed
+        O->>P: Compensate: release payment
+    end
+      </div>
+    </div>
+
+    <h2>Orchestration: central coordinator calls services</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    Saga[Saga Orchestrator] --> S1[Step 1: Payment]
+    S1 --> S2[Step 2: Inventory]
+    S2 --> S3[Step 3: Ship]
+    S3 -->|Fail| Comp[Run compensations in reverse]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Style</th><th>How</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td>Choreography</td><td>Services react to events; no central coordinator</td><td>Harder to reason; no single place for flow</td></tr>
+        <tr><td>Orchestration</td><td>Central saga runner calls services and runs compensations</td><td>Clear flow; orchestrator is a single point</td></tr>
+      </tbody>
+    </table>
+
+    <p>Sagas guarantee “all steps complete or compensating actions run” but not atomicity: between steps, state can be partially updated. Design compensations to be idempotent and handle already-compensated or failed steps.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="event-driven-architecture.html">Prev: Event-driven</a> · <a href="graceful-degradation.html">Next: Graceful degradation</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

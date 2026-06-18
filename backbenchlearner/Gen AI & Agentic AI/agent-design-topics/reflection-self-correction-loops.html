@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Reflection and Self-Correction Loops with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/reflection-self-correction-loops.html">
+  <meta property="og:title" content="Reflection and Self-Correction Loops | BackbenchLearner">
+  <meta property="og:description" content="Learn about Reflection and Self-Correction Loops with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/reflection-self-correction-loops.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Reflection and Self-Correction Loops | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Reflection and Self-Correction Loops with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Reflection and Self-Correction Loops | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Reflection / Self-Correction Loops</h1>
+    <p>Reflection loop means the agent checks its own output and improves it before returning the final result.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Draft response] --> B[Check against criteria]
+    B --> C{Pass?}
+    C -- No --> D[Revise]
+    D --> B
+    C -- Yes --> E[Final response]
+      </div>
+    </div>
+
+    <h2>What to check</h2>
+    <ul>
+      <li>Factual consistency.</li>
+      <li>Output format compliance.</li>
+      <li>Policy/safety constraints.</li>
+      <li>Missing edge cases.</li>
+    </ul>
+
+    <h2>Trade-off</h2>
+    <p>More reflection can improve quality, but increases latency and cost.</p>
+
+    <footer>
+      <a href="short-term-vs-long-term-memory.html">Previous</a> · <a href="orchestration-workflow-control.html">Next</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

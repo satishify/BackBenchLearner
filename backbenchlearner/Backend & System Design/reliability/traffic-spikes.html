@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn strategies to handle traffic spikes and viral load in backend systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/traffic-spikes.html">
+  <meta property="og:title" content="Handling traffic spikes & viral load | BackbenchLearner">
+  <meta property="og:description" content="Learn strategies to handle traffic spikes and viral load in backend systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/traffic-spikes.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Handling traffic spikes & viral load | BackbenchLearner">
+  <meta name="twitter:description" content="Learn strategies to handle traffic spikes and viral load in backend systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Handling traffic spikes & viral load | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Handling traffic spikes & viral load</h1>
+
+    <p>Traffic spikes (launch, viral event, attack) can overwhelm the system. Handling them involves: <strong>absorbing</strong> load (caching, CDN, queues), <strong>limiting</strong> load (rate limiting, backpressure), <strong>scaling</strong> (horizontal auto-scale), and <strong>degrading gracefully</strong> when capacity is exceeded.</p>
+
+    <h2>Layers of protection</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    Traffic[Spike in traffic] --> CDN[CDN / edge cache]
+    CDN --> Limit[Rate limit / throttle]
+    Limit --> Scale[Auto-scale app tier]
+    Scale --> Queue[Queue for async work]
+    Queue --> DB[(DB)]
+    Limit -->|Over capacity| Degrade[Graceful degradation]
+      </div>
+    </div>
+
+    <h2>Strategies</h2>
+    <ul>
+      <li><strong>Cache aggressively</strong> — Static and cacheable API responses at edge and app layer to reduce origin load.</li>
+      <li><strong>Rate limiting</strong> — Per user/IP/key to cap abuse and give fair share; return 429 when over limit.</li>
+      <li><strong>Queue non-critical work</strong> — E.g. send email, analytics; process from queue so web tier stays responsive.</li>
+      <li><strong>Auto-scaling</strong> — Scale out app (and optionally DB read replicas) on CPU/request count; scale in when load drops.</li>
+      <li><strong>Graceful degradation</strong> — When overloaded, serve reduced features or cached content instead of failing everything.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant U as Users
+    participant LB as Load Balancer
+    participant App as App (scaled)
+    participant Cache as Cache
+
+    U->>LB: Spike
+    LB->>App: Forward (within limit)
+    App->>Cache: Hit cache when possible
+    Cache-->>App: Reduce DB load
+    App-->>U: 200 or 429 if over limit
+      </div>
+    </div>
+
+    <p>Design for spikes: stateless app tier, horizontal scaling, caching, and queues. Use rate limiting and circuit breakers to protect downstream. Plan for “viral” events with load tests and runbooks.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="deployments.html">Prev: Deployments</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

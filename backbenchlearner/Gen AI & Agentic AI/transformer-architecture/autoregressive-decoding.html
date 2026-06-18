@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand autoregressive decoding loop and decoding algorithms like greedy, beam, top-k and top-p.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/autoregressive-decoding.html">
+  <meta property="og:title" content="Autoregressive Decoding | BackbenchLearner">
+  <meta property="og:description" content="Understand autoregressive decoding loop and decoding algorithms like greedy, beam, top-k and top-p.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/autoregressive-decoding.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Autoregressive Decoding | BackbenchLearner">
+  <meta name="twitter:description" content="Understand autoregressive decoding loop and decoding algorithms like greedy, beam, top-k and top-p.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Autoregressive Decoding | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Autoregressive Decoding</h1>
+    <p>Decoder-only generation produces one token at a time: previous tokens become context for the next token.</p>
+
+    <h2>Decoder loop</h2>
+    <ol>
+      <li>Start with <code>&lt;BOS&gt;</code> or user prompt.</li>
+      <li>Run model and get next-token probabilities.</li>
+      <li>Select token (greedy/beam/sampling).</li>
+      <li>Append token and repeat.</li>
+      <li>Stop at <code>&lt;EOS&gt;</code> or max length.</li>
+    </ol>
+
+    <h2>Decoding strategies</h2>
+    <table>
+      <thead><tr><th>Method</th><th>Behavior</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td>Greedy</td><td>Pick best token each step</td><td>Fast, deterministic, can be myopic</td></tr>
+        <tr><td>Beam search</td><td>Track top candidate sequences</td><td>Better global quality, slower</td></tr>
+        <tr><td>Top-k sampling</td><td>Sample from top-k tokens</td><td>Controlled diversity</td></tr>
+        <tr><td>Top-p sampling</td><td>Sample from dynamic probability mass</td><td>Adaptive diversity</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Common generation controls</h2>
+    <ul>
+      <li><strong>Temperature:</strong> lower for factual, higher for creative.</li>
+      <li><strong>Repetition/frequency penalty:</strong> reduce loops and repeated phrases.</li>
+      <li><strong>max_tokens + stop sequences:</strong> hard output boundaries.</li>
+    </ul>
+
+    <footer>
+      <a href="decoder-masking-cross-attention.html">Previous</a> · <a href="../llm-models-and-apis/llm-evolution-and-model-families.html">Next: LLM evolution and model families</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

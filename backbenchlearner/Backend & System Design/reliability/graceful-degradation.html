@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn graceful degradation techniques to keep core features available under failures.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/graceful-degradation.html">
+  <meta property="og:title" content="Graceful degradation | BackbenchLearner">
+  <meta property="og:description" content="Learn graceful degradation techniques to keep core features available under failures.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/graceful-degradation.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Graceful degradation | BackbenchLearner">
+  <meta name="twitter:description" content="Learn graceful degradation techniques to keep core features available under failures.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Graceful degradation | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Graceful degradation</h1>
+
+    <p><strong>Graceful degradation</strong> means when a dependency fails or is slow, the system reduces functionality instead of failing entirely: e.g. show cached or default content, disable non-critical features, or return a partial response. The user still gets a useful result.</p>
+
+    <h2>Degrade instead of fail</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    R[Request] --> C{Recommendation API}
+    C -->|OK| Full[Full response]
+    C -->|Down| Degrade[Use default / cache / skip]
+    Degrade --> Partial[Partial but valid response]
+    Full --> User[User]
+    Partial --> User
+      </div>
+    </div>
+
+    <h2>Strategies</h2>
+    <ul>
+      <li><strong>Fallback value</strong> — Use default or last-known-good (e.g. “Recommendations temporarily unavailable”).</li>
+      <li><strong>Cache</strong> — Serve stale data when live source is down.</li>
+      <li><strong>Disable feature</strong> — Hide or grey out the feature (e.g. “Live pricing unavailable”).</li>
+      <li><strong>Partial response</strong> — Return what you have; omit the failing part and indicate it in the response.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Primary service] -->|Fail| B[Circuit open / timeout]
+    B --> C[Fallback path]
+    C --> D[Cached / default / reduced]
+      </div>
+    </div>
+
+    <p>Combine with <strong>circuit breakers</strong> and <strong>timeouts</strong>: when the circuit is open or the call times out, switch to the degraded path instead of failing the whole request.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="saga-pattern.html">Prev: Saga pattern</a> · <a href="observability.html">Next: Observability</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

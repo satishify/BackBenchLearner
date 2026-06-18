@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Replace backbenchlearner.com with your production domain -->
+  <url><loc>https://backbenchlearner.com/</loc></url>
+  <url><loc>https://backbenchlearner.com/index.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/what-is-api.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rest-vs-graphql.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/http-methods.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/http-status-codes.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/stateless-vs-stateful.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/auth-vs-authorization.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/session-vs-jwt.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/oauth2.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rate-limiting-vs-throttling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/idempotency.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sql-vs-nosql.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/indexes.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/acid-properties.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/transactions-isolation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/normalization-vs-denormalization.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/pagination.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sharding-partitioning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/read-replicas-write-scaling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/duplicate-records.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/optimistic-vs-pessimistic-locking.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/what-is-caching.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-eviction-strategies.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-consistency.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cdn-edge-caching.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-can-make-systems-wrong.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/load-balancing.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/horizontal-vs-vertical-scaling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/microservices-vs-monoliths.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/service-communication.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/message-queues.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/exactly-once-vs-at-least-once.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/retries-timeouts-circuit-breakers.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/race-conditions.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/distributed-locking.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/event-driven-architecture.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/saga-pattern.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/graceful-degradation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/observability.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/deployments.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/traffic-spikes.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-ai.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-machine-learning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-deep-learning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-generative-ai.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-are-llms-and-text-generation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/ai-ml-deep-learning-genai.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/common-model-types.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/pretraining-finetuning-inference.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/backpropagation-and-gradient-descent.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/regularization-techniques.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/tokens-context-window-temperature-top-p.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/prompt-engineering.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/embeddings-semantic-search.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/rag-retrieval-augmented-generation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/hallucinations-and-limitations.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/what-makes-an-agent.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/reasoning-planning-tools-memory.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/chatbot-vs-agent.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/single-vs-multi-agent.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/human-in-the-loop-workflows.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/task-decomposition.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/tool-calling-function-calling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/short-term-vs-long-term-memory.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/reflection-self-correction-loops.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/orchestration-workflow-control.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/use-cases.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/evaluation-metrics.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/guardrails-and-security.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/prompt-injection-and-tool-misuse-risks.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/monitoring-and-observability.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/apis-for-models.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/vector-databases.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/langchain-llamaindex-autogen-crewai.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/basic-python-for-experimentation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/build-skills/workflow-automation-concepts.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/self-attention-qkv.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/positional-encoding-and-mha.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/decoder-masking-cross-attention.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/autoregressive-decoding.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/llm-evolution-and-model-families.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/prompting-fundamentals-and-roles.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/decoding-parameters-and-control.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/apis-and-tool-calling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/structured-outputs-and-validation.html</loc></url>
+
+  <url><loc>https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/capstone/end-to-end-ai-agent-use-case.html</loc></url>
+</urlset>
+

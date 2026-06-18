@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore the trade-offs between REST and GraphQL for API design and performance.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rest-vs-graphql.html">
+  <meta property="og:title" content="REST vs GraphQL | BackbenchLearner">
+  <meta property="og:description" content="Explore the trade-offs between REST and GraphQL for API design and performance.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/rest-vs-graphql.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="REST vs GraphQL | BackbenchLearner">
+  <meta name="twitter:description" content="Explore the trade-offs between REST and GraphQL for API design and performance.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>REST vs GraphQL | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>REST vs GraphQL</h1>
+
+    <p><strong>REST</strong> models the world as <em>resources</em> (URLs) and uses HTTP methods to act on them. <strong>GraphQL</strong> exposes a single endpoint and lets the client request exactly the fields and shape of data it needs in one query.</p>
+
+    <h2>REST: multiple endpoints, fixed responses</h2>
+    <p>Each resource has its own URL. The server decides the response shape. To get a user and their posts you might call two endpoints (or a custom “compound” endpoint).</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph REST
+        A[GET /users/1] --> U[User JSON]
+        B[GET /users/1/posts] --> P[Posts JSON]
+    end
+      </div>
+    </div>
+
+    <h2>GraphQL: one endpoint, client-defined shape</h2>
+    <p>One POST to <code>/graphql</code> with a query. The client specifies fields (e.g. user + nested posts). Server resolves and returns only what was asked.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph GraphQL
+        Q[POST /graphql\nquery user+posts] --> R[Single response\nuser + posts]
+    end
+      </div>
+    </div>
+
+    <h2>Comparison</h2>
+    <table>
+      <thead><tr><th>Aspect</th><th>REST</th><th>GraphQL</th></tr></thead>
+      <tbody>
+        <tr><td>Endpoints</td><td>Many (per resource)</td><td>One (or few)</td></tr>
+        <tr><td>Response shape</td><td>Server-defined</td><td>Client-defined</td></tr>
+        <tr><td>Over-fetching</td><td>Possible</td><td>Avoided by design</td></tr>
+        <tr><td>Under-fetching</td><td>Multiple round-trips possible</td><td>One query for related data</td></tr>
+        <tr><td>Caching</td><td>HTTP cache (URL = key)</td><td>More complex (normalized caches)</td></tr>
+        <tr><td>Learning curve</td><td>Simpler</td><td>Query language + schema</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>When to use REST:</strong> Simple CRUD, strong HTTP caching, broad tooling. <strong>When to use GraphQL:</strong> Complex UIs needing flexible shapes, many clients with different needs, reducing over/under-fetching.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="what-is-api.html">Prev: What is an API</a> · <a href="http-methods.html">Next: HTTP methods</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Evaluation Metrics with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/evaluation-metrics.html">
+  <meta property="og:title" content="Evaluation Metrics | BackbenchLearner">
+  <meta property="og:description" content="Learn about Evaluation Metrics with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/evaluation-metrics.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Evaluation Metrics | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Evaluation Metrics with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Evaluation Metrics | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Evaluation: Accuracy, Latency, Cost, Safety</h1>
+    <p>A practical AI system is not only accurate. It must also be fast, affordable, and safe.</p>
+
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>Question</th><th>Example Measurement</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Accuracy</td><td>Is output correct?</td><td>Pass rate on golden dataset</td></tr>
+        <tr><td>Latency</td><td>Is it fast enough?</td><td>P95 response time</td></tr>
+        <tr><td>Cost</td><td>Is it sustainable?</td><td>Cost per request/session</td></tr>
+        <tr><td>Safety</td><td>Does it follow policy?</td><td>Violation rate</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Evaluation strategy</h2>
+    <ul>
+      <li>Offline tests before release.</li>
+      <li>Shadow testing in production.</li>
+      <li>A/B comparison for model/prompt changes.</li>
+    </ul>
+
+    <h2>Classification metrics (ML foundation)</h2>
+    <p>When your task is classification, confusion-matrix-based metrics are essential.</p>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>Formula</th><th>When important</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Accuracy</td><td>(TP + TN) / Total</td><td>Balanced datasets</td></tr>
+        <tr><td>Precision</td><td>TP / (TP + FP)</td><td>When false alarms are costly</td></tr>
+        <tr><td>Recall</td><td>TP / (TP + FN)</td><td>When missing positives is risky</td></tr>
+        <tr><td>F1 score</td><td>2PR / (P + R)</td><td>Imbalanced datasets</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Model predictions] --> B[Confusion matrix]
+    B --> C[Accuracy]
+    B --> D[Precision]
+    B --> E[Recall]
+    D --> F[F1 score]
+    E --> F
+      </div>
+    </div>
+
+    <h2>Overfitting quick check</h2>
+    <ul>
+      <li>Train loss goes down but validation loss goes up -> likely overfitting.</li>
+      <li>Use regularization, more data, or early stopping.</li>
+    </ul>
+
+    <footer>
+      <a href="use-cases.html">Previous</a> · <a href="guardrails-and-security.html">Next</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

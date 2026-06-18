@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Update the domain before production deployment.
+Sitemap: https://backbenchlearner.com/sitemap.xml
+

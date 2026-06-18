@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand OAuth 2.0 flows and how social login works in modern backend applications.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/oauth2.html">
+  <meta property="og:title" content="OAuth 2.0 (Login with Google, GitHub, etc.) | BackbenchLearner">
+  <meta property="og:description" content="Understand OAuth 2.0 flows and how social login works in modern backend applications.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/oauth2.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OAuth 2.0 (Login with Google, GitHub, etc.) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand OAuth 2.0 flows and how social login works in modern backend applications.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>OAuth 2.0 (Login with Google, GitHub, etc.) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>OAuth 2.0 (Login with Google, GitHub, etc.)</h1>
+
+    <p><strong>OAuth 2.0</strong> is a protocol that lets a user grant your app limited access to their data at another service (Google, GitHub, etc.) without giving your app their password. “Login with Google” uses OAuth 2.0 so the user signs in at Google, and Google gives your app a token to act on their behalf (within agreed scopes).</p>
+
+    <h2>Roles</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    RO[Resource Owner\nUser] --> C[Client\nYour App]
+    C --> AS[Authorization Server\nGoogle/GitHub]
+    AS --> RS[Resource Server\nGoogle APIs]
+    C --> RS
+      </div>
+    </div>
+
+    <h2>Authorization Code flow (web “Login with Google”)</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant C as Your App (Client)
+    participant AS as Auth Server (Google)
+    participant RS as Resource Server
+
+    U->>C: Click "Login with Google"
+    C->>U: Redirect to Google (client_id, redirect_uri, scope)
+    U->>AS: Signs in at Google
+    AS->>U: Redirect back with ?code=...
+    U->>C: Browser hits your redirect_uri?code=...
+    C->>AS: POST token endpoint (code, client_secret)
+    AS-->>C: access_token (+ optional refresh_token)
+    C->>RS: API call with access_token
+    RS-->>C: User profile / data
+    C->>U: Logged in
+      </div>
+    </div>
+
+    <h2>Key concepts</h2>
+    <ul>
+      <li><strong>Authorization code</strong> — Short-lived code exchanged for tokens; keeps secret in server-to-server call.</li>
+      <li><strong>Access token</strong> — Used to call the provider’s API (e.g. get email). Short-lived.</li>
+      <li><strong>Refresh token</strong> — Used to get new access tokens without re-login (if granted).</li>
+      <li><strong>Scopes</strong> — Requested permissions (e.g. <code>email profile</code>).</li>
+    </ul>
+
+    <p>For “Login with Google/GitHub,” you use the <strong>Authorization Code</strong> flow (with PKCE for public clients like SPAs). The provider’s Authorization Server issues tokens; you use the access token to fetch user info and create or match a user in your system.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="session-vs-jwt.html">Prev: Session vs JWT</a> · <a href="rate-limiting-vs-throttling.html">Next: Rate limiting vs Throttling</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

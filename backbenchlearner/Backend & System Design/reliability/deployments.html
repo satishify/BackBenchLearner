@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn deployment strategies like blue-green and rolling releases for safer rollouts.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/deployments.html">
+  <meta property="og:title" content="Deployments (blue-green, rolling) | BackbenchLearner">
+  <meta property="og:description" content="Learn deployment strategies like blue-green and rolling releases for safer rollouts.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/deployments.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Deployments (blue-green, rolling) | BackbenchLearner">
+  <meta name="twitter:description" content="Learn deployment strategies like blue-green and rolling releases for safer rollouts.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Deployments (blue-green, rolling) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Deployments (blue-green, rolling)</h1>
+
+    <p>Deployment strategies control how new code is rolled out with minimal downtime and risk. <strong>Blue-green</strong>: two identical environments (blue = current, green = new); switch traffic in one go. <strong>Rolling</strong>: replace instances one (or a few) at a time while the rest serve traffic.</p>
+
+    <h2>Blue-green: flip switch</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    LB[Load Balancer]
+    LB --> Blue[Blue (v1) - active]
+    LB -.->|Before| Green[Green (v2) - idle]
+    LB -->|After switch| Green
+    LB -.->|After| Blue
+      </div>
+    </div>
+
+    <h2>Rolling: gradual replacement</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    S1[v1] --> S2[v1] --> S3[v2] --> S4[v1]
+    Note[One by one replace with v2]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Strategy</th><th>How</th><th>Pros / cons</th></tr></thead>
+      <tbody>
+        <tr><td>Blue-green</td><td>Deploy to idle env; switch traffic</td><td>Fast rollback (switch back); double capacity during deploy</td></tr>
+        <tr><td>Rolling</td><td>Replace instances gradually</td><td>No double capacity; mixed versions during deploy</td></tr>
+        <tr><td>Canary</td><td>Send small % traffic to new version</td><td>Low-risk validation; more complex routing</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>blue-green</strong> when you want instant switch and easy rollback. Use <strong>rolling</strong> when you want to avoid running two full environments. Use <strong>canary</strong> to validate new version with a fraction of traffic before full rollout.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="observability.html">Prev: Observability</a> · <a href="traffic-spikes.html">Next: Traffic spikes</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

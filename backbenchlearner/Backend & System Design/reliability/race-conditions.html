@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how race conditions occur and strategies to detect and prevent them.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/race-conditions.html">
+  <meta property="og:title" content="Handling race conditions | BackbenchLearner">
+  <meta property="og:description" content="Learn how race conditions occur and strategies to detect and prevent them.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/race-conditions.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Handling race conditions | BackbenchLearner">
+  <meta name="twitter:description" content="Learn how race conditions occur and strategies to detect and prevent them.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Handling race conditions | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Handling race conditions</h1>
+
+    <p>A <strong>race condition</strong> occurs when the outcome depends on the order or timing of concurrent operations (e.g. two requests reading then updating the same counter). Handling them means making the “read–modify–write” or “check–then–act” sequence atomic (e.g. with locks, DB constraints, or atomic operations).</p>
+
+    <h2>Classic race: two updates overwrite</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant A as Request A
+    participant B as Request B
+    participant DB as DB
+
+    A->>DB: SELECT balance (100)
+    B->>DB: SELECT balance (100)
+    A->>DB: UPDATE balance = 100 - 50
+    B->>DB: UPDATE balance = 100 - 30
+    Note over DB: Balance = 70 (lost A's update)
+      </div>
+    </div>
+
+    <h2>Solutions</h2>
+    <ul>
+      <li><strong>Atomic update</strong> — <code>UPDATE SET balance = balance - 50</code> (no read-modify-write in app).</li>
+      <li><strong>Pessimistic lock</strong> — <code>SELECT ... FOR UPDATE</code>; hold lock until update.</li>
+      <li><strong>Optimistic lock</strong> — Version column; <code>UPDATE ... WHERE version = old_version</code>; retry if 0 rows.</li>
+      <li><strong>Serialization</strong> — Single writer (queue, leader) for that resource.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    R[Race-prone: read then write] --> A[Atomic DB op]
+    R --> L[Lock (pessimistic)]
+    R --> O[Version check (optimistic)]
+    R --> Q[Single writer queue]
+      </div>
+    </div>
+
+    <p>Identify critical sections (shared state, counters, inventory). Prefer <strong>atomic DB operations</strong>; use locking or versioning when you must read then write in app.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="retries-timeouts-circuit-breakers.html">Prev: Retries, timeouts, circuit breakers</a> · <a href="distributed-locking.html">Next: Distributed locking</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

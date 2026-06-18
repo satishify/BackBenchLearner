@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare SQL and NoSQL databases and choose the right model for your use case.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sql-vs-nosql.html">
+  <meta property="og:title" content="SQL vs NoSQL — when to use what | BackbenchLearner">
+  <meta property="og:description" content="Compare SQL and NoSQL databases and choose the right model for your use case.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/sql-vs-nosql.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SQL vs NoSQL — when to use what | BackbenchLearner">
+  <meta name="twitter:description" content="Compare SQL and NoSQL databases and choose the right model for your use case.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>SQL vs NoSQL — when to use what | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>SQL vs NoSQL — when to use what</h1>
+
+    <p><strong>SQL (relational)</strong> databases store data in tables with fixed schemas, relationships, and ACID transactions. <strong>NoSQL</strong> is a broad term for non-relational stores: document (MongoDB), key-value (Redis), wide-column (Cassandra), graph (Neo4j), each optimized for different access patterns.</p>
+
+    <h2>High-level comparison</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph SQL["SQL (Relational)"]
+        T[Tables, rows, columns]
+        J[Joins, foreign keys]
+        A[ACID transactions]
+    end
+    subgraph NoSQL["NoSQL"]
+        D[Document: JSON-like docs]
+        K[Key-Value: key → value]
+        W[Wide-column: column families]
+        G[Graph: nodes & edges]
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>SQL</th><th>NoSQL</th></tr></thead>
+      <tbody>
+        <tr><td>Schema</td><td>Fixed, enforced</td><td>Flexible (doc) or simple (KV)</td></tr>
+        <tr><td>Transactions</td><td>Multi-row ACID common</td><td>Often single-doc or eventual consistency</td></tr>
+        <tr><td>Scaling</td><td>Vertical + read replicas; sharding complex</td><td>Horizontal sharding common (doc, KV, wide-col)</td></tr>
+        <tr><td>Query</td><td>Declarative SQL, joins</td><td>API/query by key, index, or graph traversal</td></tr>
+        <tr><td>Use cases</td><td>Structured data, reporting, consistency-critical</td><td>Flexible schema, high write throughput, cache, graph</td></tr>
+      </tbody>
+    </table>
+
+    <h2>When to use which</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph PreferSQL["Prefer SQL"]
+        P1[Strict consistency]
+        P2[Complex queries / joins]
+        P3[Reporting, analytics]
+    end
+    subgraph PreferNoSQL["Prefer NoSQL"]
+        N1[Schema evolution / flexible]
+        N2[Very high write scale]
+        N3[Cache, session, key lookup]
+        N4[Graph relationships]
+    end
+      </div>
+    </div>
+
+    <p>Choose <strong>SQL</strong> when you need strong consistency, complex relations, and a clear schema. Choose <strong>NoSQL</strong> (and which type) when you need horizontal scale, flexible or nested documents, simple key access, or graph traversal — and can accept the trade-offs (e.g. eventual consistency, no joins).</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="indexes.html">Next: Indexes</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

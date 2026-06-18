@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare horizontal and vertical scaling strategies for backend system growth.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/horizontal-vs-vertical-scaling.html">
+  <meta property="og:title" content="Horizontal vs vertical scaling | BackbenchLearner">
+  <meta property="og:description" content="Compare horizontal and vertical scaling strategies for backend system growth.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/horizontal-vs-vertical-scaling.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Horizontal vs vertical scaling | BackbenchLearner">
+  <meta name="twitter:description" content="Compare horizontal and vertical scaling strategies for backend system growth.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Horizontal vs vertical scaling | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Horizontal vs vertical scaling</h1>
+
+    <p><strong>Vertical scaling</strong> (scale up) means making one machine bigger: more CPU, RAM, disk. <strong>Horizontal scaling</strong> (scale out) means adding more machines and distributing load across them (e.g. more app servers behind a load balancer).</p>
+
+    <h2>Vertical: bigger machine</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph Before["Before"]
+        B[1 server\n2 CPU, 4GB]
+    end
+    subgraph After["After (scale up)"]
+        A[1 server\n8 CPU, 32GB]
+    end
+    Before --> After
+      </div>
+    </div>
+
+    <h2>Horizontal: more machines</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    LB[Load balancer]
+    LB --> S1[Server 1]
+    LB --> S2[Server 2]
+    LB --> S3[Server 3]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Vertical</th><th>Horizontal</th></tr></thead>
+      <tbody>
+        <tr><td>Change</td><td>Bigger single node</td><td>Add more nodes</td></tr>
+        <tr><td>Limit</td><td>Hardware ceiling, single point of failure</td><td>Theoretical limit much higher</td></tr>
+        <tr><td>Cost</td><td>Big machines get expensive</td><td>Commodity boxes; pay for what you add</td></tr>
+        <tr><td>App design</td><td>Often no code change</td><td>Stateless app, shared storage/DB</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>vertical</strong> for quick gains and simple ops; use <strong>horizontal</strong> for long-term scale and availability. Most production systems scale out (horizontal) and use load balancing + shared DB/cache.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="load-balancing.html">Prev: Load balancing</a> · <a href="microservices-vs-monoliths.html">Next: Microservices vs monoliths</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

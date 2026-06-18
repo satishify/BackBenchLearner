@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand offset and cursor pagination patterns for scalable database-backed APIs.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/pagination.html">
+  <meta property="og:title" content="Pagination (offset vs cursor-based) | BackbenchLearner">
+  <meta property="og:description" content="Understand offset and cursor pagination patterns for scalable database-backed APIs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/pagination.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pagination (offset vs cursor-based) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand offset and cursor pagination patterns for scalable database-backed APIs.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Pagination (offset vs cursor-based) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Pagination (offset vs cursor-based)</h1>
+
+    <p><strong>Pagination</strong> returns large result sets in chunks (pages). <strong>Offset-based</strong> uses <code>LIMIT n OFFSET m</code> (page 1, 2, 3…). <strong>Cursor-based</strong> uses a stable pointer (e.g. last item’s ID or timestamp) and fetches “next page after this cursor,” which avoids skipped/duplicate rows when data changes.</p>
+
+    <h2>Offset-based: page number</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Request page 3] --> Q[SELECT ... LIMIT 10 OFFSET 20]
+    Q --> DB[(DB)]
+    DB --> Skip[Skip 20 rows, return 10]
+    Note[Problem: if rows inserted/deleted, offset shifts]
+      </div>
+    </div>
+
+    <h2>Cursor-based: next after this key</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Request after cursor id=42] --> Q[SELECT ... WHERE id > 42 ORDER BY id LIMIT 10]
+    Q --> DB[(DB)]
+    DB --> Stable[Stable: same rows even if data changes]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Offset</th><th>Cursor</th></tr></thead>
+      <tbody>
+        <tr><td>API</td><td><code>?page=3&limit=10</code></td><td><code>?after=id_xyz&limit=10</code></td></tr>
+        <tr><td>Jump to page</td><td>Yes (e.g. page 5)</td><td>No (sequential next only)</td></tr>
+        <tr><td>Consistency</td><td>Can skip/duplicate if data changes</td><td>Stable across inserts/deletes</td></tr>
+        <tr><td>Performance</td><td>OFFSET 10000 = scan & skip 10000</td><td>Index seek on cursor key</td></tr>
+      </tbody>
+    </table>
+
+    <p>Use <strong>offset</strong> for simple UIs where “page 2” is enough and data is relatively static. Use <strong>cursor-based</strong> for feeds, infinite scroll, and large tables where consistency and performance matter.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="normalization-vs-denormalization.html">Prev: Normalization vs denormalization</a> · <a href="sharding-partitioning.html">Next: Sharding & partitioning</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

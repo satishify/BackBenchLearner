@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand distributed locking patterns to coordinate concurrent operations safely.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/distributed-locking.html">
+  <meta property="og:title" content="Distributed locking | BackbenchLearner">
+  <meta property="og:description" content="Understand distributed locking patterns to coordinate concurrent operations safely.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/reliability/distributed-locking.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Distributed locking | BackbenchLearner">
+  <meta name="twitter:description" content="Understand distributed locking patterns to coordinate concurrent operations safely.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Distributed locking | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Distributed locking</h1>
+
+    <p><strong>Distributed locking</strong> lets multiple nodes agree that only one holder “owns” a lock at a time (e.g. for a job or resource). Implementations use a shared store (Redis, etcd, Zookeeper) with compare-and-set or lease semantics. Used for leader election, single-run jobs, or protecting a shared resource across services.</p>
+
+    <h2>Lock acquire and release</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant A as Node A
+    participant B as Node B
+    participant Redis as Redis/Store
+
+    A->>Redis: SET lock:job1 token NX EX 30
+    Redis-->>A: OK (acquired)
+    B->>Redis: SET lock:job1 token NX EX 30
+    Redis-->>B: nil (failed - held by A)
+    A->>Redis: DEL lock:job1 (release)
+    B->>Redis: SET lock:job1 token NX EX 30
+    Redis-->>B: OK (acquired)
+      </div>
+    </div>
+
+    <h2>Key concerns</h2>
+    <ul>
+      <li><strong>TTL / lease</strong> — Lock must expire so a crashed holder doesn’t hold forever.</li>
+      <li><strong>Owner token</strong> — Only the holder can release (compare token before DEL).</li>
+      <li><strong>Safety</strong> — Use a store that provides consistency (e.g. Redis with correct options, or etcd).</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Acquire lock] --> B[Do work]
+    B --> C[Release lock]
+    A -->|Fail| D[Retry or skip]
+    Note[TTL: auto-release if holder dies]
+      </div>
+    </div>
+
+    <p>Use distributed locks when you need mutual exclusion across processes (e.g. one scheduler instance, one consumer per partition). Prefer libraries (Redlock, etcd) and always set a TTL and owner token.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="race-conditions.html">Prev: Race conditions</a> · <a href="event-driven-architecture.html">Next: Event-driven architecture</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

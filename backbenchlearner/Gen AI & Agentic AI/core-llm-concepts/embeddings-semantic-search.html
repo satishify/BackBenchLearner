@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/embeddings-semantic-search.html">
+  <meta property="og:title" content="Embeddings and Semantic Search | BackbenchLearner">
+  <meta property="og:description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/embeddings-semantic-search.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Embeddings and Semantic Search | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Embeddings and Semantic Search | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Embeddings and Semantic Search</h1>
+    <p><strong>Embeddings</strong> convert text into vectors so machines can compare meaning using math.</p>
+
+    <h2>Why embeddings are useful</h2>
+    <ul>
+      <li>Find relevant content even when words are different.</li>
+      <li>Support natural language search in large document sets.</li>
+      <li>Power recommendation and clustering systems.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Query] --> B[Query embedding]
+    C[Document chunks] --> D[Chunk embeddings]
+    B --> E[Vector similarity]
+    D --> E
+    E --> F[Top matches]
+      </div>
+    </div>
+
+    <h2>Keyword vs semantic search</h2>
+    <p><strong>Keyword:</strong> looks for exact words.<br>
+    <strong>Semantic:</strong> looks for meaning similarity.</p>
+    <p>Example: query "reduce infra cost" can match doc "cloud spend optimization."</p>
+
+    <h2>Why embeddings replaced one-hot style vectors</h2>
+    <ul>
+      <li>One-hot vectors are sparse and very high-dimensional.</li>
+      <li>They cannot naturally represent semantic closeness ("cat" and "kitten").</li>
+      <li>Dense embeddings are compact and encode similarity geometry.</li>
+    </ul>
+    <p><strong>Famous embedding intuition:</strong> <code>king - man + woman ≈ queen</code></p>
+
+    <h2>Distributional idea in simple words</h2>
+    <p>Words used in similar contexts tend to have similar meanings. Embedding models learn this pattern automatically from large corpora.</p>
+
+    <h2>Best practices</h2>
+    <ul>
+      <li>Use good chunking strategy (size + overlap).</li>
+      <li>Store metadata for filtering.</li>
+      <li>Re-rank top results before giving to LLM.</li>
+    </ul>
+
+    <footer>
+      <a href="prompt-engineering.html">Previous</a> · <a href="rag-retrieval-augmented-generation.html">Next: RAG</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

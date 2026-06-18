@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand message queues and when to use Kafka, RabbitMQ, or SQS in distributed systems.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/message-queues.html">
+  <meta property="og:title" content="Message queues (Kafka, RabbitMQ, SQS) | BackbenchLearner">
+  <meta property="og:description" content="Understand message queues and when to use Kafka, RabbitMQ, or SQS in distributed systems.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/message-queues.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Message queues (Kafka, RabbitMQ, SQS) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand message queues and when to use Kafka, RabbitMQ, or SQS in distributed systems.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Message queues (Kafka, RabbitMQ, SQS) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Message queues (Kafka, RabbitMQ, SQS)</h1>
+
+    <p>A <strong>message queue</strong> holds messages between producers and consumers. Producers publish; consumers process asynchronously. This decouples services, buffers load, and enables at-least-once or exactly-once processing with retries and ordering guarantees (depending on the system).</p>
+
+    <h2>Generic queue flow</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    P1[Producer 1] --> Q[Queue / Topic]
+    P2[Producer 2] --> Q
+    Q --> C1[Consumer 1]
+    Q --> C2[Consumer 2]
+      </div>
+    </div>
+
+    <h2>Kafka vs RabbitMQ vs SQS (high level)</h2>
+    <table>
+      <thead><tr><th>System</th><th>Model</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td>Kafka</td><td>Log/topic; consumers read offset; retention</td><td>Event streaming, high throughput, replay</td></tr>
+        <tr><td>RabbitMQ</td><td>Queues, exchanges, routing</td><td>Task queues, RPC, flexible routing</td></tr>
+        <tr><td>SQS</td><td>FIFO or standard queue; pull</td><td>AWS-native, decouple components, serverless</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Kafka: topics and consumer groups</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Topic["Topic: orders"]
+        P0[Partition 0]
+        P1[Partition 1]
+    end
+    Producer --> Topic
+    Topic --> CG[Consumer Group]
+    CG --> C1[Consumer A]
+    CG --> C2[Consumer B]
+    Note[Each partition consumed by one consumer in group]
+      </div>
+    </div>
+
+    <p>Use a <strong>queue</strong> when you need async processing, load leveling, or decoupling. Choose <strong>Kafka</strong> for event log and replay; <strong>RabbitMQ</strong> for flexible routing and task queues; <strong>SQS</strong> for simple, managed queues on AWS.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="service-communication.html">Prev: Service communication</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

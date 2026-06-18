@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn common causes of duplicate records and strategies to prevent and resolve them.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/duplicate-records.html">
+  <meta property="og:title" content="Handling duplicate records | BackbenchLearner">
+  <meta property="og:description" content="Learn common causes of duplicate records and strategies to prevent and resolve them.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/duplicate-records.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Handling duplicate records | BackbenchLearner">
+  <meta name="twitter:description" content="Learn common causes of duplicate records and strategies to prevent and resolve them.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Handling duplicate records | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Handling duplicate records</h1>
+
+    <p>Duplicates can come from retries, double submissions, or multiple sources claiming the same entity. Handling them means: <strong>preventing</strong> duplicates (unique constraints, idempotency keys), <strong>detecting</strong> them (dedup keys, matching rules), and <strong>resolving</strong> them (merge, keep one, flag for review).</p>
+
+    <h2>Prevention first</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    R[Request] --> K{Idempotency key\nseen?}
+    K -->|No| P[Process & store key]
+    K -->|Yes| Return[Return stored result]
+    P --> DB[(DB)]
+    DB --> U[UNIQUE on business key]
+      </div>
+    </div>
+
+    <h2>Strategies</h2>
+    <table>
+      <thead><tr><th>Strategy</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td>Unique constraint</td><td>DB UNIQUE on (user_id, external_id) so duplicate insert fails</td></tr>
+        <tr><td>Idempotency key</td><td>Store (key → result); retries return same result, no second insert</td></tr>
+        <tr><td>Upsert</td><td>INSERT ... ON CONFLICT DO UPDATE so “duplicate” becomes update</td></tr>
+        <tr><td>Dedup in batch</td><td>Before insert, query or hash to detect existing; skip or merge</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Detect and resolve</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    In[Incoming record] --> Match{Match existing?}
+    Match -->|No| Insert[Insert]
+    Match -->|Yes| Decide{Policy}
+    Decide -->|Keep first| Ignore[Ignore new]
+    Decide -->|Merge| Merge[Merge fields]
+    Decide -->|Flag| Flag[Flag for review]
+      </div>
+    </div>
+
+    <p>Define a <strong>business identity</strong> (e.g. email, external_id, composite key) and enforce it with constraints or idempotency. For existing duplicates, run one-off dedup (merge/delete) and then enforce uniqueness going forward.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="read-replicas-write-scaling.html">Prev: Read replicas</a> · <a href="optimistic-vs-pessimistic-locking.html">Next: Optimistic vs pessimistic locking</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

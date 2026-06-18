@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn masked self-attention and cross-attention in Transformer decoders with practical intuition.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/decoder-masking-cross-attention.html">
+  <meta property="og:title" content="Decoder Masking and Cross-Attention | BackbenchLearner">
+  <meta property="og:description" content="Learn masked self-attention and cross-attention in Transformer decoders with practical intuition.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/decoder-masking-cross-attention.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Decoder Masking and Cross-Attention | BackbenchLearner">
+  <meta name="twitter:description" content="Learn masked self-attention and cross-attention in Transformer decoders with practical intuition.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Decoder Masking and Cross-Attention | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Decoder Masking and Cross-Attention</h1>
+
+    <h2>Masked self-attention in decoder</h2>
+    <p>Decoder generation is causal. At position <code>t</code>, model must not see future tokens <code>&gt; t</code>. A triangular mask enforces this.</p>
+    <ul>
+      <li>Prevents training-time leakage ("cheating").</li>
+      <li>Still allows parallel computation across positions during training.</li>
+      <li>Enables autoregressive next-token learning.</li>
+    </ul>
+
+    <h2>Cross-attention in encoder-decoder models</h2>
+    <p>Cross-attention connects decoder to source input:</p>
+    <ul>
+      <li><strong>Q</strong> comes from decoder state.</li>
+      <li><strong>K, V</strong> come from encoder outputs.</li>
+    </ul>
+    <p>This lets each generated target token align with relevant source tokens (for translation, summarization, etc.).</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    EN[Encoder outputs] --> K[Keys]
+    EN --> V[Values]
+    DE[Decoder hidden state] --> Q[Query]
+    Q --> ATT[Cross-attention]
+    K --> ATT
+    V --> ATT
+    ATT --> OUT[Decoder contextual output]
+      </div>
+    </div>
+
+    <h2>Self-attention vs cross-attention</h2>
+    <table>
+      <thead><tr><th>Mechanism</th><th>Q source</th><th>K/V source</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Self-attention</td><td>Same sequence</td><td>Same sequence</td><td>Intra-sequence context</td></tr>
+        <tr><td>Cross-attention</td><td>Decoder</td><td>Encoder</td><td>Source-target alignment</td></tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <a href="positional-encoding-and-mha.html">Previous</a> · <a href="autoregressive-decoding.html">Next: Autoregressive decoding</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

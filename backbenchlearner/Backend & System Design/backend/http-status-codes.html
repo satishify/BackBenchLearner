@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand HTTP status codes and how to use 2xx, 4xx, and 5xx responses correctly.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/http-status-codes.html">
+  <meta property="og:title" content="HTTP Status Codes (2xx, 4xx, 5xx) | BackbenchLearner">
+  <meta property="og:description" content="Understand HTTP status codes and how to use 2xx, 4xx, and 5xx responses correctly.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/http-status-codes.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HTTP Status Codes (2xx, 4xx, 5xx) | BackbenchLearner">
+  <meta name="twitter:description" content="Understand HTTP status codes and how to use 2xx, 4xx, and 5xx responses correctly.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>HTTP Status Codes (2xx, 4xx, 5xx) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>HTTP Status Codes (2xx, 4xx, 5xx)</h1>
+
+    <p>Status codes tell the client whether the request <strong>succeeded</strong>, <strong>failed because of the client</strong> (4xx), or <strong>failed because of the server</strong> (5xx). Using them correctly helps clients retry, show errors, and cache correctly.</p>
+
+    <h2>Code ranges</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph 2xx[2xx Success]
+        A[200 OK]
+        B[201 Created]
+        C[204 No Content]
+    end
+    subgraph 4xx[4xx Client Error]
+        D[400 Bad Request]
+        E[401 Unauthorized]
+        F[403 Forbidden]
+        G[404 Not Found]
+    end
+    subgraph 5xx[5xx Server Error]
+        H[500 Internal]
+        I[502 Bad Gateway]
+        J[503 Unavailable]
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Code</th><th>Meaning</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td>200</td><td>OK</td><td>Success (GET, PUT, PATCH)</td></tr>
+        <tr><td>201</td><td>Created</td><td>Resource created (POST), include Location header</td></tr>
+        <tr><td>204</td><td>No Content</td><td>Success, no body (e.g. DELETE)</td></tr>
+        <tr><td>400</td><td>Bad Request</td><td>Invalid input, malformed body</td></tr>
+        <tr><td>401</td><td>Unauthorized</td><td>Not authenticated (login / token missing or invalid)</td></tr>
+        <tr><td>403</td><td>Forbidden</td><td>Authenticated but not allowed to do this</td></tr>
+        <tr><td>404</td><td>Not Found</td><td>Resource doesn’t exist (or hide existence with 403)</td></tr>
+        <tr><td>500</td><td>Internal Server Error</td><td>Unexpected server bug</td></tr>
+        <tr><td>502</td><td>Bad Gateway</td><td>Invalid response from upstream</td></tr>
+        <tr><td>503</td><td>Service Unavailable</td><td>Overloaded or down; retry later</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Who is at fault?</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    R[Request] --> D{Valid?}
+    D -->|No| C[4xx - Client fix]
+    D -->|Yes| S{Server OK?}
+    S -->|No| E[5xx - Retry / back off]
+    S -->|Yes| O[2xx - Success]
+    C --> C1[400, 401, 403, 404...]
+    E --> E1[500, 502, 503]
+      </div>
+    </div>
+
+    <p><strong>401 vs 403:</strong> Use <strong>401</strong> when the user is not identified (missing or bad credentials). Use <strong>403</strong> when the user is known but not permitted to perform the action.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="http-methods.html">Prev: HTTP methods</a> · <a href="stateless-vs-stateful.html">Next: Stateless vs Stateful</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

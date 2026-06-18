@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand stateless and stateful API design patterns and their backend trade-offs.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/stateless-vs-stateful.html">
+  <meta property="og:title" content="Stateless vs Stateful APIs | BackbenchLearner">
+  <meta property="og:description" content="Understand stateless and stateful API design patterns and their backend trade-offs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/backend/stateless-vs-stateful.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stateless vs Stateful APIs | BackbenchLearner">
+  <meta name="twitter:description" content="Understand stateless and stateful API design patterns and their backend trade-offs.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Stateless vs Stateful APIs | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Stateless vs Stateful APIs</h1>
+
+    <p>In a <strong>stateless</strong> API, the server does not keep request-to-request “session” state; each request carries everything needed (e.g. token, IDs). In a <strong>stateful</strong> API, the server stores session state (e.g. in memory or DB) and often relies on a session identifier (cookie) to find it.</p>
+
+    <h2>Stateless: every request self-contained</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant S1 as Server 1
+    participant S2 as Server 2
+
+    C->>S1: Request + token/session ID
+    S1->>S1: Validate token (no local state)
+    S1-->>C: Response
+
+    C->>S2: Same token (e.g. load balancer)
+    S2->>S2: Validate token (no local state)
+    S2-->>C: Response
+    Note over S1,S2: Any server can serve any request
+      </div>
+    </div>
+
+    <h2>Stateful: server stores session</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant S1 as Server 1
+    participant S2 as Server 2
+    participant Store as Session Store
+
+    C->>S1: Request + session cookie
+    S1->>Store: Get session(sessionId)
+    Store-->>S1: Session data
+    S1-->>C: Response
+
+    C->>S2: Same cookie (different server)
+    S2->>Store: Get session(sessionId)
+    Store-->>S2: Session data
+    S2-->>C: Response
+    Note over Store: Shared store = any server can resolve session
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Stateless</th><th>Stateful</th></tr></thead>
+      <tbody>
+        <tr><td>No server-side session; token/cookie carries identity</td><td>Server (or shared store) holds session data</td></tr>
+        <tr><td>Scales horizontally easily; any replica can serve</td><td>Need sticky sessions or shared session store</td></tr>
+        <tr><td>JWT, API keys, OAuth tokens common</td><td>Session cookies + server-side session store</td></tr>
+        <tr><td>Hard to “logout” without token blacklist/short TTL</td><td>Logout = delete session in store</td></tr>
+      </tbody>
+    </table>
+
+    <p>REST APIs are usually designed to be <strong>stateless</strong> so they scale and survive restarts. State (e.g. shopping cart) is often stored in DB or cache and keyed by user/token, not in process memory.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="http-status-codes.html">Prev: HTTP status codes</a> · <a href="auth-vs-authorization.html">Next: Authentication vs Authorization</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

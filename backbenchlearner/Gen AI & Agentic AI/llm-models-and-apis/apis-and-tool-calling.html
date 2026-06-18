@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand model APIs, message roles, and function/tool calling workflows in production LLM apps.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/apis-and-tool-calling.html">
+  <meta property="og:title" content="APIs and Tool Calling | BackbenchLearner">
+  <meta property="og:description" content="Understand model APIs, message roles, and function/tool calling workflows in production LLM apps.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/apis-and-tool-calling.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="APIs and Tool Calling | BackbenchLearner">
+  <meta name="twitter:description" content="Understand model APIs, message roles, and function/tool calling workflows in production LLM apps.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>APIs and Tool Calling | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>LLM APIs and Tool Calling</h1>
+
+    <h2>What model APIs provide</h2>
+    <ul>
+      <li>Chat completions with role-structured messages.</li>
+      <li>Model choices based on cost/latency/quality.</li>
+      <li>Vision/audio/embeddings support in selected models.</li>
+      <li>Production-grade usage with token-based billing.</li>
+    </ul>
+
+    <h2>Tool calling concept</h2>
+    <p>Model converts user intent into a structured function call (JSON arguments), then app executes the function and returns result back to model.</p>
+    <ol>
+      <li>User asks a question.</li>
+      <li>Model selects tool and fills arguments.</li>
+      <li>App executes tool (DB/API/calculation).</li>
+      <li>Result is fed back for final natural-language answer.</li>
+    </ol>
+
+    <h2>Why tool calling matters</h2>
+    <ul>
+      <li>Connects LLM reasoning with real-world systems.</li>
+      <li>Reduces hallucination by grounding on tool outputs.</li>
+      <li>Enables agent workflows (search, calculate, transact).</li>
+    </ul>
+
+    <h2>Basic schema pattern</h2>
+    <pre><code>{
+  "name": "get_weather",
+  "parameters": {
+    "type": "object",
+    "properties": { "location": { "type": "string" } },
+    "required": ["location"]
+  }
+}</code></pre>
+
+    <footer>
+      <a href="decoding-parameters-and-control.html">Previous</a> · <a href="structured-outputs-and-validation.html">Next</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

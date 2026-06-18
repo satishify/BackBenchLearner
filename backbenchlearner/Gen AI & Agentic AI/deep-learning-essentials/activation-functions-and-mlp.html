@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">
+  <meta property="og:title" content="Activation Functions and MLP | BackbenchLearner">
+  <meta property="og:description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Activation Functions and MLP | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Activation Functions and MLP | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Activation Functions and MLP</h1>
+    <p>Activation functions add non-linearity, enabling neural networks to learn complex patterns. MLP (Multi-Layer Perceptron) stacks layers of neurons.</p>
+
+    <h2>Common activation functions</h2>
+    <ul>
+      <li><strong>ReLU:</strong> fast and widely used in hidden layers.</li>
+      <li><strong>Sigmoid:</strong> maps output to 0-1 range.</li>
+      <li><strong>Tanh:</strong> output between -1 and 1.</li>
+    </ul>
+
+    <h2>MLP flow</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    I[Input features] --> H1[Hidden layer]
+    H1 --> H2[Hidden layer]
+    H2 --> O[Output]
+      </div>
+    </div>
+
+    <h2>Why non-linearity matters</h2>
+    <p>Without activation functions, many stacked layers collapse into a linear transformation, limiting model power.</p>
+
+    <footer>
+      <a href="artificial-neuron-and-perceptron.html">Previous</a> · <a href="backpropagation-and-gradient-descent.html">Next</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand ACID properties and why they matter for reliable database transactions.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/acid-properties.html">
+  <meta property="og:title" content="ACID properties | BackbenchLearner">
+  <meta property="og:description" content="Understand ACID properties and why they matter for reliable database transactions.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/databases/acid-properties.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ACID properties | BackbenchLearner">
+  <meta name="twitter:description" content="Understand ACID properties and why they matter for reliable database transactions.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>ACID properties | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>ACID properties</h1>
+
+    <p><strong>ACID</strong> describes what you get from a transactional database: all-or-nothing execution, valid state before and after, isolation from concurrent transactions, and durability after commit. Together they keep data consistent and predictable.</p>
+
+    <h2>The four properties</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    A[Atomicity: All or nothing]
+    C[Consistency: Rules hold before & after]
+    I[Isolation: Concurrent txns don't see each other's partial state]
+    D[Durability: Committed data survives crash]
+    A --> T[Transaction]
+    C --> T
+    I --> T
+    D --> T
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Letter</th><th>Meaning</th><th>In practice</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A</strong>tomicity</td><td>All or nothing</td><td>If any step fails, entire transaction is rolled back</td></tr>
+        <tr><td><strong>C</strong>onsistency</td><td>Invariants hold</td><td>DB constraints (FK, unique, checks) hold after commit</td></tr>
+        <tr><td><strong>I</strong>solation</td><td>Concurrent txns isolated</td><td>Controlled by isolation level (see next topic)</td></tr>
+        <tr><td><strong>D</strong>urability</td><td>Commit is permanent</td><td>Once committed, data persists despite crash</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Atomicity in action</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant T as Transaction
+    participant DB as Database
+
+    T->>DB: BEGIN
+    T->>DB: UPDATE accounts SET balance = balance - 100 WHERE id = 1
+    T->>DB: UPDATE accounts SET balance = balance + 100 WHERE id = 2
+    alt All OK
+        T->>DB: COMMIT
+        DB-->>T: Durability: written to disk
+    else Error
+        T->>DB: ROLLBACK
+        DB-->>T: All changes undone (Atomicity)
+    end
+      </div>
+    </div>
+
+    <p>NoSQL stores often relax ACID (e.g. eventual consistency, single-document transactions) to gain scale. When you need multi-row or multi-document consistency, choose a store that supports ACID or use patterns like Saga with compensating actions.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="indexes.html">Prev: Indexes</a> · <a href="transactions-isolation.html">Next: Transactions & isolation levels</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how CDN and edge caching improve latency and reduce backend load.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cdn-edge-caching.html">
+  <meta property="og:title" content="CDN and edge caching | BackbenchLearner">
+  <meta property="og:description" content="Learn how CDN and edge caching improve latency and reduce backend load.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cdn-edge-caching.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CDN and edge caching | BackbenchLearner">
+  <meta name="twitter:description" content="Learn how CDN and edge caching improve latency and reduce backend load.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>CDN and edge caching | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>CDN and edge caching</h1>
+
+    <p>A <strong>CDN (Content Delivery Network)</strong> is a set of edge servers (POPs) close to users. It caches static assets (and often API responses) at the edge so requests are served from a nearby node instead of the origin, reducing latency and load on the origin.</p>
+
+    <h2>Request path with CDN</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    U[User] --> Edge[Edge POP]
+    Edge --> |Cache hit| U
+    Edge --> |Cache miss| Origin[Origin server]
+    Origin --> Edge
+    Edge --> |Store & return| U
+      </div>
+    </div>
+
+    <h2>What lives at the edge</h2>
+    <table>
+      <thead><tr><th>Content type</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td>Static assets</td><td>JS, CSS, images, fonts — long TTL</td></tr>
+        <tr><td>API responses</td><td>Cacheable GET with Cache-Control; short TTL or key by user</td></tr>
+        <tr><td>Whole pages</td><td>Static or ISR pages</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Cache-Control at edge</h2>
+    <p>Origin sends <code>Cache-Control: public, max-age=3600</code> (and optionally <code>s-maxage</code> for shared/CDN). Edge caches and serves for that period; after expiry it revalidates with origin (or serves stale while revalidating).</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    O[Origin: Cache-Control headers] --> E[Edge cache]
+    E --> |max-age| Serve[Serve from edge]
+    E --> |Expired| Revalidate[Revalidate with origin]
+      </div>
+    </div>
+
+    <p>Use a CDN for static content and for cacheable API responses when low latency and offloading origin matter. Invalidate or use short TTL when content must stay fresh.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="cache-consistency.html">Prev: Cache consistency</a> · <a href="cache-can-make-systems-wrong.html">Next: Why cache can make systems wrong</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

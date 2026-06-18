@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Human-in-the-Loop Workflows with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/human-in-the-loop-workflows.html">
+  <meta property="og:title" content="Human-in-the-Loop Workflows | BackbenchLearner">
+  <meta property="og:description" content="Learn about Human-in-the-Loop Workflows with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/human-in-the-loop-workflows.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Human-in-the-Loop Workflows | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Human-in-the-Loop Workflows with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Human-in-the-Loop Workflows | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Human-in-the-Loop Workflows</h1>
+    <p>Human-in-the-loop (HITL) means people approve or correct AI decisions at critical points.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Agent drafts action] --> B{High risk?}
+    B -- Yes --> C[Human review]
+    C --> D[Approve or reject]
+    B -- No --> E[Auto execute]
+    D --> E
+      </div>
+    </div>
+
+    <h2>Where HITL is important</h2>
+    <ul>
+      <li>Financial transactions.</li>
+      <li>Legal/compliance outputs.</li>
+      <li>Security or account access changes.</li>
+      <li>External communication in sensitive cases.</li>
+    </ul>
+
+    <h2>Benefits</h2>
+    <ul>
+      <li>Reduces risk and improves trust.</li>
+      <li>Creates feedback loops for model improvement.</li>
+      <li>Supports governance and accountability.</li>
+    </ul>
+
+    <footer>
+      <a href="single-vs-multi-agent.html">Previous</a> · <a href="../agent-design-topics/task-decomposition.html">Next: Agent Design Topics</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

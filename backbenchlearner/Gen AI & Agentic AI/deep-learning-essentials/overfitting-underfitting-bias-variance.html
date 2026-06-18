@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Overfitting, Underfitting, Bias-Variance with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html">
+  <meta property="og:title" content="Overfitting, Underfitting, Bias-Variance | BackbenchLearner">
+  <meta property="og:description" content="Learn about Overfitting, Underfitting, Bias-Variance with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Overfitting, Underfitting, Bias-Variance | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Overfitting, Underfitting, Bias-Variance with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Overfitting, Underfitting, Bias-Variance | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Overfitting, Underfitting, and Bias-Variance Tradeoff</h1>
+    <p>Good models should generalize to unseen data, not just memorize training data.</p>
+
+    <h2>Underfitting (high bias)</h2>
+    <ul>
+      <li>Model too simple.</li>
+      <li>High train error and high validation error.</li>
+    </ul>
+
+    <h2>Overfitting (high variance)</h2>
+    <ul>
+      <li>Model too complex.</li>
+      <li>Low train error but high validation error.</li>
+    </ul>
+
+    <h2>How to detect quickly</h2>
+    <ul>
+      <li>Train loss down + validation loss up -> overfitting signal.</li>
+      <li>Both losses high -> underfitting signal.</li>
+    </ul>
+
+    <h2>Goal</h2>
+    <p>Find the balance where total error is minimized: <code>Bias^2 + Variance + noise</code>.</p>
+
+    <footer>
+      <a href="backpropagation-and-gradient-descent.html">Previous</a> · <a href="regularization-techniques.html">Next</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

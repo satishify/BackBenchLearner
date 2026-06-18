@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare microservices and monolith architectures with practical backend trade-offs.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/microservices-vs-monoliths.html">
+  <meta property="og:title" content="Microservices vs monoliths (trade-offs) | BackbenchLearner">
+  <meta property="og:description" content="Compare microservices and monolith architectures with practical backend trade-offs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/distributed/microservices-vs-monoliths.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Microservices vs monoliths (trade-offs) | BackbenchLearner">
+  <meta name="twitter:description" content="Compare microservices and monolith architectures with practical backend trade-offs.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Microservices vs monoliths (trade-offs) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Microservices vs monoliths (trade-offs)</h1>
+
+    <p>A <strong>monolith</strong> is one deployable application containing all features; it runs as a single process (or a few). <strong>Microservices</strong> split the system into many small services, each deployable and scalable independently, communicating over the network.</p>
+
+    <h2>Monolith vs microservices layout</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Monolith["Monolith"]
+        M[Single app\nAuth + Orders + Users + ...]
+    end
+    subgraph Micro["Microservices"]
+        A[Auth Service]
+        O[Order Service]
+        U[User Service]
+        A --- O
+        O --- U
+    end
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Aspect</th><th>Monolith</th><th>Microservices</th></tr></thead>
+      <tbody>
+        <tr><td>Deploy</td><td>One big deploy</td><td>Deploy per service</td></tr>
+        <tr><td>Scaling</td><td>Scale whole app</td><td>Scale only hot services</td></tr>
+        <tr><td>Complexity</td><td>Simpler ops, one codebase</td><td>Distributed ops, network, discovery</td></tr>
+        <tr><td>Consistency</td><td>Single DB, ACID easy</td><td>Distributed data, eventual consistency</td></tr>
+        <tr><td>Team</td><td>One repo, coordinated releases</td><td>Teams own services, independent release</td></tr>
+      </tbody>
+    </table>
+
+    <h2>When to choose which</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph Mono["Favor monolith"]
+        M1[Small team, early product]
+        M2[Strong consistency needs]
+        M3[Simple ops]
+    end
+    subgraph Micro["Favor microservices"]
+        S1[Large org, many teams]
+        S2[Different scale per domain]
+        S3[Independent deploy required]
+    end
+      </div>
+    </div>
+
+    <p>Start with a <strong>monolith</strong> when the team and product are small; split into <strong>microservices</strong> when you hit scaling or organizational boundaries (team ownership, different scaling per domain). Don’t split by default — distributed systems are harder.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="horizontal-vs-vertical-scaling.html">Prev: Horizontal vs vertical</a> · <a href="service-communication.html">Next: Service-to-service communication</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

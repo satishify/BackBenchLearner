@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn what caching is and where to apply it in backend and system design.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/what-is-caching.html">
+  <meta property="og:title" content="What is caching and where to cache | BackbenchLearner">
+  <meta property="og:description" content="Learn what caching is and where to apply it in backend and system design.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/what-is-caching.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is caching and where to cache | BackbenchLearner">
+  <meta name="twitter:description" content="Learn what caching is and where to apply it in backend and system design.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>What is caching and where to cache | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>What is caching and where to cache</h1>
+
+    <p><strong>Caching</strong> stores a copy of data in a faster or closer store so repeated requests can be served without recomputing or hitting the primary source (DB, API). It reduces latency and load on the source.</p>
+
+    <h2>Request path: where caches sit</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    C[Client] --> Browser[Browser cache]
+    Browser --> CDN[CDN / Edge]
+    CDN --> App[App server cache]
+    App --> Cache[Redis/Memcached]
+    Cache --> DB[(Database)]
+      </div>
+    </div>
+
+    <h2>Cache layers</h2>
+    <table>
+      <thead><tr><th>Layer</th><th>Where</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td>Browser</td><td>Client</td><td>Static assets, HTTP cache headers</td></tr>
+        <tr><td>CDN / Edge</td><td>Edge POPs</td><td>Static files, API response cache</td></tr>
+        <tr><td>Application</td><td>In-process or local</td><td>Hot data, computed results</td></tr>
+        <tr><td>Distributed cache</td><td>Redis, Memcached</td><td>Shared cache across app servers</td></tr>
+        <tr><td>DB layer</td><td>Query cache, buffer pool</td><td>DB’s own optimization</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What to cache</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph Good["Good to cache"]
+        G1[Read-heavy, rarely changing]
+        G2[Expensive to compute]
+        G3[Static or semi-static assets]
+    end
+    subgraph Bad["Avoid or short TTL"]
+        B1[User-specific, sensitive]
+        B2[Frequently updated]
+        B3[Must be real-time]
+    end
+      </div>
+    </div>
+
+    <p>Cache where it gives the most benefit: close to the client for latency (CDN, browser), close to the app for throughput (Redis). Invalidate or set TTL when data can change.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="cache-eviction-strategies.html">Next: Cache eviction strategies</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

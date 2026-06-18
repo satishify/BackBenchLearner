@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">
+  <meta property="og:title" content="Why Transformers Replaced RNNs | BackbenchLearner">
+  <meta property="og:description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Why Transformers Replaced RNNs | BackbenchLearner">
+  <meta name="twitter:description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Why Transformers Replaced RNNs | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Why Transformers Replaced Earlier Seq2Seq Models</h1>
+    <p>Before Transformers, sequence tasks used RNN/LSTM encoder-decoder models. They worked, but had major scaling and context limitations.</p>
+
+    <h2>Main limitations of pre-attention and RNN seq2seq</h2>
+    <ul>
+      <li><strong>Fixed context bottleneck:</strong> whole input compressed into one vector.</li>
+      <li><strong>Weak long-range memory:</strong> distant tokens lose influence.</li>
+      <li><strong>Sequential processing:</strong> poor parallelism, slower training.</li>
+      <li><strong>Vanishing/exploding gradients:</strong> optimization instability.</li>
+      <li><strong>Uniform treatment:</strong> no dynamic focus on most relevant words.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[RNN Encoder] --> B[Single context vector]
+    B --> C[RNN Decoder]
+    C --> D[Output sequence]
+    B -. bottleneck .-> E[Information loss on long input]
+      </div>
+    </div>
+
+    <h2>Attention solved the bottleneck first</h2>
+    <p>Attention allowed each decoder step to look at all encoder hidden states with dynamic weights, instead of relying only on one fixed vector.</p>
+
+    <h2>Why Transformer was the next leap</h2>
+    <ul>
+      <li>Removes recurrence and enables full parallel token processing.</li>
+      <li>Self-attention gives direct token-to-token interaction.</li>
+      <li>Dependency path between far tokens becomes short (direct).</li>
+      <li>Multi-head attention captures different relation types simultaneously.</li>
+    </ul>
+
+    <footer>
+      <a href="../core-llm-concepts/hallucinations-and-limitations.html">Previous</a> · <a href="self-attention-qkv.html">Next: Self-attention and Q/K/V</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

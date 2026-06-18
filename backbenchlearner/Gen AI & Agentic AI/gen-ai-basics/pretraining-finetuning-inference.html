@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Pretraining, Fine-Tuning, Inference with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/pretraining-finetuning-inference.html">
+  <meta property="og:title" content="Pretraining, Fine-Tuning, Inference | BackbenchLearner">
+  <meta property="og:description" content="Learn about Pretraining, Fine-Tuning, Inference with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/pretraining-finetuning-inference.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pretraining, Fine-Tuning, Inference | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Pretraining, Fine-Tuning, Inference with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Pretraining, Fine-Tuning, Inference | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Pretraining, Fine-Tuning, and Inference</h1>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Large raw data] --> B[Pretraining]
+    B --> C[Base model]
+    C --> D[Fine-tuning on task/domain]
+    D --> E[Deployed model]
+    E --> F[Inference in production]
+      </div>
+    </div>
+
+    <h2>Pretraining</h2>
+    <p>Model learns general language or multimodal patterns from very large datasets. This phase is expensive and done by model providers.</p>
+
+    <h2>Fine-tuning</h2>
+    <p>Model is adapted to specific domain behavior, tone, format, or tasks using curated examples.</p>
+    <p><strong>Example:</strong> Fine-tune for legal contract summarization style.</p>
+
+    <h2>Inference</h2>
+    <p>Runtime stage when users send prompts and receive outputs. Inference quality depends on model choice, prompt quality, and retrieval context.</p>
+
+    <h2>In real products</h2>
+    <ul>
+      <li>Many teams start with base model + prompt engineering + RAG.</li>
+      <li>Fine-tuning is added later if behavior still needs control.</li>
+      <li>Inference optimization focuses on latency and cost.</li>
+    </ul>
+
+    <footer>
+      <a href="common-model-types.html">Previous</a> · <a href="../deep-learning-essentials/artificial-neuron-and-perceptron.html">Next: Deep Learning Essentials</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

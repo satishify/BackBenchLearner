@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand positional encodings and multi-head attention in Transformer models.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/positional-encoding-and-mha.html">
+  <meta property="og:title" content="Positional Encoding and Multi-Head Attention | BackbenchLearner">
+  <meta property="og:description" content="Understand positional encodings and multi-head attention in Transformer models.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/positional-encoding-and-mha.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Positional Encoding and Multi-Head Attention | BackbenchLearner">
+  <meta name="twitter:description" content="Understand positional encodings and multi-head attention in Transformer models.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Positional Encoding and Multi-Head Attention | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Positional Encoding and Multi-Head Attention</h1>
+
+    <h2>Why positional encoding is required</h2>
+    <p>Self-attention is permutation-invariant by default. Without position signals, sentence order can be ambiguous.</p>
+    <p>So models add positional vectors to token embeddings: <code>x_i = token_i + position_i</code>.</p>
+
+    <h2>Sinusoidal encoding idea</h2>
+    <ul>
+      <li>Uses sine on even dimensions and cosine on odd dimensions.</li>
+      <li>Provides unique position patterns and supports relative distance reasoning.</li>
+      <li>No extra trainable position parameters required (in fixed sinusoidal variant).</li>
+    </ul>
+
+    <h2>Why multi-head attention (MHA)</h2>
+    <p>One head may focus on one relation type. Multiple heads learn complementary patterns in parallel (syntax, coreference, local position, semantics).</p>
+    <p><code>MultiHead(X) = Concat(head_1 ... head_h) W_o</code></p>
+
+    <h2>Training tricks commonly used</h2>
+    <ul>
+      <li>Residual connections (Add)</li>
+      <li>Layer normalization (Norm)</li>
+      <li>Scaled dot-product attention</li>
+      <li>Position signals added to embeddings</li>
+    </ul>
+
+    <footer>
+      <a href="self-attention-qkv.html">Previous</a> · <a href="decoder-masking-cross-attention.html">Next: Decoder masking and cross-attention</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

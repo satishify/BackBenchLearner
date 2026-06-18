@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand cache consistency patterns and how to prevent stale cache data issues.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-consistency.html">
+  <meta property="og:title" content="Cache consistency & stale cache problems | BackbenchLearner">
+  <meta property="og:description" content="Understand cache consistency patterns and how to prevent stale cache data issues.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-consistency.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cache consistency & stale cache problems | BackbenchLearner">
+  <meta name="twitter:description" content="Understand cache consistency patterns and how to prevent stale cache data issues.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Cache consistency & stale cache problems | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Cache consistency & stale cache problems</h1>
+
+    <p><strong>Cache consistency</strong> is the idea that the cache and the source of truth (e.g. DB) agree. When the DB changes, the cache can still hold old data — that’s <strong>stale cache</strong>. Staleness can cause wrong reads until the cache is updated or expired.</p>
+
+    <h2>Why staleness happens</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant Cache as Cache
+    participant DB as Database
+
+    C->>Cache: Read key X
+    Cache-->>C: value v1
+    Note over DB: Someone updates DB: X = v2
+    C->>Cache: Read key X (still v1)
+    Cache-->>C: v1 (stale)
+      </div>
+    </div>
+
+    <h2>Ways to reduce staleness</h2>
+    <ul>
+      <li><strong>TTL</strong> — Accept staleness for TTL; then re-fetch. Simple; can be stale up to TTL.</li>
+      <li><strong>Invalidate on write</strong> — On DB update, delete (or update) the cache key. Cache and DB can be consistent if invalidation is reliable.</li>
+      <li><strong>Write-through</strong> — Write to cache and DB together. Cache stays in sync but every write hits both.</li>
+      <li><strong>Write-behind</strong> — Write to cache first, async to DB. Low latency but risk of loss and more staleness if DB is source of truth.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    W[Write to DB] --> I[Invalidate cache key]
+    I --> Next[Next read = cache miss]
+    Next --> F[Fetch from DB]
+    F --> Store[Store in cache]
+      </div>
+    </div>
+
+    <p>Strong consistency between cache and DB is hard in distributed systems. Often use short TTL + invalidation on write, and accept brief staleness for non-critical data.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="cache-eviction-strategies.html">Prev: Eviction strategies</a> · <a href="cdn-edge-caching.html">Next: CDN and edge caching</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

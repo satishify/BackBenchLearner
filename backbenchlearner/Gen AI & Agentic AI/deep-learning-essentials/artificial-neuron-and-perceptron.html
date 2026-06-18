@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">
+  <meta property="og:title" content="Artificial Neuron and Perceptron | BackbenchLearner">
+  <meta property="og:description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Artificial Neuron and Perceptron | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Artificial Neuron and Perceptron | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Artificial Neuron and Perceptron</h1>
+    <p>An artificial neuron is a small mathematical unit inspired by biological neurons. A perceptron is one of the earliest neuron-based learning models.</p>
+
+    <h2>Neuron computation</h2>
+    <p><code>z = w1x1 + w2x2 + ... + wnxn + b</code>, then <code>y = f(z)</code></p>
+    <p>Here, <code>w</code> are weights, <code>b</code> is bias, and <code>f</code> is an activation function.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    X1[x1] --> S[Weighted sum + bias]
+    X2[x2] --> S
+    X3[x3] --> S
+    S --> A[Activation f(z)]
+    A --> Y[Output y]
+      </div>
+    </div>
+
+    <h2>Perceptron limitation</h2>
+    <p>A single perceptron can only solve <strong>linearly separable</strong> problems. This is why deep multi-layer models became important.</p>
+
+    <footer>
+      <a href="../gen-ai-basics/pretraining-finetuning-inference.html">Previous</a> · <a href="activation-functions-and-mlp.html">Next</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

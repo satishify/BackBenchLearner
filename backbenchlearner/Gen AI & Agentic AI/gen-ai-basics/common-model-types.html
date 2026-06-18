@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Common Model Types with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/common-model-types.html">
+  <meta property="og:title" content="Common Model Types | BackbenchLearner">
+  <meta property="og:description" content="Learn about Common Model Types with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/common-model-types.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Common Model Types | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Common Model Types with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Common Model Types | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Common Model Types: Text, Image, Audio, Video, Multimodal</h1>
+    <p>Different Gen AI models are optimized for different input/output formats.</p>
+
+    <table>
+      <thead>
+        <tr><th>Model Type</th><th>Typical Input</th><th>Typical Output</th><th>Use Case</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Text (LLM)</td><td>Text prompt</td><td>Text/code</td><td>Chatbot, summarizer, coding helper</td></tr>
+        <tr><td>Image generation</td><td>Text prompt</td><td>Image</td><td>Creative design, marketing visuals</td></tr>
+        <tr><td>Speech/audio</td><td>Audio/text</td><td>Transcript/speech</td><td>Voice bot, call analytics</td></tr>
+        <tr><td>Video generation</td><td>Text/image</td><td>Video clip</td><td>Education and promotional videos</td></tr>
+        <tr><td>Multimodal</td><td>Text + image + audio</td><td>Mixed output</td><td>Image QA, UI screenshot analysis</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Choosing the right model</h2>
+    <ul>
+      <li>Match model type to user task first.</li>
+      <li>Then compare quality, speed, and cost.</li>
+      <li>For enterprise apps, prioritize controllability and security.</li>
+    </ul>
+
+    <h2>Learning paradigms (related ML foundation)</h2>
+    <table>
+      <thead>
+        <tr><th>Paradigm</th><th>Data labels</th><th>Typical tasks</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Supervised learning</td><td>Has labels</td><td>Classification, regression</td></tr>
+        <tr><td>Unsupervised learning</td><td>No labels</td><td>Clustering, dimensionality reduction</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Raw data] --> B{Labels available?}
+    B -- Yes --> C[Supervised model]
+    B -- No --> D[Unsupervised methods]
+    C --> E[Predict class/value]
+    D --> F[Find hidden structure]
+      </div>
+    </div>
+
+    <h2>Data types you see in ML</h2>
+    <ul>
+      <li><strong>Categorical:</strong> color, city, product type</li>
+      <li><strong>Ordinal:</strong> low, medium, high</li>
+      <li><strong>Continuous:</strong> salary, temperature, latency</li>
+    </ul>
+
+    <footer>
+      <a href="ai-ml-deep-learning-genai.html">Previous</a> · <a href="pretraining-finetuning-inference.html">Next: Pretraining, fine-tuning, inference</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

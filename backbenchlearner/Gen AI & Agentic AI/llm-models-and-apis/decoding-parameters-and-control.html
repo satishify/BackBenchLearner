@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understand temperature, top-k, top-p, penalties, max tokens, and stop sequences for reliable LLM outputs.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/decoding-parameters-and-control.html">
+  <meta property="og:title" content="Decoding Parameters and Output Control | BackbenchLearner">
+  <meta property="og:description" content="Understand temperature, top-k, top-p, penalties, max tokens, and stop sequences for reliable LLM outputs.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/decoding-parameters-and-control.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Decoding Parameters and Output Control | BackbenchLearner">
+  <meta name="twitter:description" content="Understand temperature, top-k, top-p, penalties, max tokens, and stop sequences for reliable LLM outputs.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Decoding Parameters and Output Control | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Decoding Parameters and Output Control</h1>
+
+    <h2>Core controls</h2>
+    <table>
+      <thead><tr><th>Parameter</th><th>What it controls</th><th>Typical usage</th></tr></thead>
+      <tbody>
+        <tr><td>temperature</td><td>randomness of sampling</td><td>0.2-0.4 factual, 0.8-1.2 creative</td></tr>
+        <tr><td>top_k</td><td>sample from top-k candidates</td><td>conservative diversity</td></tr>
+        <tr><td>top_p</td><td>sample from nucleus probability mass</td><td>adaptive diversity</td></tr>
+        <tr><td>repetition/frequency penalty</td><td>reduce repeated tokens</td><td>long outputs, summaries</td></tr>
+        <tr><td>max_tokens</td><td>hard output length cap</td><td>cost and latency control</td></tr>
+        <tr><td>stop sequences</td><td>forced termination string</td><td>structured response boundaries</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Practical presets</h2>
+    <ul>
+      <li><strong>Factual Q&A:</strong> low temperature + low top_p + moderate max_tokens.</li>
+      <li><strong>Creative writing:</strong> higher temperature + top_p around 0.9-0.95.</li>
+      <li><strong>Code generation:</strong> low temperature + stop sequences for fences/turn boundaries.</li>
+      <li><strong>Brainstorming:</strong> higher temperature + larger token budget.</li>
+    </ul>
+
+    <h2>Important tuning note</h2>
+    <p>Avoid extreme values on both <code>top_k</code> and <code>top_p</code> at the same time. Tune one primary sampling control first, then temperature.</p>
+
+    <footer>
+      <a href="prompting-fundamentals-and-roles.html">Previous</a> · <a href="apis-and-tool-calling.html">Next</a>
+    </footer>
+  </div>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

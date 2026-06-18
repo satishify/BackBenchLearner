@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn about Monitoring and Observability with this BackbenchLearner guide.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/monitoring-and-observability.html">
+  <meta property="og:title" content="Monitoring and Observability | BackbenchLearner">
+  <meta property="og:description" content="Learn about Monitoring and Observability with this BackbenchLearner guide.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/practical-topics/monitoring-and-observability.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Monitoring and Observability | BackbenchLearner">
+  <meta name="twitter:description" content="Learn about Monitoring and Observability with this BackbenchLearner guide.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Monitoring and Observability | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Monitoring and Observability</h1>
+    <p>Observability gives visibility into AI system behavior so teams can detect quality, safety, and reliability issues early.</p>
+
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Requests] --> B[Agent service]
+    B --> C[Logs]
+    B --> D[Metrics]
+    B --> E[Traces]
+    C --> F[Dashboards]
+    D --> F
+    E --> F
+    F --> G[Alerts]
+      </div>
+    </div>
+
+    <h2>What to monitor</h2>
+    <ul>
+      <li>Accuracy and hallucination rate.</li>
+      <li>Latency (P50/P95).</li>
+      <li>Token and tool cost.</li>
+      <li>Safety violation counts.</li>
+      <li>Tool/API failure rates.</li>
+    </ul>
+
+    <footer>
+      <a href="prompt-injection-and-tool-misuse-risks.html">Previous</a> · <a href="../build-skills/apis-for-models.html">Next: Build Skills</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+

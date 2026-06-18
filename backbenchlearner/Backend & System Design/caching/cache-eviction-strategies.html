@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare cache eviction strategies like TTL and LRU for efficient cache management.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-eviction-strategies.html">
+  <meta property="og:title" content="Cache eviction strategies (TTL, LRU) | BackbenchLearner">
+  <meta property="og:description" content="Compare cache eviction strategies like TTL and LRU for efficient cache management.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://backbenchlearner.com/Backend%20%26%20System%20Design/caching/cache-eviction-strategies.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cache eviction strategies (TTL, LRU) | BackbenchLearner">
+  <meta name="twitter:description" content="Compare cache eviction strategies like TTL and LRU for efficient cache management.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <title>Cache eviction strategies (TTL, LRU) | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <nav><a href="../../index.html">← Home</a></nav>
+    <h1>Cache eviction strategies (TTL, LRU)</h1>
+
+    <p>When the cache is full or an entry is stale, something must be removed — that’s <strong>eviction</strong>. Common strategies: <strong>TTL</strong> (time-to-live): remove after a fixed time; <strong>LRU</strong> (least recently used): remove the item that hasn’t been used for the longest time.</p>
+
+    <h2>TTL: time-based expiry</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    Set[Set key, TTL=60s] --> Store[Store + expiry time]
+    Store --> Check{Read request}
+    Check -->|Now < expiry| Hit[Cache hit]
+    Check -->|Now >= expiry| Miss[Evict, cache miss]
+      </div>
+    </div>
+
+    <h2>LRU: evict least recently used</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph LRU["LRU list (order = last access)"]
+        A[Most recent] --> B --> C --> D[Least recent]
+    end
+    Full[Cache full] --> Evict[Evict D]
+    Evict --> New[Add new entry at head]
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Strategy</th><th>When evict</th><th>Use case</th></tr></thead>
+      <tbody>
+        <tr><td>TTL</td><td>After fixed duration</td><td>Stale-safe data (e.g. 5 min for profile)</td></tr>
+        <tr><td>LRU</td><td>When full; drop least recently used</td><td>Bounded memory; keep “hot” data</td></tr>
+        <tr><td>LFU</td><td>When full; drop least frequently used</td><td>Keep most popular items</td></tr>
+        <tr><td>FIFO</td><td>When full; drop oldest inserted</td><td>Simple, no access tracking</td></tr>
+      </tbody>
+    </table>
+
+    <p>Combine <strong>TTL</strong> (so data doesn’t stay forever wrong) with <strong>LRU</strong> (so under memory pressure you drop the coldest entries). Many caches (e.g. Redis) support both.</p>
+
+    <footer>
+      <a href="../../index.html">Home</a> · <a href="what-is-caching.html">Prev: What is caching</a> · <a href="cache-consistency.html">Next: Cache consistency</a>
+    </footer>
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+<script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+</body>
+</html>
+
