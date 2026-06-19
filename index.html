@@ -58,15 +58,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.75rem 1.5rem;
+      flex-wrap: nowrap;
+      gap: 1rem;
       padding: 0.85rem 1.5rem;
       max-width: 100%;
     }
     .brand-block {
       display: flex;
       align-items: center;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       min-width: 0;
     }
     .site-logo {
@@ -97,10 +97,11 @@
     }
     .topic-nav {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 0.4rem;
       align-items: center;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
+      min-width: 0;
     }
     .topic-nav a {
       display: inline-block;
@@ -340,8 +341,9 @@
     }
     .sidebar-backdrop.visible { display: block; }
     @media (max-width: 768px) {
-      .header-inner { gap: 0.5rem 1rem; }
+      .header-inner { gap: 0.5rem 1rem; flex-wrap: wrap; }
       .sidebar-toggle { display: inline-flex; }
+      .topic-nav { flex-wrap: wrap; }
       .sidebar {
         position: fixed;
         top: 0;
