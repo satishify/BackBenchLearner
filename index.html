@@ -221,6 +221,58 @@
     #welcome h1 { font-size: 1.75rem; margin: 0 0 0.5rem 0; color: var(--text); }
     #welcome .tagline { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
     #welcome p[style] { color: var(--text-muted); }
+    .visitor-panel {
+      position: fixed;
+      top: 72px;
+      right: 1rem;
+      background: #ffffff;
+      border: 1px solid rgba(13, 148, 136, 0.2);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      font-size: 0.72rem;
+      z-index: 80;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 140px;
+    }
+    .visitor-panel.visible {
+      display: flex;
+    }
+    .visitor-panel strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .visitor-panel .label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.01em;
+    }
+    .visitor-unlock-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 75;
+      background: transparent;
+      border: 1px solid rgba(13, 148, 136, 0.3);
+      color: var(--text-muted);
+      padding: 0.35rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .visitor-unlock-btn:hover {
+      background: rgba(13, 148, 136, 0.08);
+      border-color: rgba(13, 148, 136, 0.5);
+      color: var(--text);
+    }
     #content-frame {
       flex: 1;
       width: 100%;
@@ -345,6 +397,17 @@
     </details>
   </section>
   <footer class="page-footer">© BackbenchLearner 2026</footer>
+  <button class="visitor-unlock-btn" id="visitor-unlock-btn" title="Admin panel">👁</button>
+  <div class="visitor-panel" id="visitor-panel" aria-live="polite">
+    <div>
+      <strong id="visitor-count">Loading…</strong>
+      <span class="label">visitors</span>
+    </div>
+    <div>
+      <strong id="visitor-location">Detecting…</strong>
+      <span class="label">location</span>
+    </div>
+  </div>
   <script>
     (function() {
       var READ_STORAGE_KEY = 'backbenchlearner-read';
@@ -602,6 +665,73 @@
         el.innerHTML = html;
       }
 
+      function formatLocation(data) {
+        if (!data) return 'Unknown';
+        var parts = [];
+        if (data.city) parts.push(data.city);
+        if (data.region) parts.push(data.region);
+        if (data.country_name) parts.push(data.country_name);
+        return parts.length ? parts.join(', ') : 'Unknown';
+      }
+
+      function loadVisitorInfo() {
+        var countEl = document.getElementById('visitor-count');
+        var locationEl = document.getElementById('visitor-location');
+        if (countEl) {
+          fetch('https://api.countapi.xyz/hit/backbenchlearner.com/visitor-counter')
+            .then(function(resp) { return resp.json(); })
+            .then(function(data) {
+              if (data && typeof data.value === 'number') {
+                countEl.textContent = data.value.toLocaleString();
+              } else {
+                countEl.textContent = 'N/A';
+              }
+            })
+            .catch(function() { countEl.textContent = 'N/A'; });
+        }
+        if (locationEl) {
+          fetch('https://ipapi.co/json/')
+            .then(function(resp) { return resp.json(); })
+            .then(function(data) {
+              locationEl.textContent = formatLocation(data);
+            })
+            .catch(function() { locationEl.textContent = 'Unknown'; });
+        }
+      }
+
+      function checkVisitorAuth() {
+        var pass = sessionStorage.getItem('visitor-auth');
+        return pass === 'true';
+      }
+      function setVisitorAuth(val) {
+        if (val) sessionStorage.setItem('visitor-auth', 'true');
+        else sessionStorage.removeItem('visitor-auth');
+      }
+      function promptVisitorPassword() {
+        var pwd = window.prompt('Enter admin password to view stats:');
+        if (pwd === 'backbench2026') {
+          setVisitorAuth(true);
+          showVisitorPanel();
+          loadVisitorInfo();
+          return true;
+        } else if (pwd !== null) {
+          window.alert('Incorrect password.');
+        }
+        return false;
+      }
+      function showVisitorPanel() {
+        var panel = document.getElementById('visitor-panel');
+        if (panel && checkVisitorAuth()) {
+          panel.classList.add('visible');
+        }
+      }
+      function hideVisitorPanel() {
+        var panel = document.getElementById('visitor-panel');
+        if (panel) {
+          panel.classList.remove('visible');
+        }
+      }
+
       function setSidebarOpen(open) {
         var sidebar = document.getElementById('sidebar');
         var backdrop = document.getElementById('sidebar-backdrop');
@@ -763,6 +893,21 @@
         showWelcome(topicId);
         renderSeoLinks();
         syncUI();
+        var unlockBtn = document.getElementById('visitor-unlock-btn');
+        if (unlockBtn) {
+          unlockBtn.addEventListener('click', function() {
+            if (checkVisitorAuth()) {
+              setVisitorAuth(false);
+              hideVisitorPanel();
+            } else {
+              promptVisitorPassword();
+            }
+          });
+        }
+        if (checkVisitorAuth()) {
+          showVisitorPanel();
+          loadVisitorInfo();
+        }
       });
     })();
   </script>
