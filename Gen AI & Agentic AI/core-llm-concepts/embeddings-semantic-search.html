@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta name="description" content="Embeddings and Semantic Search: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/embeddings-semantic-search.html">
   <meta property="og:title" content="Embeddings and Semantic Search | BackbenchLearner">
-  <meta property="og:description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta property="og:description" content="Embeddings and Semantic Search: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/embeddings-semantic-search.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Embeddings and Semantic Search | BackbenchLearner">
-  <meta name="twitter:description" content="Learn about Embeddings and Semantic Search with this BackbenchLearner guide.">
+  <meta name="twitter:description" content="Embeddings and Semantic Search: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>Embeddings and Semantic Search | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,16 +51,20 @@ flowchart LR
     <strong>Semantic:</strong> looks for meaning similarity.</p>
     <p>Example: query "reduce infra cost" can match doc "cloud spend optimization."</p>
 
-    <h2>Why embeddings replaced one-hot style vectors</h2>
+    <h2>One-hot encoding limitations</h2>
+    <p>Historically, each vocabulary word mapped to a sparse vector of length |V| with a single 1. Problems:</p>
     <ul>
-      <li>One-hot vectors are sparse and very high-dimensional.</li>
-      <li>They cannot naturally represent semantic closeness ("cat" and "kitten").</li>
-      <li>Dense embeddings are compact and encode similarity geometry.</li>
+      <li><strong>Extreme sparsity</strong> — 100k words ⇒ 100k dimensions mostly zeros.</li>
+      <li><strong>No semantic similarity</strong> — dot product between any two distinct one-hot vectors is 0; “cat” is as far from “dog” as from “refrigerator”.</li>
     </ul>
-    <p><strong>Famous embedding intuition:</strong> <code>king - man + woman ≈ queen</code></p>
 
-    <h2>Distributional idea in simple words</h2>
-    <p>Words used in similar contexts tend to have similar meanings. Embedding models learn this pattern automatically from large corpora.</p>
+    <h2>Distributed embeddings (Word2Vec-style)</h2>
+    <p>Dense vectors (often 100–300 dims) encode latent features learned from context. Similar words cluster in space, enabling analogies like <code>king − man + woman ≈ queen</code>.</p>
+
+    <h2>Cosine similarity vs Euclidean distance</h2>
+    <p><strong>Cosine similarity</strong> measures the angle between vectors, normalizing for length and frequency skew:</p>
+    <p><code>cos(θ) = (A · B) / (‖A‖ ‖B‖)</code></p>
+    <p>We prefer cosine over raw Euclidean distance when word frequency stretches vector magnitude. We avoid tangent-based metrics because they explode near orthogonal vectors.</p>
 
     <h2>Best practices</h2>
     <ul>
@@ -75,6 +79,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 

@@ -10,6 +10,9 @@
   <meta property="og:description" content="Backend, system design, Gen AI, deep learning, and agentic AI notes with diagrams and examples.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://backbenchlearner.com/index.html">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,6 +264,48 @@
       line-height: 1.35;
     }
     .seo-discovery a:hover { text-decoration: underline; }
+    .sidebar-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0.45rem 0.75rem;
+      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--header-text);
+      background: var(--header-active-bg);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle:hover { background: rgba(255, 255, 255, 0.28); }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 61, 92, 0.35);
+      z-index: 90;
+    }
+    .sidebar-backdrop.visible { display: block; }
+    @media (max-width: 768px) {
+      .header-inner { gap: 0.5rem 1rem; }
+      .sidebar-toggle { display: inline-flex; }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        width: min(280px, 88vw);
+        min-width: unset;
+        transform: translateX(-105%);
+        transition: transform 0.22s ease;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { width: 100%; }
+      #welcome { padding: 1.25rem 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -271,12 +316,14 @@
           <img src="assets/logo.png" alt="BackbenchLearner — Learn. Build. Level Up." />
         </a>
       </div>
+      <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">☰ Lessons</button>
       <nav class="topic-nav" id="topic-nav">
         <a href="#backend-design" data-topic-id="backend-design" class="active">Backend &amp; System Design</a>
         <a href="#gen-ai-agentic-ai" data-topic-id="gen-ai-agentic-ai">Gen AI &amp; Agentic AI</a>
       </nav>
     </div>
   </header>
+  <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
   <div class="content-row">
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main">
@@ -291,34 +338,7 @@
   <section class="seo-discovery" aria-label="All lesson links for search indexing">
     <details>
       <summary>All Lessons (crawlable links)</summary>
-      <div class="seo-links">
-        <a href="Backend%20%26%20System%20Design/backend/what-is-api.html">Backend: What is an API</a>
-        <a href="Backend%20%26%20System%20Design/databases/sql-vs-nosql.html">Databases: SQL vs NoSQL</a>
-        <a href="Backend%20%26%20System%20Design/caching/what-is-caching.html">Caching: What is caching</a>
-        <a href="Backend%20%26%20System%20Design/distributed/load-balancing.html">Distributed: Load balancing</a>
-        <a href="Backend%20%26%20System%20Design/reliability/exactly-once-vs-at-least-once.html">Reliability: Exactly-once vs at-least-once</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-ai.html">Gen AI Basics: What is AI</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-machine-learning.html">Gen AI Basics: What is Machine Learning</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-deep-learning.html">Gen AI Basics: What is Deep Learning</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-generative-ai.html">Gen AI Basics: What is Generative AI</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">Deep Learning Essentials: Artificial neuron and perceptron</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">Deep Learning Essentials: Activation functions and MLP</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/backpropagation-and-gradient-descent.html">Deep Learning Essentials: Backpropagation and gradient descent</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html">Deep Learning Essentials: Overfitting and bias-variance</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/regularization-techniques.html">Deep Learning Essentials: Regularization techniques</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/tokens-context-window-temperature-top-p.html">Core LLM Concepts: Tokens and sampling</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/core-llm-concepts/rag-retrieval-augmented-generation.html">Core LLM Concepts: RAG</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/agentic-ai-basics/what-makes-an-agent.html">Agentic AI Basics: What makes an agent</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/agent-design-topics/tool-calling-function-calling.html">Agent Design: Tool calling</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/practical-topics/evaluation-metrics.html">Practical Topics: Evaluation metrics</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/build-skills/apis-for-models.html">Build Skills: APIs for models</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">Transformer Architecture: Why transformers</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/self-attention-qkv.html">Transformer Architecture: Self-attention and Q/K/V</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/decoder-masking-cross-attention.html">Transformer Architecture: Decoder masking and cross-attention</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/llm-evolution-and-model-families.html">LLM Models & APIs: LLM evolution</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/llm-models-and-apis/structured-outputs-and-validation.html">LLM Models & APIs: Structured outputs</a>
-        <a href="Gen%20AI%20%26%20Agentic%20AI/capstone/end-to-end-ai-agent-use-case.html">Capstone: End-to-end use case</a>
-      </div>
+      <div class="seo-links" id="seo-links"></div>
       <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #4a6b82; margin-top: 0.75rem;">
         Full list is available in <a href="sitemap.xml">sitemap.xml</a>.
       </p>
@@ -530,21 +550,67 @@
       function saveReadSet(set) {
         try { sessionStorage.setItem(READ_STORAGE_KEY, JSON.stringify(Array.from(set))); } catch (e) {}
       }
-      function getTopicFromHash() {
-        var h = window.location.hash.slice(1);
-        if (!h) return '';
-        if (h.indexOf('/') !== -1 && TOPICS[h.split('/')[0]]) return h;
-        return h + (h.indexOf('.html') === -1 ? '.html' : '');
-      }
-      function getPathFromHash() {
-        var h = window.location.hash.slice(1);
-        if (!h) return '';
-        if (TOPICS[h]) return '';
+      function parseHash() {
+        var h = decodeURIComponent(window.location.hash.slice(1));
+        if (!h) {
+          return { topicId: getCurrentTopicId(), path: '' };
+        }
+        var slash = h.indexOf('/');
+        if (slash !== -1) {
+          var maybeTopic = h.slice(0, slash);
+          if (TOPICS[maybeTopic]) {
+            var rest = h.slice(slash + 1);
+            if (!rest) {
+              return { topicId: maybeTopic, path: '' };
+            }
+            var lessonPath = rest.indexOf('.html') === -1 ? rest + '.html' : rest;
+            var topic = TOPICS[maybeTopic];
+            return { topicId: maybeTopic, path: topic.basePath + '/' + lessonPath };
+          }
+        }
+        if (TOPICS[h]) {
+          return { topicId: h, path: '' };
+        }
         var topicId = getCurrentTopicId();
-        var topic = TOPICS[topicId];
-        var path = (h.indexOf('.html') === -1) ? h + '.html' : h;
-        if (topic && topic.basePath) path = topic.basePath + '/' + path;
-        return path;
+        var legacyTopic = TOPICS[topicId];
+        var legacyPath = h.indexOf('.html') === -1 ? h + '.html' : h;
+        return { topicId: topicId, path: legacyTopic.basePath + '/' + legacyPath };
+      }
+
+      function getPathFromHash() {
+        return parseHash().path;
+      }
+
+      function lessonHash(topicId, linkHash) {
+        return topicId + '/' + linkHash;
+      }
+
+      function renderSeoLinks() {
+        var el = document.getElementById('seo-links');
+        if (!el) return;
+        var html = '';
+        Object.keys(TOPICS).forEach(function(topicId) {
+          var topic = TOPICS[topicId];
+          topic.sections.forEach(function(section) {
+            section.links.forEach(function(link) {
+              var fullPath = topic.basePath + '/' + link.path;
+              var encoded = encodeURI(fullPath);
+              html += '<a href="' + encoded + '">' + topic.title + ': ' + link.label + '</a>';
+            });
+          });
+        });
+        el.innerHTML = html;
+      }
+
+      function setSidebarOpen(open) {
+        var sidebar = document.getElementById('sidebar');
+        var backdrop = document.getElementById('sidebar-backdrop');
+        var toggle = document.getElementById('sidebar-toggle');
+        if (!sidebar || !backdrop || !toggle) return;
+        sidebar.classList.toggle('open', open);
+        backdrop.classList.toggle('visible', open);
+        backdrop.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
       }
 
       function renderSidebar(topicId) {
@@ -559,13 +625,13 @@
         topic.sections.forEach(function(section, sectionIndex) {
           var listId = 'chapter-links-' + topicId + '-' + sectionIndex;
           html += '<div class="chapter">';
-          html += '<button class="chapter-toggle" type="button" data-list-id="' + listId + '" aria-expanded="false">';
+          html += '<button class="chapter-toggle" type="button" data-list-id="' + listId + '" aria-expanded="true">';
           html += '<span>' + section.title + '</span><span class="chapter-caret">▶</span>';
           html += '</button>';
-          html += '<ul class="chapter-links" id="' + listId + '">';
+          html += '<ul class="chapter-links expanded" id="' + listId + '">';
           section.links.forEach(function(link) {
             var fullPath = base + link.path;
-            html += '<li><a href="#' + link.hash + '" data-topic="' + fullPath + '">' + link.label + '</a></li>';
+            html += '<li><a href="#' + lessonHash(topicId, link.hash) + '" data-topic="' + fullPath + '">' + link.label + '</a></li>';
           });
           html += '</ul></div>';
         });
@@ -618,7 +684,14 @@
       }
 
       function syncUI() {
-        var path = getPathFromHash();
+        var parsed = parseHash();
+        if (parsed.topicId && TOPICS[parsed.topicId] && getCurrentTopicId() !== parsed.topicId) {
+          setCurrentTopicId(parsed.topicId);
+          setHeaderActive(parsed.topicId);
+          renderSidebar(parsed.topicId);
+          showWelcome(parsed.topicId);
+        }
+        var path = parsed.path;
         var welcome = document.getElementById('welcome');
         var frame = document.getElementById('content-frame');
         var links = document.querySelectorAll('.sidebar a[data-topic]');
@@ -629,6 +702,7 @@
           var readSet = getReadSet();
           readSet.add(path);
           saveReadSet(readSet);
+          setSidebarOpen(false);
         } else {
           frame.src = '';
           frame.classList.remove('visible');
@@ -647,7 +721,7 @@
         setCurrentTopicId(topicId);
         setHeaderActive(topicId);
         renderSidebar(topicId);
-        window.location.hash = '';
+        window.location.hash = topicId;
         showWelcome(topicId);
         document.getElementById('content-frame').src = '';
         document.getElementById('content-frame').classList.remove('visible');
@@ -663,12 +737,31 @@
         }
       });
 
+      var sidebarToggle = document.getElementById('sidebar-toggle');
+      var sidebarBackdrop = document.getElementById('sidebar-backdrop');
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          var sidebar = document.getElementById('sidebar');
+          setSidebarOpen(!sidebar.classList.contains('open'));
+        });
+      }
+      if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', function() {
+          setSidebarOpen(false);
+        });
+      }
+
       window.addEventListener('hashchange', syncUI);
       window.addEventListener('load', function() {
+        var parsed = parseHash();
+        if (parsed.topicId && TOPICS[parsed.topicId]) {
+          setCurrentTopicId(parsed.topicId);
+        }
         var topicId = getCurrentTopicId();
         setHeaderActive(topicId);
         renderSidebar(topicId);
         showWelcome(topicId);
+        renderSeoLinks();
         syncUI();
       });
     })();

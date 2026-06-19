@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Learn about Backpropagation and Gradient Descent with this BackbenchLearner guide.">
+  <meta name="description" content="Backpropagation and Gradient Descent: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/backpropagation-and-gradient-descent.html">
   <meta property="og:title" content="Backpropagation and Gradient Descent | BackbenchLearner">
-  <meta property="og:description" content="Learn about Backpropagation and Gradient Descent with this BackbenchLearner guide.">
+  <meta property="og:description" content="Backpropagation and Gradient Descent: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/backpropagation-and-gradient-descent.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Backpropagation and Gradient Descent | BackbenchLearner">
-  <meta name="twitter:description" content="Learn about Backpropagation and Gradient Descent with this BackbenchLearner guide.">
+  <meta name="twitter:description" content="Backpropagation and Gradient Descent: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>Backpropagation and Gradient Descent | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,16 @@
   <div class="wrapper">
     <nav><a href="../../index.html">← Home</a></nav>
     <h1>Backpropagation and Gradient Descent</h1>
-    <p>Backpropagation computes how each weight contributes to error. Gradient descent then updates weights to reduce loss.</p>
+    <p><strong>Forward propagation</strong> computes predictions; a <strong>loss function</strong> scores error. <strong>Backpropagation</strong> sends error signals backward via the chain rule; <strong>gradient descent</strong> nudges weights downhill.</p>
+
+    <h2>Gradient descent intuition</h2>
+    <p>Imagine a hiker in fog on a mountain who can only feel local slope. Each step moves opposite the steepest gradient toward the valley (minimum loss):</p>
+    <p><code>W<sub>new</sub> = W<sub>old</sub> − η · (∂E/∂W)</code></p>
+    <p><strong>Learning rate η</strong> is step size — too small = slow training; too large = overshooting and unstable loss.</p>
+
+    <h2>Chain rule in backprop</h2>
+    <p><code>∂E/∂w = (∂E/∂ŷ) · (∂ŷ/∂z) · (∂z/∂w)</code></p>
+    <p>Gradients flow from output layer back through each hidden layer so every weight knows how much it contributed to the error.</p>
 
     <h2>Training loop</h2>
     <ol>
@@ -62,6 +71,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 

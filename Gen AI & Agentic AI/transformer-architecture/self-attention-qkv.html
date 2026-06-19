@@ -35,6 +35,14 @@
       <li><strong>Value (V):</strong> information to pass if selected.</li>
     </ul>
 
+    <h2>YouTube search analogy</h2>
+    <ul>
+      <li><strong>Query (Q)</strong> — what you type in the search bar.</li>
+      <li><strong>Key (K)</strong> — titles/tags each video exposes for matching.</li>
+      <li><strong>Value (V)</strong> — the actual content returned after ranking.</li>
+    </ul>
+    <p>The platform scores Q against all K vectors, softmax-ranks them, and blends the corresponding V vectors.</p>
+
     <h2>Core formula</h2>
     <p><code>Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V</code></p>
     <p>Scaling by <code>sqrt(d_k)</code> keeps scores numerically stable before softmax.</p>
@@ -63,6 +71,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 

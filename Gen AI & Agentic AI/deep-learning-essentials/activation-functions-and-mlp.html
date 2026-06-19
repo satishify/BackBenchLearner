@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta name="description" content="Activation Functions and MLP: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">
   <meta property="og:title" content="Activation Functions and MLP | BackbenchLearner">
-  <meta property="og:description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta property="og:description" content="Activation Functions and MLP: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/activation-functions-and-mlp.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Activation Functions and MLP | BackbenchLearner">
-  <meta name="twitter:description" content="Learn about Activation Functions and MLP with this BackbenchLearner guide.">
+  <meta name="twitter:description" content="Activation Functions and MLP: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>Activation Functions and MLP | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,18 +35,35 @@
       <li><strong>Tanh:</strong> output between -1 and 1.</li>
     </ul>
 
-    <h2>MLP flow</h2>
+    <h2>MLP architecture</h2>
+    <p><strong>Input → Hidden layer(s) → Output</strong>. Hidden layers must use non-linear activations; without them, the stack collapses to a single linear map and cannot solve XOR-like boundaries.</p>
+
+    <h2>Why tanh over tan</h2>
+    <p>Standard tangent has discontinuities and shoots to infinity at 90° — causing exploding gradients. <strong>Hyperbolic tanh</strong> is smooth, monotonic, and bounded in [−1, +1].</p>
+
+    <h2>Output activations and loss pairing (Session 2)</h2>
+    <table>
+      <thead>
+        <tr><th>Task</th><th>Output activation</th><th>Typical loss</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Regression</td><td>Linear / identity</td><td>Mean Squared Error (MSE)</td></tr>
+        <tr><td>Binary classification</td><td>Sigmoid → [0, 1]</td><td>Binary cross-entropy (BCE)</td></tr>
+        <tr><td>Multi-class</td><td>Softmax → distribution</td><td>Categorical cross-entropy (CCE)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Softmax (the percentage maker)</h2>
+    <p>Raw logits are exponentiated (eliminates negatives, amplifies the winner), then normalized so all class probabilities sum to 1.0. CCE then penalizes confident wrong classes heavily.</p>
+
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-    I[Input features] --> H1[Hidden layer]
-    H1 --> H2[Hidden layer]
-    H2 --> O[Output]
+    I[Input features] --> H1[Hidden + ReLU/tanh]
+    H1 --> H2[Hidden + ReLU/tanh]
+    H2 --> O[Output + softmax/sigmoid]
       </div>
     </div>
-
-    <h2>Why non-linearity matters</h2>
-    <p>Without activation functions, many stacked layers collapse into a linear transformation, limiting model power.</p>
 
     <footer>
       <a href="artificial-neuron-and-perceptron.html">Previous</a> · <a href="backpropagation-and-gradient-descent.html">Next</a>
@@ -54,6 +71,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 

@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta name="description" content="Artificial Neuron and Perceptron: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">
   <meta property="og:title" content="Artificial Neuron and Perceptron | BackbenchLearner">
-  <meta property="og:description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta property="og:description" content="Artificial Neuron and Perceptron: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/deep-learning-essentials/artificial-neuron-and-perceptron.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Artificial Neuron and Perceptron | BackbenchLearner">
-  <meta name="twitter:description" content="Learn about Artificial Neuron and Perceptron with this BackbenchLearner guide.">
+  <meta name="twitter:description" content="Artificial Neuron and Perceptron: concepts, examples, and practical notes for learners on BackbenchLearner.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>Artificial Neuron and Perceptron | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,25 +26,37 @@
   <div class="wrapper">
     <nav><a href="../../index.html">← Home</a></nav>
     <h1>Artificial Neuron and Perceptron</h1>
-    <p>An artificial neuron is a small mathematical unit inspired by biological neurons. A perceptron is one of the earliest neuron-based learning models.</p>
+    <p>The <strong>Rosenblatt perceptron (1958)</strong> is an early learning unit: it scales inputs by weights, adds a bias, applies a threshold, and outputs a binary decision (0 or 1).</p>
 
-    <h2>Neuron computation</h2>
-    <p><code>z = w1x1 + w2x2 + ... + wnxn + b</code>, then <code>y = f(z)</code></p>
-    <p>Here, <code>w</code> are weights, <code>b</code> is bias, and <code>f</code> is an activation function.</p>
+    <h2>Weighted sum and step activation</h2>
+    <p><code>z = Σ X<sub>i</sub>W<sub>i</sub> + b</code></p>
+    <p><code>ŷ = 1 if z ≥ 0, else 0</code> (step / threshold activation)</p>
+
+    <h2>Perceptron learning rule</h2>
+    <p>When the model misclassifies, weights update proportionally to error:</p>
+    <p><code>ΔW = η · (y − ŷ) · X</code> &nbsp; then &nbsp; <code>W<sub>new</sub> = W<sub>old</sub> + ΔW</code></p>
+    <p>η is the <strong>learning rate</strong> — how large each corrective step is.</p>
 
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-    X1[x1] --> S[Weighted sum + bias]
+    X1[x1] --> S[Weighted sum z]
     X2[x2] --> S
     X3[x3] --> S
-    S --> A[Activation f(z)]
-    A --> Y[Output y]
+    S --> A[Step activation]
+    A --> Y[Binary output]
       </div>
     </div>
 
-    <h2>Perceptron limitation</h2>
-    <p>A single perceptron can only solve <strong>linearly separable</strong> problems. This is why deep multi-layer models became important.</p>
+    <h2>Linear separability</h2>
+    <p>A single perceptron solves only <strong>linearly separable</strong> problems — data that can be split by one straight line (or hyperplane). AND and OR gates work; <strong>XOR does not</strong>.</p>
+    <p>Minsky & Papert (1969) proved a single layer cannot learn XOR. That limitation contributed to the first AI winter and motivated <strong>multi-layer networks</strong> with non-linear hidden layers.</p>
+
+    <h2>XOR vs AND intuition</h2>
+    <ul>
+      <li><strong>AND / OR</strong> — one line can separate the 1s from the 0s in the input grid.</li>
+      <li><strong>XOR</strong> — positive class sits on opposite corners; no single line separates them.</li>
+    </ul>
 
     <footer>
       <a href="../gen-ai-basics/pretraining-finetuning-inference.html">Previous</a> · <a href="activation-functions-and-mlp.html">Next</a>
@@ -52,6 +64,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 

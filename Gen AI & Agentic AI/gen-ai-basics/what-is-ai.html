@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Learn about What is AI with this BackbenchLearner guide.">
+  <meta name="description" content="Foundations of AI: Dartmouth 1956, Turing Test, four quadrants of intelligence, GOFAI, expert systems, and the shift to modern rational agents.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-ai.html">
   <meta property="og:title" content="What is AI | BackbenchLearner">
-  <meta property="og:description" content="Learn about What is AI with this BackbenchLearner guide.">
+  <meta property="og:description" content="Foundations of AI: Dartmouth 1956, Turing Test, four quadrants of intelligence, GOFAI, expert systems, and the shift to modern rational agents.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/gen-ai-basics/what-is-ai.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="What is AI | BackbenchLearner">
-  <meta name="twitter:description" content="Learn about What is AI with this BackbenchLearner guide.">
+  <meta name="twitter:description" content="Foundations of AI: Dartmouth 1956, Turing Test, four quadrants of intelligence, GOFAI, expert systems, and the shift to modern rational agents.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
   <title>What is AI | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,41 +26,56 @@
   <div class="wrapper">
     <nav><a href="../../index.html">← Home</a></nav>
     <h1>What is Artificial Intelligence (AI)</h1>
-    <p><strong>AI</strong> is the broad field of building systems that perform tasks requiring intelligence, such as reasoning, decision making, language understanding, and problem solving.</p>
+    <p><strong>Artificial Intelligence (AI)</strong> is the field of building systems that perform tasks that normally require human intelligence — reasoning, perception, language understanding, planning, and decision making under uncertainty.</p>
 
-    <h2>Classic AI viewpoints</h2>
+    <h2>The birth of AI (1956 Dartmouth Conference)</h2>
+    <p>AI became a formal research discipline at the <strong>Dartmouth Summer Research Project</strong> in 1956, organized by John McCarthy with pioneers including Marvin Minsky, Nathaniel Rochester, and Claude Shannon. Their working hypothesis: every aspect of learning or intelligence can be precisely described so that a machine can simulate it.</p>
+
+    <h2>Behavioral intelligence: the Turing Test (1950)</h2>
+    <p>Alan Turing proposed the <strong>Imitation Game</strong>: a human judge chats via text with a human and a machine. If the judge cannot reliably identify the machine, the system demonstrates behavioral intelligence. Early systems like <strong>ELIZA (1966)</strong> fooled users with pattern matching and reflection — not true understanding, but a useful benchmark for conversational interfaces.</p>
+
+    <h2>The four quadrants of AI</h2>
+    <p>AI is often classified along two axes — <em>process vs. behavior</em> and <em>human-like vs. rational</em>:</p>
     <ul>
-      <li>Think humanly</li>
-      <li>Think rationally</li>
-      <li>Act humanly</li>
-      <li>Act rationally</li>
+      <li><strong>Thinking humanly</strong> — cognitive modeling of human thought structures.</li>
+      <li><strong>Acting humanly</strong> — behavior judged by human-relative criteria (e.g. passing the Turing Test).</li>
+      <li><strong>Thinking rationally</strong> — logic and formal inference (syllogisms, theorem proving).</li>
+      <li><strong>Acting rationally</strong> — agents that choose actions to maximize expected utility from data and constraints.</li>
     </ul>
-    <p>In modern products, the focus is often on <strong>acting rationally</strong>: producing the best possible outcome for a given goal.</p>
+    <p><strong>Modern enterprise AI</strong> is overwhelmingly aligned with <strong>acting rationally</strong>: minimize objective loss, hit task goals reliably, rather than mimic human cognitive quirks.</p>
 
-    <h2>AI timeline highlights</h2>
+    <h2>Classical AI (GOFAI) and expert systems</h2>
+    <p><strong>Good Old-Fashioned AI (GOFAI)</strong> relied on symbolic, hand-built knowledge:</p>
     <ul>
-      <li>1956: Dartmouth workshop (early AI formalization).</li>
-      <li>Symbolic AI era: logic, rule-based systems, expert systems.</li>
-      <li>AI winters: progress slowed due to scalability and data limits.</li>
-      <li>ML and deep learning revived AI with data-driven methods.</li>
+      <li><strong>Formal logic</strong> — facts + inference rules (A → B, B → C ⇒ A → C).</li>
+      <li><strong>Production rules</strong> — IF condition THEN action trees.</li>
+      <li><strong>Semantic networks</strong> — entities as nodes, relations as edges (e.g. Sparrow → is-a → Bird).</li>
+    </ul>
+    <p><strong>Expert systems</strong> (1970s–80s) split a <em>knowledge base</em> (domain rules from experts) from an <em>inference engine</em> that applied them. <strong>MYCIN (1975)</strong> diagnosed blood infections and recommended antibiotics — a landmark commercial symbolic system.</p>
+
+    <h2>Why GOFAI failed and AI winters followed</h2>
+    <ul>
+      <li><strong>Ambiguity</strong> — brittle translation and context failures outside toy domains.</li>
+      <li><strong>Combinatorial explosion</strong> — rule sets grew faster than systems could search them.</li>
+      <li><strong>AI winters</strong> — funding collapses in the mid-1970s and late 1980s when symbolic AI could not scale to messy real-world data.</li>
     </ul>
 
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-    A[Symbolic AI] --> B[Expert Systems]
-    B --> C[AI Winter]
+    A[Symbolic AI / GOFAI] --> B[Expert Systems]
+    B --> C[AI Winters]
     C --> D[Machine Learning]
     D --> E[Deep Learning]
     E --> F[Generative AI]
       </div>
     </div>
 
-    <h2>Real-world examples</h2>
+    <h2>Real-world examples today</h2>
     <ul>
-      <li>Maps finding fastest routes.</li>
-      <li>Spam filtering and fraud detection.</li>
-      <li>Voice assistants and chatbots.</li>
+      <li>Route optimization and fraud detection in production systems.</li>
+      <li>Spam filtering and recommendation engines.</li>
+      <li>Voice assistants, coding copilots, and enterprise chatbots.</li>
     </ul>
 
     <footer>
@@ -69,6 +84,7 @@ flowchart LR
   </div>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
+<script src="../../scripts/lesson-shell.js"></script>
 </body>
 </html>
 
