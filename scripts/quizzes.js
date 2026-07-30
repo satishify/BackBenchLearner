@@ -1914,6 +1914,84 @@ window.BBL.QUIZZES = {
       }
     ]
   },
+  "genai/module-4-multimodal-agentic/vision-language": {
+    "id": "genai/module-4-multimodal-agentic/vision-language",
+    "title": "4.1 Vision-Language Models & Image Generation",
+    "questions": [
+      {
+        "q": "What does multimodal AI primarily add beyond a text-only LLM?",
+        "options": [
+          "Faster CPUs",
+          "Ability to take in or produce more than one data type (e.g. images + text)",
+          "Removing the need for embeddings",
+          "Guaranteed zero hallucinations"
+        ],
+        "answer": 1,
+        "why": "Multimodal systems jointly handle modalities such as text and images in a shared or fused representation."
+      },
+      {
+        "q": "A VLM is best described as…",
+        "options": [
+          "A database of stock photos",
+          "A model that can consume images (and text) and produce language outputs about them",
+          "Only a GAN for faces",
+          "A load balancer for GPUs"
+        ],
+        "answer": 1,
+        "why": "Vision-language models connect visual encoders with language generation for captioning, VQA, and similar tasks."
+      },
+      {
+        "q": "In product terms, which risk is especially relevant to image generation?",
+        "options": [
+          "SQL injection into Redis",
+          "Copyright, likeness, and unsafe imagery if filters are weak",
+          "TCP retransmission storms",
+          "CSS specificity wars"
+        ],
+        "answer": 1,
+        "why": "Generated images raise rights and safety issues that text filters alone do not cover."
+      }
+    ]
+  },
+  "genai/module-4-multimodal-agentic/agentic-systems": {
+    "id": "genai/module-4-multimodal-agentic/agentic-systems",
+    "title": "4.2 Agentic AI Systems",
+    "questions": [
+      {
+        "q": "What is the main difference between a simple chatbot turn and an agent?",
+        "options": [
+          "Agents never use language models",
+          "Agents can plan, call tools, observe results, and loop toward a goal",
+          "Chatbots always use GPUs; agents never do",
+          "Agents cannot ask for human approval"
+        ],
+        "answer": 1,
+        "why": "Agentic systems add tool use and iterative control flow beyond a single reply."
+      },
+      {
+        "q": "Where can you find the deeper BackbenchLearner lessons on agents today?",
+        "options": [
+          "Only in Backend HTTP methods",
+          "Module 2.9 Agentic AI & Multi-Agent Orchestration",
+          "exclusively in Module 5 Capstone",
+          "There is no agent content yet"
+        ],
+        "answer": 1,
+        "why": "Module 4.2 is a short stub; Module 2.9 already has the full agent track."
+      },
+      {
+        "q": "A multimodal agent might…",
+        "options": [
+          "Only sort CSV files offline forever",
+          "Read a screenshot with vision, then call tools to act on what it saw",
+          "Delete all embeddings on startup",
+          "Refuse any API call by definition"
+        ],
+        "answer": 1,
+        "why": "Combining VLMs with tools is the Module 4 bridge between vision and agency."
+      }
+    ]
+  },
   "genai/module-5-deployment-safety/serving-and-apis": {
     "id": "genai/module-5-deployment-safety/serving-and-apis",
     "title": "5.2 Model Serving & API Development",

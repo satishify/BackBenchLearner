@@ -1,0 +1,28 @@
+title: "4.1 Vision-Language Models & Image Generation"
+questions:
+  - q: "What does multimodal AI primarily add beyond a text-only LLM?"
+    options:
+      - "Faster CPUs"
+      - "Ability to take in or produce more than one data type (e.g. images + text)"
+      - "Removing the need for embeddings"
+      - "Guaranteed zero hallucinations"
+    answer: 1
+    why: "Multimodal systems jointly handle modalities such as text and images in a shared or fused representation."
+
+  - q: "A VLM is best described as…"
+    options:
+      - "A database of stock photos"
+      - "A model that can consume images (and text) and produce language outputs about them"
+      - "Only a GAN for faces"
+      - "A load balancer for GPUs"
+    answer: 1
+    why: "Vision-language models connect visual encoders with language generation for captioning, VQA, and similar tasks."
+
+  - q: "In product terms, which risk is especially relevant to image generation?"
+    options:
+      - "SQL injection into Redis"
+      - "Copyright, likeness, and unsafe imagery if filters are weak"
+      - "TCP retransmission storms"
+      - "CSS specificity wars"
+    answer: 1
+    why: "Generated images raise rights and safety issues that text filters alone do not cover."

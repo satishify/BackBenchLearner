@@ -1,0 +1,28 @@
+title: "4.2 Agentic AI Systems"
+questions:
+  - q: "What is the main difference between a simple chatbot turn and an agent?"
+    options:
+      - "Agents never use language models"
+      - "Agents can plan, call tools, observe results, and loop toward a goal"
+      - "Chatbots always use GPUs; agents never do"
+      - "Agents cannot ask for human approval"
+    answer: 1
+    why: "Agentic systems add tool use and iterative control flow beyond a single reply."
+
+  - q: "Where can you find the deeper BackbenchLearner lessons on agents today?"
+    options:
+      - "Only in Backend HTTP methods"
+      - "Module 2.9 Agentic AI & Multi-Agent Orchestration"
+      - " exclusively in Module 5 Capstone"
+      - "There is no agent content yet"
+    answer: 1
+    why: "Module 4.2 is a short stub; Module 2.9 already has the full agent track."
+
+  - q: "A multimodal agent might…"
+    options:
+      - "Only sort CSV files offline forever"
+      - "Read a screenshot with vision, then call tools to act on what it saw"
+      - "Delete all embeddings on startup"
+      - "Refuse any API call by definition"
+    answer: 1
+    why: "Combining VLMs with tools is the Module 4 bridge between vision and agency."

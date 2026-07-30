@@ -369,7 +369,7 @@ window.BBL.CURRICULUM = {
       {
         "id": "module-4-multimodal-agentic",
         "title": "Module 4 · Multimodal & Agentic AI",
-        "blurb": "Vision-language track (agentic lessons live in Module 2.9)."
+        "blurb": "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
       },
       {
         "id": "module-5-deployment-safety",
@@ -1120,6 +1120,68 @@ window.BBL.CURRICULUM = {
             "path": "module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html",
             "label": "Serving Merged vs Adapter Weights",
             "minutes": 5
+          }
+        ]
+      },
+      {
+        "id": "module-4-multimodal-agentic/vision-language",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.1 Vision-Language Models & Image Generation",
+        "quizId": "genai/module-4-multimodal-agentic/vision-language",
+        "hasQuiz": true,
+        "minutes": 5,
+        "lessons": [
+          {
+            "slug": "multimodal-ai-overview",
+            "hash": "module-4-multimodal-agentic/vision-language/multimodal-ai-overview",
+            "path": "module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html",
+            "label": "Multimodal AI Overview",
+            "minutes": 2
+          },
+          {
+            "slug": "vision-language-models-vlms",
+            "hash": "module-4-multimodal-agentic/vision-language/vision-language-models-vlms",
+            "path": "module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html",
+            "label": "Vision-Language Models (VLMs)",
+            "minutes": 2
+          },
+          {
+            "slug": "image-generation-basics",
+            "hash": "module-4-multimodal-agentic/vision-language/image-generation-basics",
+            "path": "module-4-multimodal-agentic/vision-language/image-generation-basics.html",
+            "label": "Image Generation Basics",
+            "minutes": 1
+          }
+        ]
+      },
+      {
+        "id": "module-4-multimodal-agentic/agentic-systems",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.2 Agentic AI Systems",
+        "quizId": "genai/module-4-multimodal-agentic/agentic-systems",
+        "hasQuiz": true,
+        "minutes": 3,
+        "lessons": [
+          {
+            "slug": "module-4-agentic-roadmap",
+            "hash": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap",
+            "path": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap.html",
+            "label": "Module 4 Agentic Roadmap",
+            "minutes": 1
+          },
+          {
+            "slug": "agents-vs-chatbots-recap",
+            "hash": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap",
+            "path": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html",
+            "label": "Agents vs Chatbots (Recap)",
+            "minutes": 1
+          },
+          {
+            "slug": "multimodal-agents-teaser",
+            "hash": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser",
+            "path": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html",
+            "label": "Multimodal Agents (Teaser)",
+            "minutes": 1
           }
         ]
       },

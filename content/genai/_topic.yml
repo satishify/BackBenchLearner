@@ -51,10 +51,12 @@ modules:
         title: "3.3 PEFT, Adapters & Soft Prompting"
   - id: module-4-multimodal-agentic
     title: "Module 4 · Multimodal & Agentic AI"
-    blurb: "Vision-language track (agentic lessons live in Module 2.9)."
+    blurb: "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
     chapters:
       - id: vision-language
         title: "4.1 Vision-Language Models & Image Generation"
+      - id: agentic-systems
+        title: "4.2 Agentic AI Systems"
   - id: module-5-deployment-safety
     title: "Module 5 · Deployment, Optimisation & AI Safety"
     blurb: "Turning a prototype into something you can operate."
