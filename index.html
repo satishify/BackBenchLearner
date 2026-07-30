@@ -9,10 +9,17 @@
   <meta property="og:title" content="BackbenchLearner">
   <meta property="og:description" content="Backend, system design, Gen AI, deep learning, and agentic AI notes with diagrams and examples.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://backbenchlearner.com/index.html">
-  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta property="og:url" content="https://backbenchlearner.com/">
+  <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="BackbenchLearner — Learn · Build · Level up">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
+  <meta name="twitter:title" content="BackbenchLearner">
+  <meta name="twitter:description" content="Backend, system design, Gen AI, deep learning, and agentic AI notes with diagrams and examples.">
+  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -764,6 +771,16 @@
           </button>
           <div class="mega-menu" id="practice-menu" role="menu"></div>
         </div>
+        <div class="nav-item" id="nav-cheatsheet">
+          <button type="button" class="nav-trigger" id="cheatsheet-trigger" aria-expanded="false" aria-haspopup="true">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            </span>
+            Cheat Sheet
+            <span class="nav-caret">▾</span>
+          </button>
+          <div class="mega-menu" id="cheatsheet-menu" role="menu"></div>
+        </div>
       </nav>
       <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">☰ Lessons</button>
     </div>
@@ -798,10 +815,11 @@
       <span class="label">location</span>
     </div>
   </div>
-  <script src="scripts/curriculum.js?v=20260730f"></script>
-  <script src="scripts/progress.js?v=20260730f"></script>
-  <script src="scripts/quizzes.js?v=20260730f"></script>
-  <script src="scripts/shell.js?v=20260730f"></script>
+  <script src="scripts/curriculum.js?v=20260730g"></script>
+  <script src="scripts/progress.js?v=20260730g"></script>
+  <script src="scripts/quizzes.js?v=20260730g"></script>
+  <script src="scripts/cheatsheets.js?v=20260730g"></script>
+  <script src="scripts/shell.js?v=20260730g"></script>
   <script>
     // Paint the conic progress ring from data-pct after the dashboard renders.
     (function () {

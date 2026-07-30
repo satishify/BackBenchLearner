@@ -41,6 +41,8 @@
    *   #backend-design/quiz/backend
    *   #practice
    *   #practice/backend-design
+   *   #cheatsheet
+   *   #cheatsheet/genai/module-1-foundations
    */
   function parseHash() {
     var raw = window.location.hash.slice(1);
@@ -68,6 +70,27 @@
         topicId: practiceTopic,
         kind: 'practice-mock',
         mockKey: mockKey,
+        hash: h
+      };
+    }
+
+    if (parts[0] === 'cheatsheet') {
+      if (parts.length === 1) {
+        return { topicId: getCurrentTopicId(), kind: 'cheatsheet-hub', hash: h };
+      }
+      var cheatTopic = parts[1];
+      if (cheatTopic === 'gen-ai-agentic-ai') cheatTopic = 'genai';
+      if (!Nav.topic(cheatTopic)) {
+        return { topicId: getCurrentTopicId(), kind: 'cheatsheet-hub', hash: h };
+      }
+      var sheetSlug = parts.length >= 3 ? parts.slice(2).join('/') : '';
+      if (!sheetSlug) {
+        return { topicId: cheatTopic, kind: 'cheatsheet-hub', hash: h };
+      }
+      return {
+        topicId: cheatTopic,
+        kind: 'cheatsheet',
+        sheetSlug: sheetSlug,
         hash: h
       };
     }
@@ -110,6 +133,23 @@
     var url = 'practice.html?t=' + encodeURIComponent(topicId);
     if (mockKey) url += '&m=' + encodeURIComponent(mockKey);
     return url;
+  }
+
+  function listCheatSheets(topicId) {
+    var registry = (BBL.CHEATSHEETS && BBL.CHEATSHEETS[topicId]) || [];
+    return registry.slice();
+  }
+
+  function findCheatSheet(topicId, slug) {
+    var sheets = listCheatSheets(topicId);
+    for (var i = 0; i < sheets.length; i += 1) {
+      if (sheets[i].slug === slug) return sheets[i];
+    }
+    return null;
+  }
+
+  function cheatsheetUrl(sheet) {
+    return encodePath(sheet.path);
   }
 
   function listModuleMocks(topicId) {
@@ -190,6 +230,7 @@
   function renderMainNav(activeTopicId, mode) {
     var learnMenu = document.getElementById('learn-menu');
     var practiceMenu = document.getElementById('practice-menu');
+    var cheatMenu = document.getElementById('cheatsheet-menu');
     if (!learnMenu || !practiceMenu) return;
 
     var learnHtml = '<div class="mega-label">Study topics</div><ul class="mega-list">';
@@ -281,10 +322,62 @@
       '<div class="mega-footer"><a href="#practice">View all practice →</a></div>';
     practiceMenu.innerHTML = practiceHtml;
 
+    if (cheatMenu) {
+      var cheatHtml = '';
+      Nav.topics().forEach(function (topic) {
+        var sheets = listCheatSheets(topic.id);
+        if (!sheets.length) return;
+        cheatHtml +=
+          '<div class="mega-label">' + escapeHtml(topic.navLabel) + '</div>';
+        cheatHtml += '<ul class="mega-list">';
+        var openSlug = '';
+        if (mode === 'cheatsheet') {
+          var ch = parseHash();
+          if (ch.kind === 'cheatsheet' && ch.topicId === topic.id) openSlug = ch.sheetSlug || '';
+        }
+        sheets.forEach(function (sheet) {
+          var active =
+            mode === 'cheatsheet' && sheet.slug === openSlug ? ' active' : '';
+          cheatHtml +=
+            '<li><a href="#cheatsheet/' +
+            topic.id +
+            '/' +
+            sheet.slug +
+            '" class="' +
+            active.trim() +
+            '">';
+          cheatHtml +=
+            '<span class="mega-item-icon" aria-hidden="true">' +
+            topicIcon(topic.id) +
+            '</span>';
+          cheatHtml +=
+            '<span><span class="mega-title">' +
+            escapeHtml(sheet.title) +
+            '</span>';
+          cheatHtml +=
+            '<span class="mega-desc">~' +
+            sheet.minutes +
+            ' min revision' +
+            (sheet.module ? ' · ' + escapeHtml(sheet.module) : '') +
+            '</span></span></a></li>';
+        });
+        cheatHtml += '</ul>';
+      });
+      if (!cheatHtml) {
+        cheatHtml =
+          '<div class="mega-label">Revision guides</div><ul class="mega-list"><li><span class="mega-desc">Cheat sheets coming soon</span></li></ul>';
+      }
+      cheatHtml +=
+        '<div class="mega-footer"><a href="#cheatsheet">View all cheat sheets →</a></div>';
+      cheatMenu.innerHTML = cheatHtml;
+    }
+
     var learnTrigger = document.getElementById('learn-trigger');
     var practiceTrigger = document.getElementById('practice-trigger');
+    var cheatTrigger = document.getElementById('cheatsheet-trigger');
     if (learnTrigger) learnTrigger.classList.toggle('active', mode === 'learn');
     if (practiceTrigger) practiceTrigger.classList.toggle('active', mode === 'practice');
+    if (cheatTrigger) cheatTrigger.classList.toggle('active', mode === 'cheatsheet');
   }
 
   function setHeaderActive(topicId, mode) {
@@ -704,10 +797,53 @@
     welcome.style.display = 'block';
   }
 
+  function renderCheatHub() {
+    var welcome = document.getElementById('welcome');
+    if (!welcome) return;
+    var html = '<h1>Cheat sheets</h1>';
+    html +=
+      '<p class="tagline">Topic and chapter revision guides — dense bullets you can re-read in about 30 minutes before a quiz or interview.</p>';
+    Nav.topics().forEach(function (topic) {
+      var sheets = listCheatSheets(topic.id);
+      if (!sheets.length) return;
+      html += '<h2 class="practice-topic-heading">' + escapeHtml(topic.navLabel) + '</h2>';
+      html += '<div class="dash-chapters">';
+      sheets.forEach(function (sheet) {
+        html += '<div class="dash-chapter">';
+        html += '<div class="dash-chapter-head">';
+        html += '<strong>' + escapeHtml(sheet.title) + '</strong>';
+        html += '<span>~' + sheet.minutes + ' min</span></div>';
+        if (sheet.description) {
+          html +=
+            '<div class="dash-quiz-score muted">' +
+            escapeHtml(sheet.description) +
+            '</div>';
+        }
+        html +=
+          '<p class="dash-continue" style="margin:0.75rem 0 0"><a class="dash-cta" href="#cheatsheet/' +
+          topic.id +
+          '/' +
+          sheet.slug +
+          '">Open revision guide →</a></p></div>';
+      });
+      html += '</div>';
+    });
+    if (html.indexOf('dash-chapter') === -1) {
+      html += '<p class="tagline">No cheat sheets yet for these topics.</p>';
+    }
+    welcome.innerHTML = html;
+    welcome.style.display = 'block';
+  }
+
+  function navMode(kind) {
+    if (kind === 'practice-hub' || kind === 'practice-mock') return 'practice';
+    if (kind === 'cheatsheet-hub' || kind === 'cheatsheet') return 'cheatsheet';
+    return 'learn';
+  }
+
   function syncUI() {
     var parsed = parseHash();
-    var mode =
-      parsed.kind === 'practice-hub' || parsed.kind === 'practice-mock' ? 'practice' : 'learn';
+    var mode = navMode(parsed.kind);
     if (mode === 'learn') setCurrentTopicId(parsed.topicId);
     setHeaderActive(parsed.topicId, mode);
     renderSidebar(parsed.topicId);
@@ -725,6 +861,31 @@
 
     if (parsed.kind === 'practice-mock') {
       frame.src = practiceUrl(parsed.topicId, parsed.mockKey || '');
+      frame.classList.add('visible');
+      welcome.style.display = 'none';
+      setSidebarOpen(false);
+      closeMenus();
+      return;
+    }
+
+    if (parsed.kind === 'cheatsheet-hub') {
+      frame.src = '';
+      frame.classList.remove('visible');
+      renderCheatHub();
+      closeMenus();
+      return;
+    }
+
+    if (parsed.kind === 'cheatsheet') {
+      var sheet = findCheatSheet(parsed.topicId, parsed.sheetSlug);
+      if (!sheet) {
+        renderCheatHub();
+        frame.src = '';
+        frame.classList.remove('visible');
+        closeMenus();
+        return;
+      }
+      frame.src = cheatsheetUrl(sheet);
       frame.classList.add('visible');
       welcome.style.display = 'none';
       setSidebarOpen(false);
@@ -786,6 +947,14 @@
             escapeHtml(lesson.label) +
             '</a>';
         });
+      });
+      listCheatSheets(topic.id).forEach(function (sheet) {
+        html +=
+          '<a href="' +
+          cheatsheetUrl(sheet) +
+          '">Cheat sheet: ' +
+          escapeHtml(sheet.title) +
+          '</a>';
       });
     });
     el.innerHTML = html;
@@ -880,6 +1049,7 @@
 
   bindMenuTrigger('nav-learn', 'learn-trigger');
   bindMenuTrigger('nav-practice', 'practice-trigger');
+  bindMenuTrigger('nav-cheatsheet', 'cheatsheet-trigger');
 
   document.getElementById('main-nav').addEventListener('click', function (e) {
     var topicLink = e.target.closest('a[data-topic-id]');
@@ -901,6 +1071,14 @@
       closeMenus();
       var href = practiceLink.getAttribute('href') || '';
       window.location.hash = href.replace(/^#/, '');
+      return;
+    }
+    var cheatLink = e.target.closest('a[href^="#cheatsheet"]');
+    if (cheatLink) {
+      e.preventDefault();
+      closeMenus();
+      var cheatHref = cheatLink.getAttribute('href') || '';
+      window.location.hash = cheatHref.replace(/^#/, '');
     }
   });
 
@@ -928,14 +1106,14 @@
   window.addEventListener('hashchange', syncUI);
   Progress.subscribe(function () {
     var parsed = parseHash();
-    var mode =
-      parsed.kind === 'practice-hub' || parsed.kind === 'practice-mock' ? 'practice' : 'learn';
+    var mode = navMode(parsed.kind);
     renderSidebar(parsed.topicId);
     paintSidebarActive(parsed);
     expandForActive(parsed);
     setHeaderActive(parsed.topicId, mode);
     if (parsed.kind === 'welcome') renderDashboard(parsed.topicId);
     if (parsed.kind === 'practice-hub') renderPracticeHub();
+    if (parsed.kind === 'cheatsheet-hub') renderCheatHub();
   });
 
   renderSeoLinks();

@@ -166,4 +166,13 @@
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-5-deployment-safety/responsible-genai</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-5-deployment-safety/capstone/end-to-end-ai-agent-use-case.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-5-deployment-safety/capstone</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/backend-design/backend-core.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/backend-design/databases.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/backend-design/caching.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/backend-design/distributed.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/backend-design/reliability.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/genai/module-1-foundations.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/genai/module-2-prompting-rag.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/genai/module-3-finetuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html</loc></url>
 </urlset>
