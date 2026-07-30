@@ -1,0 +1,253 @@
+id: genai/mock/module-3
+title: "Module 3 Mock Exam"
+minutes: 90
+questions:
+  - q: "HR policy changes weekly. The model’s tone is fine but answers cite last quarter’s rules. What should you try first?"
+    section: "Finetune vs RAG vs Prompt"
+    options:
+      - "Full fine-tune on every PDF every night as the primary CMS"
+      - "RAG or system-of-record lookup for current policy; keep weights for stable behavior"
+      - "Increase temperature so answers vary into correctness"
+      - "Train a reward model with no retrieval and no SFT"
+    answer: 1
+    why: "Volatile facts belong in retrieval/tools; fine-tuning is a poor substitute for a living document store."
+
+  - q: "You need the model to always emit a company-specific JSON schema and terse tone. Data is stable (~2k examples). Best default among prompt / RAG / SFT?"
+    section: "Finetune vs RAG vs Prompt"
+    options:
+      - "RAG alone with random web pages"
+      - "Start with strong prompting/structured decoding; add SFT/PEFT if prompting still fails format reliability"
+      - "RLHF from day one with no demonstrations"
+      - "Freeze nothing and train every parameter on 20 examples"
+    answer: 1
+    why: "Format/style often yields to prompting + constraints; SFT when you need reliable imitation at scale."
+
+  - q: "When is full fine-tuning more justified than RAG for a knowledge problem?"
+    section: "Finetune vs RAG vs Prompt"
+    options:
+      - "Facts change hourly and must stay out of weights"
+      - "You need durable skill/style changes or domain language that prompting/RAG cannot stabilize"
+      - "You have zero GPUs and no eval set"
+      - "You want maximum hallucination of citations"
+    answer: 1
+    why: "Fine-tuning changes model behavior/distribution; RAG supplies evidence. Prefer FT for skills, RAG for fresh facts."
+
+  - q: "In chat SFT, which tokens typically contribute to the loss?"
+    section: "SFT"
+    options:
+      - "Only system-prompt tokens"
+      - "Assistant response tokens (user/system often masked)"
+      - "Random vocabulary ids unrelated to the reply"
+      - "Embedding table indices only"
+    answer: 1
+    why: "Causal SFT imitates desired assistant spans; masking inputs prevents the model from 'learning' to regurgitate the prompt as the objective."
+
+  - q: "Supervised fine-tuning is best described as?"
+    section: "SFT"
+    options:
+      - "Ranking two answers without demonstrations"
+      - "Imitating curated prompt→response pairs via next-token cross-entropy"
+      - "Always requiring PPO and a separate reward model"
+      - "Updating only the tokenizer merge rules"
+    answer: 1
+    why: "SFT is behavioral cloning on demonstrations; preference optimization is a later stage when needed."
+
+  - q: "Your SFT set mixes high-quality curated replies with scraped forum junk at equal weight. Most likely outcome?"
+    section: "SFT"
+    options:
+      - "The model magically ignores junk"
+      - "Average behavior drifts toward noisy patterns; quality becomes inconsistent"
+      - "Perplexity on junk becomes the only useful prod metric"
+      - "LoRA rank becomes infinite"
+    answer: 1
+    why: "SFT imitates the data mixture; garbage examples teach garbage manners and facts."
+
+  - q: "Why freeze most backbone weights (or use adapters) when adapting a strong base model with a small style dataset?"
+    section: "Freeze Strategies"
+    options:
+      - "Frozen models can never change behavior at all"
+      - "Fewer trainable parameters usually cut cost and reduce catastrophic forgetting risk"
+      - "Full fine-tunes never work for JSON"
+      - "Freezing increases GPU memory vs LoRA always"
+    answer: 1
+    why: "Limiting what can move preserves general competence and fits smaller hardware for modest task shifts."
+
+  - q: "You unfreeze only the last transformer block + LM head for domain adaptation. What is the main bet?"
+    section: "Freeze Strategies"
+    options:
+      - "Early layers already encode reusable features; late layers specialize to the new output distribution"
+      - "Early layers must always be trained first from scratch"
+      - "The tokenizer must be deleted"
+      - "Attention heads cannot be frozen ever"
+    answer: 0
+    why: "Partial FT assumes lower layers transfer; top layers adapt task-specific readout — verify with forgetting evals."
+
+  - q: "A 'train everything with high LR on 500 examples' run destroys the model’s general instruction following. Name the phenomenon."
+    section: "Forgetting"
+    options:
+      - "Curriculum learning success"
+      - "Catastrophic forgetting / overwriting prior skills"
+      - "Perfect multi-task retention"
+      - "Product quantization"
+    answer: 1
+    why: "Aggressive updates on a narrow set overwrite broad pretrained/SFT capabilities."
+
+  - q: "Which mitigation most directly targets forgetting during continued training?"
+    section: "Forgetting"
+    options:
+      - "Delete the base checkpoint"
+      - "Lower LR / PEFT / mix replay of general data / shorter training with early stopping on a general eval"
+      - "Raise temperature at inference only"
+      - "Increase nprobe"
+    answer: 1
+    why: "Constraint on updates, data replay, and monitoring general suites are standard anti-forgetting levers."
+
+  - q: "Instruction-tuning data should usually be stored in which conceptual format?"
+    section: "Data Prep"
+    options:
+      - "Raw HTML dumps with no roles"
+      - "Structured messages (system/user/assistant) or clear instruction→response fields matching the chat template"
+      - "Only unlabeled embeddings"
+      - "Screenshots of Slack without text extraction"
+    answer: 1
+    why: "Training must match the inference chat template and role structure or the model learns the wrong format."
+
+  - q: "You find duplicate near-identical SFT rows comprising 30% of the set. Risk?"
+    section: "Data Prep"
+    options:
+      - "None — duplicates always help"
+      - "Over-weighting those patterns and inflated train metrics that don’t generalize"
+      - "Mandatory use of PPO"
+      - "Automatic LoRA merge failure"
+    answer: 1
+    why: "Duplicates act like a higher sampling weight; dedup and rebalance before trusting loss curves."
+
+  - q: "PII appears in training completions. Correct data-prep stance?"
+    section: "Data Prep"
+    options:
+      - "Ship it; the model will refuse at inference somehow"
+      - "Redact/filter before training and treat training corpora as a compliance surface"
+      - "Rely on temperature 0 to remove PII"
+      - "Store PII only in the system prompt forever"
+    answer: 1
+    why: "Models can memorize training text; privacy scrubbing is a dataset requirement, not an afterthought."
+
+  - q: "At a high level, how does DPO typically differ from classic RLHF (RM + PPO)?"
+    section: "RLHF/DPO"
+    options:
+      - "DPO cannot use preference pairs"
+      - "DPO optimizes from preference pairs more directly, often skipping a separate reward-model + RL loop"
+      - "DPO replaces the need for any SFT checkpoint in all recipes"
+      - "RLHF never uses a reference model"
+    answer: 1
+    why: "Both use preferences; DPO’s common appeal is a simpler preference likelihood objective without full RM+RL."
+
+  - q: "RLHF reward models are trained primarily on what signal?"
+    section: "RLHF/DPO"
+    options:
+      - "Exact next-token labels only"
+      - "Human (or AI) preference comparisons between candidate responses"
+      - "BM25 scores"
+      - "IVF list ids"
+    answer: 1
+    why: "The RM learns to score which completion humans prefer; policy optimization then raises that score under KL constraints."
+
+  - q: "A DPO run improves preference win rate but the model starts refusing benign questions. Likely cause?"
+    section: "RLHF/DPO"
+    options:
+      - "Too little KL / over-optimizing a skewed 'safe' preference set"
+      - "Embeddings not normalized"
+      - "nlist too small"
+      - "Missing ReLU in the preference model"
+    answer: 0
+    why: "Preference optimization can overfit annotator biases (over-refusal); monitor helpfulness and safety together."
+
+  - q: "Why keep a reference model (or KL penalty) during preference optimization?"
+    section: "RLHF/DPO"
+    options:
+      - "To delete the tokenizer"
+      - "To prevent the policy from drifting into degenerate high-reward gibberish"
+      - "To force RAG on every token"
+      - "To quantize gradients to 1 bit always"
+    answer: 1
+    why: "KL/reference anchoring preserves fluency and prior capabilities while chasing preference reward."
+
+  - q: "LoRA approximates a weight update ΔW as what?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "A full dense matrix with no structure"
+      - "A product of low-rank matrices B·A (rank r ≪ full dim)"
+      - "A change only to the learning-rate schedule"
+      - "Tokenizer surgery"
+    answer: 1
+    why: "LoRA injects trainable low-rank adapters; ΔW ≈ BA with far fewer parameters than dense FT."
+
+  - q: "QLoRA’s primary systems win is?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "Guaranteed higher accuracy than bf16 LoRA"
+      - "Lower peak memory by quantizing the frozen backbone while training LoRA adapters"
+      - "Automatic removal of the need for evals"
+      - "Replacing preference data with random labels"
+    answer: 1
+    why: "4-bit (typical) base weights shrink memory; quality still depends on data and hyperparameters."
+
+  - q: "Prompt tuning / prefix tuning differs from LoRA how?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "They are identical methods with different names"
+      - "Soft-prompt methods learn virtual tokens/prefixes; LoRA learns low-rank weight updates in linear layers"
+      - "LoRA only works for images"
+      - "Prompt tuning updates every backbone matrix by default"
+    answer: 1
+    why: "Soft prompts steer via continuous prompt embeddings; LoRA patches weights with BA."
+
+  - q: "When is keeping LoRA adapters unmerged (hot-swappable) most valuable?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "You only ever ship one skill and never roll back"
+      - "Many tenants/skills share one base model and need small, swappable artifacts"
+      - "You want to maximize disk per skill"
+      - "You refuse to run any eval suite"
+    answer: 1
+    why: "Separate adapters enable modular multi-skill serving and cheap rollback without duplicating the base."
+
+  - q: "Raising LoRA rank r from 8 to 64 on a tiny noisy dataset most often risks what?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "Underfitting only, never overfitting"
+      - "More capacity to memorize noise / increase forgetting without enough clean data"
+      - "Mandatory deletion of LayerNorm"
+      - "Automatic 384× PQ compression"
+    answer: 1
+    why: "Higher rank ≈ more trainable freedom; without data quality/quantity it overfits and can harm the base."
+
+  - q: "Adapter modules (Houlsby/Pfeiffer-style) insert small bottleneck MLPs. Relative to full FT, the design goal is?"
+    section: "LoRA/QLoRA/Adapters"
+    options:
+      - "Train every parameter twice"
+      - "Achieve task adaptation with a tiny parameter budget while freezing the backbone"
+      - "Replace attention with rules"
+      - "Avoid any nonlinearity in the network"
+    answer: 1
+    why: "Classic adapters are PEFT: freeze the pretrained net, train small inserted modules per task."
+
+  - q: "You must choose: (A) prompt-only, (B) RAG, (C) LoRA SFT. Task = extract fields from invoices with a stable schema; invoices are private and never in a shared index; latency budget is tight. Strongest default?"
+    section: "Finetune vs RAG vs Prompt"
+    options:
+      - "B only — RAG over the public web"
+      - "A first with constrained decoding; C if prompt reliability plateaus on a golden set"
+      - "C immediately with rank 256 on 40 examples and no eval"
+      - "None — only RLHF works for extraction"
+    answer: 1
+    why: "Extraction is a skill/format problem; start cheap with prompts+schema, escalate to LoRA when metrics demand it."
+
+  - q: "After LoRA SFT, general MMLU-style probes drop 8 points while your domain F1 soars. Next action?"
+    section: "Forgetting"
+    options:
+      - "Ignore general probes forever"
+      - "Diagnose forgetting: lower LR/rank/steps, add replay/regularization, or accept a deliberate specialist with clear product scope"
+      - "Raise nprobe to restore MMLU"
+      - "Delete domain evals"
+    answer: 1
+    why: "Domain gains that destroy general ability need an explicit trade-off: mitigate forgetting or document a specialist deployment."

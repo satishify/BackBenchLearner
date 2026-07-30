@@ -1,51 +1,96 @@
 # BackbenchLearner – Content structure
 
-## Folder hierarchy
+## Source of truth
 
-- **Topic** = One folder at site root (e.g. `Backend & System Design`). Shows as a tab in the header.
-- **Chapter** = Folder inside the topic (e.g. `backend`, `databases`, `caching`). Shows as a section in the sidebar.
-- **Subtopic** = HTML file inside a chapter folder. Each file is one lesson/page (e.g. `what-is-api.html`).
+Lessons are authored as **Markdown** under `content/`. The generator writes the HTML that GitHub Pages serves.
 
 ```
-BackbenchLearner/
-├── index.html              ← Main app (sidebar + iframe)
-├── assets/
-├── styles/
-├── Backend & System Design/   ← Topic
-│   ├── backend/               ← Chapter
-│   │   ├── what-is-api.html   ← Subtopic
-│   │   ├── rest-vs-graphql.html
-│   │   └── ...
-│   ├── databases/
-│   ├── caching/
-│   ├── distributed/
-│   └── reliability/
-└── (future topic folder, e.g. Frontend Notes/)
+content/
+├── topics.yml                 ← topic order in the header
+├── redirects.yml              ← old URL → new URL (emits redirect stubs)
+├── backend-design/
+│   ├── _topic.yml             ← topic manifest (chapters, labels)
+│   └── backend/
+│       ├── 01-what-is-api.md
+│       ├── _quiz.yml          ← optional chapter quiz
+│       └── …
+└── genai/
+    ├── _topic.yml             ← modules + chapters
+    └── module-1-foundations/
+        └── transformers/
+            └── 01-….md
 ```
 
-## Adding a new topic
+Published HTML lands in `backend-design/` and `genai/`. Redirect stubs keep the old `Backend & System Design/` and `Gen AI & Agentic AI/` URLs working.
 
-1. **Create the topic folder**  
-   At BackbenchLearner root, create a folder with the topic name (e.g. `Frontend Notes`).
+## Authoring a lesson
 
-2. **Add chapters and pages**  
-   Inside that folder, create one folder per chapter. Put one HTML file per subtopic in the chapter folder.  
-   In each HTML file use:
-   - `href="../../index.html"` for Home
-   - `href="../../styles/common.css"` for the shared stylesheet
+1. Add a Markdown file next to its siblings, numbered so order is clear: `03-http-methods.md`.
+2. Front matter is required:
 
-3. **Register the topic in index.html**
-   - In the `TOPICS` object, add a new entry (e.g. `'frontend-notes': { ... }`).
-   - Set `basePath` to the topic folder name (e.g. `'Frontend Notes'`).
-   - Set `title`, `welcomeTitle`, `welcomeTagline`.
-   - Set `sections` to an array of `{ title: 'Section name', links: [ { hash, path, label }, ... ] }`.
-   - `path` = path relative to topic folder (e.g. `chapter-name/page.html`).
-   - `hash` = same without `.html` (e.g. `chapter-name/page`), used in the URL.
+```yaml
+---
+title: "HTTP methods"
+description: "What GET, POST, PUT, PATCH, and DELETE mean in practice."
+---
+```
 
-4. **Add a header tab**  
-   In the `<nav class="topic-nav">` in index.html, add:
-   ```html
-   <a href="#frontend-notes" data-topic-id="frontend-notes">Frontend Notes</a>
-   ```
+3. Body supports headings, lists, tables, ` ```python ` / ` ```mermaid `, and callouts:
 
-After that, the new topic will appear in the header and its chapters/subtopics in the sidebar when selected.
+```markdown
+:::key
+Idempotency means retrying is safe.
+:::
+```
+
+4. Regenerate:
+
+```bash
+python3 tools/build_site.py
+```
+
+Do **not** hand-edit the generated `.html` files — they are overwritten on the next build.
+
+## Authoring a quiz
+
+Put `_quiz.yml` in the chapter folder:
+
+```yaml
+title: Chapter title
+questions:
+  - q: Question text?
+    options:
+      - Wrong
+      - Right
+      - Also wrong
+    answer: 1          # 0-based index
+    why: Short explanation shown after the learner answers.
+```
+
+Rebuild; the quiz appears as the last sidebar row for that chapter and as “Take the chapter quiz” after the last lesson.
+
+### Module mock exams
+
+Timed mocks live under `content/<topic>/_mocks/*.yml` (e.g. `content/genai/_mocks/module-1.yml`). Schema:
+
+```yaml
+id: genai/mock/module-1
+title: "Module 1 Mock Exam"
+minutes: 90
+questions:
+  - q: "..."
+    section: "Foundations"
+    options: ["A", "B", "C", "D"]
+    answer: 0
+    why: "..."
+```
+
+Practice opens them via `#practice/genai/module-1` with a countdown timer, change-until-submit, and section breakdown.
+
+## Reading time
+
+`tools/build_site.py` estimates minutes from word count + diagrams + tables + code lines, and writes them into `scripts/curriculum.js`. Re-run the generator after substantial edits.
+
+## Private notes
+
+Licensed study PDFs and `TOC.pages` must stay **outside** this repo (see `_bbl-private-notes/` beside the project). `.gitignore` blocks `*.pages` and `Notes-Summary*`.

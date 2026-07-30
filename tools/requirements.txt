@@ -1,0 +1,3 @@
+# Developer-only dependency for tools/build_site.py.
+# The published site needs nothing at runtime — it is plain static HTML.
+PyYAML>=6.0

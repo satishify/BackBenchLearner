@@ -1,0 +1,82 @@
+title: "2.3 Evaluations & AI Safety"
+questions:
+  - q: "A chatbot is 2% more accurate on a tiny academic set but p95 latency doubled and cost 5×. Ship it?"
+    options:
+      - "Yes—accuracy is the only axis that matters"
+      - "No without a multi-objective review: quality, latency, cost, and safety together"
+      - "Only if temperature is 2.0"
+      - "Only if you delete guardrails"
+    answer: 1
+    why: "Production eval is a portfolio: small quality gains can be dominated by latency, cost, or risk regressions."
+
+  - q: "What is a threat model doing for an LLM feature?"
+    options:
+      - "Listing movie recommendations"
+      - "Naming assets, attackers, misuse paths, and harms you must mitigate"
+      - "Replacing unit tests with vibes"
+      - "Maximizing prompt length"
+    answer: 1
+    why: "Threat models focus engineering on realistic abuse and failure modes before launch."
+
+  - q: "Guardrails should sit where in a tool-using agent?"
+    options:
+      - "Only after irreversible side effects complete"
+      - "Before dangerous tools execute (and often again on outputs), with allowlists and auth checks"
+      - "Inside the embedding table"
+      - "Nowhere if the model says it is safe"
+    answer: 1
+    why: "Models are persuadable; policy and auth must gate tools in code, not trust chain-of-thought."
+
+  - q: "Safety evals that only use friendly prompts are insufficient because…"
+    options:
+      - "Friendly prompts are illegal"
+      - "Adversarial and jailbreak-style inputs reveal different failure modes"
+      - "Safety never needs metrics"
+      - "Latency tests replace red teams"
+    answer: 1
+    why: "Attackers optimize against your rules; eval sets must include adversarial cases, not only happy-path chat."
+
+  - q: "Cost metric for an LLM endpoint is best computed as…"
+    options:
+      - "Number of engineers on the team"
+      - "Token usage (and tool calls) per successful task, not only per raw request"
+      - "GPU sticker price alone with no traffic"
+      - "Count of emojis in responses"
+    answer: 1
+    why: "Retries, long contexts, and tools inflate real cost; normalize by successful outcomes."
+
+  - q: "A medical advice bot refuses diagnosis but still gives dosing for unprescribed drugs. Which failure?"
+    options:
+      - "Perfect safety because it refused the first sentence"
+      - "Partial/inconsistent policy enforcement—harmful content leaked through a side path"
+      - "A pure latency bug"
+      - "Proof structured outputs are unnecessary"
+    answer: 1
+    why: "Safety requires end-to-end policy coverage, not a single canned refusal while other answers remain risky."
+
+  - q: "Offline accuracy is high but online user thumbs-down spikes after a prompt change. What should you trust?"
+    options:
+      - "Only the offline number forever"
+      - "Investigate distribution shift, prompt regression, and online feedback—treat offline as incomplete"
+      - "Delete monitoring"
+      - "Raise temperature until thumbs-up returns"
+    answer: 1
+    why: "Offline sets miss real traffic; combine regression suites with live quality signals."
+
+  - q: "Which use case usually needs the strictest human escalation path?"
+    options:
+      - "Rewriting a marketing subject line"
+      - "Irreversible actions with legal/financial harm (wire transfers, account deletion)"
+      - "Suggesting playlist order"
+      - "Capitalizing titles"
+    answer: 1
+    why: "High-blast-radius actions demand human-in-the-loop and strong auth, not autonomous tool fire."
+
+  - q: "Latency SLOs for chat should measure…"
+    options:
+      - "Only average token count in training data"
+      - "User-perceived time-to-first-token and time-to-final, including tool/RAG hops"
+      - " solely model parameter count"
+      - "How long the threat model document is"
+    answer: 1
+    why: "Users feel streaming start and total completion time; retrieval and tools count toward the experience."

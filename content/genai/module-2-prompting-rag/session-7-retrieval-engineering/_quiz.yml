@@ -1,0 +1,82 @@
+title: "2.7 RAG Retrieval Engineering"
+questions:
+  - q: "A bi-encoder retrieval setup embeds queries and documents separately so that…"
+    options:
+      - "Every query must cross-attend every document token at search time"
+      - "Document embeddings can be precomputed and indexed; query embedding is compared at search time"
+      - "BM25 becomes unnecessary forever by law"
+      - "Chunk boundaries no longer matter"
+    answer: 1
+    why: "Bi-encoders enable offline indexing of corpus vectors; only the query is embedded online for ANN/dot-product search."
+
+  - q: "Chunks that are too large most often hurt RAG by…"
+    options:
+      - "Increasing precision of every retrieval"
+      - "Packing irrelevant sentences into the prompt and wasting context"
+      - "Making embeddings free"
+      - "Guaranteeing perfect citations"
+    answer: 1
+    why: "Huge chunks dilute the signal and burn tokens; too-small chunks can orphan necessary context—tune both."
+
+  - q: "Hybrid search (BM25 + dense) helps most when…"
+    options:
+      - "You only ever query with synonyms and never need exact SKUs"
+      - "Some queries need exact tokens (IDs, error codes) while others need paraphrase matching"
+      - "You disable all ranking"
+      - "Metadata filters are forbidden"
+    answer: 1
+    why: "Lexical and dense signals cover complementary failure modes; fusion/rerank combines strengths."
+
+  - q: "A cross-encoder reranker is typically applied…"
+    options:
+      - "To the entire web as a first-stage index"
+      - "To a small candidate set from cheap retrieval to reorder by query–doc relevance"
+      - "Instead of any embedding model always"
+      - "Only during tokenizer training"
+    answer: 1
+    why: "Cross-encoders are accurate but expensive; they refine top-N, not replace first-stage retrieval at corpus scale."
+
+  - q: "Query rewriting is most useful when…"
+    options:
+      - "The user’s query is already a perfect keyword list with IDs"
+      - "Conversational or underspecified questions need expansion/clarification before search"
+      - "You want to delete the vector index"
+      - "Chunking is perfect and retrieval never fails"
+    answer: 1
+    why: "Rewriters turn chatty or anaphoric questions into standalone search queries that retrieve better."
+
+  - q: "You split a 3,000-token policy into 500-token chunks with 50-token overlap. How many chunks if you stride by 450?"
+    options:
+      - "1"
+      - "About 7 (starts at 0,450,900,...,2700)"
+      - "3,000"
+      - "50"
+    answer: 1
+    why: "With stride 450, starts are 0…2700 → 7 windows (ceil((3000−500)/450)+1 = 6+1 = 7)."
+
+  - q: "Document preprocessing that usually improves retrieval quality includes…"
+    options:
+      - "Leaving boilerplate nav menus and cookie banners in every chunk"
+      - "Cleaning noise, preserving headings/structure, and attaching source metadata"
+      - "Lowercasing all UUIDs into empty strings"
+      - "Shuffling sentences randomly before embedding"
+    answer: 1
+    why: "Noise and missing structure poison embeddings; metadata enables filters and citations."
+
+  - q: "Dense retrieval returns near-duplicates of the same FAQ. Best engineering fix?"
+    options:
+      - "Increase k to 100 and hope"
+      - "Deduplicate/near-duplicate collapse and diversify candidates before prompting"
+      - "Delete BM25 forever"
+      - "Raise embedding dim to 1 without training"
+    answer: 1
+    why: "Redundant neighbors waste context; diversity and dedup improve the evidence pack."
+
+  - q: "When should you prefer BM25-only over dense for a corpus?"
+    options:
+      - "Never—dense always dominates"
+      - "Strong exact-match domains (part numbers, codes) with little paraphrase, especially before embeddings are tuned"
+      - "When you need multilingual semantic match without shared keywords"
+      - "When ANN hardware is free and unlimited"
+    answer: 1
+    why: "Lexical methods shine on precise tokens; dense shines on paraphrase—choose from failure analysis, not fashion."

@@ -1,0 +1,46 @@
+title: Reliability & Real-World Problems
+questions:
+  - q: What is the practical approach to “exactly-once” side effects with at-least-once brokers?
+    options:
+      - Disable all retries forever
+      - Make consumers idempotent with business-key deduplication
+      - Use only UDP
+      - Cache every message in the browser
+    answer: 1
+    why: Brokers redeliver; storing processed IDs or using idempotency keys prevents double side effects.
+
+  - q: Why add jitter to retry backoff?
+    options:
+      - To make logs prettier
+      - To avoid synchronized retry storms that amplify load
+      - To increase timeout budgets automatically
+      - To force exactly-once delivery
+    answer: 1
+    why: Randomizing delays desynchronizes clients so they do not all retry at the same instant.
+
+  - q: What is a common safe fix for an inventory oversell race?
+    options:
+      - Check qty in Python, then update in a later request
+      - Atomic SQL such as UPDATE … WHERE qty >= 1
+      - Store inventory only in a frontend variable
+      - Remove unique constraints
+    answer: 1
+    why: Putting the condition in one atomic update prevents two concurrent buyers from both succeeding.
+
+  - q: In a saga, what is a compensation?
+    options:
+      - A load balancer algorithm
+      - A business action that undoes a prior local transaction after a later step fails
+      - A CDN purge
+      - A type of SQL index
+    answer: 1
+    why: Sagas cannot globally ROLLBACK; they explicitly reverse prior steps (refund, release stock, etc.).
+
+  - q: Which trio is the classic observability stack?
+    options:
+      - CSS, HTML, JavaScript
+      - Logs, metrics, and traces
+      - Blue, green, and canary only
+      - TCP, UDP, and ICMP
+    answer: 1
+    why: Metrics alert and trend; logs detail events; traces show cross-service latency paths.

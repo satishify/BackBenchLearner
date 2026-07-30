@@ -1,0 +1,82 @@
+title: "2.1 LLMs, Decoding, Prompting & APIs"
+questions:
+  - q: "An LLM generating the next token is best described as…"
+    options:
+      - "A database lookup that always returns a stored sentence verbatim"
+      - "Sampling (or argmax) from a conditional distribution over the vocabulary given context"
+      - "A guaranteed theorem prover with zero uncertainty"
+      - "A compression algorithm that never uses neural nets"
+    answer: 1
+    why: "Autoregressive LMs score tokens given prior context; decoding turns those scores into a chosen token sequence."
+
+  - q: "Pretraining vs fine-tuning vs inference — which statement matches production practice?"
+    options:
+      - "Inference updates all model weights on every user query"
+      - "Pretraining learns general language from huge corpora; fine-tuning adapts; inference runs the frozen (or adapted) model"
+      - "Fine-tuning always happens inside the user’s browser with no server"
+      - "Pretraining only teaches JSON schema validation"
+    answer: 1
+    why: "Those three stages separate expensive general learning, task adaptation, and serving predictions."
+
+  - q: "A prompt uses 2,000 tokens and the completion is 500 tokens. Input price is $0.50 / 1M tokens and output is $1.50 / 1M. Approximate cost?"
+    options:
+      - "$0.00100 + $0.00075 = $0.00175"
+      - "$2.50 total"
+      - "$0.50 exactly"
+      - "Free because tokens are not billed"
+    answer: 0
+    why: "Cost ≈ 2000/1e6×0.50 + 500/1e6×1.50 = 0.001 + 0.00075 = $0.00175. Output tokens are often pricier."
+
+  - q: "You need stable JSON field names for a parser. Which decoding setup is most appropriate?"
+    options:
+      - "Temperature 1.5 and top-p 0.95 together"
+      - "Low temperature (near greedy) and/or constrained/structured decoding"
+      - "Maximum temperature with no schema"
+      - "Disable the system prompt and hope"
+    answer: 1
+    why: "Structured outputs want low entropy sampling (and preferably schema constraints), not creative diversity."
+
+  - q: "Top-p (nucleus) sampling keeps…"
+    options:
+      - "A fixed count of 5 tokens always"
+      - "The smallest set of top tokens whose cumulative probability ≥ p"
+      - "Only tokens below a random UUID"
+      - "Every token in the vocabulary equally"
+    answer: 1
+    why: "Nucleus sampling truncates the long tail dynamically based on probability mass, then samples inside that set."
+
+  - q: "System vs user roles in chat APIs — where should durable safety policy live?"
+    options:
+      - "Only in the latest user message so attackers can edit it"
+      - "In the system/developer message as high-privilege instructions"
+      - "Inside temperature alone"
+      - "Only in the assistant’s previous joke"
+    answer: 1
+    why: "System/developer channels are the constitution; user content is untrusted task input."
+
+  - q: "Tool calling / function calling is valuable because it…"
+    options:
+      - "Forces the model to invent SQL results without APIs"
+      - "Lets the model emit structured intents that your runtime executes against real tools"
+      - "Removes the need for any authentication"
+      - "Guarantees the model never hallucinates again"
+    answer: 1
+    why: "The model proposes a call; your backend runs the tool and returns facts—grounding actions outside pure text."
+
+  - q: "A support bot cites a refund policy that does not exist in your docs. This is primarily…"
+    options:
+      - "A tokenizer bug that always inserts the word 'refund'"
+      - "Hallucination / unsupported generation—fluency without grounded evidence"
+      - "Proof that temperature was zero so errors are impossible"
+      - "Evidence the context window was infinite"
+    answer: 1
+    why: "LMs can produce plausible falsehoods; products need retrieval, tools, or refusal patterns to constrain claims."
+
+  - q: "Context window is best treated as…"
+    options:
+      - "An unlimited free hard drive for every PDF ever"
+      - "A shared token budget for system, history, retrieved docs, and the new user turn"
+      - "Only the completion length, never the prompt"
+      - "A synonym for learning rate"
+    answer: 1
+    why: "Everything you send competes for the same window; RAG dumps and chat history can crowd out the actual question."

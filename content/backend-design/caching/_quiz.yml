@@ -1,0 +1,46 @@
+title: Caching & Performance
+questions:
+  - q: What is cache-aside?
+    options:
+      - The database writes to Redis before every commit
+      - The app checks cache first, loads the source on miss, then fills the cache
+      - The CDN always bypasses origin
+      - Evicting keys only with FIFO
+    answer: 1
+    why: Cache-aside (lazy loading) lets the application own the read path around an authoritative store.
+
+  - q: Why combine TTL with LRU?
+    options:
+      - TTL bounds staleness; LRU bounds memory under pressure
+      - LRU replaces the need for a database
+      - TTL makes keys immortal
+      - They are identical policies
+    answer: 0
+    why: TTL expires old data; LRU drops cold keys when RAM is full — complementary controls.
+
+  - q: After updating a row in the DB, what is a common safe cache step?
+    options:
+      - Increase TTL forever
+      - Delete (invalidate) the related cache key after commit
+      - Disable the load balancer
+      - Write only to the cache and skip the DB
+    answer: 1
+    why: Invalidation after commit forces the next read to reload fresh data from the source of truth.
+
+  - q: Which Cache-Control directive is best for a private authenticated /api/me response?
+    options:
+      - public, max-age=86400
+      - s-maxage=31536000
+      - private, no-store
+      - immutable
+    answer: 2
+    why: Personalized auth responses must not sit in shared CDN caches; private/no-store is appropriate.
+
+  - q: What problem does single-flight (request coalescing) on a cache miss help prevent?
+    options:
+      - SQL syntax errors
+      - Thundering herd stampedes against the database
+      - TLS certificate expiry
+      - Blue-green deploys
+    answer: 1
+    why: Only one loader runs for a hot key; others wait, so expiry does not stampede the DB.

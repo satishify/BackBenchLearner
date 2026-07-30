@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Private study sources — licensed third-party course material.
+# These must never be published to the site or the public repo.
+Notes-Summary*/
+**/Notes-Summary*/
+*.pages
+_private-notes/
+
+# Editor / tooling
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.venv/
+venv/

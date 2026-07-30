@@ -1,0 +1,82 @@
+title: "3.2 Data Prep & Training Mechanisms"
+questions:
+  - q: "A high-quality SFT JSONL row should minimally include…"
+    options:
+      - "Only a free-form essay with no task boundary"
+      - "A clear instruction/input and the target assistant response in a consistent chat/schema format"
+      - "Raw HTML of the whole website"
+      - "Unlabeled embeddings"
+    answer: 1
+    why: "Instruction format consistency lets the model learn the mapping you will use at inference."
+
+  - q: "Label noise at 15% on a 2-class intent set most likely causes…"
+    options:
+      - "Perfect calibration automatically"
+      - "Ceiling on accuracy and confusing gradients—clean labels beat clever optimizers"
+      - "Faster convergence to the global optimum"
+      - "Zero need for a validation split"
+    answer: 1
+    why: "Noisy supervision caps achievable quality; data cleaning usually outperforms hyperparameter heroics."
+
+  - q: "Catastrophic forgetting after domain SFT shows up as…"
+    options:
+      - "Better scores on unrelated general instruction anchors"
+      - "Regressions on general/anchor tasks while the niche task improves"
+      - "Lower training loss on all tasks forever"
+      - "Tokenizer shrink"
+    answer: 1
+    why: "Heavy updates can erase pretrained skills; track anchors and mitigate with replay/PEFT/lower LR."
+
+  - q: "Why capture a prompt-only baseline before any LoRA/SFT sprint?"
+    options:
+      - "Baselines are illegal in science"
+      - "Without it you cannot tell whether training helped versus better prompting/RAG"
+      - "Training always wins by definition"
+      - "GPUs require a baseline file to power on"
+    answer: 1
+    why: "The lab workflow freezes metrics first; adaptation must beat a measured non-trained control."
+
+  - q: "During a LoRA sprint, trainable parameters report ~100%. What should you do?"
+    options:
+      - "Celebrate maximum PEFT efficiency"
+      - "Stop—PEFT wrapping likely failed and you may be full-tuning by accident"
+      - "Double the learning rate immediately"
+      - "Merge adapters into the tokenizer"
+    answer: 1
+    why: "Healthy LoRA trains a small percent of weights; ~100% means the freeze/adapter setup is wrong."
+
+  - q: "You train 5 epochs; train loss falls but holdout task score peaks at epoch 1 then worsens. Interpretation?"
+    options:
+      - "Keep going until train loss is zero"
+      - "Overfitting—early-stop near the holdout peak and/or reduce epochs/LR"
+      - "Underfitting that needs 50 more epochs"
+      - "Proof labels were perfect"
+    answer: 1
+    why: "Diverging train vs holdout signals memorization; use early stopping and cleaner data."
+
+  - q: "Eval writeups for a fine-tune should compare…"
+    options:
+      - "Only qualitative vibes from one friend"
+      - "Baseline vs adapted model on task metrics plus anchor/regression suites"
+      - "Parameter count alone"
+      - "Git commit message length"
+    answer: 1
+    why: "The lab asks for measured deltas on the target task and checks that general behavior did not collapse."
+
+  - q: "Mixing a small replay of general instruct data during domain SFT mainly fights…"
+    options:
+      - "GPU underutilization only"
+      - "Catastrophic forgetting of broad skills"
+      - "The need for any domain data"
+      - "Tokenizer Unicode bugs"
+    answer: 1
+    why: "Replay keeps some gradient mass on general behaviors while specializing."
+
+  - q: "A Module 3 review checklist item you should not skip before claiming success?"
+    options:
+      - "Confirm lever choice (prompt/RAG/FT) matches the failure mode"
+      - "Delete all failed runs from notes"
+      - "Ship without reading holdout errors"
+      - "Skip schema validation because demos looked fine"
+    answer: 0
+    why: "The checklist starts with choosing the right lever and verifying eval discipline—not just running a trainer."

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,follow">
+  <title>Chapter Quiz | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    .quiz-shell { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .quiz-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0 0 0.35rem 0;
+    }
+    .quiz-progress {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0 0 1.25rem 0;
+    }
+    .quiz-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.35rem;
+    }
+    .quiz-question {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: var(--text);
+    }
+    .quiz-options {
+      display: grid;
+      gap: 0.55rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .quiz-options button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 0.98rem;
+      padding: 0.75rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .quiz-options button:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .quiz-options button:disabled { cursor: default; }
+    .quiz-options button.is-correct {
+      border-color: var(--success);
+      background: rgba(13, 148, 136, 0.12);
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+    .quiz-options button.is-wrong {
+      border-color: var(--danger);
+      background: rgba(207, 34, 46, 0.08);
+      color: var(--danger);
+    }
+    .quiz-why {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: rgba(15, 118, 110, 0.06);
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      font-size: 0.95rem;
+    }
+    .quiz-why strong {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: var(--accent-strong);
+    }
+    .quiz-actions {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .quiz-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 0.6rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .quiz-btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .quiz-btn-primary:hover { filter: brightness(1.05); }
+    .quiz-score {
+      font-size: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 0.5rem 0 0.25rem;
+      color: var(--accent-strong);
+    }
+    .quiz-review { margin-top: 1.5rem; display: grid; gap: 0.75rem; }
+    .quiz-review-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      background: #fff;
+    }
+    .quiz-review-item.correct { border-left: 4px solid var(--success); }
+    .quiz-review-item.wrong { border-left: 4px solid var(--danger); }
+    .quiz-empty {
+      padding: 2rem 0;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-shell" id="quiz-root">
+    <p class="quiz-empty">Loading quiz…</p>
+  </div>
+  <script src="scripts/curriculum.js"></script>
+  <script src="scripts/progress.js"></script>
+  <script src="scripts/quizzes.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var BBL = window.BBL;
+      var root = document.getElementById('quiz-root');
+      var params = new URLSearchParams(window.location.search);
+      var topicId = params.get('t');
+      var chapterId = params.get('c');
+      var quizId = topicId && chapterId ? topicId + '/' + chapterId : null;
+      var bank = quizId && BBL.QUIZZES ? BBL.QUIZZES[quizId] : null;
+      var chapter = topicId && chapterId ? BBL.Nav.chapter(topicId, chapterId) : null;
+
+      if (window.self !== window.top) document.body.classList.add('in-iframe');
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"]/g, function (char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char];
+        });
+      }
+
+      function shuffle(arr) {
+        var copy = arr.slice();
+        for (var i = copy.length - 1; i > 0; i -= 1) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = copy[i];
+          copy[i] = copy[j];
+          copy[j] = tmp;
+        }
+        return copy;
+      }
+
+      function chapterHomeHash() {
+        if (!chapter || !chapter.lessons.length) return '#' + topicId;
+        return '#' + topicId + '/' + chapter.lessons[0].hash;
+      }
+
+      function backLink() {
+        if (window.self !== window.top) {
+          return '<a class="quiz-btn" href="' + chapterHomeHash() + '">Back to chapter</a>';
+        }
+        return '<a class="quiz-btn" href="index.html' + chapterHomeHash() + '">Back to chapter</a>';
+      }
+
+      if (!bank || !bank.questions || !bank.questions.length) {
+        var title = chapter ? chapter.title : 'Chapter';
+        root.innerHTML =
+          '<p class="quiz-kicker">Quiz</p>' +
+          '<h1>' + escapeHtml(title) + '</h1>' +
+          '<div class="quiz-empty">' +
+          '<p>No quiz has been written for this chapter yet. Come back after the lessons are deepened.</p>' +
+          backLink() +
+          '</div>';
+        return;
+      }
+
+      var state = {
+        questions: [],
+        index: 0,
+        score: 0,
+        answers: [],
+        locked: false
+      };
+
+      function start() {
+        state.questions = shuffle(bank.questions).map(function (q) {
+          var options = q.options.map(function (text, index) {
+            return { text: text, correct: index === q.answer };
+          });
+          return {
+            q: q.q,
+            why: q.why || '',
+            options: shuffle(options)
+          };
+        });
+        state.index = 0;
+        state.score = 0;
+        state.answers = [];
+        state.locked = false;
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        var q = state.questions[state.index];
+        var html = '<p class="quiz-kicker">' + escapeHtml(bank.title || 'Chapter quiz') + '</p>';
+        html += '<p class="quiz-progress">Question ' + (state.index + 1) + ' of ' + state.questions.length + '</p>';
+        html += '<div class="quiz-card">';
+        html += '<h2 class="quiz-question">' + escapeHtml(q.q) + '</h2>';
+        html += '<ul class="quiz-options">';
+        q.options.forEach(function (opt, i) {
+          html +=
+            '<li><button type="button" data-opt="' +
+            i +
+            '">' +
+            escapeHtml(opt.text) +
+            '</button></li>';
+        });
+        html += '</ul>';
+        html += '<div id="quiz-feedback" hidden></div>';
+        html += '<div class="quiz-actions" id="quiz-actions" hidden></div>';
+        html += '</div>';
+        root.innerHTML = html;
+
+        root.querySelectorAll('.quiz-options button').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            if (state.locked) return;
+            choose(Number(btn.getAttribute('data-opt')));
+          });
+        });
+      }
+
+      function choose(optIndex) {
+        state.locked = true;
+        var q = state.questions[state.index];
+        var chosen = q.options[optIndex];
+        var correct = chosen.correct;
+        if (correct) state.score += 1;
+        state.answers.push({
+          q: q.q,
+          why: q.why,
+          chosen: chosen.text,
+          correctText: q.options.filter(function (o) { return o.correct; })[0].text,
+          correct: correct
+        });
+
+        var buttons = root.querySelectorAll('.quiz-options button');
+        buttons.forEach(function (btn, i) {
+          btn.disabled = true;
+          if (q.options[i].correct) btn.classList.add('is-correct');
+          else if (i === optIndex) btn.classList.add('is-wrong');
+        });
+
+        var feedback = document.getElementById('quiz-feedback');
+        feedback.hidden = false;
+        feedback.className = 'quiz-why';
+        feedback.innerHTML =
+          '<strong>' +
+          (correct ? 'Correct' : 'Not quite') +
+          '</strong>' +
+          (q.why ? escapeHtml(q.why) : '');
+
+        var actions = document.getElementById('quiz-actions');
+        actions.hidden = false;
+        var isLast = state.index === state.questions.length - 1;
+        actions.innerHTML =
+          '<button type="button" class="quiz-btn quiz-btn-primary" id="quiz-next">' +
+          (isLast ? 'See results' : 'Next question') +
+          '</button>';
+        document.getElementById('quiz-next').addEventListener('click', function () {
+          if (isLast) finish();
+          else {
+            state.index += 1;
+            state.locked = false;
+            renderQuestion();
+          }
+        });
+      }
+
+      function finish() {
+        BBL.Progress.setQuizScore(quizId, state.score, state.questions.length);
+        var html = '<p class="quiz-kicker">' + escapeHtml(bank.title || 'Chapter quiz') + '</p>';
+        html += '<h1>Results</h1>';
+        html +=
+          '<p class="quiz-score">' +
+          state.score +
+          ' / ' +
+          state.questions.length +
+          '</p>';
+        html +=
+          '<p>Best score is saved on this browser. Retake any time — questions and options are reshuffled.</p>';
+        html += '<div class="quiz-actions">';
+        html += '<button type="button" class="quiz-btn quiz-btn-primary" id="quiz-retake">Retake quiz</button>';
+        html += backLink();
+        html += '</div>';
+        html += '<div class="quiz-review">';
+        state.answers.forEach(function (item, i) {
+          html +=
+            '<div class="quiz-review-item ' +
+            (item.correct ? 'correct' : 'wrong') +
+            '">';
+          html +=
+            '<p><strong>Q' +
+            (i + 1) +
+            '.</strong> ' +
+            escapeHtml(item.q) +
+            '</p>';
+          html +=
+            '<p>Your answer: ' +
+            escapeHtml(item.chosen) +
+            (item.correct ? '' : ' · Correct: ' + escapeHtml(item.correctText)) +
+            '</p>';
+          if (item.why) html += '<p>' + escapeHtml(item.why) + '</p>';
+          html += '</div>';
+        });
+        html += '</div>';
+        root.innerHTML = html;
+        document.getElementById('quiz-retake').addEventListener('click', start);
+      }
+
+      // Route in-frame "Back to chapter" through the parent hash
+      document.addEventListener('click', function (e) {
+        if (window.self === window.top) return;
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) return;
+        e.preventDefault();
+        window.parent.location.hash = a.getAttribute('href').slice(1);
+      });
+
+      start();
+    })();
+  </script>
+</body>
+</html>

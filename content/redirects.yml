@@ -1,0 +1,304 @@
+- from: Backend & System Design/backend/what-is-api.html
+  to: backend-design/backend/what-is-api.html
+- from: Backend & System Design/backend/rest-vs-graphql.html
+  to: backend-design/backend/rest-vs-graphql.html
+- from: Backend & System Design/backend/http-methods.html
+  to: backend-design/backend/http-methods.html
+- from: Backend & System Design/backend/http-status-codes.html
+  to: backend-design/backend/http-status-codes.html
+- from: Backend & System Design/backend/stateless-vs-stateful.html
+  to: backend-design/backend/stateless-vs-stateful.html
+- from: Backend & System Design/backend/auth-vs-authorization.html
+  to: backend-design/backend/auth-vs-authorization.html
+- from: Backend & System Design/backend/session-vs-jwt.html
+  to: backend-design/backend/session-vs-jwt.html
+- from: Backend & System Design/backend/oauth2.html
+  to: backend-design/backend/oauth2.html
+- from: Backend & System Design/backend/rate-limiting-vs-throttling.html
+  to: backend-design/backend/rate-limiting-vs-throttling.html
+- from: Backend & System Design/backend/idempotency.html
+  to: backend-design/backend/idempotency.html
+- from: Backend & System Design/databases/sql-vs-nosql.html
+  to: backend-design/databases/sql-vs-nosql.html
+- from: Backend & System Design/databases/indexes.html
+  to: backend-design/databases/indexes.html
+- from: Backend & System Design/databases/acid-properties.html
+  to: backend-design/databases/acid-properties.html
+- from: Backend & System Design/databases/transactions-isolation.html
+  to: backend-design/databases/transactions-isolation.html
+- from: Backend & System Design/databases/normalization-vs-denormalization.html
+  to: backend-design/databases/normalization-vs-denormalization.html
+- from: Backend & System Design/databases/pagination.html
+  to: backend-design/databases/pagination.html
+- from: Backend & System Design/databases/sharding-partitioning.html
+  to: backend-design/databases/sharding-partitioning.html
+- from: Backend & System Design/databases/read-replicas-write-scaling.html
+  to: backend-design/databases/read-replicas-write-scaling.html
+- from: Backend & System Design/databases/duplicate-records.html
+  to: backend-design/databases/duplicate-records.html
+- from: Backend & System Design/databases/optimistic-vs-pessimistic-locking.html
+  to: backend-design/databases/optimistic-vs-pessimistic-locking.html
+- from: Backend & System Design/caching/what-is-caching.html
+  to: backend-design/caching/what-is-caching.html
+- from: Backend & System Design/caching/cache-eviction-strategies.html
+  to: backend-design/caching/cache-eviction-strategies.html
+- from: Backend & System Design/caching/cache-consistency.html
+  to: backend-design/caching/cache-consistency.html
+- from: Backend & System Design/caching/cdn-edge-caching.html
+  to: backend-design/caching/cdn-edge-caching.html
+- from: Backend & System Design/caching/cache-can-make-systems-wrong.html
+  to: backend-design/caching/cache-can-make-systems-wrong.html
+- from: Backend & System Design/distributed/load-balancing.html
+  to: backend-design/distributed/load-balancing.html
+- from: Backend & System Design/distributed/horizontal-vs-vertical-scaling.html
+  to: backend-design/distributed/horizontal-vs-vertical-scaling.html
+- from: Backend & System Design/distributed/microservices-vs-monoliths.html
+  to: backend-design/distributed/microservices-vs-monoliths.html
+- from: Backend & System Design/distributed/service-communication.html
+  to: backend-design/distributed/service-communication.html
+- from: Backend & System Design/distributed/message-queues.html
+  to: backend-design/distributed/message-queues.html
+- from: Backend & System Design/reliability/exactly-once-vs-at-least-once.html
+  to: backend-design/reliability/exactly-once-vs-at-least-once.html
+- from: Backend & System Design/reliability/retries-timeouts-circuit-breakers.html
+  to: backend-design/reliability/retries-timeouts-circuit-breakers.html
+- from: Backend & System Design/reliability/race-conditions.html
+  to: backend-design/reliability/race-conditions.html
+- from: Backend & System Design/reliability/distributed-locking.html
+  to: backend-design/reliability/distributed-locking.html
+- from: Backend & System Design/reliability/event-driven-architecture.html
+  to: backend-design/reliability/event-driven-architecture.html
+- from: Backend & System Design/reliability/saga-pattern.html
+  to: backend-design/reliability/saga-pattern.html
+- from: Backend & System Design/reliability/graceful-degradation.html
+  to: backend-design/reliability/graceful-degradation.html
+- from: Backend & System Design/reliability/observability.html
+  to: backend-design/reliability/observability.html
+- from: Backend & System Design/reliability/deployments.html
+  to: backend-design/reliability/deployments.html
+- from: Backend & System Design/reliability/traffic-spikes.html
+  to: backend-design/reliability/traffic-spikes.html
+- from: Gen AI & Agentic AI/gen-ai-basics/what-is-ai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-ai.html
+- from: Gen AI & Agentic AI/gen-ai-basics/what-is-machine-learning.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-machine-learning.html
+- from: Gen AI & Agentic AI/gen-ai-basics/what-is-deep-learning.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-deep-learning.html
+- from: Gen AI & Agentic AI/gen-ai-basics/what-is-generative-ai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-generative-ai.html
+- from: Gen AI & Agentic AI/gen-ai-basics/ai-ml-deep-learning-genai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/ai-ml-deep-learning-genai.html
+- from: Gen AI & Agentic AI/gen-ai-basics/what-are-llms-and-text-generation.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/what-are-llms-and-text-generation.html
+- from: Gen AI & Agentic AI/gen-ai-basics/common-model-types.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/common-model-types.html
+- from: Gen AI & Agentic AI/gen-ai-basics/pretraining-finetuning-inference.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/pretraining-finetuning-inference.html
+- from: Gen AI & Agentic AI/deep-learning-essentials/artificial-neuron-and-perceptron.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/artificial-neuron-and-perceptron.html
+- from: Gen AI & Agentic AI/deep-learning-essentials/activation-functions-and-mlp.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/activation-functions-and-mlp.html
+- from: Gen AI & Agentic AI/deep-learning-essentials/backpropagation-and-gradient-descent.html
+  to: genai/module-1-foundations/session-2-dl-essentials/backpropagation-and-gradient-descent.html
+- from: Gen AI & Agentic AI/deep-learning-essentials/overfitting-underfitting-bias-variance.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/overfitting-underfitting-bias-variance.html
+- from: Gen AI & Agentic AI/deep-learning-essentials/regularization-techniques.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/regularization-techniques.html
+- from: Gen AI & Agentic AI/transformer-architecture/why-transformers.html
+  to: genai/module-1-foundations/transformers/why-transformers.html
+- from: Gen AI & Agentic AI/transformer-architecture/self-attention-qkv.html
+  to: genai/module-1-foundations/transformers/self-attention-qkv.html
+- from: Gen AI & Agentic AI/transformer-architecture/positional-encoding-and-mha.html
+  to: genai/module-1-foundations/transformers/positional-encoding-and-mha.html
+- from: Gen AI & Agentic AI/transformer-architecture/decoder-masking-cross-attention.html
+  to: genai/module-1-foundations/transformers/decoder-masking-cross-attention.html
+- from: Gen AI & Agentic AI/transformer-architecture/autoregressive-decoding.html
+  to: genai/module-1-foundations/transformers/autoregressive-decoding.html
+- from: Gen AI & Agentic AI/llm-models-and-apis/llm-evolution-and-model-families.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/llm-evolution-and-model-families.html
+- from: Gen AI & Agentic AI/core-llm-concepts/tokens-context-window-temperature-top-p.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/tokens-context-window-temperature-top-p.html
+- from: Gen AI & Agentic AI/llm-models-and-apis/prompting-fundamentals-and-roles.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/prompting-fundamentals-and-roles.html
+- from: Gen AI & Agentic AI/llm-models-and-apis/decoding-parameters-and-control.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/decoding-parameters-and-control.html
+- from: Gen AI & Agentic AI/llm-models-and-apis/apis-and-tool-calling.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/apis-and-tool-calling.html
+- from: Gen AI & Agentic AI/llm-models-and-apis/structured-outputs-and-validation.html
+  to: genai/module-2-prompting-rag/session-2-structured-evals/structured-outputs-and-validation.html
+- from: Gen AI & Agentic AI/core-llm-concepts/hallucinations-and-limitations.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/hallucinations-and-limitations.html
+- from: Gen AI & Agentic AI/core-llm-concepts/prompt-engineering.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/prompt-engineering.html
+- from: Gen AI & Agentic AI/core-llm-concepts/embeddings-semantic-search.html
+  to: genai/module-2-prompting-rag/session-6-rag-fundamentals/embeddings-semantic-search.html
+- from: Gen AI & Agentic AI/core-llm-concepts/rag-retrieval-augmented-generation.html
+  to: genai/module-2-prompting-rag/session-6-rag-fundamentals/rag-retrieval-augmented-generation.html
+- from: Gen AI & Agentic AI/build-skills/vector-databases.html
+  to: genai/module-2-prompting-rag/session-8-production-rag/vector-databases-overview.html
+- from: Gen AI & Agentic AI/agentic-ai-basics/what-makes-an-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/what-makes-an-agent.html
+- from: Gen AI & Agentic AI/agentic-ai-basics/reasoning-planning-tools-memory.html
+  to: genai/module-2-prompting-rag/session-12-agentic/reasoning-planning-tools-memory.html
+- from: Gen AI & Agentic AI/agentic-ai-basics/chatbot-vs-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/chatbot-vs-agent.html
+- from: Gen AI & Agentic AI/agentic-ai-basics/single-vs-multi-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/single-vs-multi-agent.html
+- from: Gen AI & Agentic AI/agentic-ai-basics/human-in-the-loop-workflows.html
+  to: genai/module-2-prompting-rag/session-12-agentic/human-in-the-loop-workflows.html
+- from: Gen AI & Agentic AI/agent-design-topics/task-decomposition.html
+  to: genai/module-2-prompting-rag/session-12-agentic/task-decomposition.html
+- from: Gen AI & Agentic AI/agent-design-topics/tool-calling-function-calling.html
+  to: genai/module-2-prompting-rag/session-12-agentic/tool-calling-function-calling.html
+- from: Gen AI & Agentic AI/agent-design-topics/short-term-vs-long-term-memory.html
+  to: genai/module-2-prompting-rag/session-12-agentic/short-term-vs-long-term-memory.html
+- from: Gen AI & Agentic AI/agent-design-topics/reflection-self-correction-loops.html
+  to: genai/module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops.html
+- from: Gen AI & Agentic AI/agent-design-topics/orchestration-workflow-control.html
+  to: genai/module-2-prompting-rag/session-12-agentic/orchestration-workflow-control.html
+- from: Gen AI & Agentic AI/build-skills/langchain-llamaindex-autogen-crewai.html
+  to: genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html
+- from: Gen AI & Agentic AI/build-skills/apis-for-models.html
+  to: genai/module-5-deployment-safety/serving-and-apis/apis-for-models.html
+- from: Gen AI & Agentic AI/build-skills/basic-python-for-experimentation.html
+  to: genai/module-5-deployment-safety/serving-and-apis/basic-python-for-experimentation.html
+- from: Gen AI & Agentic AI/build-skills/workflow-automation-concepts.html
+  to: genai/module-5-deployment-safety/serving-and-apis/workflow-automation-concepts.html
+- from: Gen AI & Agentic AI/practical-topics/use-cases.html
+  to: genai/module-5-deployment-safety/responsible-genai/use-cases.html
+- from: Gen AI & Agentic AI/practical-topics/evaluation-metrics.html
+  to: genai/module-5-deployment-safety/responsible-genai/evaluation-metrics.html
+- from: Gen AI & Agentic AI/practical-topics/guardrails-and-security.html
+  to: genai/module-5-deployment-safety/responsible-genai/guardrails-and-security.html
+- from: Gen AI & Agentic AI/practical-topics/prompt-injection-and-tool-misuse-risks.html
+  to: genai/module-5-deployment-safety/responsible-genai/prompt-injection-and-tool-misuse-risks.html
+- from: Gen AI & Agentic AI/practical-topics/monitoring-and-observability.html
+  to: genai/module-5-deployment-safety/responsible-genai/monitoring-and-observability.html
+- from: Gen AI & Agentic AI/capstone/end-to-end-ai-agent-use-case.html
+  to: genai/module-5-deployment-safety/capstone/end-to-end-ai-agent-use-case.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/what-is-ai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-ai.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/what-is-machine-learning.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-machine-learning.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/what-is-deep-learning.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-deep-learning.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/what-is-generative-ai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/what-is-generative-ai.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/ai-ml-deep-learning-genai.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/ai-ml-deep-learning-genai.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/artificial-neuron-and-perceptron.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/artificial-neuron-and-perceptron.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/activation-functions-and-mlp.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/activation-functions-and-mlp.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/overfitting-underfitting-bias-variance.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/overfitting-underfitting-bias-variance.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/regularization-techniques.html
+  to: genai/module-1-foundations/session-1-ai-dl-essentials/regularization-techniques.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/loss-functions.html
+  to: genai/module-1-foundations/session-2-dl-essentials/loss-functions.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/softmax-and-probabilities.html
+  to: genai/module-1-foundations/session-2-dl-essentials/softmax-and-probabilities.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/backpropagation-and-gradient-descent.html
+  to: genai/module-1-foundations/session-2-dl-essentials/backpropagation-and-gradient-descent.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/training-loop-learning-rate-epochs.html
+  to: genai/module-1-foundations/session-2-dl-essentials/training-loop-learning-rate-epochs.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/what-are-llms-and-text-generation.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/what-are-llms-and-text-generation.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/common-model-types.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/common-model-types.html
+- from: genai/module-1-foundations/ai-deep-learning-essentials/pretraining-finetuning-inference.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/pretraining-finetuning-inference.html
+- from: genai/module-1-foundations/foundation-models/llm-evolution-and-model-families.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/llm-evolution-and-model-families.html
+- from: genai/module-1-foundations/foundation-models/tokens-context-window-temperature-top-p.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/tokens-context-window-temperature-top-p.html
+- from: genai/module-1-foundations/foundation-models/prompting-fundamentals-and-roles.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/prompting-fundamentals-and-roles.html
+- from: genai/module-1-foundations/foundation-models/decoding-parameters-and-control.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/decoding-parameters-and-control.html
+- from: genai/module-1-foundations/foundation-models/apis-and-tool-calling.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/apis-and-tool-calling.html
+- from: genai/module-1-foundations/foundation-models/structured-outputs-and-validation.html
+  to: genai/module-2-prompting-rag/session-2-structured-evals/structured-outputs-and-validation.html
+- from: genai/module-1-foundations/foundation-models/hallucinations-and-limitations.html
+  to: genai/module-2-prompting-rag/session-1-llms-decoding-apis/hallucinations-and-limitations.html
+- from: genai/module-2-prompting-rag/advanced-prompting/prompt-engineering.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/prompt-engineering.html
+- from: genai/module-2-prompting-rag/advanced-prompting/few-shot-and-chain-of-thought.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/few-shot-and-chain-of-thought.html
+- from: genai/module-2-prompting-rag/advanced-prompting/system-prompts-and-role-design.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/system-prompts-and-role-design.html
+- from: genai/module-2-prompting-rag/advanced-prompting/structured-prompting-and-output-contracts.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/structured-prompting-and-output-contracts.html
+- from: genai/module-2-prompting-rag/advanced-prompting/prompt-evaluation-and-regression-testing.html
+  to: genai/module-2-prompting-rag/session-4-advanced-prompting/prompt-evaluation-and-regression-testing.html
+- from: genai/module-2-prompting-rag/rag-fundamentals/embeddings-semantic-search.html
+  to: genai/module-2-prompting-rag/session-6-rag-fundamentals/embeddings-semantic-search.html
+- from: genai/module-2-prompting-rag/rag-fundamentals/rag-retrieval-augmented-generation.html
+  to: genai/module-2-prompting-rag/session-6-rag-fundamentals/rag-retrieval-augmented-generation.html
+- from: genai/module-2-prompting-rag/rag-fundamentals/vector-databases.html
+  to: genai/module-2-prompting-rag/session-8-production-rag/vector-databases-overview.html
+- from: genai/module-2-prompting-rag/advanced-rag/chunking-and-document-preprocessing.html
+  to: genai/module-2-prompting-rag/session-7-retrieval-engineering/chunking-and-document-preprocessing.html
+- from: genai/module-2-prompting-rag/advanced-rag/hybrid-search-bm25-and-dense.html
+  to: genai/module-2-prompting-rag/session-7-retrieval-engineering/hybrid-search-bm25-and-dense.html
+- from: genai/module-2-prompting-rag/advanced-rag/reranking-and-query-rewriting.html
+  to: genai/module-2-prompting-rag/session-7-retrieval-engineering/reranking-and-query-rewriting.html
+- from: genai/module-2-prompting-rag/advanced-rag/multi-hop-and-agentic-retrieval.html
+  to: genai/module-2-prompting-rag/session-8-production-rag/multi-hop-retrieval.html
+- from: genai/module-2-prompting-rag/advanced-rag/rag-evaluation-and-failure-modes.html
+  to: genai/module-2-prompting-rag/session-8-production-rag/rag-evaluation-and-failure-modes.html
+- from: genai/module-2-prompting-rag/advanced-rag/citations-grounding-and-hallucination-control.html
+  to: genai/module-2-prompting-rag/session-8-production-rag/citations-grounding-and-hallucination-control.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/what-makes-an-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/what-makes-an-agent.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/reasoning-planning-tools-memory.html
+  to: genai/module-2-prompting-rag/session-12-agentic/reasoning-planning-tools-memory.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/chatbot-vs-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/chatbot-vs-agent.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/single-vs-multi-agent.html
+  to: genai/module-2-prompting-rag/session-12-agentic/single-vs-multi-agent.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/human-in-the-loop-workflows.html
+  to: genai/module-2-prompting-rag/session-12-agentic/human-in-the-loop-workflows.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/task-decomposition.html
+  to: genai/module-2-prompting-rag/session-12-agentic/task-decomposition.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/tool-calling-function-calling.html
+  to: genai/module-2-prompting-rag/session-12-agentic/tool-calling-function-calling.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/short-term-vs-long-term-memory.html
+  to: genai/module-2-prompting-rag/session-12-agentic/short-term-vs-long-term-memory.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/reflection-self-correction-loops.html
+  to: genai/module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/orchestration-workflow-control.html
+  to: genai/module-2-prompting-rag/session-12-agentic/orchestration-workflow-control.html
+- from: genai/module-4-multimodal-agentic/agentic-systems/langchain-llamaindex-autogen-crewai.html
+  to: genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
+  to: genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/datasets-labels-and-instruction-format.html
+  to: genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/sft-supervised-fine-tuning.html
+  to: genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/full-finetune-vs-freeze-strategies.html
+  to: genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/eval-catastrophic-forgetting-and-overfit.html
+  to: genai/module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html
+- from: genai/module-3-finetuning/finetuning-fundamentals/alignment-overview-rlhf-dpo.html
+  to: genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html
+- from: genai/module-3-finetuning/peft/why-peft-adapters-intuition.html
+  to: genai/module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html
+- from: genai/module-3-finetuning/peft/lora-and-qlora.html
+  to: genai/module-3-finetuning/session-3-peft/lora-and-qlora.html
+- from: genai/module-3-finetuning/peft/prompt-tuning-prefix-tuning.html
+  to: genai/module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning.html
+- from: genai/module-3-finetuning/peft/training-recipes-lr-rank-quantization.html
+  to: genai/module-3-finetuning/session-3-peft/training-recipes-lr-rank-quantization.html
+- from: genai/module-3-finetuning/peft/serving-merged-vs-adapter-weights.html
+  to: genai/module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html
+- from: genai/module-3-finetuning/lab-sprint/lab-prep-and-baseline.html
+  to: genai/module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html
+- from: genai/module-3-finetuning/lab-sprint/lab-sft-or-lora-sprint.html
+  to: genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html
+- from: genai/module-3-finetuning/lab-sprint/lab-eval-and-writeup.html
+  to: genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html
+- from: genai/module-3-finetuning/lab-sprint/module-3-review-checklist.html
+  to: genai/module-3-finetuning/session-2-data-training/module-3-review-checklist.html

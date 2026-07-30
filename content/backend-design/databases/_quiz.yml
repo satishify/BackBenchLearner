@@ -1,0 +1,46 @@
+title: Databases quiz
+questions:
+  - q: You need multi-row money transfers with foreign keys and reporting joins. Which default fits best?
+    options:
+      - A key-value cache only (Redis) as the system of record
+      - A relational SQL database with ACID transactions
+      - Client-side localStorage as the ledger
+      - A graph DB used only for session cookies
+    answer: 1
+    why: Relational SQL databases are built for constraints, joins, and multi-row ACID transactions that ledgers need.
+
+  - q: SELECT * FROM users WHERE email = ? is slow at 1M rows until you add a unique index on email. What did the index change?
+    options:
+      - It removed the need for WHERE clauses
+      - It replaced a sequential scan with an index lookup/seek
+      - It made INSERT free and DELETE impossible
+      - It duplicated the table into MongoDB automatically
+    answer: 1
+    why: Indexes trade write overhead for fast seeks on the filtered column instead of scanning every row.
+
+  - q: OFFSET 50000 LIMIT 20 gets slower as page numbers grow, and inserts cause duplicate feed items. What should a large feed API prefer?
+    options:
+      - Larger OFFSET values only
+      - Cursor/keyset pagination on a stable (created_at, id) order
+      - Returning the entire table each time
+      - ORDER BY random()
+    answer: 1
+    why: Keyset/cursor pagination seeks the index after the last seen key and stays stable when new rows arrive.
+
+  - q: You route all GETs to an async read replica. A user updates their bio and immediately still sees the old bio. What is the usual cause?
+    options:
+      - SQL UNIQUE constraints being too strict
+      - Replication lag / missing read-your-writes routing to the primary
+      - Idempotency keys on GET
+      - Using TOO many indexes on the replica
+    answer: 1
+    why: Async replicas apply changes with lag; after writes, sticky/primary reads avoid stale read-your-writes.
+
+  - q: Two clients GET a document at version=1 and both PATCH. How does optimistic locking protect data?
+    options:
+      - The database locks the row for the whole time the user stares at the form
+      - UPDATE ... WHERE version=1 succeeds once; the second gets 0 rows / 412 and must reload
+      - HTTP GET becomes illegal
+      - Both writes always merge automatically with CRDTs
+    answer: 1
+    why: Optimistic locking checks the version at write time so only one concurrent update wins; the other retries after refresh.

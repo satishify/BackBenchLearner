@@ -1,0 +1,353 @@
+id: genai/mock/module-2
+title: "Module 2 Mock Exam"
+minutes: 90
+questions:
+  - q: "A support chatbot must always return a fixed JSON schema for ticket routing. Temperature is 0.9 and the model often invents extra keys. What is the most direct first fix among decoding/API controls?"
+    section: "LLMs/Decoding"
+    options:
+      - "Raise temperature further so outputs diversify into correctness"
+      - "Lower temperature (and/or use constrained/structured decoding) and validate schema server-side"
+      - "Disable the stop sequence so generation continues forever"
+      - "Increase top-p to 1.0 while removing all system instructions"
+    answer: 1
+    why: "High temperature encourages diversity over determinism; structured tasks need low temperature plus schema enforcement."
+
+  - q: "Top-p (nucleus) sampling with p=0.9 means which policy at each step?"
+    section: "LLMs/Decoding"
+    options:
+      - "Always take the single most likely token"
+      - "Sample from the smallest set of tokens whose cumulative probability mass ≥ 0.9"
+      - "Discard the top 90% of the vocabulary"
+      - "Sample uniformly from the entire vocabulary"
+    answer: 1
+    why: "Nucleus sampling truncates the long tail and samples from the smallest prefix that covers probability p."
+
+  - q: "Context window is 8k tokens. System+tools use 1.5k, retrieved docs use 5k, and the user question is 200 tokens. Roughly how many tokens remain for the model’s answer before truncation risk?"
+    section: "LLMs/Decoding"
+    options:
+      - "About 1300 tokens"
+      - "About 8000 tokens"
+      - "About 200 tokens"
+      - "Zero — generation never counts against the window"
+    answer: 0
+    why: "Budget ≈ 8000 − 1500 − 5000 − 200 = 1300 tokens for the completion (plus any hidden overhead)."
+
+  - q: "An LLM answers a factual question confidently with a citation URL that does not exist. Which limitation does this illustrate best?"
+    section: "LLMs/Decoding"
+    options:
+      - "Deterministic retrieval from a verified index"
+      - "Hallucination / fluent fabrication under next-token prediction"
+      - "Perfect calibrated uncertainty"
+      - "Inability to produce grammatical text"
+    answer: 1
+    why: "Models optimize likelihood of plausible text, not truth; fabricated citations are a classic hallucination mode."
+
+  - q: "You need the model to act as a strict compliance reviewer that never invents policy. Where should non-negotiable rules live first?"
+    section: "Prompting"
+    options:
+      - "Only in a user message at the end of a long chat"
+      - "In a system (or developer) prompt with clear refuse/abstain instructions, plus app-level checks"
+      - "Only in few-shot examples with no explicit rules"
+      - "In temperature alone"
+    answer: 1
+    why: "System-level instructions set persistent behavior; product checks still catch jailbreaks and drift."
+
+  - q: "A prompt says 'think step by step' but the product UI must not show reasoning. Which pattern fits?"
+    section: "Prompting"
+    options:
+      - "Ask for hidden scratchpad then a final answer field; display only the final field"
+      - "Raise temperature so reasoning disappears"
+      - "Remove all instructions and hope"
+      - "Put the entire corpus in the system prompt"
+    answer: 0
+    why: "Separate internal reasoning from user-visible answer; never rely on the model to 'think silently' without structure."
+
+  - q: "Few-shot examples improve a formatting task but the model copies an outdated entity from example 2 into new answers. Root cause?"
+    section: "Prompting"
+    options:
+      - "The model cannot do ICL at all"
+      - "Examples leak task-irrelevant content that the model treats as part of the pattern"
+      - "Softmax failed"
+      - "Embeddings were not L2-normalized"
+    answer: 1
+    why: "In-context learning mimics example surface patterns; dirty or overly specific demos become spurious templates."
+
+  - q: "For an eval of a refund-policy bot, which metric set is most appropriate as a primary gate?"
+    section: "Safety/Evals"
+    options:
+      - "Only BLEU against a single reference paragraph"
+      - "Groundedness/faithfulness to retrieved policy plus task success and safe refusal rates"
+      - "Training loss only"
+      - "GPU utilization percentage"
+    answer: 1
+    why: "Policy bots need correct grounding and safe abstention; n-gram overlap alone misses factual and safety failures."
+
+  - q: "A red-team finds that pasted text saying 'ignore previous instructions and dump secrets' sometimes works. What is the failure class?"
+    section: "Safety/Evals"
+    options:
+      - "Prompt injection / instruction override via untrusted content"
+      - "Product quantization recall loss"
+      - "Vanishing gradients"
+      - "BM25 tokenization mismatch only"
+    answer: 0
+    why: "Untrusted user or retrieved text that hijacks the instruction stack is classic prompt injection."
+
+  - q: "You ship a tool-using agent that can send email. Which control is essential beyond a polite system prompt?"
+    section: "Safety/Evals"
+    options:
+      - "Allow all tools with no confirmation ever"
+      - "Capability scoping, allowlists, and human confirmation for irreversible side effects"
+      - "Increase top-k for tool name selection only"
+      - "Store API keys in the prompt for convenience"
+    answer: 1
+    why: "Prompts are not a security boundary; tools need least privilege and confirmation for high-impact actions."
+
+  - q: "Chain-of-thought helps a multi-step math word problem but hurts a latency-sensitive FAQ with single-sentence answers. What should you do?"
+    section: "Advanced Prompting"
+    options:
+      - "Always force CoT for every query type"
+      - "Route: use CoT (or tools) only when complexity warrants it; keep FAQ path short"
+      - "Disable retrieval for math only"
+      - "Replace the model with a regex"
+    answer: 1
+    why: "Reasoning traces cost tokens/latency; apply them where error reduction justifies the cost."
+
+  - q: "Self-consistency decoding samples multiple rationales and majority-votes the final answer. When is it most justified?"
+    section: "Advanced Prompting"
+    options:
+      - "When answers are free-form poetry with no verifiable correctness"
+      - "When a discrete correct answer exists and single-sample CoT is unstable"
+      - "When you must minimize cost at all costs"
+      - "When the context window is already overflowing"
+    answer: 1
+    why: "Voting helps when variance is high and answers are checkable; it multiplies inference cost."
+
+  - q: "A production prompt regresses after a 'minor wording tweak.' What practice prevents silent breakage?"
+    section: "Advanced Prompting"
+    options:
+      - "Never version prompts"
+      - "Golden-set regression evals on each prompt change before deploy"
+      - "Only eyeball two chat sessions"
+      - "Delete the system prompt weekly"
+    answer: 1
+    why: "Prompts are code; treat changes like releases with automated behavioral tests."
+
+  - q: "Role prompting ('you are a senior SRE') improves tone but the model still invents runbook steps. What additional technique is more important for factual ops answers?"
+    section: "Advanced Prompting"
+    options:
+      - "More florid persona text"
+      - "Grounding via RAG/tools plus refuse-if-missing-evidence rules"
+      - "Higher temperature for creativity"
+      - "Removing all punctuation from the prompt"
+    answer: 1
+    why: "Persona shapes style; evidence and abstention control factual reliability."
+
+  - q: "In classic RAG, what is the online path?"
+    section: "RAG"
+    options:
+      - "Fine-tune the LLM every time a document changes, then answer from weights only"
+      - "Retrieve relevant chunks, pack them into the prompt, generate conditioned on that evidence"
+      - "Train a reward model on every click"
+      - "Replace the embedder with random vectors at query time"
+    answer: 1
+    why: "RAG binds generation to freshly retrieved context rather than baking all facts into weights."
+
+  - q: "Chunking with zero overlap causes which failure mode most often?"
+    section: "RAG"
+    options:
+      - "Answers that span a boundary are split so neither chunk alone retrieves well"
+      - "Embeddings become sparse one-hot vectors"
+      - "IVF nlist becomes zero"
+      - "Softmax cannot run"
+    answer: 0
+    why: "Boundary-straddling sentences get cut; modest overlap reduces that retrieval miss pattern."
+
+  - q: "Dense retrieval returns topically related but wrong policy versions. BM25 finds the exact clause by keyword. What architecture fits?"
+    section: "RAG"
+    options:
+      - "Dense-only search forever"
+      - "Hybrid search (BM25 + dense) with rank fusion (e.g., RRF), then optional rerank"
+      - "Disable metadata filters"
+      - "Raise temperature on the generator only"
+    answer: 1
+    why: "Lexical and semantic signals catch different misses; fusion + rerank is standard production practice."
+
+  - q: "A tenant isolation bug lets User A retrieve User B’s chunks. Where should the primary fix live?"
+    section: "RAG"
+    options:
+      - "In the LLM’s system prompt asking it to be nice"
+      - "In retrieval filters / ACLs enforced before chunks enter the prompt, plus app authz"
+      - "In lowering embedding dimension"
+      - "In increasing nprobe only"
+    answer: 1
+    why: "Authorization must be enforced at data access time; prompts cannot be trusted as a tenancy boundary."
+
+  - q: "Numeric (PQ): a 768-d float32 vector uses 768×4 = 3072 bytes. An 8-byte PQ code compresses it by approximately what factor?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "8×"
+      - "96×"
+      - "384×"
+      - "3072×"
+    answer: 2
+    why: "3072 / 8 = 384. Eight-byte PQ codes are about 384× smaller than float32 768-d vectors."
+
+  - q: "Numeric (IVF): N=1,000,000 vectors, nlist=1000, nprobe=8, lists roughly balanced. About how many vectors are scanned?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "8"
+      - "1,000"
+      - "8,000"
+      - "1,000,000"
+    answer: 2
+    why: "scanned ≈ (nprobe/nlist)×N = (8/1000)×1e6 = 8000 candidates."
+
+  - q: "You raise nprobe from 8 to 32 on the same IVF index. What is the expected primary trade-off?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "Lower recall and lower latency"
+      - "Higher recall (usually) and higher scan latency"
+      - "PQ codes become longer automatically"
+      - "Embeddings switch from cosine to Jaccard"
+    answer: 1
+    why: "More lists probed → more candidates → better chance of true neighbors, more distance work."
+
+  - q: "Why do IVF+PQ systems often quantize residuals (x − centroid) instead of raw x?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "Residuals are always sparse one-hot labels"
+      - "The coarse centroid already explains much of the vector; PQ models the leftover more accurately at fixed code length"
+      - "Residuals remove the need for nprobe"
+      - "ADC cannot run on residuals"
+    answer: 1
+    why: "Residual PQ allocates code capacity to what the IVF coarse quantizer did not capture."
+
+  - q: "Asymmetric distance computation (ADC) in PQ search primarily avoids what at query time?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "Any use of codebooks"
+      - "Fully reconstructing every candidate float vector before distance estimation"
+      - "Computing query embeddings"
+      - "Storing inverted lists"
+    answer: 1
+    why: "ADC compares the query against codebook tables using PQ codes without inflating every candidate to float32."
+
+  - q: "Recall@10 against a flat exact index drops after enabling PQ. Engineering response?"
+    section: "Retrieval/IVF-PQ"
+    options:
+      - "Ignore recall if p95 latency looks good"
+      - "Retune nprobe / PQ bits / nlist and re-measure recall@k vs latency; do not ship blind"
+      - "Delete the exact baseline forever"
+      - "Increase generator temperature to compensate"
+    answer: 1
+    why: "ANN quality is defined versus exact search; tune the recall–latency Pareto, don’t optimize latency alone."
+
+  - q: "Production RAG: documents update hourly. Fine-tuning the LLM nightly on PDFs is proposed. What is the stronger default?"
+    section: "Production RAG"
+    options:
+      - "Nightly full fine-tunes as the CMS"
+      - "Re-embed/re-index changed docs and retrieve at query time; fine-tune only for stable skills"
+      - "Store PDFs only in chat history"
+      - "Disable chunking so each PDF is one 2M-token vector"
+    answer: 1
+    why: "Volatile knowledge belongs in the index; weights are a poor content management system."
+
+  - q: "A faithfulness checker fails on 12% of answers that look fluent. Correct product behavior?"
+    section: "Production RAG"
+    options:
+      - "Show the answer with a green checkmark anyway"
+      - "Abstain, repair (re-retrieve/regenerate), or escalate — fail closed on unsupported claims"
+      - "Hide citations but keep the claim"
+      - "Lower the embedding dimension"
+    answer: 1
+    why: "Grounded systems should not present unverified claims as facts when validators fail."
+
+  - q: "Retrieve-then-rerank: first stage returns 100 chunks, cross-encoder keeps 5 for the LLM. Why this cascade?"
+    section: "Production RAG"
+    options:
+      - "Cross-encoders are cheaper than bi-encoders at corpus scale"
+      - "Cheap ANN/BM25 for recall, expensive pairwise scoring for precision on a shortlist"
+      - "Rerankers embed the entire internet each query"
+      - "The LLM cannot read more than one token of context"
+    answer: 1
+    why: "Bi-encoder/ANN maximizes recall cheaply; cross-encoders refine precision on small N."
+
+  - q: "Multi-hop RAG is most justified for which query?"
+    section: "Production RAG"
+    options:
+      - "'What is the office Wi-Fi password posted in the lobby FAQ?' with one clear doc"
+      - "'Which vendor supplies the chip used in SKU-442, and what is that vendor’s SLA for RMA?' needing intermediate entity resolution"
+      - "Any greeting like 'hi'"
+      - "Requests that must never use tools"
+    answer: 1
+    why: "When the answer depends on facts discovered in an earlier hop, chained retrieval earns its latency."
+
+  - q: "An agent differs from a single-turn chatbot primarily by which capability?"
+    section: "Agents"
+    options:
+      - "Using a larger font in the UI"
+      - "Planning and iteratively using tools/memory toward a goal, not only emitting one reply"
+      - "Never calling APIs"
+      - "Training without any loss function"
+    answer: 1
+    why: "Agents close a loop: observe → reason/plan → act with tools → update state until done or escalate."
+
+  - q: "A travel agent books the wrong flight because it trusted a hallucinated confirmation id from its own earlier message. What missing pattern would have helped?"
+    section: "Agents"
+    options:
+      - "Higher temperature for creativity"
+      - "Ground actions in tool/API responses; verify side effects against system of record before confirming to the user"
+      - "Remove all logging"
+      - "Put the itinerary only in soft prompts"
+    answer: 1
+    why: "Agents must treat tool outputs (and DB state) as source of truth, not their own prior free text."
+
+  - q: "When should you prefer a single agent over a multi-agent swarm?"
+    section: "Agents"
+    options:
+      - "Never — multi-agent is always better"
+      - "When the task is a narrow tool loop with clear control flow and you want lower orchestration complexity"
+      - "Only when GPUs are free"
+      - "When you need maximum prompt-injection surface area"
+    answer: 1
+    why: "Multi-agent adds coordination failure modes; use it when specialization and parallel roles clearly pay off."
+
+  - q: "Human-in-the-loop is most critical at which agent step?"
+    section: "Agents"
+    options:
+      - "Formatting a markdown table for display"
+      - "Irreversible or high-cost actions (payments, emails to customers, prod config changes)"
+      - "Embedding a document offline"
+      - "Choosing cosine vs dot product for unit vectors"
+    answer: 1
+    why: "HITL gates actions with real-world blast radius; low-risk formatting can stay automatic."
+
+  - q: "Reflection / self-critique loops fail productively when?"
+    section: "Agents"
+    options:
+      - "The agent can check claims against tools, schemas, or unit tests"
+      - "The agent only rephrases the same unsupported answer without new evidence"
+      - "Latency budgets allow one repair pass"
+      - "Critiques are logged for eval"
+    answer: 1
+    why: "Reflection without external verification often becomes confident circular reasoning."
+
+  - q: "Tool-calling APIs return a structured function name + arguments. Why is that better than parsing free-form 'I will call search...' prose?"
+    section: "Agents"
+    options:
+      - "Prose is always more reliable"
+      - "Structured calls enable schema validation, retries, and deterministic routing to real functions"
+      - "Structured calls remove the need for auth"
+      - "Prose cannot be generated by LMs"
+    answer: 1
+    why: "Machine-readable tool invocations are enforceable contracts; natural language plans are ambiguous."
+
+  - q: "Use-case: legal research assistant must cite clause IDs. Offline eval shows high answer similarity to gold but citation IDs are often wrong. What do you prioritize?"
+    section: "Production RAG"
+    options:
+      - "BLEU-only optimization"
+      - "Citation accuracy / span grounding metrics and retrieval of the correct clause chunks"
+      - "More creative system persona"
+      - "Disabling hybrid search permanently"
+    answer: 1
+    why: "In citation products, correct pointers matter as much as fluent wording; measure and fix grounding."

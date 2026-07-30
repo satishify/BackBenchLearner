@@ -1,0 +1,46 @@
+title: "5.2 Model Serving & API Development"
+questions:
+  - q: What do model APIs typically accept in a request?
+    options:
+      - Only a binary model checkpoint with no parameters
+      - Model name, messages/prompt, generation parameters, and auth
+      - A raw GPU device ID with no prompt text
+      - Unauthenticated free-form shell commands
+    answer: 1
+    why: Typical requests include model name, messages or prompt, parameters like temperature/max tokens, and an auth token or API key.
+
+  - q: Which production practice belongs with model API usage?
+    options:
+      - Log full API keys and secrets for easier debugging
+      - Never set timeouts so requests can run forever
+      - Retry transient errors, set timeouts/fallbacks, and track token cost
+      - Disable all retries so every blip fails hard
+    answer: 2
+    why: Production guidance covers retries, timeouts, fallback models, cost tracking, and avoiding secret/sensitive logging.
+
+  - q: In the beginner Python experimentation stack, what is `pytest` mainly for?
+    options:
+      - Plotting confusion matrices
+      - Making HTTP calls to model APIs
+      - Repeatable quality checks and tests
+      - Storing vector embeddings only
+    answer: 2
+    why: The lesson lists pytest for repeatable checks; requests for API calls, pandas for tables, jupyter for quick experiments.
+
+  - q: In the sklearn mini-flow, what comes after splitting train/test data?
+    options:
+      - Immediately deploy to production without evaluation
+      - Scale features when required, then train and evaluate
+      - Delete the test set so metrics cannot leak
+      - Skip the model and only print the dataset size
+    answer: 1
+    why: The flow is load → split → scale when needed → train baseline → evaluate with metrics like precision, recall, and F1.
+
+  - q: What should a solid automation workflow include for safe retries?
+    options:
+      - Idempotency, timeouts/fallbacks, audit logs, and a manual override path
+      - Infinite loops with no timeouts
+      - Silent failure with no logging
+      - Automatic destructive actions with no approval option
+    answer: 0
+    why: Core design points are idempotent retries, timeout/fallback handling, audit logging, and a manual override path for failures.

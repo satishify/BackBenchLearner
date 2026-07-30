@@ -1,0 +1,69 @@
+# Topic manifest. Chapter order here drives sidebar order.
+# Modules 1–3 follow private session-PDF syllabus (content is original).
+id: genai
+basePath: "genai"
+navLabel: "Gen AI & Agentic AI"
+title: "Gen AI & Agentic AI"
+welcomeTitle: "Gen AI & Agentic AI"
+welcomeTagline: "Session-aligned path from deep learning essentials through production RAG, agents, and fine-tuning."
+modules:
+  - id: module-1-foundations
+    title: "Module 1 · Foundations of GenAI & LLMs"
+    blurb: "Understand the machinery before you use it."
+    chapters:
+      - id: session-1-ai-dl-essentials
+        title: "1.1 AI & Deep Learning Essentials"
+      - id: session-2-dl-essentials
+        title: "1.2 Deep Learning Essentials"
+      - id: transformers
+        title: "1.3 The Transformer Architecture"
+  - id: module-2-prompting-rag
+    title: "Module 2 · Prompting, RAG & Agents"
+    blurb: "From APIs and prompts to retrieval, indexes, and agentic systems."
+    chapters:
+      - id: session-1-llms-decoding-apis
+        title: "2.1 LLMs, Decoding, Prompting & APIs"
+      - id: session-2-structured-evals
+        title: "2.2 Structured Outputs & LLM Evaluations"
+      - id: session-3-evals-safety
+        title: "2.3 Evaluations & AI Safety"
+      - id: session-4-advanced-prompting
+        title: "2.4 Advanced Prompting"
+      - id: session-5-prompt-security
+        title: "2.5 Prompt Optimization & Security"
+      - id: session-6-rag-fundamentals
+        title: "2.6 RAG Fundamentals"
+      - id: session-7-retrieval-engineering
+        title: "2.7 RAG Retrieval Engineering"
+      - id: session-8-production-rag
+        title: "2.8 Production RAG"
+      - id: session-12-agentic
+        title: "2.9 Agentic AI & Multi-Agent Orchestration"
+  - id: module-3-finetuning
+    title: "Module 3 · LLM Fine-tuning & Alignment"
+    blurb: "When your own data is the advantage."
+    chapters:
+      - id: session-1-fundamentals
+        title: "3.1 Fine-Tuning Fundamentals"
+      - id: session-2-data-training
+        title: "3.2 Data Prep & Training Mechanisms"
+      - id: session-3-peft
+        title: "3.3 PEFT, Adapters & Soft Prompting"
+  - id: module-4-multimodal-agentic
+    title: "Module 4 · Multimodal & Agentic AI"
+    blurb: "Vision-language track (agentic lessons live in Module 2.9)."
+    chapters:
+      - id: vision-language
+        title: "4.1 Vision-Language Models & Image Generation"
+  - id: module-5-deployment-safety
+    title: "Module 5 · Deployment, Optimisation & AI Safety"
+    blurb: "Turning a prototype into something you can operate."
+    chapters:
+      - id: production-rag-agents
+        title: "5.1 Production-Grade RAG & Agent Orchestration"
+      - id: serving-and-apis
+        title: "5.2 Model Serving & API Development"
+      - id: responsible-genai
+        title: "5.3 Responsible and Trusted GenAI"
+      - id: capstone
+        title: "5.4 Industry Capstone Project"

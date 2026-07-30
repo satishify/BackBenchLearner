@@ -1,0 +1,82 @@
+title: "1.2 Deep Learning Essentials"
+questions:
+  - q: "You train a 3-class intent classifier. The model assigns probability 0.02 to the true class. What is the cross-entropy contribution for that example (natural log)?"
+    options:
+      - "log(0.02) ≈ −3.91 (so loss ≈ +3.91)"
+      - "0.02"
+      - "1 − 0.02 = 0.98"
+      - "0.02² = 0.0004"
+    answer: 0
+    why: "Multi-class CE is −log p_true. A tiny probability on the correct class yields a large positive loss, punishing confident mistakes."
+
+  - q: "When is MSE a better default loss than cross-entropy?"
+    options:
+      - "Predicting a continuous temperature from sensors"
+      - "Choosing one of 40 support ticket categories"
+      - "Next-token prediction over a vocabulary"
+      - "Binary spam vs not-spam with calibrated probabilities as the only metric"
+    answer: 0
+    why: "MSE (or related regression losses) matches numeric targets; classification/LM heads usually use CE-family losses on probabilities."
+
+  - q: "Softmax logits are [2.0, 1.0, 0.1]. Which statement is true?"
+    options:
+      - "The probabilities must be exactly [2.0, 1.0, 0.1]"
+      - "Adding 5 to every logit leaves the softmax probabilities unchanged"
+      - "Multiplying every logit by 0 cannot change anything useful"
+      - "Softmax forces two classes to both have probability 1"
+    answer: 1
+    why: "Softmax is shift-invariant: z and z+c yield the same distribution because the constant factors cancel in numerator and denominator."
+
+  - q: "Why subtract the max logit before exp in a stable softmax?"
+    options:
+      - "It changes the mathematical result to favor the smallest class"
+      - "It prevents overflow/NaNs while leaving probabilities equivalent"
+      - "It replaces softmax with argmax forever"
+      - "It removes the need for a temperature parameter"
+    answer: 1
+    why: "exp of large logits overflows; shifting by −max is algebraically exact for softmax but numerically safe."
+
+  - q: "Temperature T=0.5 vs T=2.0 on the same logits at inference — what happens?"
+    options:
+      - "T=0.5 flattens toward uniform; T=2.0 sharpens to winner-take-all"
+      - "T=0.5 sharpens; T=2.0 flattens toward more uniform sampling"
+      - "Temperature only changes the learning rate"
+      - "Neither value affects the softmax distribution"
+    answer: 1
+    why: "Dividing logits by T<1 amplifies gaps (peakier); T>1 shrinks gaps (flatter), trading certainty for diversity."
+
+  - q: "Backpropagation’s core job in gradient descent is to…"
+    options:
+      - "Randomly reset all weights each step"
+      - "Compute how loss changes w.r.t. each parameter via the chain rule"
+      - "Delete the training set after one epoch"
+      - "Guarantee a global minimum on non-convex nets"
+    answer: 1
+    why: "Backprop efficiently applies the chain rule so optimizers can step parameters against the loss gradient."
+
+  - q: "Learning rate is too high. What symptom is most characteristic?"
+    options:
+      - "Loss decreases smoothly every step then plateaus gently"
+      - "Loss oscillates wildly or diverges to NaN"
+      - "Gradients become exactly zero forever on day one"
+      - "The dataset shrinks automatically"
+    answer: 1
+    why: "Oversized steps overshoot minima; training becomes unstable. Too-small LRs crawl; too-large LRs blow up."
+
+  - q: "Why do CNNs share convolutional filters across spatial locations?"
+    options:
+      - "To force every pixel to use a unique unrelated weight"
+      - "To detect local patterns translation-equivariantly with far fewer parameters than a dense layer"
+      - "Because images never have local structure"
+      - "To remove the need for nonlinear activations"
+    answer: 1
+    why: "Weight sharing matches the inductive bias that the same edge/texture detector is useful across the image."
+
+  - q: "Compared with a vanilla RNN, what problem do LSTMs primarily mitigate?"
+    options:
+      - "Inability to process any sequence shorter than 2 tokens"
+      - "Vanishing/exploding gradients that erase long-range signal through many timesteps"
+      - "The need for any nonlinearity"
+      - "GPU memory becoming free"
+    answer: 1
+    why: "Gating (and cell state highways) help preserve and control information over longer sequences than naive RNNs."

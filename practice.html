@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,follow">
+  <title>Practice Mock | BackbenchLearner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    .quiz-shell { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .quiz-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0 0 0.35rem 0;
+    }
+    .quiz-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 1.1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .quiz-timer {
+      font-weight: 600;
+      color: var(--accent-strong);
+      font-variant-numeric: tabular-nums;
+    }
+    .quiz-timer.is-low { color: var(--danger); }
+    .quiz-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.35rem;
+    }
+    .quiz-question {
+      font-size: 1.12rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem 0;
+      color: var(--text);
+    }
+    .quiz-section-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent-strong);
+      margin-bottom: 0.65rem;
+    }
+    .quiz-options {
+      display: grid;
+      gap: 0.55rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .quiz-options button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 0.98rem;
+      padding: 0.75rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .quiz-options button:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .quiz-options button.is-selected {
+      border-color: var(--accent);
+      background: rgba(15, 118, 110, 0.12);
+      font-weight: 600;
+    }
+    .quiz-options button.is-correct {
+      border-color: var(--success);
+      background: rgba(15, 118, 110, 0.12);
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+    .quiz-options button.is-wrong {
+      border-color: var(--danger);
+      background: rgba(185, 28, 28, 0.08);
+      color: var(--danger);
+    }
+    .quiz-options button:disabled { cursor: default; }
+    .quiz-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .quiz-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .quiz-btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .quiz-btn-danger {
+      background: #fff;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-score {
+      font-size: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 0.5rem 0 0.25rem;
+      color: var(--accent-strong);
+    }
+    .quiz-sections {
+      display: grid;
+      gap: 0.45rem;
+      margin: 1rem 0 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .quiz-section-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.45rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+    }
+    .quiz-review { margin-top: 1.5rem; display: grid; gap: 0.75rem; }
+    .quiz-review-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      background: #fff;
+    }
+    .quiz-review-item.correct { border-left: 4px solid var(--success); }
+    .quiz-review-item.wrong { border-left: 4px solid var(--danger); }
+    .quiz-empty { padding: 2rem 0; color: var(--text-muted); }
+    .quiz-intro li { margin: 0.35rem 0; }
+    .quiz-dotnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.85rem 0 0;
+    }
+    .quiz-dotnav button {
+      width: 1.7rem;
+      height: 1.7rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .quiz-dotnav button.answered { background: rgba(15, 118, 110, 0.14); color: var(--accent-strong); border-color: var(--accent); }
+    .quiz-dotnav button.current { outline: 2px solid var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="quiz-shell" id="quiz-root">
+    <p class="quiz-empty">Loading mock exam…</p>
+  </div>
+  <script src="scripts/curriculum.js?v=20260730e"></script>
+  <script src="scripts/progress.js?v=20260730e"></script>
+  <script src="scripts/quizzes.js?v=20260730e"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var BBL = window.BBL;
+      var root = document.getElementById('quiz-root');
+      var params = new URLSearchParams(window.location.search);
+      var topicId = params.get('t');
+      var mockKey = params.get('m') || '';
+      var topic = topicId ? BBL.Nav.topic(topicId) : null;
+      var quizzes = BBL.QUIZZES || {};
+
+      if (window.self !== window.top) document.body.classList.add('in-iframe');
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"]/g, function (char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char];
+        });
+      }
+
+      function shuffle(arr) {
+        var copy = arr.slice();
+        for (var i = copy.length - 1; i > 0; i -= 1) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = copy[i];
+          copy[i] = copy[j];
+          copy[j] = tmp;
+        }
+        return copy;
+      }
+
+      function formatTime(seconds) {
+        var m = Math.floor(seconds / 60);
+        var s = seconds % 60;
+        return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      function backLink() {
+        var hash = '#practice';
+        if (window.self !== window.top) {
+          return '<a class="quiz-btn" href="' + hash + '">Back to Practice</a>';
+        }
+        return '<a class="quiz-btn" href="index.html' + hash + '">Back to Practice</a>';
+      }
+
+      function resolveBank() {
+        if (!topicId) return null;
+        if (mockKey) {
+          var id = topicId + '/mock/' + mockKey;
+          if (quizzes[id]) return quizzes[id];
+        }
+        // Prefer first authored module mock for the topic
+        var keys = Object.keys(quizzes).filter(function (id) {
+          return id.indexOf(topicId + '/mock/') === 0 && quizzes[id].kind === 'mock';
+        }).sort();
+        if (keys.length) return quizzes[keys[0]];
+        // Fallback: mix chapter quizzes (legacy)
+        var all = [];
+        Object.keys(quizzes).forEach(function (id) {
+          if (id.indexOf(topicId + '/') !== 0) return;
+          if (quizzes[id].kind === 'mock') return;
+          (quizzes[id].questions || []).forEach(function (q) {
+            all.push({
+              q: q.q,
+              options: q.options,
+              answer: q.answer,
+              why: q.why || '',
+              section: quizzes[id].title || id
+            });
+          });
+        });
+        if (!all.length) return null;
+        return {
+          id: topicId + '/mock',
+          title: (topic && topic.navLabel ? topic.navLabel + ' mixed mock' : 'Mock'),
+          minutes: 90,
+          kind: 'mock',
+          questions: all
+        };
+      }
+
+      if (!topic) {
+        root.innerHTML =
+          '<h1>Practice</h1><div class="quiz-empty"><p>Unknown topic.</p>' +
+          backLink() +
+          '</div>';
+        return;
+      }
+
+      var bank = resolveBank();
+      if (!bank || !(bank.questions || []).length) {
+        root.innerHTML =
+          '<p class="quiz-kicker">Mock exam</p><h1>' +
+          escapeHtml(topic.navLabel) +
+          '</h1><div class="quiz-empty"><p>No mock exam bank is available yet.</p><div class="quiz-actions">' +
+          backLink() +
+          '</div></div>';
+        return;
+      }
+
+      var state = {
+        questions: [],
+        index: 0,
+        selections: [],
+        started: false,
+        submitted: false,
+        secondsLeft: (bank.minutes || 90) * 60,
+        timerId: null,
+        score: 0,
+        sectionStats: {}
+      };
+
+      function stopTimer() {
+        if (state.timerId) {
+          clearInterval(state.timerId);
+          state.timerId = null;
+        }
+      }
+
+      function startTimer() {
+        stopTimer();
+        state.timerId = setInterval(function () {
+          state.secondsLeft -= 1;
+          var el = document.getElementById('quiz-timer');
+          if (el) {
+            el.textContent = formatTime(Math.max(0, state.secondsLeft));
+            el.classList.toggle('is-low', state.secondsLeft <= 5 * 60);
+          }
+          if (state.secondsLeft <= 0) {
+            stopTimer();
+            submitExam();
+          }
+        }, 1000);
+      }
+
+      function showIntro() {
+        var html =
+          '<p class="quiz-kicker">Mock exam</p><h1>' +
+          escapeHtml(bank.title) +
+          '</h1>';
+        html +=
+          '<div class="quiz-card quiz-intro"><p>Set aside <strong>' +
+          (bank.minutes || 90) +
+          ' uninterrupted minutes</strong>. Keep scratch paper for numerical questions. There is no negative marking.</p><ul>';
+        html += '<li>The timer starts when you begin.</li>';
+        html += '<li>You can change any answer until you submit.</li>';
+        html += '<li>Submit to see score, per-section breakdown, and explanations.</li>';
+        html += '<li>' + bank.questions.length + ' questions in this bank.</li>';
+        html += '</ul><div class="quiz-nav">';
+        html += '<button type="button" class="quiz-btn quiz-btn-primary" id="quiz-begin">Begin exam</button>';
+        html += backLink();
+        html += '</div></div>';
+        root.innerHTML = html;
+        document.getElementById('quiz-begin').addEventListener('click', beginExam);
+      }
+
+      function beginExam() {
+        state.questions = shuffle(bank.questions).map(function (q) {
+          var options = q.options.map(function (text, index) {
+            return { text: text, correct: index === q.answer };
+          });
+          return {
+            q: q.q,
+            why: q.why || '',
+            section: q.section || 'General',
+            options: shuffle(options)
+          };
+        });
+        state.selections = state.questions.map(function () { return null; });
+        state.index = 0;
+        state.started = true;
+        state.submitted = false;
+        state.secondsLeft = (bank.minutes || 90) * 60;
+        startTimer();
+        renderQuestion();
+      }
+
+      function answeredCount() {
+        var n = 0;
+        state.selections.forEach(function (s) { if (s !== null) n += 1; });
+        return n;
+      }
+
+      function renderQuestion() {
+        var q = state.questions[state.index];
+        var html =
+          '<p class="quiz-kicker">' +
+          escapeHtml(bank.title) +
+          '</p>';
+        html += '<div class="quiz-toolbar">';
+        html +=
+          '<span>Question ' +
+          (state.index + 1) +
+          ' / ' +
+          state.questions.length +
+          ' · answered ' +
+          answeredCount() +
+          '</span>';
+        html +=
+          '<span>Time left: <span class="quiz-timer" id="quiz-timer">' +
+          formatTime(state.secondsLeft) +
+          '</span></span>';
+        html += '</div><div class="quiz-card">';
+        html +=
+          '<div class="quiz-section-tag">' +
+          escapeHtml(q.section) +
+          '</div>';
+        html += '<h2 class="quiz-question">' + escapeHtml(q.q) + '</h2>';
+        html += '<ul class="quiz-options">';
+        q.options.forEach(function (opt, i) {
+          var selected = state.selections[state.index] === i ? ' is-selected' : '';
+          html +=
+            '<li><button type="button" data-opt="' +
+            i +
+            '" class="' +
+            selected.trim() +
+            '">' +
+            escapeHtml(opt.text) +
+            '</button></li>';
+        });
+        html += '</ul><div class="quiz-dotnav" id="quiz-dots"></div>';
+        html += '<div class="quiz-nav">';
+        html +=
+          '<button type="button" class="quiz-btn" id="quiz-prev"' +
+          (state.index === 0 ? ' disabled' : '') +
+          '>Previous</button>';
+        html +=
+          '<button type="button" class="quiz-btn" id="quiz-next"' +
+          (state.index === state.questions.length - 1 ? ' disabled' : '') +
+          '>Next</button>';
+        html +=
+          '<button type="button" class="quiz-btn quiz-btn-danger" id="quiz-submit">Submit exam</button>';
+        html += '</div></div>';
+        root.innerHTML = html;
+
+        var dots = document.getElementById('quiz-dots');
+        state.questions.forEach(function (_, i) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = String(i + 1);
+          if (i === state.index) btn.classList.add('current');
+          if (state.selections[i] !== null) btn.classList.add('answered');
+          btn.addEventListener('click', function () {
+            state.index = i;
+            renderQuestion();
+          });
+          dots.appendChild(btn);
+        });
+
+        root.querySelectorAll('.quiz-options button').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            state.selections[state.index] = Number(btn.getAttribute('data-opt'));
+            renderQuestion();
+          });
+        });
+        document.getElementById('quiz-prev').addEventListener('click', function () {
+          if (state.index > 0) {
+            state.index -= 1;
+            renderQuestion();
+          }
+        });
+        document.getElementById('quiz-next').addEventListener('click', function () {
+          if (state.index < state.questions.length - 1) {
+            state.index += 1;
+            renderQuestion();
+          }
+        });
+        document.getElementById('quiz-submit').addEventListener('click', function () {
+          var unanswered = state.questions.length - answeredCount();
+          var msg =
+            unanswered > 0
+              ? unanswered + ' question(s) unanswered. Submit anyway?'
+              : 'Submit exam and see your score?';
+          if (window.confirm(msg)) submitExam();
+        });
+      }
+
+      function submitExam() {
+        if (state.submitted) return;
+        state.submitted = true;
+        stopTimer();
+        var score = 0;
+        var sectionStats = {};
+        var review = [];
+        state.questions.forEach(function (q, i) {
+          var sel = state.selections[i];
+          var correctOpt = q.options.filter(function (o) { return o.correct; })[0];
+          var chosen = sel === null ? null : q.options[sel];
+          var ok = !!(chosen && chosen.correct);
+          if (ok) score += 1;
+          var sec = q.section || 'General';
+          if (!sectionStats[sec]) sectionStats[sec] = { correct: 0, total: 0 };
+          sectionStats[sec].total += 1;
+          if (ok) sectionStats[sec].correct += 1;
+          review.push({
+            q: q.q,
+            section: sec,
+            why: q.why,
+            chosen: chosen ? chosen.text : '(blank)',
+            correctText: correctOpt.text,
+            correct: ok
+          });
+        });
+        state.score = score;
+        state.sectionStats = sectionStats;
+        BBL.Progress.setQuizScore(bank.id, score, state.questions.length);
+        renderResults(review);
+      }
+
+      function renderResults(review) {
+        var html =
+          '<p class="quiz-kicker">' +
+          escapeHtml(bank.title) +
+          '</p><h1>Results</h1>';
+        html +=
+          '<p class="quiz-score">' +
+          state.score +
+          ' / ' +
+          state.questions.length +
+          '</p>';
+        html += '<p>Best score is saved on this browser. Retake anytime — order reshuffles.</p>';
+        html += '<h2 style="font-size:1.05rem;margin:1.25rem 0 0.5rem">Section breakdown</h2>';
+        html += '<div class="quiz-sections">';
+        Object.keys(state.sectionStats).forEach(function (sec) {
+          var s = state.sectionStats[sec];
+          html +=
+            '<div class="quiz-section-row"><span>' +
+            escapeHtml(sec) +
+            '</span><span>' +
+            s.correct +
+            '/' +
+            s.total +
+            '</span></div>';
+        });
+        html += '</div><div class="quiz-nav">';
+        html +=
+          '<button type="button" class="quiz-btn quiz-btn-primary" id="quiz-retake">Retake mock</button>';
+        html += backLink();
+        html += '</div><div class="quiz-review">';
+        review.forEach(function (item, i) {
+          html +=
+            '<div class="quiz-review-item ' +
+            (item.correct ? 'correct' : 'wrong') +
+            '">';
+          html +=
+            '<p><strong>Q' +
+            (i + 1) +
+            ' · ' +
+            escapeHtml(item.section) +
+            '.</strong> ' +
+            escapeHtml(item.q) +
+            '</p>';
+          html +=
+            '<p>Your answer: ' +
+            escapeHtml(item.chosen) +
+            (item.correct ? '' : ' · Correct: ' + escapeHtml(item.correctText)) +
+            '</p>';
+          if (item.why) html += '<p>' + escapeHtml(item.why) + '</p>';
+          html += '</div>';
+        });
+        html += '</div>';
+        root.innerHTML = html;
+        document.getElementById('quiz-retake').addEventListener('click', function () {
+          showIntro();
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        if (window.self === window.top) return;
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) return;
+        e.preventDefault();
+        window.parent.postMessage({ type: 'bbl-navigate', hash: a.getAttribute('href') }, '*');
+      });
+
+      showIntro();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+title: Backend fundamentals quiz
+questions:
+  - q: A mobile client retries POST /charges after a timeout and creates two charges. What should the API have required?
+    options:
+      - Longer JSON field names
+      - An Idempotency-Key bound to the logical pay action
+      - Switching the endpoint from POST to GET
+      - Returning HTTP 200 for all errors
+    answer: 1
+    why: Idempotency keys let the server recognize retries and return the original charge instead of inserting another.
+
+  - q: Authentication vs authorization — which statement is correct?
+    options:
+      - Authorization proves who you are; authentication decides permissions
+      - Authentication proves who you are; authorization decides what you may do
+      - They are synonyms for validating JWT signatures
+      - Authorization always happens before authentication
+    answer: 1
+    why: First establish identity (authn), then enforce permissions/ownership (authz) on the server.
+
+  - q: You run two FastAPI replicas behind a load balancer. Login works only half the time because sessions live in process memory. What design fixes this?
+    options:
+      - Make the API more stateful with larger in-memory dicts
+      - Keep a shared session store (e.g. Redis) or use sticky sessions carefully
+      - Disable the load balancer and use one global lock
+      - Replace all POST methods with PUT
+    answer: 1
+    why: A stateless app tier reads session state from a shared store so any replica can serve the next request.
+
+  - q: Why is a mutating GET /orders/create a bad idea even if it “works” in the browser?
+    options:
+      - GET cannot carry headers
+      - Prefetchers, crawlers, and caches assume GET is safe and may trigger side effects
+      - FastAPI forbids GET routes
+      - GET responses cannot be JSON
+    answer: 1
+    why: Safe methods must not change state; infrastructure will freely retry or prefetch GET.
+
+  - q: In OAuth 2.0 “Login with Google” for a server-side app, what is the main job of the state parameter?
+    options:
+      - Encrypt the access token at rest
+      - Choose between REST and GraphQL
+      - Prevent CSRF by correlating the redirect round-trip with the original login start
+      - Replace the need for HTTPS
+    answer: 2
+    why: You generate and store a random state, then reject callbacks whose state does not match.

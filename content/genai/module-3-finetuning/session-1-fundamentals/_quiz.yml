@@ -1,0 +1,82 @@
+title: "3.1 Fine-Tuning Fundamentals"
+questions:
+  - q: "Your docs change weekly and answers must cite the latest policy. Prefer which lever first?"
+    options:
+      - "Full fine-tune every night on the whole PDF dump"
+      - "RAG (and prompting) so knowledge stays outside weights"
+      - "RLHF with no retrieval"
+      - "Deleting the eval set"
+    answer: 1
+    why: "Rapidly changing factual content belongs in retrieval; fine-tuning is a poor knowledge database."
+
+  - q: "Fine-tuning is a better fit than prompting alone when…"
+    options:
+      - "You need a stable stylistic/format habit or domain skill that few-shots cannot reliably lock"
+      - "You have zero labeled examples and no eval"
+      - "Facts change hourly and must be cited"
+      - "You only need a calculator tool"
+    answer: 0
+    why: "Adaptation shines for consistent behavior patterns; fresh facts still prefer RAG/tools."
+
+  - q: "Supervised fine-tuning (SFT) trains on…"
+    options:
+      - "Preference pairs only with a reward model"
+      - "Input→desired output demonstrations (instruction/response examples)"
+      - "Random tokens with no labels"
+      - "Only unlabeled raw web text forever"
+    answer: 1
+    why: "SFT imitates labeled completions; preference methods (RLHF/DPO) come after or beside that stage."
+
+  - q: "Full fine-tune vs freezing most layers — freezing helps primarily by…"
+    options:
+      - "Increasing catastrophic forgetting on purpose"
+      - "Cutting trainable parameters/memory and often preserving general capabilities"
+      - "Making the tokenizer larger"
+      - "Removing the need for a learning rate"
+    answer: 1
+    why: "Fewer updated weights mean cheaper training and less drift from the pretrained prior—on the path to PEFT."
+
+  - q: "RLHF’s distinctive ingredient versus plain SFT is…"
+    options:
+      - "A preference/reward signal guiding the policy beyond single gold demos"
+      - "Deleting the base model"
+      - "Using only MSE on embeddings"
+      - "Forbidding any human labels"
+    answer: 0
+    why: "RLHF optimizes against preference feedback (via a reward model / PPO-style loop), not only imitation."
+
+  - q: "DPO is attractive in practice because it…"
+    options:
+      - "Requires sampling a live reward model with PPO always"
+      - "Optimizes directly on preference pairs without a separate RL loop"
+      - "Guarantees zero forgetting"
+      - "Replaces all evaluation"
+    answer: 1
+    why: "DPO turns preference data into a supervised-style objective, simplifying alignment stacks versus classic RLHF."
+
+  - q: "A team fine-tunes to memorize 5,000 SKUs instead of retrieving them. Likely failure mode?"
+    options:
+      - "Perfect lifelong factual accuracy"
+      - "Stale/wrong SKUs after catalog updates and brittle memorization"
+      - "Lower latency than a hash map forever"
+      - "Automatic ACL enforcement"
+    answer: 1
+    why: "Weights are a bad product database; catalogs need retrieval or tools with source-of-truth systems."
+
+  - q: "You have excellent prompts + RAG but the model still violates a strict internal tone/schema. Next?"
+    options:
+      - "Ignore schema failures"
+      - "Consider SFT/PEFT on schema-obedient demonstrations after measuring a prompt baseline"
+      - "Raise temperature"
+      - "Remove validators"
+    answer: 1
+    why: "When behavior (not facts) is the bottleneck, supervised adaptation on clean demos is the usual escalation."
+
+  - q: "Alignment (RLHF/DPO) without a held-out preference/eval set is dangerous because…"
+    options:
+      - "Preferences cannot be wrong"
+      - "You can overfit annotator quirks or sycophancy and not notice capability regressions"
+      - "DPO mathematically forbids overfitting"
+      - "SFT becomes illegal"
+    answer: 1
+    why: "Alignment data can teach unwanted patterns; measure helpfulness, harmlessness, and anchor tasks."

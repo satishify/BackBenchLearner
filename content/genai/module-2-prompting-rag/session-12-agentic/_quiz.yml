@@ -1,0 +1,91 @@
+title: "2.9 Agentic AI & Multi-Agent Orchestration"
+questions:
+  - q: "What primarily distinguishes an agent from a chatbot that only replies in text?"
+    options:
+      - "Agents always have more parameters"
+      - "Agents plan and take actions via tools/environment, not only emit conversational text"
+      - "Chatbots cannot use system prompts"
+      - "Agents never need memory"
+    answer: 1
+    why: "Agency is about goal-directed action loops (tools, state, stop conditions), not chat tone alone."
+
+  - q: "A minimal agent loop often combines which capabilities?"
+    options:
+      - "Reasoning/planning, tool use, and memory/state across steps"
+      - "Only temperature scheduling"
+      - "Only static FAQ templates"
+      - "Only offline batch ETL"
+    answer: 0
+    why: "The chapter frames agents as reasoning + planning + tools + memory working together over multiple steps."
+
+  - q: "Prefer a single agent over multi-agent when…"
+    options:
+      - "You enjoy debugging distributed blame"
+      - "One clear workflow with shared context is enough and coordination overhead would not pay off"
+      - "Tasks require strict separation of roles with independent tools and review"
+      - "You have no eval harness either way"
+    answer: 1
+    why: "Multi-agent adds handoff/latency complexity; use it when specialization and checks justify the cost."
+
+  - q: "Human-in-the-loop is most justified for…"
+    options:
+      - "Capitalizing titles"
+      - "High-risk irreversible actions (payments, access changes, legal filings)"
+      - "Caching embedding vectors"
+      - "Choosing font size in docs"
+    answer: 1
+    why: "HITL inserts approval gates where mistakes are expensive or ethically sensitive."
+
+  - q: "Task decomposition helps agents by…"
+    options:
+      - "Merging all goals into one giant ambiguous prompt"
+      - "Breaking goals into checkable subtasks with clearer tool choices and stop criteria"
+      - "Removing the need for any planner"
+      - "Guaranteeing zero tool errors"
+    answer: 1
+    why: "Smaller steps are easier to verify, retry, and assign to tools or specialist agents."
+
+  - q: "In function calling, who should execute the side-effecting API call?"
+    options:
+      - "The model’s imagination only"
+      - "Your runtime after validating name, args, and authorization"
+      - "A random web scraper with admin cookies"
+      - "The embedding index"
+    answer: 1
+    why: "The model proposes structured calls; trusted code validates and executes them."
+
+  - q: "Short-term vs long-term memory in agents maps best to…"
+    options:
+      - "Temperature vs top-p"
+      - "Working context / scratchpad for the active task vs durable stores (profiles, vector memories) across sessions"
+      - "GPU vs CPU"
+      - "System vs assistant role colors"
+    answer: 1
+    why: "STM is the live episode state; LTM persists knowledge that must be retrieved later."
+
+  - q: "Reflection / self-correction loops are most valuable when…"
+    options:
+      - "Outputs are already schema-perfect and verified externally"
+      - "You can critique draft results against checks and revise before committing an action"
+      - "You want unbounded loops with no stop condition"
+      - "Tools are disabled"
+    answer: 1
+    why: "Critique-and-revise catches errors cheaply—if bounded by budgets and exit criteria."
+
+  - q: "LangChain vs LlamaIndex vs AutoGen/CrewAI—how should you choose?"
+    options:
+      - "Always pick the longest name"
+      - "Match the framework’s center of gravity (chains/tools, RAG indices, or multi-agent orchestration) to your problem"
+      - "Frameworks replace the need for evals and auth"
+      - "Only use one file with no abstractions ever, in all companies"
+    answer: 1
+    why: "Libraries optimize different layers; pick based on workflow shape, then keep policy and tests in your code."
+
+  - q: "Orchestration/workflow control should enforce…"
+    options:
+      - "Unlimited retries forever on failing tools"
+      - "Budgets, timeouts, idempotency, and explicit success/fail states for each step"
+      - "Hiding errors from logs"
+      - "Letting any agent mint production credentials"
+    answer: 1
+    why: "Production agents need operational controls, not infinite autonomous wandering."

@@ -1,0 +1,46 @@
+title: "5.3 Responsible and Trusted GenAI"
+questions:
+  - q: What practical tip does the use-cases lesson emphasize?
+    options:
+      - Launch the broadest possible agent with unmeasurable quality
+      - Start with narrow, high-value use cases where quality can be measured
+      - Avoid support, coding, research, and automation entirely
+      - Skip FAQs and only automate high-risk financial transfers first
+    answer: 1
+    why: The chapter recommends starting narrow and high-value where output quality can be measured (support, coding, research, automation).
+
+  - q: Beyond accuracy, which trio of metrics does the evaluation lesson stress for practical AI systems?
+    options:
+      - Font size, color theme, and emoji count
+      - Latency, cost, and safety
+      - GPU brand, IDE choice, and commit message length
+      - Only offline BLEU with no production checks
+    answer: 1
+    why: A practical system must be accurate, fast (latency), affordable (cost), and safe — with offline, shadow, and A/B evaluation strategies.
+
+  - q: When are false alarms especially costly, which classification metric matters most?
+    options:
+      - Recall only, ignoring false positives
+      - Precision (TP / (TP + FP))
+      - Train loss alone
+      - Token count in the system prompt
+    answer: 1
+    why: Precision focuses on false positives; recall matters when missing positives is risky; F1 balances both on imbalanced data.
+
+  - q: What are the three guardrail layers described in the chapter?
+    options:
+      - Marketing, billing, and branding only
+      - Input, processing (tool/data access), and output moderation/validation
+      - Training, pretraining, and pretraining again
+      - Frontend CSS, CDN cache, and DNS only
+    answer: 1
+    why: Guardrails block unsafe inputs, restrict tool/data access during processing, and moderate/validate outputs — plus least privilege and PII/secret hygiene.
+
+  - q: What is prompt injection in this chapter's framing?
+    options:
+      - A normal way to raise temperature for creativity
+      - Malicious content trying to override system instructions toward unsafe behavior
+      - A database index for faster SQL joins
+      - Harmless logging of API keys in dashboards
+    answer: 1
+    why: Injection tries to override policies (e.g., reveal credentials); mitigate with instruction hierarchy, sanitizing retrieval, tool allowlists, and HITL for destructive actions.

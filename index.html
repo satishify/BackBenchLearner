@@ -16,25 +16,28 @@
   <title>BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f5f9fc;
+      --bg: #f4f5f7;
       --surface: #ffffff;
-      --border: #c5d9e8;
-      --text: #1a3d5c;
-      --text-muted: #4a6b82;
-      --link: #0d9488;
-      --link-read: #5c4d8a;
-      --active: #0d9488;
-      --sidebar-bg: #f0fdfa;
-      --sidebar-border: #ccfbf1;
-      --header-bg: linear-gradient(90deg, #4527e0 0%, #7c3aed 55%, #c026d3 100%);
-      --header-bg-solid: #4527e0;
-      --header-text: #f5f3ff;
-      --header-link: #d8d4fe;
-      --header-active-bg: rgba(255, 255, 255, 0.18);
-      --accent-teal: #2dd4bf;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --link: #0f766e;
+      --link-read: #475569;
+      --active: #0f766e;
+      --sidebar-bg: #f8fafc;
+      --sidebar-border: #e2e8f0;
+      --header-bg: #ffffff;
+      --header-bg-solid: #ffffff;
+      --header-text: #0f172a;
+      --header-link: #334155;
+      --header-active-bg: rgba(15, 118, 110, 0.1);
+      --accent-soft: rgba(15, 118, 110, 0.12);
+      --done: #0f766e;
+      --danger: #b91c1c;
+      --brand: #0f766e;
     }
     * { box-sizing: border-box; }
     body {
@@ -52,16 +55,19 @@
       background-color: var(--header-bg-solid);
       color: var(--header-text);
       flex-shrink: 0;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 120;
     }
     .header-inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: nowrap;
-      gap: 1rem;
-      padding: 0.85rem 1.5rem;
-      max-width: 100%;
+      justify-content: flex-start;
+      gap: 1.5rem;
+      padding: 0.7rem 1.25rem;
+      width: 100%;
+      margin: 0;
+      max-width: none;
     }
     .brand-block {
       display: flex;
@@ -72,142 +78,380 @@
     .site-logo {
       display: inline-flex;
       align-items: center;
+      gap: 0.65rem;
       text-decoration: none;
-      line-height: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+      color: var(--header-text);
+      min-width: 0;
     }
-    .site-logo:hover { opacity: 0.95; }
-    .site-logo img {
+    .site-logo:hover { opacity: 0.9; }
+    .site-logo-mark {
       display: block;
-      height: 56px;
-      width: auto;
-      object-fit: contain;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 9px;
     }
-    @media (max-width: 1024px) {
-      .site-logo img { height: 50px; }
+    .site-logo-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+      min-width: 0;
+      line-height: 1.15;
     }
-    @media (max-width: 860px) {
-      .site-logo img { height: 44px; }
+    .site-logo-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+    .site-logo-tag {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
     @media (max-width: 600px) {
-      .site-logo img { height: 40px; }
-      .site-logo { border-radius: 8px; }
+      .site-logo-mark { width: 32px; height: 32px; }
+      .site-logo-name { font-size: 0.95rem; }
+      .site-logo-tag { display: none; }
     }
-    .topic-nav {
+    .main-nav {
       display: flex;
-      flex-wrap: nowrap;
-      gap: 0.4rem;
       align-items: center;
+      gap: 0.15rem;
       flex: 1 1 auto;
       min-width: 0;
     }
-    .topic-nav a {
-      display: inline-block;
-      padding: 0.45rem 0.85rem;
-      font-size: 0.85rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--header-link);
-      text-decoration: none;
-      border-radius: 6px;
-      background: transparent;
-      border: 1px solid transparent;
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    .nav-item {
+      position: relative;
     }
-    .topic-nav a:hover {
-      background: var(--header-active-bg);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-    .topic-nav a.active {
-      background: var(--header-active-bg);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.4);
+    .nav-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
       font-weight: 600;
+      color: var(--header-link);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
     }
+    .nav-trigger:hover,
+    .nav-item.open .nav-trigger,
+    .nav-trigger.active {
+      background: var(--header-active-bg);
+      color: var(--brand);
+    }
+    .nav-trigger .nav-caret {
+      font-size: 0.65rem;
+      opacity: 0.7;
+      transition: transform 0.15s ease;
+    }
+    .nav-item.open .nav-caret { transform: rotate(180deg); }
+    .nav-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-icon svg { width: 100%; height: 100%; display: block; }
+    .mega-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.45rem);
+      left: 0;
+      min-width: 360px;
+      max-width: min(520px, 92vw);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      padding: 0.85rem;
+      z-index: 130;
+    }
+    .nav-item.open .mega-menu { display: block; }
+    .mega-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.25rem 0.55rem 0.55rem;
+    }
+    .mega-menu .mega-label:not(:first-child) {
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .mega-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.2rem;
+    }
+    .mega-list a {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.7rem 0.65rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .mega-list a:hover,
+    .mega-list a.active {
+      background: rgba(15, 118, 110, 0.08);
+    }
+    .mega-list a.active .mega-title { color: var(--brand); }
+    .mega-item-icon {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: var(--brand);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mega-item-icon svg { width: 1.15rem; height: 1.15rem; }
+    .mega-title {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .mega-desc {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+      line-height: 1.35;
+    }
+    .mega-footer {
+      margin-top: 0.55rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid var(--border);
+    }
+    .mega-footer a {
+      display: block;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--brand);
+      text-decoration: none;
+      padding: 0.65rem;
+      border-radius: 8px;
+      background: rgba(15, 118, 110, 0.08);
+    }
+    .mega-footer a:hover { background: rgba(15, 118, 110, 0.14); }
+    .nav-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      background: transparent;
+    }
+    .nav-backdrop.visible { display: block; }
     .content-row {
       display: flex;
       flex: 1;
       min-height: 0;
     }
     .sidebar {
-      width: 280px;
-      min-width: 280px;
+      width: 300px;
+      min-width: 300px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--sidebar-border);
       padding: 1rem 0.85rem;
       overflow-y: auto;
     }
-    .sidebar .chapter {
-      margin-top: 0.7rem;
+    .sidebar-summary {
+      background: #ffffff;
+      border: 1px solid var(--sidebar-border);
+      border-radius: 10px;
+      padding: 0.85rem 0.9rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
-    .sidebar .chapter:first-child {
-      margin-top: 0;
+    .sidebar-summary-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.1;
     }
+    .sidebar-summary-pct span {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+    .sidebar-summary-meta,
+    .sidebar-summary-site {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .sidebar-summary-site { margin-top: 0.45rem; }
+    .progress-bar {
+      display: block;
+      height: 4px;
+      background: rgba(15, 118, 110, 0.14);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.45rem;
+    }
+    .progress-bar-fill {
+      display: block;
+      height: 100%;
+      background: var(--active);
+      border-radius: 999px;
+      transition: width 0.2s ease;
+    }
+    /* Tree: Module → Chapter → Lesson (progressive indent + guide rail) */
+    .sidebar .module { margin-top: 0.9rem; }
+    .sidebar .module:first-of-type { margin-top: 0; }
+    .sidebar .module-toggle,
     .sidebar .chapter-toggle {
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      gap: 0.35rem;
       border: none;
       background: transparent;
       cursor: pointer;
       text-align: left;
-      padding: 0.2rem 0.1rem;
+      padding: 0.4rem 0.3rem;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       font-weight: 600;
       font-family: 'JetBrains Mono', monospace;
+      border-radius: 6px;
     }
+    .sidebar .module-toggle:hover,
     .sidebar .chapter-toggle:hover {
-      background: rgba(13, 148, 136, 0.10);
-      border-radius: 4px;
+      background: rgba(15, 118, 110, 0.08);
+    }
+    .sidebar .module-toggle {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      padding-left: 0.15rem;
+    }
+    .sidebar .module-body {
+      display: none;
+      margin: 0.2rem 0 0.35rem 0.55rem;
+      padding-left: 0.65rem;
+      border-left: 2px solid #cbd5e1;
+    }
+    .sidebar .module-body.expanded { display: block; }
+    .sidebar .module-body .chapter { margin-top: 0.35rem; }
+    .sidebar .module-body .chapter:first-child { margin-top: 0.1rem; }
+    .sidebar .chapter-toggle {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #334155;
+      padding: 0.35rem 0.25rem;
+    }
+    .sidebar .chapter-toggle-main { flex: 1; min-width: 0; }
+    .sidebar .chapter-title { display: block; line-height: 1.3; }
+    .sidebar .chapter-meta {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
     }
     .sidebar .chapter-caret {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-left: 0.4rem;
+      margin-top: 0.15rem;
       transition: transform 0.15s ease;
+      flex-shrink: 0;
     }
+    .sidebar .module-toggle[aria-expanded="true"] .chapter-caret,
     .sidebar .chapter-toggle[aria-expanded="true"] .chapter-caret {
       transform: rotate(90deg);
     }
+    .sidebar .chapter { margin-top: 0.45rem; }
     .sidebar .chapter-links {
       display: none;
-      margin-top: 0.15rem;
+      margin: 0.15rem 0 0.25rem 0.45rem;
+      padding-left: 0.55rem;
+      border-left: 2px solid #e2e8f0;
     }
-    .sidebar .chapter-links.expanded {
-      display: block;
+    .sidebar .module-body .chapter-links {
+      margin-left: 0.2rem;
     }
+    .sidebar .chapter-links.expanded { display: block; }
     .sidebar ul { list-style: none; padding: 0; margin: 0; }
     .sidebar li { margin: 0; }
     .sidebar a {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
+      font-family: 'DM Sans', 'JetBrains Mono', sans-serif;
+      font-size: 0.78rem;
       text-decoration: none;
-      color: #0d9488;
-      display: block;
-      padding: 0.2rem 0.3rem;
-      border-radius: 4px;
+      color: #334155;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.3rem;
+      padding: 0.28rem 0.3rem;
+      border-radius: 6px;
       line-height: 1.35;
     }
-    .sidebar a:hover { background: rgba(13, 148, 136, 0.12); text-decoration: none; }
+    .sidebar a:hover { background: rgba(15, 118, 110, 0.08); text-decoration: none; color: var(--active); }
     .sidebar a.active {
       color: var(--active);
       font-weight: 600;
-      background: rgba(13, 148, 136, 0.18);
+      background: rgba(15, 118, 110, 0.12);
     }
-    .sidebar a.read {
-      color: #5c4d8a !important;
+    .sidebar a.read { color: #64748b !important; }
+    .sidebar a.done { color: var(--done) !important; }
+    .sidebar a.done .lesson-check,
+    .sidebar a.quiz.done .lesson-check { color: var(--done); }
+    .sidebar a.read.active,
+    .sidebar a.done.active { color: var(--active) !important; }
+    .sidebar .lesson-check {
+      width: 0.9rem;
+      flex-shrink: 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
     }
-    .sidebar a.read.active {
-      color: var(--active) !important;
+    .sidebar .lesson-num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: #0f766e;
+      margin-right: 0.15rem;
     }
-    .sidebar a.read:not(.active):hover {
-      color: #6d5c9e !important;
-      background: rgba(92, 77, 138, 0.12);
+    .sidebar a.active .lesson-num { color: var(--active); }
+    .sidebar a.done .lesson-num { color: var(--done); }
+    .sidebar a.read .lesson-num { color: #94a3b8; }
+    .sidebar .lesson-label { flex: 1; min-width: 0; }
+    .sidebar .lesson-mins {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      font-size: 0.68rem;
     }
+    .sidebar a.quiz .lesson-label { font-style: italic; }
     .main {
       flex: 1;
       display: flex;
@@ -217,20 +461,136 @@
     #welcome {
       flex: 1;
       padding: 2rem 2.5rem;
-      max-width: 800px;
+      max-width: 880px;
     }
     #welcome h1 { font-size: 1.75rem; margin: 0 0 0.5rem 0; color: var(--text); }
-    #welcome .tagline { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
-    #welcome p[style] { color: var(--text-muted); }
+    #welcome .tagline { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
+    .practice-topic-heading {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 1.5rem 0 0.65rem;
+    }
+    .practice-topic-heading:first-of-type { margin-top: 0.5rem; }
+    .dash-overview {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .dash-ring {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background:
+        radial-gradient(closest-side, #fff 72%, transparent 73% 100%),
+        conic-gradient(var(--active) calc(var(--pct, 0) * 1%), rgba(15, 118, 110, 0.14) 0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .dash-ring strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    .dash-ring span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .dash-stats {
+      display: grid;
+      gap: 0.55rem;
+      flex: 1;
+    }
+    .dash-stats strong {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+    }
+    .dash-stats span {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .dash-continue { margin: 0 0 1.5rem 0; }
+    .dash-cta {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      background: var(--active);
+      color: #fff !important;
+      text-decoration: none !important;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+    }
+    .dash-cta:hover { filter: brightness(1.05); }
+    .dash-chapters {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .dash-chapter {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .dash-chapter-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: baseline;
+      margin-bottom: 0.15rem;
+    }
+    .dash-chapter-head strong { font-size: 0.95rem; }
+    .dash-chapter-head span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .dash-quiz-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--done);
+      margin-top: 0.4rem;
+    }
+    .dash-quiz-score.muted { color: var(--text-muted); }
+    .dash-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .dash-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .dash-btn:hover { border-color: var(--active); color: var(--active); }
+    .dash-btn-danger { color: var(--danger); }
+    .dash-btn-danger:hover { border-color: var(--danger); color: var(--danger); }
     .visitor-panel {
       position: fixed;
       top: 72px;
       right: 1rem;
       background: #ffffff;
-      border: 1px solid rgba(13, 148, 136, 0.2);
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.7rem 0.9rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
       font-size: 0.72rem;
       z-index: 80;
       display: none;
@@ -238,9 +598,7 @@
       gap: 0.5rem;
       max-width: 140px;
     }
-    .visitor-panel.visible {
-      display: flex;
-    }
+    .visitor-panel.visible { display: flex; }
     .visitor-panel strong {
       display: block;
       color: var(--text);
@@ -256,11 +614,11 @@
     }
     .visitor-unlock-btn {
       position: fixed;
-      top: 1rem;
+      bottom: 1rem;
       right: 1rem;
       z-index: 75;
-      background: transparent;
-      border: 1px solid rgba(13, 148, 136, 0.3);
+      background: #fff;
+      border: 1px solid var(--border);
       color: var(--text-muted);
       padding: 0.35rem 0.55rem;
       border-radius: 6px;
@@ -268,11 +626,11 @@
       cursor: pointer;
       transition: all 0.15s ease;
       font-family: 'JetBrains Mono', monospace;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
     }
     .visitor-unlock-btn:hover {
-      background: rgba(13, 148, 136, 0.08);
-      border-color: rgba(13, 148, 136, 0.5);
-      color: var(--text);
+      border-color: var(--active);
+      color: var(--active);
     }
     #content-frame {
       flex: 1;
@@ -312,7 +670,7 @@
     .seo-discovery a {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem;
-      color: #0d9488;
+      color: var(--active);
       text-decoration: none;
       line-height: 1.35;
     }
@@ -322,16 +680,18 @@
       align-items: center;
       justify-content: center;
       padding: 0.45rem 0.75rem;
-      font-size: 1rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--header-text);
+      font-size: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      color: var(--brand);
       background: var(--header-active-bg);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      border-radius: 6px;
+      border: 1px solid rgba(15, 118, 110, 0.25);
+      border-radius: 8px;
       cursor: pointer;
       flex-shrink: 0;
+      margin-left: auto;
     }
-    .sidebar-toggle:hover { background: rgba(255, 255, 255, 0.28); }
+    .sidebar-toggle:hover { background: rgba(15, 118, 110, 0.16); }
     .sidebar-backdrop {
       display: none;
       position: fixed;
@@ -341,16 +701,24 @@
     }
     .sidebar-backdrop.visible { display: block; }
     @media (max-width: 768px) {
-      .header-inner { gap: 0.5rem 1rem; flex-wrap: wrap; }
+      .header-inner { gap: 0.65rem; flex-wrap: wrap; }
       .sidebar-toggle { display: inline-flex; }
-      .topic-nav { flex-wrap: wrap; }
+      .main-nav { width: 100%; order: 3; }
+      .mega-menu {
+        position: static;
+        min-width: 0;
+        max-width: none;
+        box-shadow: none;
+        border: 1px solid var(--border);
+        margin-top: 0.35rem;
+      }
       .sidebar {
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
         z-index: 100;
-        width: min(280px, 88vw);
+        width: min(300px, 90vw);
         min-width: unset;
         transform: translateX(-105%);
         transition: transform 0.22s ease;
@@ -359,6 +727,7 @@
       .sidebar.open { transform: translateX(0); }
       .main { width: 100%; }
       #welcome { padding: 1.25rem 1rem; }
+      .dash-overview { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -367,25 +736,44 @@
     <div class="header-inner">
       <div class="brand-block">
         <a href="index.html" class="site-logo" title="BackbenchLearner — Learn. Build. Level Up.">
-          <img src="assets/logo.png?v=a12cd41" alt="BackbenchLearner — Learn. Build. Level Up." />
+          <img class="site-logo-mark" src="assets/logo-mark.svg" width="36" height="36" alt="" />
+          <span class="site-logo-text">
+            <span class="site-logo-name">BackbenchLearner</span>
+            <span class="site-logo-tag">Learn · Build · Level up</span>
+          </span>
         </a>
       </div>
-      <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">☰ Lessons</button>
-      <nav class="topic-nav" id="topic-nav">
-        <a href="#backend-design" data-topic-id="backend-design" class="active">Backend &amp; System Design</a>
-        <a href="#gen-ai-agentic-ai" data-topic-id="gen-ai-agentic-ai">Gen AI &amp; Agentic AI</a>
+      <nav class="main-nav" id="main-nav" aria-label="Primary">
+        <div class="nav-item" id="nav-learn">
+          <button type="button" class="nav-trigger" id="learn-trigger" aria-expanded="false" aria-haspopup="true">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </span>
+            Learn
+            <span class="nav-caret">▾</span>
+          </button>
+          <div class="mega-menu" id="learn-menu" role="menu"></div>
+        </div>
+        <div class="nav-item" id="nav-practice">
+          <button type="button" class="nav-trigger" id="practice-trigger" aria-expanded="false" aria-haspopup="true">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
+            </span>
+            Practice
+            <span class="nav-caret">▾</span>
+          </button>
+          <div class="mega-menu" id="practice-menu" role="menu"></div>
+        </div>
       </nav>
+      <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">☰ Lessons</button>
     </div>
   </header>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
   <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
   <div class="content-row">
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main">
-      <div id="welcome">
-        <h1>Backend & System Design Notes</h1>
-        <p class="tagline">Core concepts, databases, caching, distributed systems, and reliability — with diagrams and explanations.</p>
-        <p style="color: var(--text-muted);">Select a topic from the sidebar to open it here.</p>
-      </div>
+      <div id="welcome"></div>
       <iframe id="content-frame" name="content-frame" title="Topic content"></iframe>
     </main>
   </div>
@@ -410,509 +798,20 @@
       <span class="label">location</span>
     </div>
   </div>
+  <script src="scripts/curriculum.js?v=20260730f"></script>
+  <script src="scripts/progress.js?v=20260730f"></script>
+  <script src="scripts/quizzes.js?v=20260730f"></script>
+  <script src="scripts/shell.js?v=20260730f"></script>
   <script>
-    (function() {
-      var READ_STORAGE_KEY = 'backbenchlearner-read';
-      var CURRENT_TOPIC_KEY = 'backbenchlearner-current-topic';
-
-      var TOPICS = {
-        'backend-design': {
-          basePath: 'Backend & System Design',
-          title: 'Backend & System Design Notes',
-          welcomeTitle: 'Backend & System Design Notes',
-          welcomeTagline: 'Core concepts, databases, caching, distributed systems, and reliability — with diagrams and explanations.',
-          sections: [
-            {
-              title: 'Backend & System Design Core Concepts',
-              links: [
-                { hash: 'backend/what-is-api', path: 'backend/what-is-api.html', label: '1. What is an API' },
-                { hash: 'backend/rest-vs-graphql', path: 'backend/rest-vs-graphql.html', label: '2. REST vs GraphQL' },
-                { hash: 'backend/http-methods', path: 'backend/http-methods.html', label: '3. HTTP methods' },
-                { hash: 'backend/http-status-codes', path: 'backend/http-status-codes.html', label: '4. HTTP status codes' },
-                { hash: 'backend/stateless-vs-stateful', path: 'backend/stateless-vs-stateful.html', label: '5. Stateless vs Stateful APIs' },
-                { hash: 'backend/auth-vs-authorization', path: 'backend/auth-vs-authorization.html', label: '6. Authentication vs Authorization' },
-                { hash: 'backend/session-vs-jwt', path: 'backend/session-vs-jwt.html', label: '7. Session-based auth vs JWT' },
-                { hash: 'backend/oauth2', path: 'backend/oauth2.html', label: '8. OAuth 2.0' },
-                { hash: 'backend/rate-limiting-vs-throttling', path: 'backend/rate-limiting-vs-throttling.html', label: '9. Rate limiting vs Throttling' },
-                { hash: 'backend/idempotency', path: 'backend/idempotency.html', label: '10. Idempotency' }
-              ]
-            },
-            {
-              title: 'Databases & Data Handling',
-              links: [
-                { hash: 'databases/sql-vs-nosql', path: 'databases/sql-vs-nosql.html', label: '1. SQL vs NoSQL' },
-                { hash: 'databases/indexes', path: 'databases/indexes.html', label: '2. Indexes' },
-                { hash: 'databases/acid-properties', path: 'databases/acid-properties.html', label: '3. ACID properties' },
-                { hash: 'databases/transactions-isolation', path: 'databases/transactions-isolation.html', label: '4. Transactions & isolation' },
-                { hash: 'databases/normalization-vs-denormalization', path: 'databases/normalization-vs-denormalization.html', label: '5. Normalization vs denormalization' },
-                { hash: 'databases/pagination', path: 'databases/pagination.html', label: '6. Pagination' },
-                { hash: 'databases/sharding-partitioning', path: 'databases/sharding-partitioning.html', label: '7. Sharding & partitioning' },
-                { hash: 'databases/read-replicas-write-scaling', path: 'databases/read-replicas-write-scaling.html', label: '8. Read replicas & write scaling' },
-                { hash: 'databases/duplicate-records', path: 'databases/duplicate-records.html', label: '9. Handling duplicate records' },
-                { hash: 'databases/optimistic-vs-pessimistic-locking', path: 'databases/optimistic-vs-pessimistic-locking.html', label: '10. Optimistic vs pessimistic locking' }
-              ]
-            },
-            {
-              title: 'Caching & Performance',
-              links: [
-                { hash: 'caching/what-is-caching', path: 'caching/what-is-caching.html', label: '1. What is caching' },
-                { hash: 'caching/cache-eviction-strategies', path: 'caching/cache-eviction-strategies.html', label: '2. Cache eviction strategies' },
-                { hash: 'caching/cache-consistency', path: 'caching/cache-consistency.html', label: '3. Cache consistency' },
-                { hash: 'caching/cdn-edge-caching', path: 'caching/cdn-edge-caching.html', label: '4. CDN and edge caching' },
-                { hash: 'caching/cache-can-make-systems-wrong', path: 'caching/cache-can-make-systems-wrong.html', label: '5. Why cache can make systems wrong' }
-              ]
-            },
-            {
-              title: 'Distributed Systems & Scaling',
-              links: [
-                { hash: 'distributed/load-balancing', path: 'distributed/load-balancing.html', label: '1. Load balancing' },
-                { hash: 'distributed/horizontal-vs-vertical-scaling', path: 'distributed/horizontal-vs-vertical-scaling.html', label: '2. Horizontal vs vertical scaling' },
-                { hash: 'distributed/microservices-vs-monoliths', path: 'distributed/microservices-vs-monoliths.html', label: '3. Microservices vs monoliths' },
-                { hash: 'distributed/service-communication', path: 'distributed/service-communication.html', label: '4. Service-to-service communication' },
-                { hash: 'distributed/message-queues', path: 'distributed/message-queues.html', label: '5. Message queues' }
-              ]
-            },
-            {
-              title: 'Reliability & Real-World Problems',
-              links: [
-                { hash: 'reliability/exactly-once-vs-at-least-once', path: 'reliability/exactly-once-vs-at-least-once.html', label: '1. Exactly-once vs at-least-once' },
-                { hash: 'reliability/retries-timeouts-circuit-breakers', path: 'reliability/retries-timeouts-circuit-breakers.html', label: '2. Retries, timeouts, circuit breakers' },
-                { hash: 'reliability/race-conditions', path: 'reliability/race-conditions.html', label: '3. Race conditions' },
-                { hash: 'reliability/distributed-locking', path: 'reliability/distributed-locking.html', label: '4. Distributed locking' },
-                { hash: 'reliability/event-driven-architecture', path: 'reliability/event-driven-architecture.html', label: '5. Event-driven architecture' },
-                { hash: 'reliability/saga-pattern', path: 'reliability/saga-pattern.html', label: '6. Saga pattern' },
-                { hash: 'reliability/graceful-degradation', path: 'reliability/graceful-degradation.html', label: '7. Graceful degradation' },
-                { hash: 'reliability/observability', path: 'reliability/observability.html', label: '8. Observability' },
-                { hash: 'reliability/deployments', path: 'reliability/deployments.html', label: '9. Deployments' },
-                { hash: 'reliability/traffic-spikes', path: 'reliability/traffic-spikes.html', label: '10. Traffic spikes' }
-              ]
-            }
-          ]
-        },
-        'gen-ai-agentic-ai': {
-          basePath: 'Gen AI & Agentic AI',
-          title: 'Gen AI & Agentic AI',
-          welcomeTitle: 'Gen AI & Agentic AI',
-          welcomeTagline: 'Learn Gen AI and Agentic AI in easy language with diagrams and practical examples.',
-          sections: [
-            {
-              title: 'Gen AI Basics',
-              links: [
-                { hash: 'gen-ai-basics/what-is-ai', path: 'gen-ai-basics/what-is-ai.html', label: '1. What is AI' },
-                { hash: 'gen-ai-basics/what-is-machine-learning', path: 'gen-ai-basics/what-is-machine-learning.html', label: '2. What is Machine Learning' },
-                { hash: 'gen-ai-basics/what-is-deep-learning', path: 'gen-ai-basics/what-is-deep-learning.html', label: '3. What is Deep Learning' },
-                { hash: 'gen-ai-basics/what-is-generative-ai', path: 'gen-ai-basics/what-is-generative-ai.html', label: '4. What is Generative AI' },
-                { hash: 'gen-ai-basics/what-are-llms-and-text-generation', path: 'gen-ai-basics/what-are-llms-and-text-generation.html', label: '5. What LLMs are and how they generate text' },
-                { hash: 'gen-ai-basics/ai-ml-deep-learning-genai', path: 'gen-ai-basics/ai-ml-deep-learning-genai.html', label: '6. AI vs ML vs Deep Learning vs Gen AI' },
-                { hash: 'gen-ai-basics/common-model-types', path: 'gen-ai-basics/common-model-types.html', label: '7. Common model types' },
-                { hash: 'gen-ai-basics/pretraining-finetuning-inference', path: 'gen-ai-basics/pretraining-finetuning-inference.html', label: '8. Pretraining, fine-tuning, inference' }
-              ]
-            },
-            {
-              title: 'Deep Learning Essentials',
-              links: [
-                { hash: 'deep-learning-essentials/artificial-neuron-and-perceptron', path: 'deep-learning-essentials/artificial-neuron-and-perceptron.html', label: '1. Artificial neuron and perceptron' },
-                { hash: 'deep-learning-essentials/activation-functions-and-mlp', path: 'deep-learning-essentials/activation-functions-and-mlp.html', label: '2. Activation functions and MLP' },
-                { hash: 'deep-learning-essentials/backpropagation-and-gradient-descent', path: 'deep-learning-essentials/backpropagation-and-gradient-descent.html', label: '3. Backpropagation and gradient descent' },
-                { hash: 'deep-learning-essentials/overfitting-underfitting-bias-variance', path: 'deep-learning-essentials/overfitting-underfitting-bias-variance.html', label: '4. Overfitting, underfitting, bias-variance' },
-                { hash: 'deep-learning-essentials/regularization-techniques', path: 'deep-learning-essentials/regularization-techniques.html', label: '5. Regularization techniques' }
-              ]
-            },
-            {
-              title: 'Core LLM Concepts',
-              links: [
-                { hash: 'core-llm-concepts/tokens-context-window-temperature-top-p', path: 'core-llm-concepts/tokens-context-window-temperature-top-p.html', label: '1. Tokens, context window, temperature, top-p' },
-                { hash: 'core-llm-concepts/prompt-engineering', path: 'core-llm-concepts/prompt-engineering.html', label: '2. Prompt engineering' },
-                { hash: 'core-llm-concepts/embeddings-semantic-search', path: 'core-llm-concepts/embeddings-semantic-search.html', label: '3. Embeddings and semantic search' },
-                { hash: 'core-llm-concepts/rag-retrieval-augmented-generation', path: 'core-llm-concepts/rag-retrieval-augmented-generation.html', label: '4. RAG (Retrieval-Augmented Generation)' },
-                { hash: 'core-llm-concepts/hallucinations-and-limitations', path: 'core-llm-concepts/hallucinations-and-limitations.html', label: '5. Hallucinations and model limitations' }
-              ]
-            },
-            {
-              title: 'Transformer Architecture (Session 2-3)',
-              links: [
-                { hash: 'transformer-architecture/why-transformers', path: 'transformer-architecture/why-transformers.html', label: '1. Why transformers replaced RNN seq2seq' },
-                { hash: 'transformer-architecture/self-attention-qkv', path: 'transformer-architecture/self-attention-qkv.html', label: '2. Self-attention and Q/K/V in detail' },
-                { hash: 'transformer-architecture/positional-encoding-and-mha', path: 'transformer-architecture/positional-encoding-and-mha.html', label: '3. Positional encoding and multi-head attention' },
-                { hash: 'transformer-architecture/decoder-masking-cross-attention', path: 'transformer-architecture/decoder-masking-cross-attention.html', label: '4. Decoder masking and cross-attention' },
-                { hash: 'transformer-architecture/autoregressive-decoding', path: 'transformer-architecture/autoregressive-decoding.html', label: '5. Autoregressive generation and decoding' }
-              ]
-            },
-            {
-              title: 'LLM Models, Prompting & APIs (Session 4-5)',
-              links: [
-                { hash: 'llm-models-and-apis/llm-evolution-and-model-families', path: 'llm-models-and-apis/llm-evolution-and-model-families.html', label: '1. LLM evolution and model families' },
-                { hash: 'llm-models-and-apis/prompting-fundamentals-and-roles', path: 'llm-models-and-apis/prompting-fundamentals-and-roles.html', label: '2. Prompting fundamentals and roles' },
-                { hash: 'llm-models-and-apis/decoding-parameters-and-control', path: 'llm-models-and-apis/decoding-parameters-and-control.html', label: '3. Decoding parameters and output control' },
-                { hash: 'llm-models-and-apis/apis-and-tool-calling', path: 'llm-models-and-apis/apis-and-tool-calling.html', label: '4. OpenAI/Azure/Groq APIs and tool calling' },
-                { hash: 'llm-models-and-apis/structured-outputs-and-validation', path: 'llm-models-and-apis/structured-outputs-and-validation.html', label: '5. Structured outputs, validation, and reliability' }
-              ]
-            },
-            {
-              title: 'Agentic AI Basics',
-              links: [
-                { hash: 'agentic-ai-basics/what-makes-an-agent', path: 'agentic-ai-basics/what-makes-an-agent.html', label: '1. What makes an AI system an agent' },
-                { hash: 'agentic-ai-basics/reasoning-planning-tools-memory', path: 'agentic-ai-basics/reasoning-planning-tools-memory.html', label: '2. Reasoning + planning + tool use + memory' },
-                { hash: 'agentic-ai-basics/chatbot-vs-agent', path: 'agentic-ai-basics/chatbot-vs-agent.html', label: '3. Chatbot vs agent' },
-                { hash: 'agentic-ai-basics/single-vs-multi-agent', path: 'agentic-ai-basics/single-vs-multi-agent.html', label: '4. Single-agent vs multi-agent systems' },
-                { hash: 'agentic-ai-basics/human-in-the-loop-workflows', path: 'agentic-ai-basics/human-in-the-loop-workflows.html', label: '5. Human-in-the-loop workflows' }
-              ]
-            },
-            {
-              title: 'Agent Design Topics',
-              links: [
-                { hash: 'agent-design-topics/task-decomposition', path: 'agent-design-topics/task-decomposition.html', label: '1. Task decomposition' },
-                { hash: 'agent-design-topics/tool-calling-function-calling', path: 'agent-design-topics/tool-calling-function-calling.html', label: '2. Tool calling / function calling' },
-                { hash: 'agent-design-topics/short-term-vs-long-term-memory', path: 'agent-design-topics/short-term-vs-long-term-memory.html', label: '3. Short-term vs long-term memory' },
-                { hash: 'agent-design-topics/reflection-self-correction-loops', path: 'agent-design-topics/reflection-self-correction-loops.html', label: '4. Reflection / self-correction loops' },
-                { hash: 'agent-design-topics/orchestration-workflow-control', path: 'agent-design-topics/orchestration-workflow-control.html', label: '5. Orchestration and workflow control' }
-              ]
-            },
-            {
-              title: 'Practical Topics',
-              links: [
-                { hash: 'practical-topics/use-cases', path: 'practical-topics/use-cases.html', label: '1. Use cases' },
-                { hash: 'practical-topics/evaluation-metrics', path: 'practical-topics/evaluation-metrics.html', label: '2. Evaluation: accuracy, latency, cost, safety' },
-                { hash: 'practical-topics/guardrails-and-security', path: 'practical-topics/guardrails-and-security.html', label: '3. Guardrails and security' },
-                { hash: 'practical-topics/prompt-injection-and-tool-misuse-risks', path: 'practical-topics/prompt-injection-and-tool-misuse-risks.html', label: '4. Prompt injection and tool misuse risks' },
-                { hash: 'practical-topics/monitoring-and-observability', path: 'practical-topics/monitoring-and-observability.html', label: '5. Monitoring and observability' }
-              ]
-            },
-            {
-              title: 'Build Skills',
-              links: [
-                { hash: 'build-skills/apis-for-models', path: 'build-skills/apis-for-models.html', label: '1. APIs for models' },
-                { hash: 'build-skills/vector-databases', path: 'build-skills/vector-databases.html', label: '2. Vector databases' },
-                { hash: 'build-skills/langchain-llamaindex-autogen-crewai', path: 'build-skills/langchain-llamaindex-autogen-crewai.html', label: '3. LangChain, LlamaIndex, AutoGen, CrewAI' },
-                { hash: 'build-skills/basic-python-for-experimentation', path: 'build-skills/basic-python-for-experimentation.html', label: '4. Basic Python for experimentation' },
-                { hash: 'build-skills/workflow-automation-concepts', path: 'build-skills/workflow-automation-concepts.html', label: '5. Workflow automation concepts' }
-              ]
-            },
-            {
-              title: 'Capstone: Combined Use Case',
-              links: [
-                { hash: 'capstone/end-to-end-ai-agent-use-case', path: 'capstone/end-to-end-ai-agent-use-case.html', label: '1. End-to-end use case (all concepts together)' }
-              ]
-            }
-          ]
-        }
-      };
-
-      function getCurrentTopicId() {
-        var id = sessionStorage.getItem(CURRENT_TOPIC_KEY);
-        return (id && TOPICS[id]) ? id : 'backend-design';
-      }
-      function setCurrentTopicId(id) {
-        sessionStorage.setItem(CURRENT_TOPIC_KEY, id);
-      }
-
-      function getReadSet() {
-        try {
-          var raw = sessionStorage.getItem(READ_STORAGE_KEY);
-          return raw ? new Set(JSON.parse(raw)) : new Set();
-        } catch (e) { return new Set(); }
-      }
-      function saveReadSet(set) {
-        try { sessionStorage.setItem(READ_STORAGE_KEY, JSON.stringify(Array.from(set))); } catch (e) {}
-      }
-      function parseHash() {
-        var h = decodeURIComponent(window.location.hash.slice(1));
-        if (!h) {
-          return { topicId: getCurrentTopicId(), path: '' };
-        }
-        var slash = h.indexOf('/');
-        if (slash !== -1) {
-          var maybeTopic = h.slice(0, slash);
-          if (TOPICS[maybeTopic]) {
-            var rest = h.slice(slash + 1);
-            if (!rest) {
-              return { topicId: maybeTopic, path: '' };
-            }
-            var lessonPath = rest.indexOf('.html') === -1 ? rest + '.html' : rest;
-            var topic = TOPICS[maybeTopic];
-            return { topicId: maybeTopic, path: topic.basePath + '/' + lessonPath };
-          }
-        }
-        if (TOPICS[h]) {
-          return { topicId: h, path: '' };
-        }
-        var topicId = getCurrentTopicId();
-        var legacyTopic = TOPICS[topicId];
-        var legacyPath = h.indexOf('.html') === -1 ? h + '.html' : h;
-        return { topicId: topicId, path: legacyTopic.basePath + '/' + legacyPath };
-      }
-
-      function getPathFromHash() {
-        return parseHash().path;
-      }
-
-      function lessonHash(topicId, linkHash) {
-        return topicId + '/' + linkHash;
-      }
-
-      function renderSeoLinks() {
-        var el = document.getElementById('seo-links');
-        if (!el) return;
-        var html = '';
-        Object.keys(TOPICS).forEach(function(topicId) {
-          var topic = TOPICS[topicId];
-          topic.sections.forEach(function(section) {
-            section.links.forEach(function(link) {
-              var fullPath = topic.basePath + '/' + link.path;
-              var encoded = encodeURI(fullPath);
-              html += '<a href="' + encoded + '">' + topic.title + ': ' + link.label + '</a>';
-            });
-          });
+    // Paint the conic progress ring from data-pct after the dashboard renders.
+    (function () {
+      var observer = new MutationObserver(function () {
+        document.querySelectorAll('.dash-ring[data-pct]').forEach(function (el) {
+          el.style.setProperty('--pct', el.getAttribute('data-pct') || '0');
         });
-        el.innerHTML = html;
-      }
-
-      function formatLocation(data) {
-        if (!data) return 'Unknown';
-        var parts = [];
-        if (data.city) parts.push(data.city);
-        if (data.region) parts.push(data.region);
-        if (data.country_name) parts.push(data.country_name);
-        return parts.length ? parts.join(', ') : 'Unknown';
-      }
-
-      function loadVisitorInfo() {
-        var countEl = document.getElementById('visitor-count');
-        var locationEl = document.getElementById('visitor-location');
-        if (countEl) {
-          fetch('https://api.countapi.xyz/hit/backbenchlearner.com/visitor-counter')
-            .then(function(resp) { return resp.json(); })
-            .then(function(data) {
-              if (data && typeof data.value === 'number') {
-                countEl.textContent = data.value.toLocaleString();
-              } else {
-                countEl.textContent = 'N/A';
-              }
-            })
-            .catch(function() { countEl.textContent = 'N/A'; });
-        }
-        if (locationEl) {
-          fetch('https://ipapi.co/json/')
-            .then(function(resp) { return resp.json(); })
-            .then(function(data) {
-              locationEl.textContent = formatLocation(data);
-            })
-            .catch(function() { locationEl.textContent = 'Unknown'; });
-        }
-      }
-
-      function checkVisitorAuth() {
-        var pass = sessionStorage.getItem('visitor-auth');
-        return pass === 'true';
-      }
-      function setVisitorAuth(val) {
-        if (val) sessionStorage.setItem('visitor-auth', 'true');
-        else sessionStorage.removeItem('visitor-auth');
-      }
-      function promptVisitorPassword() {
-        var pwd = window.prompt('Enter admin password to view stats:');
-        if (pwd === 'backbench2026') {
-          setVisitorAuth(true);
-          showVisitorPanel();
-          loadVisitorInfo();
-          return true;
-        } else if (pwd !== null) {
-          window.alert('Incorrect password.');
-        }
-        return false;
-      }
-      function showVisitorPanel() {
-        var panel = document.getElementById('visitor-panel');
-        if (panel && checkVisitorAuth()) {
-          panel.classList.add('visible');
-        }
-      }
-      function hideVisitorPanel() {
-        var panel = document.getElementById('visitor-panel');
-        if (panel) {
-          panel.classList.remove('visible');
-        }
-      }
-
-      function setSidebarOpen(open) {
-        var sidebar = document.getElementById('sidebar');
-        var backdrop = document.getElementById('sidebar-backdrop');
-        var toggle = document.getElementById('sidebar-toggle');
-        if (!sidebar || !backdrop || !toggle) return;
-        sidebar.classList.toggle('open', open);
-        backdrop.classList.toggle('visible', open);
-        backdrop.hidden = !open;
-        toggle.setAttribute('aria-expanded', String(open));
-      }
-
-      function renderSidebar(topicId) {
-        var topic = TOPICS[topicId];
-        var sidebar = document.getElementById('sidebar');
-        if (!topic) {
-          sidebar.innerHTML = '<p style="color: var(--text-muted); padding: 1rem;">No topics yet for this section.</p>';
-          return;
-        }
-        var base = topic.basePath ? topic.basePath + '/' : '';
-        var html = '';
-        topic.sections.forEach(function(section, sectionIndex) {
-          var listId = 'chapter-links-' + topicId + '-' + sectionIndex;
-          html += '<div class="chapter">';
-          html += '<button class="chapter-toggle" type="button" data-list-id="' + listId + '" aria-expanded="true">';
-          html += '<span>' + section.title + '</span><span class="chapter-caret">▶</span>';
-          html += '</button>';
-          html += '<ul class="chapter-links expanded" id="' + listId + '">';
-          section.links.forEach(function(link) {
-            var fullPath = base + link.path;
-            html += '<li><a href="#' + lessonHash(topicId, link.hash) + '" data-topic="' + fullPath + '">' + link.label + '</a></li>';
-          });
-          html += '</ul></div>';
-        });
-        sidebar.innerHTML = html;
-
-        var toggles = sidebar.querySelectorAll('.chapter-toggle');
-        toggles.forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            var listId = btn.getAttribute('data-list-id');
-            var list = document.getElementById(listId);
-            if (!list) return;
-            var isExpanded = btn.getAttribute('aria-expanded') === 'true';
-            btn.setAttribute('aria-expanded', String(!isExpanded));
-            list.classList.toggle('expanded', !isExpanded);
-          });
-        });
-      }
-
-      function expandChapterForPath(path) {
-        if (!path) return;
-        var activeLink = document.querySelector('.sidebar a[data-topic="' + path + '"]');
-        if (!activeLink) return;
-        var chapter = activeLink.closest('.chapter');
-        if (!chapter) return;
-        var btn = chapter.querySelector('.chapter-toggle');
-        var list = chapter.querySelector('.chapter-links');
-        if (btn && list) {
-          btn.setAttribute('aria-expanded', 'true');
-          list.classList.add('expanded');
-        }
-      }
-
-      function setHeaderActive(topicId) {
-        var nav = document.getElementById('topic-nav');
-        if (!nav) return;
-        var links = nav.querySelectorAll('a[data-topic-id]');
-        links.forEach(function(a) {
-          a.classList.toggle('active', a.getAttribute('data-topic-id') === topicId);
-        });
-      }
-
-      function showWelcome(topicId) {
-        var topic = TOPICS[topicId];
-        var welcome = document.getElementById('welcome');
-        if (topic && welcome) {
-          welcome.querySelector('h1').textContent = topic.welcomeTitle || topic.title;
-          welcome.querySelector('.tagline').textContent = topic.welcomeTagline || '';
-          welcome.style.display = 'block';
-        }
-      }
-
-      function syncUI() {
-        var parsed = parseHash();
-        if (parsed.topicId && TOPICS[parsed.topicId] && getCurrentTopicId() !== parsed.topicId) {
-          setCurrentTopicId(parsed.topicId);
-          setHeaderActive(parsed.topicId);
-          renderSidebar(parsed.topicId);
-          showWelcome(parsed.topicId);
-        }
-        var path = parsed.path;
-        var welcome = document.getElementById('welcome');
-        var frame = document.getElementById('content-frame');
-        var links = document.querySelectorAll('.sidebar a[data-topic]');
-        if (path) {
-          frame.src = path;
-          frame.classList.add('visible');
-          welcome.style.display = 'none';
-          var readSet = getReadSet();
-          readSet.add(path);
-          saveReadSet(readSet);
-          setSidebarOpen(false);
-        } else {
-          frame.src = '';
-          frame.classList.remove('visible');
-          welcome.style.display = 'block';
-        }
-        links.forEach(function(a) {
-          var t = a.getAttribute('data-topic');
-          a.classList.toggle('active', t === path);
-          a.classList.toggle('read', getReadSet().has(t));
-        });
-        expandChapterForPath(path);
-      }
-
-      function switchTopic(topicId) {
-        if (!TOPICS[topicId]) return;
-        setCurrentTopicId(topicId);
-        setHeaderActive(topicId);
-        renderSidebar(topicId);
-        window.location.hash = topicId;
-        showWelcome(topicId);
-        document.getElementById('content-frame').src = '';
-        document.getElementById('content-frame').classList.remove('visible');
-        document.getElementById('welcome').style.display = 'block';
-        syncUI();
-      }
-
-      document.getElementById('topic-nav').addEventListener('click', function(e) {
-        var a = e.target.closest('a[data-topic-id]');
-        if (a && !a.classList.contains('active')) {
-          e.preventDefault();
-          switchTopic(a.getAttribute('data-topic-id'));
-        }
       });
-
-      var sidebarToggle = document.getElementById('sidebar-toggle');
-      var sidebarBackdrop = document.getElementById('sidebar-backdrop');
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          var sidebar = document.getElementById('sidebar');
-          setSidebarOpen(!sidebar.classList.contains('open'));
-        });
-      }
-      if (sidebarBackdrop) {
-        sidebarBackdrop.addEventListener('click', function() {
-          setSidebarOpen(false);
-        });
-      }
-
-      window.addEventListener('hashchange', syncUI);
-      window.addEventListener('load', function() {
-        var parsed = parseHash();
-        if (parsed.topicId && TOPICS[parsed.topicId]) {
-          setCurrentTopicId(parsed.topicId);
-        }
-        var topicId = getCurrentTopicId();
-        setHeaderActive(topicId);
-        renderSidebar(topicId);
-        showWelcome(topicId);
-        renderSeoLinks();
-        syncUI();
-        var unlockBtn = document.getElementById('visitor-unlock-btn');
-        if (unlockBtn) {
-          unlockBtn.addEventListener('click', function() {
-            if (checkVisitorAuth()) {
-              setVisitorAuth(false);
-              hideVisitorPanel();
-            } else {
-              promptVisitorPassword();
-            }
-          });
-        }
-        if (checkVisitorAuth()) {
-          showVisitorPanel();
-          loadVisitorInfo();
-        }
-      });
+      observer.observe(document.getElementById('welcome'), { childList: true, subtree: true });
     })();
   </script>
 </body>
 </html>
-

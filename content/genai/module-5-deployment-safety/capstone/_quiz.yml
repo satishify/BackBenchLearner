@@ -1,0 +1,46 @@
+title: "5.4 Industry Capstone Project"
+questions:
+  - q: What is the capstone use case?
+    options:
+      - Training a vision model from scratch on ImageNet only
+      - An e-commerce AI support agent for questions, order status, and safe returns
+      - A pure chatbot with no tools, RAG, or guardrails
+      - Offline spreadsheet macros with no LLM
+    answer: 1
+    why: The capstone builds an AI support agent that answers questions, checks orders, and creates return requests safely.
+
+  - q: In the architecture, what supplies latest return/refund rules before answering?
+    options:
+      - Random guessing with temperature 2.0
+      - RAG over a vector DB of policy documents
+      - Hard-coded HTML with no retrieval
+      - Human email every time with no agent
+    answer: 1
+    why: Embeddings + retriever + vector DB ground answers in current policy docs via RAG before the LLM/agent responds.
+
+  - q: When should human approval (HITL) fire in this use case?
+    options:
+      - Never — all refunds auto-execute
+      - On every greeting message
+      - For high-risk actions such as high-value refunds
+      - Only after observability is deleted
+    answer: 2
+    why: Guardrails route high-risk actions to manager approval (e.g., high-value refunds); safer steps can auto-execute.
+
+  - q: In the damaged-product example, what does the agent do after retrieving policy?
+    options:
+      - Stop and ask the user to file a paper form only
+      - Call Order API to verify the order, then Returns API to create the return
+      - Ignore tools and invent a ticket ID
+      - Wipe observability logs before responding
+    answer: 1
+    why: Flow is intent → RAG policy → Order API verification → Returns API create → validated answer with ticket ID → logged steps.
+
+  - q: Which evaluation dimensions does the capstone checklist cover?
+    options:
+      - Accuracy, latency, cost, safety, and reliability (retry/fallback)
+      - Only model parameter count
+      - Only UI color contrast
+      - Only training epoch count
+    answer: 0
+    why: Checklist covers policy/order accuracy, latency targets, token/tool cost, safety (no leaks/violations), and reliability under API timeouts.

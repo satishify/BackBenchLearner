@@ -1,0 +1,82 @@
+title: "2.2 Structured Outputs & LLM Evaluations"
+questions:
+  - q: "A checkout agent must return JSON with fields order_id (string) and total_cents (integer). What completes a real output contract?"
+    options:
+      - "Mentioning JSON in prose with no validation"
+      - "Schema + parse/validate step + clear repair or fail behavior on mismatch"
+      - "Asking for 'be nice' in the system prompt only"
+      - "Logging tokens without checking types"
+    answer: 1
+    why: "Contracts need machine-checkable structure and a runtime that rejects or repairs invalid payloads—not vibes."
+
+  - q: "Your validator rejects 8% of model outputs. Best next product move?"
+    options:
+      - "Ship invalid JSON to the payment API unchanged"
+      - "Retry with a repair prompt, constrained decoding, or fall back to a safe path—and track the rate"
+      - "Raise temperature to 2.0 to increase variety of broken shapes"
+      - "Delete the schema because it is inconvenient"
+    answer: 1
+    why: "Treat schema failures as first-class errors with remediation and metrics, not silent corruption."
+
+  - q: "When would you prefer a locally hosted open model over a hosted API?"
+    options:
+      - "You need data residency, custom routing, or predictable unit economics at high volume"
+      - "You want zero ops and never care about GPUs"
+      - "Local models always beat frontier APIs on every benchmark automatically"
+      - "Hosted APIs cannot do tool calling"
+    answer: 0
+    why: "Self-hosting trades ops burden for control over privacy, cost curves, and deployment topology."
+
+  - q: "For a summarization task eval, which metric suite is most product-aligned?"
+    options:
+      - "Only training loss on the summarizer weights"
+      - "Faithfulness/coverage against source plus latency and length constraints"
+      - "BLEU alone with no human or LLM-judge spot checks"
+      - "Counting commas in the summary"
+    answer: 1
+    why: "Summaries must stay true to the source and meet UX/latency budgets; loss or surface n-grams alone miss that."
+
+  - q: "Classification prompting vs fine-tuning: you have 12 labels and 40 messy examples. Sensible first approach?"
+    options:
+      - "Full fine-tune a 70B model immediately"
+      - "Strong label definitions, few-shot exemplars, structured label output, then measure confusion"
+      - "Random labels at temperature 2"
+      - "Disable the system prompt"
+    answer: 1
+    why: "With tiny noisy data, prompting + clear taxonomy usually beats jumping straight to heavy fine-tuning."
+
+  - q: "QA prompting that must cite a provided passage should instruct the model to…"
+    options:
+      - "Ignore the passage and use world knowledge first"
+      - "Answer only from the passage and refuse or say unknown when unsupported"
+      - "Always invent a URL"
+      - "Translate the question into emoji only"
+    answer: 1
+    why: "Grounded QA needs an explicit closed-book-over-context policy so the model does not freestyle."
+
+  - q: "Structured decoding / JSON mode helps most when…"
+    options:
+      - "You want open-ended poetry with no fields"
+      - "Downstream code will parse fields and a malformed key breaks the pipeline"
+      - "You never validate outputs anyway"
+      - "Latency is irrelevant and schemas are banned"
+    answer: 1
+    why: "Constrained formats reduce parse failures for automation; creative free text is the wrong use case."
+
+  - q: "A hosted API returns finish_reason=length mid-JSON. What failed?"
+    options:
+      - "The tokenizer deleted JSON forever"
+      - "Max output tokens cut the completion before the object closed—budget or prompt verbosity issue"
+      - "Temperature became a string"
+      - "The system role was too short"
+    answer: 1
+    why: "Truncation yields partial JSON; raise max tokens, tighten the schema, or ask for shorter fields."
+
+  - q: "Local vs hosted serving: which operational risk is uniquely yours when self-hosting?"
+    options:
+      - "Provider rate limits on their multi-tenant fleet"
+      - "GPU capacity planning, batching, and model upgrade rollouts on your infra"
+      - "The vendor’s SOC2 report"
+      - "DNS for api.openai.com only"
+    answer: 1
+    why: "Self-hosting shifts reliability and scaling work onto your team’s serving stack."

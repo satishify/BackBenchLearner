@@ -1,88 +1,22 @@
 <!DOCTYPE html>
+<!-- Generated redirect stub. This lesson moved; kept so old links and search results keep working. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
-  <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">
-  <meta property="og:title" content="Why Transformers Replaced RNNs | BackbenchLearner">
-  <meta property="og:description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://backbenchlearner.com/Gen%20AI%20%26%20Agentic%20AI/transformer-architecture/why-transformers.html">
-  <meta property="og:image" content="https://backbenchlearner.com/assets/og-default.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Why Transformers Replaced RNNs | BackbenchLearner">
-  <meta name="twitter:description" content="Understand why Transformer architecture replaced RNN seq2seq models for modern language tasks.">
-  <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-default.png">
-  <title>Why Transformers Replaced RNNs | BackbenchLearner</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <title>Moved: Why Transformers Replaced RNNs | BackbenchLearner</title>
+  <link rel="canonical" href="https://backbenchlearner.com/genai/module-1-foundations/transformers/why-transformers.html">
+  <meta http-equiv="refresh" content="0; url=../../genai/module-1-foundations/transformers/why-transformers.html">
+  <meta name="robots" content="noindex,follow">
   <link rel="stylesheet" href="../../styles/common.css">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 </head>
 <body>
   <div class="wrapper">
-    <nav><a href="../../index.html">← Home</a></nav>
-    <h1>Why Transformers Replaced Earlier Seq2Seq Models</h1>
-    <p>Before Transformers, sequence tasks used RNN/LSTM encoder-decoder models. They worked, but had major scaling and context limitations.</p>
-
-    <h2>Pre-attention Seq2Seq bottleneck</h2>
-    <p>Classical encoder–decoder RNNs read input token-by-token, then pass a single <strong>context vector</strong> to the decoder. For a 100-word paragraph, details from early words (e.g. noun number, gender) are squeezed into one fixed-size vector (often 512 dims) and degraded by later tokens.</p>
-
-    <div class="diagram-wrap">
-      <div class="mermaid">
-flowchart LR
-    E1[Encoder: The] --> E2[cat] --> E3[sat]
-    E3 --> V[Context vector bottleneck]
-    V --> D1[Decoder: Le] --> D2[chat]
-    V -.-> L[Long inputs lose early detail]
-      </div>
-    </div>
-
-    <h2>Five fatal bottlenecks of classical sequence models</h2>
-    <ul>
-      <li><strong>Fixed context bottleneck</strong> — one vector cannot faithfully store long inputs.</li>
-      <li><strong>Vanishing / exploding gradients</strong> — error signals decay or blow up across long time chains.</li>
-      <li><strong>Poor long-range dependencies</strong> — early token influence fades over many steps.</li>
-      <li><strong>No training parallelism</strong> — step <em>t</em> waits for <em>t−1</em>, under-using GPUs.</li>
-      <li><strong>Uniform input treatment</strong> — no dynamic focus on the most relevant source words.</li>
-    </ul>
-
-    <h2>Cross-attention (Bahdanau 2015) — first fix</h2>
-    <p>Instead of one dead vector, the decoder keeps <strong>all encoder hidden states</strong> in a memory cache. At each decoding step it computes alignment weights α<sub>ti</sub> — a spotlight over source positions — and builds a dynamic context: <code>c_t = Σ α_ti · h_i</code>. When translating “cat” → “chat”, weights might be [0.05, 0.90, 0.05] on “The / cat / sat”.</p>
-
-    <h2>Why the Transformer was the next leap</h2>
-    <ul>
-      <li><strong>Self-attention</strong> replaces recurrence — every token queries every token in parallel.</li>
-      <li>Dependency path length becomes <strong>O(1)</strong> across the sequence mesh vs <strong>O(n)</strong> along an RNN chain.</li>
-      <li><strong>Full GPU parallelism</strong> — entire sentences processed as matrix batches.</li>
-      <li><strong>Multi-head attention</strong> captures different relation types (syntax, semantics, position) simultaneously.</li>
-    </ul>
-
-    <div class="diagram-wrap">
-      <div class="mermaid">
-flowchart TB
-    subgraph RNN["RNN cross-attention"]
-      R1[Sequential O(n) steps]
-      R2[Decoder queries encoder memory]
-    end
-    subgraph TR["Transformer self-attention"]
-      T1[Parallel token mesh]
-      T2[O(1) token-to-token links]
-    end
-    RNN --> TR
-      </div>
-    </div>
-
-    <footer>
-      <a href="../core-llm-concepts/hallucinations-and-limitations.html">Previous</a> · <a href="self-attention-qkv.html">Next: Self-attention and Q/K/V</a>
-    </footer>
+    <h1>This page moved</h1>
+    <p>&ldquo;Why Transformers Replaced RNNs&rdquo; now lives at a new address. You should be redirected automatically.</p>
+    <p><a href="../../genai/module-1-foundations/transformers/why-transformers.html">Continue to Why Transformers Replaced RNNs</a></p>
+    <p><a href="../../index.html">Back to BackbenchLearner home</a></p>
   </div>
-  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
-  <script>if (window.self !== window.top) document.body.classList.add('in-iframe');</script>
-<script src="../../scripts/lesson-shell.js"></script>
+  <script>window.location.replace("../../genai/module-1-foundations/transformers/why-transformers.html");</script>
 </body>
 </html>
-

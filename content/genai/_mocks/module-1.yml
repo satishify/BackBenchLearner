@@ -1,0 +1,253 @@
+id: genai/mock/module-1
+title: "Module 1 Mock Exam"
+minutes: 90
+questions:
+  - q: "A team claims their product is 'AI' because it uses a large rule table and a regex engine. Under which modern framing is that claim weakest?"
+    section: "Foundations"
+    options:
+      - "Acting rationally by maximizing a defined objective from data or a model of the world"
+      - "Using any automation that reduces human keystrokes"
+      - "Shipping software that has a confidence score UI"
+      - "Calling an external REST API from a backend"
+    answer: 0
+    why: "Modern ML/AI systems typically learn or optimize from data or a learned model; a static rule table alone is classical programming, not learning-based AI."
+
+  - q: "Which statement best separates supervised learning from unsupervised learning?"
+    section: "Foundations"
+    options:
+      - "Supervised always uses neural nets; unsupervised never does"
+      - "Supervised trains with labeled targets; unsupervised finds structure without those targets"
+      - "Unsupervised always predicts next tokens"
+      - "Supervised cannot be used for classification"
+    answer: 1
+    why: "The defining difference is presence of labeled targets during training, not the model family."
+
+  - q: "Why is deep learning usually preferred over shallow linear models for raw image pixels?"
+    section: "Foundations"
+    options:
+      - "Linear models cannot run on GPUs"
+      - "Hierarchical nonlinear features can be learned instead of hand-engineering every pattern"
+      - "Deep nets never overfit"
+      - "Pixels are already one-hot class labels"
+    answer: 1
+    why: "Depth plus nonlinearity lets the network build edges→parts→objects style representations from pixels."
+
+  - q: "Two sentences have cosine similarity 0.92 in embedding space but share almost no surface words. What does that usually indicate?"
+    section: "Embeddings"
+    options:
+      - "The embedder is broken and only matches exact strings"
+      - "The vectors capture semantic relatedness beyond lexical overlap"
+      - "Cosine similarity only works for identical documents"
+      - "You must switch to Euclidean distance for text"
+    answer: 1
+    why: "Dense embeddings are trained so paraphrases and related meanings land nearby even without shared tokens."
+
+  - q: "You L2-normalize embeddings before search. Which similarity becomes equivalent to a plain dot product?"
+    section: "Embeddings"
+    options:
+      - "Jaccard similarity"
+      - "Cosine similarity"
+      - "Edit distance"
+      - "BM25"
+    answer: 1
+    why: "For unit vectors, cos(θ) = u·v. Normalization makes cosine search a dot-product lookup."
+
+  - q: "A single perceptron with a hard threshold fails to learn XOR. What is the core reason?"
+    section: "Perceptron/MLP"
+    options:
+      - "XOR needs floating-point weights only"
+      - "XOR is not linearly separable in the raw input space"
+      - "Perceptrons cannot represent AND"
+      - "XOR requires softmax in the input layer"
+    answer: 1
+    why: "A linear decision boundary cannot separate XOR; a multilayer network with nonlinearity can."
+
+  - q: "Stacking three Dense(linear) layers with no activation between them is functionally equivalent to what?"
+    section: "Perceptron/MLP"
+    options:
+      - "A deep nonlinear MLP with three times the capacity"
+      - "A single linear transform (one affine map)"
+      - "A convolutional residual block"
+      - "An attention head"
+    answer: 1
+    why: "Composition of affine maps is still affine. Nonlinear activations are required for depth to add expressive power."
+
+  - q: "ReLU(x) = max(0, x). Which training pathology is most associated with ReLU?"
+    section: "Perceptron/MLP"
+    options:
+      - "Softmax overflow on every forward pass"
+      - "Dead units that stay at zero if inputs remain negative and gradients vanish"
+      - "Forced L2 normalization of weights"
+      - "Inability to train with SGD"
+    answer: 1
+    why: "If a unit’s pre-activation stays negative, ReLU output and local gradient are zero — the classic dying-ReLU issue."
+
+  - q: "For logits z = [2.0, 1.0, 0.1], softmax probabilities must satisfy which property?"
+    section: "Loss/Softmax"
+    options:
+      - "Each p_i ∈ (0,1) and Σ p_i = 1"
+      - "The largest logit becomes probability 0"
+      - "Probabilities are unbounded"
+      - "Softmax ignores relative logit gaps"
+    answer: 0
+    why: "Softmax maps ℝ^K to the probability simplex: positive entries that sum to one."
+
+  - q: "Numeric application: logits [a, b] with a ≫ b. What happens to softmax(a) as (a−b) → ∞?"
+    section: "Loss/Softmax"
+    options:
+      - "It approaches 0.5"
+      - "It approaches 1"
+      - "It approaches 0"
+      - "It oscillates"
+    answer: 1
+    why: "exp(a)/[exp(a)+exp(b)] = 1/(1+exp(b−a)) → 1 as (a−b) → ∞. Softmax saturates on the winner."
+
+  - q: "Cross-entropy with a one-hot label y=k reduces to which expression (up to constants)?"
+    section: "Loss/Softmax"
+    options:
+      - "−log p_k of the predicted class probability"
+      - "Mean squared error of all logits"
+      - "Sum of absolute errors on incorrect classes only"
+      - "KL divergence with a uniform prior only"
+    answer: 0
+    why: "For one-hot targets, CE = −Σ y_i log p_i collapses to −log p_correct."
+
+  - q: "In backprop, the gradient of loss w.r.t. an early-layer weight is obtained how?"
+    section: "Backprop"
+    options:
+      - "By random guessing each epoch"
+      - "By chain rule: local Jacobian products from loss back through intermediate activations"
+      - "By only differentiating the loss w.r.t. the learning rate"
+      - "By freezing all later layers forever"
+    answer: 1
+    why: "Backpropagation applies the multivariable chain rule layer by layer from the scalar loss."
+
+  - q: "Vanishing gradients in a deep sigmoid MLP most often cause what symptom?"
+    section: "Backprop"
+    options:
+      - "Early layers learn very slowly or stall while later layers still move"
+      - "Every weight becomes NaN on the first step"
+      - "Softmax outputs become one-hot before training starts"
+      - "Batch size must equal vocabulary size"
+    answer: 0
+    why: "Sigmoid derivatives ≤ 0.25; products across depth shrink updates for early parameters."
+
+  - q: "Numeric/conceptual: loss L = (ŷ − y)² with ŷ = w·x. At a given step ∂L/∂w = 2(ŷ−y)x. If ŷ > y and x > 0, SGD with positive LR should move w in which direction?"
+    section: "Backprop"
+    options:
+      - "Increase w"
+      - "Decrease w"
+      - "Leave w unchanged always"
+      - "Set w = x"
+    answer: 1
+    why: "Gradient is positive, so gradient descent subtracts a positive quantity from w — prediction moves down toward y."
+
+  - q: "Compared with a fully connected layer on a 224×224×3 image, a convolution mainly buys what inductive bias?"
+    section: "CNN/RNN"
+    options:
+      - "Global unique weights per pixel with no sharing"
+      - "Local connectivity and weight sharing (translation-friendly filters)"
+      - "Mandatory recurrence over time"
+      - "Exact invertibility of every layer"
+    answer: 1
+    why: "CNNs reuse small kernels across space, encoding locality and translation equivariance cheaply."
+
+  - q: "A 3×3 convolution, stride 1, padding 1, on an H×W feature map yields approximately what spatial size?"
+    section: "CNN/RNN"
+    options:
+      - "Always 1×1"
+      - "Roughly the same H×W (same padding)"
+      - "Always H/9 × W/9"
+      - "Always H+3 × W+3"
+    answer: 1
+    why: "Padding 1 with 3×3 stride-1 preserves height/width for typical 'same' convolutions."
+
+  - q: "Why do vanilla RNNs struggle on long sequences relative to transformers?"
+    section: "CNN/RNN"
+    options:
+      - "They cannot process tokens at all"
+      - "Sequential hidden-state bottlenecks and hard-to-retain long-range gradients"
+      - "They require softmax in every cell by definition"
+      - "They only work on images"
+    answer: 1
+    why: "Information and gradients must squeeze through a recurrent state over many steps; attention paths are more direct."
+
+  - q: "Self-attention computes scores from queries and keys. For a single head, attention weights for one query are typically obtained by what?"
+    section: "Transformers"
+    options:
+      - "Softmax over scaled dot products with keys, then weighted sum of values"
+      - "Max-pooling over the vocabulary"
+      - "A fixed convolutional kernel of size 3"
+      - "Sorting tokens alphabetically"
+    answer: 0
+    why: "Classic scaled dot-product attention: softmax(QKᵀ/√d) V."
+
+  - q: "Why scale dot products by 1/√d_k before softmax in attention?"
+    section: "Transformers"
+    options:
+      - "To force attention weights to be exactly sparse 0/1"
+      - "To keep logits from growing with dimension and saturating softmax"
+      - "To remove the need for positional encodings"
+      - "To make training unsupervised"
+    answer: 1
+    why: "Dot-product variance grows with d_k; scaling stabilizes the softmax distribution."
+
+  - q: "Causal (decoder) masking is required for left-to-right language modeling because?"
+    section: "Transformers"
+    options:
+      - "It lets position i attend to future tokens j > i during training"
+      - "It blocks attention to future tokens so the model cannot cheat by seeing the answer"
+      - "It deletes the key projection"
+      - "It replaces LayerNorm with BatchNorm"
+    answer: 1
+    why: "Without causal masks, teacher-forced training could attend to tokens the model must later predict."
+
+  - q: "Positional encodings exist because self-attention is otherwise invariant to what?"
+    section: "Transformers"
+    options:
+      - "Vocabulary size"
+      - "Token order / permutation of the sequence"
+      - "Batch size"
+      - "Learning rate"
+    answer: 1
+    why: "Plain attention is a set operation over tokens; positions must be injected (sinusoidal, RoPE, etc.)."
+
+  - q: "Multi-head attention's main benefit over a single large head with the same total dimension is typically what?"
+    section: "Transformers"
+    options:
+      - "Guaranteed lower perplexity on every dataset"
+      - "Multiple representation subspaces can specialize (syntax vs. coreference, etc.)"
+      - "Elimination of feed-forward layers"
+      - "Removal of residual connections"
+    answer: 1
+    why: "Heads can attend to different relationship types in parallel before concatenation/projection."
+
+  - q: "Numeric application: a decoder-only model generates with greedy decoding. At step t the logits for the next token are [1.2, 3.5, 0.4]. Which token index is chosen?"
+    section: "Transformers"
+    options:
+      - "0"
+      - "1"
+      - "2"
+      - "A random sample among all three"
+    answer: 1
+    why: "Greedy decoding picks argmax; 3.5 is the largest logit → index 1."
+
+  - q: "During pretraining of a causal LM, the usual training objective is closest to which description?"
+    section: "Foundations"
+    options:
+      - "Classify ImageNet labels from pixels"
+      - "Predict the next token given previous tokens (cross-entropy)"
+      - "Maximize cosine similarity between random pairs only"
+      - "Minimize edit distance to a human essay with no likelihood"
+    answer: 1
+    why: "Autoregressive LMs maximize likelihood of each next token conditioned on the left context."
+
+  - q: "A model has very low training loss but high validation loss that keeps rising while train loss falls. Which diagnosis fits best?"
+    section: "Foundations"
+    options:
+      - "Underfitting / insufficient capacity"
+      - "Overfitting / memorization of train quirks"
+      - "Perfect generalization"
+      - "Softmax is incorrectly implemented as ReLU"
+    answer: 1
+    why: "Diverging train vs. val curves are the classic overfitting signature; use regularization, more data, or early stopping."

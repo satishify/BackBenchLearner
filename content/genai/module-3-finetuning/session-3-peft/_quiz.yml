@@ -1,0 +1,91 @@
+title: "3.3 PEFT, Adapters & Soft Prompting"
+questions:
+  - q: "What is the core idea of PEFT?"
+    options:
+      - "Retrain the tokenizer only"
+      - "Freeze most of the backbone and train a small set of task parameters"
+      - "Always delete the base model after training"
+      - "Replace attention with rules"
+    answer: 1
+    why: "PEFT keeps the pretrained backbone and learns small adapters or soft prompts for the task."
+
+  - q: "For a d×d weight, full ΔW has d² parameters. LoRA with rank r uses about how many (A is r×d, B is d×r)?"
+    options:
+      - "d² still"
+      - "2·d·r (plus optional scaling), much less when r ≪ d"
+      - "r² only, independent of d"
+      - "d/r"
+    answer: 1
+    why: "LoRA stores A and B with r·d + d·r = 2dr trainable params—e.g., d=4096, r=16 → ~131k vs ~16.8M."
+
+  - q: "QLoRA primarily buys you…"
+    options:
+      - "Guaranteed higher accuracy than bf16 LoRA"
+      - "Lower GPU memory by quantizing the frozen backbone while training LoRA adapters"
+      - "A replacement for preference datasets"
+      - "Automatic deletion of eval sets"
+    answer: 1
+    why: "QLoRA keeps the base in 4-bit (typically) so large models fit; quality still needs measurement."
+
+  - q: "Prompt tuning vs LoRA — key difference?"
+    options:
+      - "They are identical mathematically"
+      - "Prompt/prefix tuning learn continuous prompts; LoRA learns low-rank weight updates"
+      - "LoRA only trains the tokenizer"
+      - "Prompt tuning always updates all attention matrices densely"
+    answer: 1
+    why: "Soft-prompt methods live in embedding/hidden prefix space; LoRA patches selected weight matrices."
+
+  - q: "Raising LoRA rank from 8 to 64 most directly…"
+    options:
+      - "Guarantees better holdout scores always"
+      - "Increases adapter capacity and trainable parameter count (and overfitting risk on tiny data)"
+      - "Halves GPU memory automatically"
+      - "Removes the need for learning rate"
+    answer: 1
+    why: "Rank is a capacity knob; bigger is not free—watch eval and anchors."
+
+  - q: "Serving merged weights vs keeping adapters separate — when prefer separate adapters?"
+    options:
+      - "You need one static behavior forever with max kernel simplicity"
+      - "Many tasks/tenants share one base and you want hot-swap/rollback of small adapter artifacts"
+      - "You want to double VRAM for no reason"
+      - "Merging is impossible in principle"
+    answer: 1
+    why: "Modular adapters enable multi-skill routing and cheap rollback; merging simplifies single-skill serving."
+
+  - q: "A common PEFT recipe mistake is…"
+    options:
+      - "Using a modest rank with a LoRA-scale LR and few clean epochs"
+      - "Copying a full-FT learning rate unchanged onto LoRA and over-training noisy data"
+      - "Logging trainable% and anchor metrics"
+      - "Validating 4-bit quality against the same task metrics"
+    answer: 1
+    why: "PEFT needs its own LR/epoch regime; full-FT defaults plus dirty data are a frequent failure mode."
+
+  - q: "Prefix tuning injects trainable parameters mainly into…"
+    options:
+      - "Disk formatting tables"
+      - "Per-layer attention key/value (or similar) prefixes while freezing the backbone"
+      - "The optimizer’s random seed only"
+      - "The vector database schema"
+    answer: 1
+    why: "Prefixes condition attention states across layers without updating the full weight matrices."
+
+  - q: "d=4096, r=8 LoRA on one matrix: trainable params ≈ 2·4096·8 = 65,536. What % of a full d² update is that?"
+    options:
+      - "About 50%"
+      - "About 0.39% (65536 / 4096²)"
+      - "100%"
+      - "About 8%"
+    answer: 1
+    why: "4096²=16,777,216; 65,536/16,777,216 ≈ 0.0039 → roughly 0.39% of a dense ΔW."
+
+  - q: "When PEFT is the wrong tool despite good adapters…"
+    options:
+      - "You need a stable tone on small clean data"
+      - "You are asking adapters to memorize a huge changing fact database—use RAG instead"
+      - "You want cheaper experiment artifacts than full FT"
+      - "You need multi-adapter routing"
+    answer: 1
+    why: "Limited adapter capacity is for behavior, not a substitute for retrieval of large factual stores."

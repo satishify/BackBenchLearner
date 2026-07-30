@@ -1,0 +1,46 @@
+title: Distributed Systems & Scaling
+questions:
+  - q: When is least-connections load balancing a better fit than round-robin?
+    options:
+      - Always, for static file servers only
+      - When request durations or costs vary widely
+      - When you need sticky sessions by user id
+      - When you have a single backend
+    answer: 1
+    why: Least-connections sends new work to quieter nodes, which helps when some requests are long-lived or heavier.
+
+  - q: What application change most enables horizontal scaling of the app tier?
+    options:
+      - Storing sessions only in process memory
+      - Making the app mostly stateless with shared external state
+      - Removing the load balancer
+      - Using only vertical scaling forever
+    answer: 1
+    why: Interchangeable replicas need shared sessions/cache/files so any node can serve any request.
+
+  - q: What is a major cost of microservices versus a monolith?
+    options:
+      - You can never use Python
+      - Network failures, operational complexity, and harder cross-service consistency
+      - You cannot scale individual services
+      - Deploys always become slower for every change
+    answer: 1
+    why: Splitting services buys independence but introduces distributed-systems failure modes and ops overhead.
+
+  - q: When should service-to-service communication be asynchronous?
+    options:
+      - When the caller must have the result to continue the user response
+      - When work can be deferred and you want decoupling / load buffering
+      - Only for database queries
+      - Never — sync is always safer
+    answer: 1
+    why: Async queues/events fit background work and absorption of spikes; sync fits need-the-answer-now paths.
+
+  - q: Why must queue consumers usually be idempotent?
+    options:
+      - Because queues guarantee exactly-once by default everywhere
+      - Because common delivery is at-least-once and retries can redeliver
+      - Because JSON cannot be parsed twice
+      - Because load balancers delete messages
+    answer: 1
+    why: After crashes or timeouts, brokers redeliver; processing twice must not corrupt business state.
