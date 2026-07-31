@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Compare common agent/RAG frameworks by strengths — and choose based on workflow shape, not hype.">
+  <meta name="description" content="Compare common agent and RAG (retrieval-augmented generation) frameworks—and choose based on workflow shape, not hype.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html">
   <meta property="og:title" content="LangChain, LlamaIndex, AutoGen, CrewAI | BackbenchLearner">
-  <meta property="og:description" content="Compare common agent/RAG frameworks by strengths — and choose based on workflow shape, not hype.">
+  <meta property="og:description" content="Compare common agent and RAG (retrieval-augmented generation) frameworks—and choose based on workflow shape, not hype.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LangChain, LlamaIndex, AutoGen, CrewAI | BackbenchLearner">
-  <meta name="twitter:description" content="Compare common agent/RAG frameworks by strengths — and choose based on workflow shape, not hype.">
+  <meta name="twitter:description" content="Compare common agent and RAG (retrieval-augmented generation) frameworks—and choose based on workflow shape, not hype.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,55 +36,134 @@
       <h1>LangChain, LlamaIndex, AutoGen, CrewAI</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Frameworks speed up GenAI apps by packaging prompts, tools, indexes, and agent loops. They do not remove the need for evals, guardrails, or clear ownership of side effects. Pick the tool that matches your workflow shape — then keep your domain logic portable.</p>
+    <p><strong>What is this for?</strong> To compare popular frameworks for building agent and RAG apps—and explain when <strong>LangGraph</strong> fits vs plain <strong>LangChain</strong>.</p>
+    <p><strong>Why does it exist?</strong> Frameworks speed up prototyping, but they do not remove the need for evals, guardrails, or clear ownership of side effects. Pick the tool that matches your <strong>workflow shape</strong>.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Four names show up constantly:</p>
     <table>
       <thead><tr>
         <th>Framework</th>
-        <th>Strength</th>
+        <th>Plain-English strength</th>
         <th>Typical use</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>LangChain</td>
+          <td><strong>LangChain</strong></td>
           <td>Chains, tools, prompt pipelines</td>
           <td>General LLM apps</td>
         </tr>
         <tr>
-          <td>LlamaIndex</td>
+          <td><strong>LangGraph</strong></td>
+          <td>Cyclic, stateful graph control flow</td>
+          <td>Reasoning loops, multi-agent graphs</td>
+        </tr>
+        <tr>
+          <td><strong>LlamaIndex</strong></td>
           <td>Data connectors + indexing</td>
           <td>Knowledge / RAG assistants</td>
         </tr>
         <tr>
-          <td>AutoGen</td>
+          <td><strong>AutoGen</strong></td>
           <td>Agent conversation patterns</td>
           <td>Multi-agent message passing</td>
         </tr>
         <tr>
-          <td>CrewAI</td>
+          <td><strong>CrewAI</strong></td>
           <td>Role-based orchestration</td>
           <td>Task teams with shared goals</td>
         </tr>
       </tbody>
     </table>
-    <p>Think “batteries” not “brain.” Your product still needs schemas, threat models, and CI gates.</p>
+    <p>Think &quot;batteries,&quot; not &quot;brain.&quot; Your product still needs schemas, threat models, and CI gates.</p>
+    <h3>LangChain vs LangGraph</h3>
+    <table>
+      <thead><tr>
+        <th></th>
+        <th>LangChain</th>
+        <th>LangGraph</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Plain-English idea</strong></td>
+          <td>Component framework</td>
+          <td>Graph that can loop and remember</td>
+        </tr>
+        <tr>
+          <td><strong>Flow shape</strong></td>
+          <td>Mostly linear chain</td>
+          <td>Cyclic graph with state</td>
+        </tr>
+        <tr>
+          <td><strong>Good for</strong></td>
+          <td>Sequential tasks</td>
+          <td>Reasoning loops, branches, HITL pauses</td>
+        </tr>
+        <tr>
+          <td><strong>Analogy</strong></td>
+          <td>Straight line</td>
+          <td>Flowchart</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>LangChain helps you assemble prompts, tools, and models. LangGraph wires those pieces into a graph that can loop, branch, pause, and resume.</p>
+    </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>LangChain</h3>
-    <p>Broad ecosystem: prompt templates, retrievers, tool wrappers, LCEL/runnables, many vendor integrations. Good when you want one toolkit from prototype to agents. Risk: deep abstraction stacks that are hard to debug — keep traces on and avoid nesting magic.</p>
+    <p>Broad ecosystem: prompt templates, retrievers, tool wrappers, runnables, many vendor integrations. Good when you want one toolkit from prototype to agents.</p>
+    <p>Risk: deep abstraction stacks that are hard to debug—keep traces on and avoid nesting magic.</p>
+    <h3>LangGraph</h3>
+    <p>Graph-based framework for <strong>looping, stateful agent workflows</strong>:</p>
+    <ul>
+    <li><strong>Nodes</strong> = agent steps or functions.</li>
+    <li><strong>Edges</strong> = fixed routes between nodes.</li>
+    <li><strong>Conditional edges</strong> = router functions that inspect state and pick the next node.</li>
+    <li><strong><code>compile()</code></strong> = turns the graph definition into a runnable, <strong>checkpointable</strong> application.</li>
+    </ul>
+    <p>Example shape:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">graph = StateGraph(AgentState)
+graph.add_node(&#x27;triage_agent&#x27;, triage_node)
+graph.add_node(&#x27;infra_agent&#x27;, infra_node)
+graph.add_conditional_edges(&#x27;triage_agent&#x27;, router_function)
+graph.add_edge(&#x27;infra_agent&#x27;, &#x27;triage_agent&#x27;)
+app = graph.compile()</code></pre>
+    </div>
+    <p>Use LangGraph when the workflow needs loops, branches, human approval checkpoints, or recursion limits.</p>
     <h3>LlamaIndex</h3>
-    <p>Centered on connecting data -&gt; indexes -&gt; query engines. Strong default for RAG-heavy assistants (files, Notion, DBs). You still own chunking strategy, evaluation, and citation policy; the library accelerates ingestion and retrieval patterns.</p>
+    <p>Centered on connecting data → indexes → query engines. Strong default for RAG-heavy assistants (files, Notion, databases). You still own chunking strategy, evaluation, and citation policy.</p>
     <h3>AutoGen</h3>
     <p>Patterns for multiple agents exchanging messages (assistant/user proxy, group chat). Useful when the problem naturally looks like a conversation among roles. Watch cost: chatty agents amplify tokens; impose turn limits and termination conditions.</p>
     <h3>CrewAI</h3>
-    <p>Role/goal/backstory style crews that divide labor on a task. Friendly mental model for “researcher + writer + reviewer.” Same multi-agent cautions: typed artifacts beat free-form chatter; measure whether the crew beats a single agent.</p>
+    <p>Role/goal/backstory style crews that divide labor on a task. Friendly mental model for &quot;researcher + writer + reviewer.&quot; Same multi-agent cautions: typed artifacts beat free-form chatter; measure whether the crew beats a single agent.</p>
     <h3>How to choose</h3>
-    <ul>
-    <li><strong>RAG-heavy knowledge app:</strong> LlamaIndex or LangChain retrievers.</li>
-    <li><strong>Tool-using single agent:</strong> LangChain (or a thin custom loop).</li>
-    <li><strong>Explicit multi-agent collaboration:</strong> evaluate AutoGen and CrewAI on your eval suite.</li>
-    <li><strong>Team constraints:</strong> observability, deploy story, license, and who already knows the stack often dominate micro-benchmarks.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>If your problem looks like...</th>
+        <th>Lean toward</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>RAG-heavy knowledge app</td>
+          <td>LlamaIndex or LangChain retrievers</td>
+        </tr>
+        <tr>
+          <td>Tool-using single agent</td>
+          <td>LangChain or a thin custom loop</td>
+        </tr>
+        <tr>
+          <td>Cyclic loops, HITL, multi-agent graphs</td>
+          <td>LangGraph</td>
+        </tr>
+        <tr>
+          <td>Explicit multi-agent chat</td>
+          <td>AutoGen or CrewAI (on your eval suite)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Team constraints—observability, deploy story, license, who already knows the stack—often dominate micro-benchmarks.</p>
     <h3>Portable core (keep yours)</h3>
     <p>Regardless of framework, own these in your code:</p>
     <ol>
@@ -93,10 +172,11 @@
     <li>Logging/trace IDs around every tool call.</li>
     <li>HITL hooks for risky actions.</li>
     <li>Memory retention and PII rules.</li>
+    <li>Provenance: trace claims back to tool-call history.</li>
     </ol>
     <p>If a framework makes those hard, wrap it thinly or skip it.</p>
     <h2 id="in-code">In code</h2>
-    <p>A framework-agnostic skeleton — swap the <code>complete</code> and <code>retrieve</code> adapters for LangChain/LlamaIndex later.</p>
+    <p>A framework-agnostic skeleton—swap the <code>complete</code> and <code>retrieve</code> adapters for LangChain/LlamaIndex later.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
@@ -115,7 +195,6 @@ def answer_with_rag(q: str, fx: FrameworkAdapters) -&gt; str:
     )
     return fx.complete(prompt)
 
-# Fake adapters standing in for LlamaIndex/LangChain wiring
 fx = FrameworkAdapters(
     retrieve=lambda q: [f&quot;Policy: refunds within 30 days for &#x27;{q}&#x27;&quot;],
     complete=lambda p: &quot;Refunds are available within 30 days.&quot;
@@ -123,33 +202,33 @@ fx = FrameworkAdapters(
 )
 print(answer_with_rag(&quot;refund window?&quot;, fx))</code></pre>
     </div>
-    <p>Learn the framework’s tracing first; demos without traces become production mysteries.</p>
+    <p>Learn the framework&#x27;s tracing first; demos without traces become production mysteries.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Framework shopping.</strong> Rewrites every quarter; no eval lift.</li>
-    <li><strong>Abstraction blindness.</strong> Cannot see the exact prompt or tool args in prod.</li>
+    <li><strong>LangChain for cyclic loops.</strong> Fighting the framework instead of using LangGraph.</li>
     <li><strong>Multi-agent default.</strong> Crews for problems a scripted chain would solve.</li>
-    <li><strong>Version churn.</strong> APIs move; pin versions and lock eval baselines.</li>
+    <li><strong>Abstraction blindness.</strong> Cannot see the exact prompt or tool args in prod.</li>
     <li><strong>Skipping fundamentals.</strong> Fancy agents on bad chunking still hallucinate.</li>
-    <li><strong>Vendor lock-in of business rules.</strong> Refund policy living only inside a proprietary chain object.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Spike two candidates for 48 hours on the same golden set and the same tools. Score quality, p95 latency, cost, and “time for a new engineer to find the prompt.” The last score predicts maintenance pain better than GitHub stars. Keep business rules (refund limits, allowlists) in your repo modules, not only inside notebook cells or proprietary chain blobs.</p>
-    <p>Pin versions, snapshot prompts used in CI, and treat framework upgrades like model upgrades: run the full suite before merging. Frameworks earn their keep when they shorten the path to a traced, evaluated path to production — not when they hide it.</p>
+    <p>Spike two candidates for 48 hours on the same golden set and the same tools. Score quality, p95 latency, cost, and &quot;time for a new engineer to find the prompt.&quot;</p>
+    <p>Pin versions, snapshot prompts used in CI, and treat framework upgrades like model upgrades: run the full suite before merging.</p>
     <h2 id="build-vs-buy-the-loop">Build vs buy the loop</h2>
-    <p>For a single tool-using agent, a 100-line host loop plus your vendor’s tool-calling API is often enough. Reach for LangChain/LlamaIndex when connectors and retrievers would otherwise dominate your calendar. Reach for AutoGen/CrewAI when you have measured a multi-agent win. The embarrassing outcome is a heavy framework wrapping one prompt and one HTTP GET — complexity with no leverage.</p>
+    <p>For a single tool-using agent, a 100-line host loop plus your vendor&#x27;s tool-calling API is often enough. Reach for LangChain/LlamaIndex when connectors and retrievers would otherwise dominate your calendar. Reach for LangGraph when you need loops, branches, or HITL. Reach for AutoGen/CrewAI when you have measured a multi-agent win.</p>
     <h2 id="eval-portability">Eval portability</h2>
-    <p>Keep golden cases and graders outside the framework’s preferred storage format when you can — plain JSON/YAML in git. That way a migration from CrewAI to a custom loop does not rewrite your quality bar. Frameworks should be replaceable adapters under a stable evaluation harness; if uninstalling the library deletes your suite, the suite was never yours.</p>
+    <p>Keep golden cases and graders outside the framework&#x27;s preferred storage format when you can—plain JSON/YAML in git. Frameworks should be replaceable adapters under a stable evaluation harness.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Use LangChain, LlamaIndex, AutoGen, or CrewAI as accelerators for chains, RAG, or multi-agent patterns — but keep validation, evals, and safety in your own thin control layer.</p>
+    <p>Use LangChain, LlamaIndex, AutoGen, or CrewAI as accelerators—but use LangGraph when you need cyclic stateful control; keep validation, evals, and safety in your own thin layer.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
+    <li><strong>LangChain:</strong> framework for assembling LLM components and tools.</li>
+    <li><strong>LangGraph:</strong> graph-based framework for looping, stateful agent workflows.</li>
+    <li><strong>Node:</strong> one function or agent step in a graph.</li>
+    <li><strong>Conditional edge:</strong> route chosen by inspecting current state.</li>
+    <li><strong>Checkpointing:</strong> saving state so a graph can pause and resume later.</li>
     <li><strong>Chain / runnable:</strong> composed steps from input to model output.</li>
-    <li><strong>Index / retriever:</strong> data structures that fetch context for RAG.</li>
-    <li><strong>Multi-agent framework:</strong> library that coordinates multiple LLM roles.</li>
     <li><strong>Adapter:</strong> thin wrapper that isolates your app from framework APIs.</li>
-    <li><strong>Tracing:</strong> structured logs of prompts, tools, and timings.</li>
-    <li><strong>Pinning:</strong> locking library/model versions for reproducible evals.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

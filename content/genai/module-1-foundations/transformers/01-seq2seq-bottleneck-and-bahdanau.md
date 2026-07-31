@@ -1,53 +1,91 @@
 ---
 title: "Seq2Seq Bottleneck and Bahdanau Attention"
-description: "Classical encoder–decoder compression, why a single context vector fails on long inputs, and how Bahdanau attention lets the decoder look back."
+description: "Why squeezing a whole sentence into one vector fails, and how Bahdanau attention lets the decoder look back at every source word."
 ---
 
-Sequence-to-sequence (**seq2seq**) learning maps one variable-length sequence to another: translate a sentence, summarize a paragraph, turn speech frames into text. The first neural systems that worked at scale used an **RNN encoder** to read the source and an **RNN decoder** to emit the target. Clever—and brittle. The encoder often handed the decoder a single fixed vector, a sticky note meant to hold an entire paragraph. **Bahdanau attention** punched holes in that sticky-note bottleneck by letting each decoding step soft-search the encoder’s full memory. This lesson is the historical and conceptual on-ramp to transformers: same problem (align source and target), different spotlight mechanism.
+**What this is:** Sequence-to-sequence (seq2seq) models turn one sequence into another — English to French, speech to text, a paragraph to a summary.
+
+**Why it matters:** The first neural seq2seq systems worked, but they had a serious flaw: the encoder crushed the entire input into one fixed-size vector. **Bahdanau attention** (2015) was the first big fix — it let the decoder look back at every encoder step instead of trusting one summary. That idea is the direct ancestor of the attention inside modern transformers.
 
 ## Intuition
 
-You finish reading a long email and must reply from memory alone. Early details—negation, names, rare constraints—fade. Classical seq2seq did that to models: after the last source token, only `h_T` (or a small pool) remained. The decoder then generated words conditioned mostly on that compressed **context vector** plus its own past outputs. Short, simple sentences survived. Long or information-dense inputs did not.
+Picture reading a long email, then replying from memory with no way to scroll back. Early details — names, negation, rare words — fade fast. Classical seq2seq did exactly that to models.
 
-Bahdanau attention changes the job description. The encoder still produces a state per source position, but **keeps all of them**. At each decoder step, the model scores “how relevant is source position `i` to what I’m about to say?”, turns scores into a softmax distribution (alignment weights), and builds a **fresh** context as a weighted sum of encoder states. Translating the French word for “cat” can look directly at English “cat” instead of hoping it survived in a single summary vector.
+**The old flow:**
 
-Attention is not yet the full Transformer: recurrence remains, and training is still largely sequential. But the key idea—**content-based soft lookup over memories**—is the ancestor of Q/K/V attention you will study next.
+```
+"The" → "cat" → "sat"  →  ONE context vector  →  "Le" → "chat" → "assis"
+         (encoder reads left to right)              (decoder writes left to right)
+```
+
+The encoder reads the source one token at a time with a **recurrent neural network (RNN)**. When it reaches the last word, it hands the decoder a single **context vector** — a fixed-size summary of the whole input. The decoder must generate every output word using only that one vector plus its own past outputs.
+
+**Why that breaks on long inputs:** Imagine translating a 100-word paragraph. The network must squeeze every adjective, clause, and verb into one vector (say, 512 numbers). By word 80, details from word 5 — like whether a noun was singular or plural — get overwritten. The decoder translates from a blurry, generic memory.
+
+**Bahdanau's fix:** Stop throwing away intermediate encoder states. Save every hidden state `h_1, h_2, …, h_n` in a memory bank. At each decoder step, the model asks: "Which source words matter right now?" and builds a **fresh context** as a weighted blend of those saved states.
+
+When translating the French word for "cat," the spotlight might land 90% on English "cat" and 5% on "The" and "sat":
+
+```
+Saved encoder memory:  [h1: "The"]   [h2: "cat"]   [h3: "sat"]
+Focus weights:           5%            90%            5%
+                              ↑
+                    decoder generating "chat"
+```
+
+:::key
+Attention is not yet the full Transformer — RNNs still run step by step. But the core idea — **soft lookup over a memory bank** — is exactly what query/key/value (Q/K/V) self-attention does later.
+:::
 
 ## How it works
 
-**Encoder.** For source tokens `x_1 ... x_S` (usually embeddings):
+### The encoder (no attention yet)
+
+For source tokens `x_1 … x_S`:
 
 ```
 h_t = EncoderRNN(h_{t-1}, x_t)     # h_t shape: (d,)
 ```
 
-Store the list `H = [h_1, ..., h_S]`. Bidirectional encoders concatenate forward/backward states so each `h_t` sees left and right source context.
+Store the full list `H = [h_1, …, h_S]`. A **bidirectional** encoder runs forward and backward, then joins the two states so each `h_t` sees both left and right context.
 
-**Decoder without attention (bottleneck).** Initialize from `h_S` (or a projection). At step `t` with previous target embedding `y_{t-1}`:
+### The decoder without attention (the bottleneck)
+
+Initialize from the final encoder state `h_S`. At step `t` with previous target token `y_{t-1}`:
 
 ```
 s_t = DecoderRNN(s_{t-1}, y_{t-1})
-p_t = softmax(W_out @ s_t)         # distribution over target vocab
+p_t = softmax(W_out @ s_t)         # probability over target vocabulary
 ```
 
-All source information must already live in `s_0` / `h_S`. That is the bottleneck.
+All source information must already live inside `s_0` / `h_S`. That single-vector squeeze is the **context vector bottleneck**.
 
-**Bahdanau (additive) attention.** Given decoder state `s_{t-1}` (or `s_t`, depending on formulation) and each encoder state `h_i`:
+### Bahdanau (additive) attention
+
+Given decoder state `s_{t-1}` and each encoder state `h_i`:
 
 ```
 score_ti = v^T tanh(W_s @ s_{t-1} + W_h @ h_i)
-alpha_t  = softmax_i(score_ti)           # sum_i alpha_ti = 1
-c_t      = sum_i  alpha_ti * h_i         # context vector for step t
+alpha_t  = softmax_i(score_ti)           # weights sum to 1
+c_t      = sum_i  alpha_ti * h_i         # fresh context for step t
 ```
 
-Feed `c_t` into the decoder update and/or the output projection (concat with `s_t` is common):
+Feed `c_t` into the decoder:
 
 ```
 s_t = DecoderRNN(s_{t-1}, [y_{t-1}; c_t])
 p_t = softmax(W_out @ [s_t; c_t])
 ```
 
-**Training.** Teacher forcing feeds the gold previous token as `y_{t-1}`. Loss is usually token-level cross-entropy summed over the target. At inference, feed the model’s own previous prediction (greedy or beam search)—exposure bias appears when train/test prefixes diverge.
+| Piece | Plain-English idea |
+| --- | --- |
+| **score_ti** | How relevant is source word `i` to what the decoder wants to say next? |
+| **alpha_ti** | Soft spotlight weights — turn up relevant words, dim the rest |
+| **c_t** | A custom summary built just for this decode step |
+
+### Training note
+
+During training, **teacher forcing** feeds the correct previous token as `y_{t-1}`. Loss is token-level cross-entropy. At inference, the model feeds its own previous prediction back in — which can cause **exposure bias** when train and test prefixes diverge.
 
 ```mermaid
 flowchart TB
@@ -99,19 +137,15 @@ print("alpha:", np.round(alpha, 3), "sum=", alpha.sum())
 print("context norm:", np.linalg.norm(c))
 ```
 
-Real systems vectorize the `tanh` scores as a batched matmul; Luong attention uses simpler dot or general products—same soft-alignment story.
+Real systems vectorize the `tanh` scores as batched matrix math. **Luong attention** uses simpler dot products — same soft-alignment story, different scoring formula.
 
 ## What goes wrong
 
-**Still-recurrent walls.** Attention fixes the single-vector bottleneck but not GPU parallelism of the RNN unroll; very long sources remain slow to train compared with self-attention stacks.
-
-**Alignment failure.** If scores are noisy or the encoder states are weak, alphas become near-uniform or stuck on BOS/punctuation; the decoder “looks” but learns little.
-
-**Length explosion without structure.** Soft attention over thousands of positions is differentiable but can blur; later architectures add locality, sparsity, or multi-head structure.
-
-**Confusing train and decode.** Teacher forcing hides errors the model will make at inference. Scheduled sampling or robust decoding strategies matter for production seq2seq.
-
-**Skipping this lesson and jumping to Transformers.** Without the bottleneck story, “why Q/K/V?” feels unmotivated. Attention exists because fixed context vectors were not enough.
+- **Still stuck in RNN loops.** Attention fixes the single-vector bottleneck but not the slow, step-by-step training of RNNs. Very long sources remain expensive compared with self-attention stacks.
+- **Alignment failure.** If scores are noisy or encoder states are weak, weights become near-uniform or stuck on punctuation — the decoder "looks" but learns little.
+- **Length explosion.** Soft attention over thousands of positions can blur; later architectures add locality, sparsity, or multi-head structure.
+- **Train vs decode mismatch.** Teacher forcing hides errors the model will make at inference. Production seq2seq needs robust decoding strategies.
+- **Skipping this lesson.** Without the bottleneck story, "why Q/K/V?" feels unmotivated. Attention exists because one fixed vector was not enough.
 
 ## One-line summary
 
@@ -119,10 +153,10 @@ Classical seq2seq crushed the source into one vector; Bahdanau attention rebuild
 
 ## Key terms
 
-- **Seq2seq** — Models that map an input sequence to an output sequence.
-- **Encoder–decoder** — Read source into states; generate target conditioned on those states.
-- **Context vector bottleneck** — Relying on a single fixed summary of the entire source.
-- **Alignment weights (`alpha`)** — Softmax distribution over source positions at a decode step.
-- **Bahdanau attention** — Additive scoring of decoder state against each encoder state, then weighted sum.
-- **Teacher forcing** — Training the decoder on gold prefixes rather than its own predictions.
+- **Seq2seq** — A model that maps an input sequence to an output sequence.
+- **Encoder–decoder** — Read the source into states; generate the target from those states.
+- **Context vector bottleneck** — Compressing a whole input into one fixed-size summary vector.
+- **Alignment weights (alpha)** — A softmax distribution over source positions at each decode step.
+- **Bahdanau attention** — Additive scoring of decoder state against each encoder state, then a weighted sum.
+- **Teacher forcing** — Training the decoder on gold (correct) prefixes rather than its own predictions.
 - **Exposure bias** — Train/test mismatch when inference feeds predicted tokens back in.

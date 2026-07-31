@@ -36,9 +36,44 @@
       <h1>Task Decomposition</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Task decomposition</strong> means breaking a large goal into smaller subtasks that are independently executable and checkable. Agents that skip this step try to “do the whole thing” in one blob of reasoning — and then cannot tell which part failed.</p>
+    <p><strong>What is this for?</strong> To show how <strong>task decomposition</strong>—breaking a big goal into smaller steps—makes agents reliable and debuggable.</p>
+    <p><strong>Why does it exist?</strong> Agents that skip decomposition try to &quot;do the whole thing&quot; in one blob of reasoning. Then they cannot tell which part failed, retry safely, or show partial progress.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>“Create the weekly support summary” is a goal, not a step. Fetching tickets is a step. Clustering themes is a step. Each step has inputs, outputs, and a pass/fail check. When step 3 fails, you retry step 3 — not the entire week. Decomposition is how reliability and traceability enter agent design.</p>
+    <p>&quot;Create the weekly support summary&quot; is a <strong>goal</strong>, not a step.</p>
+    <ul>
+    <li>Fetching tickets is a step.</li>
+    <li>Clustering themes is a step.</li>
+    <li>Each step has inputs, outputs, and a pass/fail check.</li>
+    </ul>
+    <p>When step 3 fails, you retry step 3—not the entire week. Decomposition is how reliability and traceability enter agent design.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Goal</strong></td>
+          <td>The deliverable the user wants</td>
+        </tr>
+        <tr>
+          <td><strong>Subtask / step</strong></td>
+          <td>One named action with a checkable output</td>
+        </tr>
+        <tr>
+          <td><strong>Planner</strong></td>
+          <td>Breaks the goal into an ordered step list</td>
+        </tr>
+        <tr>
+          <td><strong>Executor</strong></td>
+          <td>Runs one step and returns the result</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>A step is not done because the model said &quot;done.&quot; Prefer programmatic checks: row count &gt; 0, JSON schema valid, tests green.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -49,7 +84,7 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why it matters</h3>
+    <h3>Why decomposition matters</h3>
     <ul>
     <li><strong>Reliability:</strong> smaller blast radius per failure.</li>
     <li><strong>Traceability:</strong> logs map to named steps.</li>
@@ -58,17 +93,27 @@ flowchart TB
     <li><strong>Parallelism:</strong> independent branches can run together.</li>
     <li><strong>Human review:</strong> insert HITL on specific steps only.</li>
     </ul>
+    <h3>Planner output (example)</h3>
+    <p>For a payment outage, a planner might output:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">1. Check code diff for recent deploys
+2. Check auth-service logs (last 1 hour)
+3. Check db-primary status
+4. Compare findings and synthesize answer</code></pre>
+    </div>
+    <p>The <strong>executor</strong> runs one line at a time—e.g., <code>github.get_commit_diff(...)</code>, then <code>splunk.query_logs(...)</code>.</p>
     <h3>How to decompose well</h3>
     <ol>
-    <li>Start from the deliverable and walk backward (what must be true before we can publish?).</li>
-    <li>Name steps as verbs with clear outputs (<code>fetch_tickets -&gt; TicketList</code>).</li>
-    <li>Keep steps roughly one tool call or one tight bundle — not mini-projects.</li>
-    <li>Mark dependencies (S2 needs S1’s artifact).</li>
+    <li>Start from the deliverable and walk backward (what must be true before we publish?).</li>
+    <li>Name steps as verbs with clear outputs (<code>fetch_tickets</code> → <code>TicketList</code>).</li>
+    <li>Keep steps roughly one tool call or one tight bundle—not mini-projects.</li>
+    <li>Mark dependencies (step 2 needs step 1&#x27;s artifact).</li>
     <li>Define a check for each step (row count &gt; 0, schema valid, tests green).</li>
     <li>Cap depth: if you need more than ~7–10 steps, introduce phases or a sub-agent.</li>
     </ol>
     <h3>Example</h3>
-    <p>Goal: “Create weekly support summary.”</p>
+    <p>Goal: &quot;Create weekly support summary.&quot;</p>
     <ol>
     <li>Fetch tickets from CRM for the date range.</li>
     <li>Cluster by issue type.</li>
@@ -78,12 +123,26 @@ flowchart TB
     </ol>
     <p>Each step can fail differently: CRM auth vs empty clusters vs tone policy on recommendations.</p>
     <h3>Static vs dynamic plans</h3>
-    <ul>
-    <li><strong>Static playbook:</strong> predefined steps; model fills parameters. Best default in production.</li>
-    <li><strong>Dynamic planning:</strong> model invents the step list. Flexible, easier to go off-rails — constrain with templates and validators.</li>
-    </ul>
-    <h3>Checks beat vibes</h3>
-    <p>A step is not done because the model said “done.” Prefer programmatic checks: <code>len(tickets) &gt; 0</code>, JSON schema valid, <code>pytest</code> exit code 0, Slack API 200. Use LLM judges only when the property is inherently semantic (summary faithfulness).</p>
+    <table>
+      <thead><tr>
+        <th>Type</th>
+        <th>Plain-English idea</th>
+        <th>Best for</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Static playbook</strong></td>
+          <td>Predefined steps; model fills parameters</td>
+          <td>Production default</td>
+        </tr>
+        <tr>
+          <td><strong>Dynamic planning</strong></td>
+          <td>Model invents the step list</td>
+          <td>Flexible but easier to go off-rails</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Constrain dynamic plans with templates and validators.</p>
     <h2 id="in-code">In code</h2>
     <p>A tiny decomposer with per-step validation and retry.</p>
     <div class="code-block" data-lang="python">
@@ -136,30 +195,31 @@ print(run_plan(STEPS).artifacts[&quot;summary&quot;])</code></pre>
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Fake decomposition.</strong> Five poetic bullets that still map to one giant tool.</li>
-    <li><strong>No checks.</strong> Steps “succeed” on model assertion alone.</li>
-    <li><strong>Too fine.</strong> Hundreds of micro-steps -&gt; coordination hell.</li>
+    <li><strong>Fake decomposition.</strong> Five poetic bullets that still map to one giant tool call.</li>
+    <li><strong>No checks.</strong> Steps &quot;succeed&quot; on model assertion alone.</li>
+    <li><strong>Too fine.</strong> Hundreds of micro-steps → coordination hell.</li>
     <li><strong>Hidden dependencies.</strong> Step 4 assumes a field step 2 never produced.</li>
-    <li><strong>Non-idempotent retries.</strong> Re-running “charge card” doubles the charge — need idempotency keys.</li>
+    <li><strong>Non-idempotent retries.</strong> Re-running &quot;charge card&quot; doubles the charge—need idempotency keys.</li>
     <li><strong>Dynamic plans without bounds.</strong> The agent invents endless new steps to look busy.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Take one messy goal from your backlog and force it into a table with columns: step name, input artifact, output artifact, check, retryable?, HITL?. If you cannot fill a row, the step is still a wish. Keep the first production version under eight steps; merge vanity steps that do not change the world or the artifact.</p>
-    <p>For side-effecting steps, write the idempotency story before the prompt. “Send Slack message” needs a dedupe key; “create ticket” needs an external reference you can look up. Decomposition without idempotency just creates precise, repeatable duplicates.</p>
+    <p>Take one messy goal from your backlog and force it into a table with columns: step name, input artifact, output artifact, check, retryable?, HITL?. If you cannot fill a row, the step is still a wish.</p>
+    <p>Keep the first production version under eight steps. For side-effecting steps, write the idempotency story before the prompt.</p>
     <h2 id="parallel-branches">Parallel branches</h2>
-    <p>When two steps share no artifacts — for example fetching CRM tickets and fetching status-page incidents — run them concurrently inside the orchestrator, then join before summarize. Decomposition makes that parallelism obvious; a monolithic prompt hides it. Just keep join checks strict: both branches must pass their predicates before the merge step reads their outputs.</p>
+    <p>When two steps share no artifacts—fetching CRM tickets and fetching status-page incidents—run them concurrently, then join before summarize. Decomposition makes that parallelism obvious.</p>
     <h2 id="naming-steps-for-ops">Naming steps for ops</h2>
-    <p>Use stable step IDs in logs (<code>fetch_tickets</code>, not “Step 1”). Dashboards and alerts should key off those IDs so a spike in <code>cluster_themes</code> failures pages the right owner. When you rename a step, keep the old ID as an alias for a release so historical metrics do not fracture. Decomposition is an operational interface, not only a prompting trick.</p>
+    <p>Use stable step IDs in logs (<code>fetch_tickets</code>, not &quot;Step 1&quot;). Dashboards and alerts should key off those IDs so a spike in <code>cluster_themes</code> failures pages the right owner.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Decompose goals into named, dependency-aware steps with programmatic checks and retries so agents make reliable partial progress instead of one opaque attempt.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Task decomposition:</strong> splitting a goal into executable subtasks.</li>
+    <li><strong>Planner:</strong> part that outputs a step-by-step plan.</li>
+    <li><strong>Executor:</strong> part that runs one planned step safely.</li>
     <li><strong>Artifact:</strong> structured output of a step consumed by later steps.</li>
     <li><strong>Playbook:</strong> predefined step skeleton for a workflow.</li>
     <li><strong>Idempotency:</strong> safe to retry without duplicate side effects.</li>
     <li><strong>Step check:</strong> programmatic predicate that a step succeeded.</li>
-    <li><strong>Partial progress:</strong> usable intermediate results when a later step fails.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

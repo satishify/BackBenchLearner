@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Build intuition for Q, K, V, derive scaled dot-product attention, and implement a tiny NumPy attention step used everywhere in LLMs.">
+  <meta name="description" content="What query, key, and value (Q/K/V) mean, how scaled dot-product attention works, and a tiny NumPy walkthrough.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-1-foundations/transformers/self-attention-qkv.html">
   <meta property="og:title" content="Self-Attention: Queries, Keys, and Values | BackbenchLearner">
-  <meta property="og:description" content="Build intuition for Q, K, V, derive scaled dot-product attention, and implement a tiny NumPy attention step used everywhere in LLMs.">
+  <meta property="og:description" content="What query, key, and value (Q/K/V) mean, how scaled dot-product attention works, and a tiny NumPy walkthrough.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-1-foundations/transformers/self-attention-qkv.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Self-Attention: Queries, Keys, and Values | BackbenchLearner">
-  <meta name="twitter:description" content="Build intuition for Q, K, V, derive scaled dot-product attention, and implement a tiny NumPy attention step used everywhere in LLMs.">
+  <meta name="twitter:description" content="What query, key, and value (Q/K/V) mean, how scaled dot-product attention works, and a tiny NumPy walkthrough.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,49 +36,113 @@
       <h1>Self-Attention: Queries, Keys, and Values</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>When an LLM resolves “it” in a sentence or latches onto a constraint in your system prompt, it is not searching a database — it is running <strong>self-attention</strong>. Each token builds a query (“what do I need?”), compares it to other tokens’ keys (“what do I offer?”), and mixes their values (“what content should flow?”). Master this block and you understand the core compute inside almost every modern GenAI model.</p>
+    <p><strong>What this is:</strong> When an LLM resolves &quot;it&quot; in a sentence or latches onto a constraint in your system prompt, it is running <strong>self-attention</strong>. Each token builds a query (&quot;what do I need?&quot;), compares it to other tokens&#x27; keys (&quot;what do I offer?&quot;), and mixes their values (&quot;what content should flow?&quot;).</p>
+    <p><strong>Why it matters:</strong> This block is the core compute inside almost every modern GenAI model. Master it and the rest of the Transformer stack becomes much clearer.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Picture YouTube search. Your <strong>query</strong> is the search box. Each video exposes a <strong>key</strong> (title, tags) for matching. The <strong>value</strong> is the video content you actually watch after ranking. Softmax turns match scores into a distribution; the result is a weighted blend of values, not a single hard pick.</p>
-    <p>In a sentence, the token “it” might query for animate nouns; “animal” offers a matching key and contributes its value vector into the updated representation of “it.” Attention is content-based addressing over the sequence: relevance is computed from learned projections, not from fixed offsets.</p>
-    <p>Self-attention means Q, K, and V all come from the <strong>same</strong> sequence (after linear maps). That lets every position refine itself using the whole context — the reason transformers handle long-range agreement better than local n-gram heuristics.</p>
+    <h3>The YouTube search analogy</h3>
+    <table>
+      <thead><tr>
+        <th>Role</th>
+        <th>Plain-English idea</th>
+        <th>YouTube example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Query (Q)</strong></td>
+          <td>&quot;What am I searching for?&quot;</td>
+          <td>What you type in the search bar</td>
+        </tr>
+        <tr>
+          <td><strong>Key (K)</strong></td>
+          <td>&quot;What is my identity label?&quot;</td>
+          <td>Video titles and tags the server checks</td>
+        </tr>
+        <tr>
+          <td><strong>Value (V)</strong></td>
+          <td>&quot;What core features do I hold?&quot;</td>
+          <td>The actual video content you watch</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The platform matches your query against all keys, turns match scores into a ranking (softmax), and returns a blend of video values weighted by relevance.</p>
+    <h3>A sentence example</h3>
+    <p>Sentence: <em>&quot;The chef cooked the food because it was delicious.&quot;</em></p>
+    <p>To figure out what <strong>&quot;it&quot;</strong> refers to:</p>
+    <ul>
+    <li><strong>Query for &quot;it&quot;:</strong> &quot;I am a pronoun. What noun in this sentence do I describe?&quot;</li>
+    <li><strong>Keys for all words:</strong> &quot;chef&quot; → animate actor; &quot;cooked&quot; → action; &quot;food&quot; → edible noun</li>
+    <li><strong>Values for all words:</strong> The actual semantic content of each word</li>
+    </ul>
+    <p>The query for &quot;it&quot; multiplies against all keys. &quot;chef&quot; gets a weak match (chefs aren&#x27;t usually &quot;delicious&quot;). &quot;food&quot; gets a strong match. Softmax puts ~85% focus on &quot;food&quot;. Multiplying that weight distribution by the values pulls &quot;food&quot; semantics into the updated representation of &quot;it&quot;.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p><strong>Self-attention</strong> means Q, K, and V all come from the <strong>same</strong> sequence (after learned linear projections). Every position can refine itself using the whole context — the reason transformers handle long-range agreement better than local word-pattern heuristics.</p>
+    </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p>Start with token embeddings <code>X</code> of shape <code>(n, d_model)</code> — <code>n</code> tokens, each a <code>d_model</code>-vector. Three learned matrices produce:</p>
+    <p>Start with token embeddings <code>X</code> of shape <code>(n, d_model)</code> — <code>n</code> tokens, each a <code>d_model</code>-vector. Three learned weight matrices produce:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">Q = X W_Q    # (n, d_k)
-K = X W_K    # (n, d_k)
-V = X W_V    # (n, d_v)</code></pre>
+      <pre><code class="language-text">Q = X * W_Q    # (n, d_k)  — &quot;what am I looking for?&quot;
+K = X * W_K    # (n, d_k)  — &quot;what do I offer for matching?&quot;
+V = X * W_V    # (n, d_v)  — &quot;what content do I carry?&quot;</code></pre>
     </div>
     <p>Often <code>d_v = d_k</code>. Pairwise scores are dot products between queries and keys:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">scores_ij = (Q_i * K_j) / sqrt(d_k)</code></pre>
     </div>
-    <p>Divide by <code>sqrt(d_k)</code> so that as dimension grows, scores do not explode into huge magnitudes that push softmax into tiny gradients. Then:</p>
+    <p>Divide by <code>sqrt(d_k)</code> so that as dimension grows, scores do not explode into huge magnitudes that push softmax into tiny gradients (<strong>softmax saturation</strong>).</p>
+    <p>Then the full attention formula:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">Attention(Q, K, V) = softmax(Q K^T / sqrt(d_k)) V</code></pre>
+      <pre><code class="language-text">Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V</code></pre>
     </div>
-    <p>Row <code>i</code> of the softmax matrix is a probability distribution over positions that token <code>i</code> will read from. Multiplying by <code>V</code> yields a new vector for each token: a soft retrieval of information from the sequence.</p>
-    <p><strong>Worked intuition.</strong> Sentence: “The animal did not cross the street because it was tired.” For query position “it”, high weight often lands on “animal” (antecedent) and “tired” (predicate). The updated embedding of “it” becomes a mixture that encodes that binding — fuel for later layers and the final next-token head.</p>
-    <p><strong>Complexity.</strong> Computing <code>Q K^T</code> is O(n^2 d_k). That quadratic term is why context-window length dominates cost and why “128k context” is an engineering story, not a free lunch.</p>
+    <p>Row <code>i</code> of the softmax matrix is a probability distribution over positions that token <code>i</code> will read from. Multipying by <code>V</code> yields a new vector for each token: a soft retrieval of information from the sequence.</p>
+    <table>
+      <thead><tr>
+        <th>Step</th>
+        <th>What happens</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Project</strong></td>
+          <td>Each token becomes Q, K, and V via learned matrices</td>
+        </tr>
+        <tr>
+          <td><strong>2. Score</strong></td>
+          <td>Every query dot-products with every key → compatibility scores</td>
+        </tr>
+        <tr>
+          <td><strong>3. Scale</strong></td>
+          <td>Divide by <code>sqrt(d_k)</code> to keep scores stable</td>
+        </tr>
+        <tr>
+          <td><strong>4. Softmax</strong></td>
+          <td>Turn scores into weights that sum to 1 per row</td>
+        </tr>
+        <tr>
+          <td><strong>5. Mix</strong></td>
+          <td>Weighted sum of values → updated token representation</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Complexity:</strong> Computing <code>Q * K^T</code> is O(n² * d_k). That quadratic term is why context-window length dominates cost — &quot;128k context&quot; is an engineering story, not a free lunch.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-  X[Token embeddings X] --> Q[Q = X W_Q]
-  X --> K[K = X W_K]
-  X --> V[V = X W_V]
-  Q --> S["Scores = QK^T / sqrt(d_k)"]
+  X[Token embeddings X] --> Q[Q = X * W_Q]
+  X --> K[K = X * W_K]
+  X --> V[V = X * W_V]
+  Q --> S["Scores = Q * K^T / sqrt(d_k)"]
   K --> S
   S --> W[Softmax weights]
   W --> O[Weighted sum of V]
   V --> O
       </div>
     </div>
-    <p>In stacked layers, the <em>input</em> to attention is already a contextualized residual stream. Early layers often mix local syntax; deeper layers mix longer semantic links. You rarely inspect raw heads in production, but the same API — scores, softmax, value mix — is what kernels fuse for inference speed.</p>
-    <p><strong>Batching view.</strong> Frameworks add a batch dimension: <code>Q</code> becomes <code>(batch, n, d_k)</code> or, with heads, <code>(batch, h, n, d_k)</code>. The math per sequence is unchanged; GPUs shine because every query–key score is a dense matmul. When people say “attention is all you need,” they mean this differentiable routing replaces recurrence — not that the rest of the block disappears.</p>
+    <p>In stacked layers, the input to attention is already a contextualized residual stream. Early layers often mix local syntax; deeper layers mix longer semantic links. Frameworks add batch and head dimensions — the math per sequence stays the same; GPUs shine because every query–key score is a dense matrix multiply.</p>
     <h2 id="in-code">In code</h2>
-    <p>A complete single-head attention forward pass on a toy sequence (fixed projections, no training).</p>
+    <p>A complete single-head attention forward pass on a toy sequence:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -106,9 +170,9 @@ print(&quot;output shape&quot;, out.shape)  # (n, d_k)</code></pre>
     <p>Row sums near 1.0 confirm a valid attention distribution. Change <code>X[0]</code> drastically and watch row-0 weights shift — that is content-based routing in miniature.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Skipping the scale.</strong> Without <code>/ sqrt(d_k)</code>, high-dimensional dots saturate softmax; gradients shrink and training stalls.</li>
-    <li><strong>Confusing Q/K/V roles.</strong> Q is “what I ask”; K is “how I am indexed”; V is “what I contribute.” Swapping them in an explanation is a common interview miss.</li>
-    <li><strong>Thinking softmax picks one token.</strong> Softmax is soft: many positions can share mass. Hard argmax would destroy gradient flow and nuance.</li>
+    <li><strong>Skipping the scale.</strong> Without <code>/ sqrt(d_k)</code>, high-dimensional dot products saturate softmax; gradients shrink and training stalls.</li>
+    <li><strong>Confusing Q/K/V roles.</strong> Q is &quot;what I ask&quot;; K is &quot;how I am indexed&quot;; V is &quot;what I contribute.&quot; Swapping them in an explanation is a common interview miss.</li>
+    <li><strong>Thinking softmax picks one token.</strong> Softmax is soft: many positions can share weight. A hard argmax would destroy gradient flow and nuance.</li>
     <li><strong>Numerical instability.</strong> Softmax should subtract the row max (as in the code) before <code>exp</code> to avoid overflow.</li>
     <li><strong>Assuming one head sees everything.</strong> A single head has limited subspace; multi-head attention (next lesson) fixes that by running several projections in parallel.</li>
     </ul>
@@ -116,13 +180,14 @@ print(&quot;output shape&quot;, out.shape)  # (n, d_k)</code></pre>
     <p>Self-attention updates each token by softmax-weighted retrieval over values, with weights from scaled query–key dot products on the same sequence.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Query (Q):</strong> projection used to ask for relevant context.</li>
-    <li><strong>Key (K):</strong> projection used to be matched against queries.</li>
-    <li><strong>Value (V):</strong> projection mixed into the output when attended.</li>
-    <li><strong>Scaled dot-product attention:</strong> <code>softmax(QK^T / sqrt(d_k)) V</code>.</li>
-    <li><strong>Attention weights:</strong> row-wise softmax distribution over positions.</li>
-    <li><strong>d_k:</strong> key/query dimension; sets the scale factor.</li>
-    <li><strong>Self-attention:</strong> Q/K/V derived from the same token sequence.</li>
+    <li><strong>Query (Q)</strong> — Projection used to ask for relevant context.</li>
+    <li><strong>Key (K)</strong> — Projection used to be matched against queries.</li>
+    <li><strong>Value (V)</strong> — Projection mixed into the output when attended.</li>
+    <li><strong>Scaled dot-product attention</strong> — <code>softmax(Q * K^T / sqrt(d_k)) * V</code>.</li>
+    <li><strong>Attention weights</strong> — Row-wise softmax distribution over positions.</li>
+    <li><strong>d_k</strong> — Key/query dimension; sets the scale factor.</li>
+    <li><strong>Self-attention</strong> — Q/K/V derived from the same token sequence.</li>
+    <li><strong>Softmax saturation</strong> — When large score values flatten gradients near zero, stalling learning.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

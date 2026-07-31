@@ -3,7 +3,7 @@ title: "Alignment Overview: RLHF and DPO"
 description: "Why SFT is not enough for preferences—high-level RLHF vs DPO, data needs, and engineering trade-offs without heavy math."
 ---
 
-SFT teaches the model to imitate demonstrations. Alignment methods teach it to prefer better answers over worse ones—helpfulness, harmlessness, and style trade-offs that are hard to encode as a single gold string. This lesson is a map of RLHF and DPO for engineers who need to know when to reach for them.
+SFT teaches the model to copy good examples. Alignment methods teach it to prefer better answers over worse ones—helpfulness, harmlessness, and style trade-offs that are hard to encode as a single gold string.
 
 ## Intuition
 
@@ -18,9 +18,14 @@ Prefs: learn to rank y_w > y_l given x
 Use SFT to get into the right format neighborhood; use preference tuning when "which answer is better?" is clearer than "what is the one true answer?"
 :::
 
-**RLHF** (Reinforcement Learning from Human Feedback) trains a **reward model** on preferences, then optimizes the policy (the LLM) to score high under that reward while staying close to an SFT reference.
+**RLHF** (reinforcement learning from human feedback) trains a **reward model** on preferences, then optimizes the policy (the language model) to score high under that reward while staying close to an SFT reference.
 
-**DPO** (Direct Preference Optimization) skips the explicit RL loop and reward model: it updates the policy directly from preference pairs with a closed-form objective relative to a reference model.
+**DPO** (direct preference optimization) skips the explicit reinforcement learning loop and reward model: it updates the policy directly from preference pairs with a closed-form objective relative to a reference model.
+
+Picture the difference:
+
+- SFT says: "Copy this exact answer."
+- Preference tuning says: "This answer is better than that one—learn the gap."
 
 ## How it works
 
@@ -52,11 +57,11 @@ High level:
 maximize  E[r(x, y)] - beta * KL(pi_theta || pi_ref)
 ```
 
-Engineering cost: sampling trajectories, unstable training, more moving parts (RM + policy + value/critic depending on stack).
+Engineering cost: sampling trajectories, unstable training, more moving parts (reward model + policy + value/critic depending on stack).
 
 ### DPO sketch
 
-DPO reparameterizes the problem so that increasing the likelihood gap between `y_w` and `y_l` (relative to the reference) improves the preference objective—no separate RM training loop in the common recipe.
+DPO reparameterizes the problem so that increasing the likelihood gap between `y_w` and `y_l` (relative to the reference) improves the preference objective—no separate reward model training loop in the common recipe.
 
 ```text
 increase log pi(y_w|x) - log pi(y_l|x)
@@ -68,13 +73,12 @@ Teams like DPO when they want preference gains with a simpler trainer. Quality s
 
 ### When to use what
 
-| Situation | Lean toward |
-| --- | --- |
-| Need format/style imitation only | SFT |
-| Clear pairwise judgments at scale | DPO or RLHF |
-| Complex multi-objective reward already modeled | RLHF-style stacks |
-| Small team, limited RL ops experience | DPO (or SFT+better data) first |
-| Safety-critical nuanced refusals | Preference data + strong eval; not vibes |
+| Strategy | Plain-English idea | When to use it |
+| --- | --- | --- |
+| **SFT** | Copy gold demonstrations. | Format and style imitation only. |
+| **DPO** | Learn from winner/loser pairs directly. | Clear pairwise judgments at scale; small team without RL ops. |
+| **RLHF** | Train a reward model, then optimize with RL. | Complex multi-objective reward already modeled. |
+| **Preference + strong eval** | Rank answers, then measure regressions. | Safety-critical nuanced refusals. |
 
 :::tip
 Garbage preferences in -> confident wrong values out. Invest in rater guidelines and agreement checks before fancy optimizers.
@@ -126,6 +130,7 @@ Conceptual trainer wiring:
 - **Skipping SFT** — Preference tuning from a raw base model is unstable; SFT first.
 - **Over-optimizing win rate** — Anchor and safety metrics silently degrade.
 - **Tiny preference sets** — Easy to overfit comparative quirks; diversity matters.
+- **Catastrophic forgetting** — Narrow preference tuning can erode general skills, just like aggressive SFT.
 
 :::warn
 Alignment is not a magic "make it safe" button. It is preference optimization under a KL leash—plus the eval suite you actually run.
@@ -145,14 +150,15 @@ The reference model is a leash. Without it, optimizers invent high-reward nonsen
 
 ## One-line summary
 
-**RLHF** learns a reward model and optimizes the policy with RL; **DPO** learns from preference pairs more directly—both refine an SFT model toward ranked human (or proxy) judgments.
+**RLHF** learns a reward model and optimizes the policy with reinforcement learning; **DPO** learns from preference pairs more directly—both refine an SFT model toward ranked human (or proxy) judgments.
 
 ## Key terms
 
 - **Alignment** — Steering models toward preferred, safe, policy-compliant behavior.
-- **RLHF** — Train a reward model from feedback, then RL-optimize the policy.
+- **RLHF** (reinforcement learning from human feedback) — Train a reward model from feedback, then RL-optimize the policy.
 - **Reward model (RM)** — Model that scores responses the way raters would.
-- **DPO** — Preference optimization method that updates the policy from pairs without a separate RM RL loop.
+- **DPO** (direct preference optimization) — Preference optimization method that updates the policy from pairs without a separate reward model RL loop.
 - **Reference model** — Frozen baseline (often SFT) used to limit drift via KL or DPO terms.
 - **Preference pair** — Same prompt with a chosen (winner) and rejected (loser) response.
 - **KL penalty** — Term that keeps the new policy close to the reference distribution.
+- **Catastrophic forgetting** — When fine-tuning on one task makes the model lose older capabilities.

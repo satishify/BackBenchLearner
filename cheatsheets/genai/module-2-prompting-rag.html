@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.">
+  <meta name="description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — beginner-friendly revision.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-2-prompting-rag.html">
   <meta property="og:title" content="Module 2 - Prompting, RAG &amp; Agents revision | Cheat Sheet | BackbenchLearner">
-  <meta property="og:description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.">
+  <meta property="og:description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — beginner-friendly revision.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-2-prompting-rag.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -45,64 +45,139 @@
     <p>Chapters <strong>2.1–2.9</strong>. Skim headings; drill weak spots in full lessons.</p>
     <h2 id="2122-llms-decoding-apis-structured-outputs">2.1–2.2 LLMs, decoding, APIs, structured outputs</h2>
     <ul>
-    <li><strong>Pretrain</strong> (next-token on huge text) -&gt; <strong>finetune / align</strong> -&gt; <strong>infer</strong> (API call).</li>
-    <li>Context window = hard budget for system + history + retrieved docs + output.</li>
-    <li>Decoding knobs: temperature, top-p, max tokens, stop sequences. Determinism is not guaranteed without seed + temp 0 (still provider quirks).</li>
-    <li><strong>Structured outputs</strong>: JSON schema / tool schemas / constrained decoding. Always validate; never trust raw model text as typed data.</li>
-    <li>Task prompts: summarize / QA / classify — specify format, audience, constraints, examples.</li>
+    <li><strong>Pretrain</strong> (predict next word on huge text) → <strong>finetune / align</strong> (shape behavior) → <strong>infer</strong> (call the model at answer time).</li>
+    <li><strong>Context window</strong> = hard budget for system rules + chat history + retrieved docs + output.</li>
+    <li><strong>Decoding knobs:</strong> temperature, top-p, max tokens, stop sequences. Even with temperature 0, exact repeats are not guaranteed (provider quirks).</li>
+    <li><strong>Structured outputs:</strong> JSON schema, tool schemas, constrained decoding. Always validate—never trust raw model text as typed data.</li>
+    <li><strong>Task prompts:</strong> summarize / Q&amp;A / classify—specify format, audience, constraints, and examples.</li>
     </ul>
     <h2 id="2325-evals-safety-advanced-prompting-security">2.3–2.5 Evals, safety, advanced prompting, security</h2>
     <h3>Evals</h3>
     <ul>
-    <li>Offline: gold sets, rubrics, LLM-as-judge (biased — calibrate). Online: thumbs, task success, latency, cost.</li>
-    <li>Regression: freeze a prompt suite; fail the PR if quality drops.</li>
+    <li><strong>Offline:</strong> gold question sets, rubrics, LLM-as-judge (can be biased—calibrate). <strong>Online:</strong> thumbs up/down, task success, latency, cost.</li>
+    <li><strong>Regression:</strong> freeze a prompt suite; fail the release if quality drops.</li>
     </ul>
     <h3>Prompt patterns</h3>
     <ul>
-    <li>System role = durable policy. User = task instance. Few-shot = show pattern, not novels.</li>
-    <li>CoT for multi-step reasoning; ask for final answer in a fixed format for grading.</li>
-    <li>Contracts beat vibes: fields, enums, length, “if unknown say UNKNOWN”.</li>
+    <li><strong>System role</strong> = durable policy. <strong>User message</strong> = this task. <strong>Few-shot</strong> = show the pattern, not a novel.</li>
+    <li><strong>Chain-of-thought (CoT)</strong> for multi-step reasoning; ask for a final answer in a fixed format for grading.</li>
+    <li><strong>Contracts beat vibes:</strong> name fields, allowed values, length limits, &quot;if unknown say UNKNOWN.&quot;</li>
     </ul>
     <h3>Security</h3>
     <ul>
-    <li><strong>Prompt injection</strong>: untrusted content (web, PDF, email) steers the model. Separate trust boundaries; don’t let tools run on attacker text blindly.</li>
-    <li>Least privilege for tools. Log tool calls. Human-in-the-loop for irreversible actions.</li>
+    <li><strong>Prompt injection:</strong> untrusted content (web, PDF, email) steers the model. Separate trust boundaries; do not run tools on attacker text blindly.</li>
+    <li><strong>Least privilege</strong> for tools. Log tool calls. Human-in-the-loop for irreversible actions.</li>
     </ul>
     <h2 id="2628-rag-fundamentals-to-production">2.6–2.8 RAG fundamentals to production</h2>
-    <h3>Pipeline</h3>
-    <p><code>query -&gt; embed -&gt; retrieve top-k -&gt; (rerank) -&gt; stuff into prompt -&gt; generate (+ cite)</code></p>
+    <h3>What RAG is</h3>
+    <p><strong>RAG</strong> (retrieval-augmented generation) = find relevant text first, add it to the prompt, then let the LLM answer from that evidence.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">query → embed → retrieve top-k → (rerank) → pack into prompt → generate (+ cite)</code></pre>
+    </div>
     <h3>Chunking</h3>
-    <ul>
-    <li>Too big -&gt; noisy context. Too small -&gt; lose meaning. Overlap helps boundaries. Metadata (source, section) enables filters.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Problem</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Too big</strong></td>
+          <td>Noisy context; one chunk mixes many topics</td>
+        </tr>
+        <tr>
+          <td><strong>Too small</strong></td>
+          <td>Loses meaning; answer spans get cut off</td>
+        </tr>
+        <tr>
+          <td><strong>Overlap (10–20%)</strong></td>
+          <td>Facts near chunk boundaries appear in two chunks</td>
+        </tr>
+        <tr>
+          <td><strong>Metadata</strong></td>
+          <td>source, section, date, tenant—enables filters and citations</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Search types</h3>
+    <table>
+      <thead><tr>
+        <th>Type</th>
+        <th>Plain-English idea</th>
+        <th>Good for</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>BM25 (keyword)</strong></td>
+          <td>Match exact words with smart scoring</td>
+          <td>Error codes, SKUs, names</td>
+        </tr>
+        <tr>
+          <td><strong>Dense (semantic)</strong></td>
+          <td>Match meaning via embeddings</td>
+          <td>Paraphrases, synonyms</td>
+        </tr>
+        <tr>
+          <td><strong>Hybrid</strong></td>
+          <td>Run both; merge with RRF or weighted fusion</td>
+          <td>Production default</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>Indexes (know the tradeoffs)</h3>
-    <ul>
-    <li><strong>Flat / brute force</strong> — exact, slow at scale.</li>
-    <li><strong>IVF</strong> — cluster centroids; search <code>nprobe</code> lists. Faster, approximate; tune recall vs latency.</li>
-    <li><strong>PQ (product quantization)</strong> — compress vectors into codes; huge memory win, more approx error.</li>
-    <li><strong>HNSW</strong> — graph ANN; strong recall/latency; RAM heavy. Common default in vector DBs.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Index</th>
+        <th>Plain-English idea</th>
+        <th>Trade-off</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Flat / brute force (KNN)</strong></td>
+          <td>Compare query to every vector</td>
+          <td>Exact; slow at scale</td>
+        </tr>
+        <tr>
+          <td><strong>IVF (inverted file index)</strong></td>
+          <td>Cluster vectors; search <strong>nprobe</strong> buckets</td>
+          <td>Faster; approximate—tune recall vs latency</td>
+        </tr>
+        <tr>
+          <td><strong>PQ (product quantization)</strong></td>
+          <td>Compress vectors into short codes</td>
+          <td>Huge memory win; more approximation error</td>
+        </tr>
+        <tr>
+          <td><strong>HNSW (hierarchical navigable small world)</strong></td>
+          <td>Layered graph of neighbors</td>
+          <td>Strong recall/speed; RAM-heavy</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Knobs:</strong> IVF <strong>nprobe</strong> and HNSW <strong>efSearch</strong> both spend more query time for better recall.</p>
     <h3>Production RAG</h3>
     <ul>
-    <li>Hybrid search (BM25 + dense). Rerankers when top-k is cheap noise.</li>
-    <li>Citations &amp; grounding: force quotes / IDs; refuse when retrieval weak.</li>
-    <li>Eval: faithfulness, answer relevance, context precision/recall — not only “sounds good”.</li>
-    <li>Ops: version embeddings + index; watch empty retrieval, p95 latency, cost/query.</li>
+    <li><strong>Two-stage ranking:</strong> bi-encoder retrieve cheaply → cross-encoder rerank top-N → generate.</li>
+    <li><strong>Retrieval gateway:</strong> auth before search, query shaping, semantic cache (high threshold—false hits hurt), routing to the right index or tool.</li>
+    <li><strong>Citations &amp; grounding:</strong> require chunk IDs; verify claims against cited text; refuse when retrieval is weak.</li>
+    <li><strong>Eval (RAGAS-style):</strong> faithfulness, answer relevancy, context precision/recall—not only &quot;sounds good.&quot;</li>
+    <li><strong>Ops:</strong> version embeddings + index; watch empty retrieval, p95 latency, cost per query.</li>
     </ul>
     <h2 id="29-agentic-ai-multi-agent">2.9 Agentic AI &amp; multi-agent</h2>
     <ul>
     <li><strong>Chatbot</strong> = reply in thread. <strong>Agent</strong> = plan + tools + memory + stop condition.</li>
-    <li>Loop: observe -&gt; think/plan -&gt; act (tool) -&gt; observe -&gt; ... -&gt; answer or escalate.</li>
-    <li>Tools: typed functions; validate args; timeouts; idempotency for side effects.</li>
-    <li>Memory: short-term (scratchpad / messages) vs long-term (store + retrieve). Don’t dump everything into context.</li>
-    <li>Multi-agent: specialize roles; orchestrate (router, sequential, hierarchical). More agents is not more quality — more failure modes.</li>
-    <li>Reflection / self-critique: second pass that checks against tools or rubric; cap retries.</li>
+    <li><strong>Loop:</strong> observe → think/plan → act (tool) → observe → … → answer or escalate.</li>
+    <li><strong>Tools:</strong> typed functions; validate args; timeouts; idempotency for side effects.</li>
+    <li><strong>Memory:</strong> short-term (scratchpad / messages) vs long-term (store + retrieve). Do not dump everything into context.</li>
+    <li><strong>Multi-agent:</strong> specialize roles; orchestrate (router, sequential, hierarchical). More agents ≠ more quality—more failure modes.</li>
+    <li><strong>Reflection / self-critique:</strong> second pass that checks against tools or rubric; cap retries.</li>
     </ul>
     <h2 id="30-minute-drill">30-minute drill</h2>
     <ol>
     <li>Draw IVF vs HNSW in one sentence each + one failure mode.</li>
     <li>Write a 5-line system prompt that blocks tool use on untrusted pasted text.</li>
-    <li>List three RAG metrics you’d put on a dashboard before launch.</li>
+    <li>List three RAG metrics you&#x27;d put on a dashboard before launch.</li>
     </ol>
 
     <footer>

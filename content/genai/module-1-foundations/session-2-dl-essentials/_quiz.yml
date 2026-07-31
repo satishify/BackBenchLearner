@@ -1,22 +1,22 @@
 title: "1.2 Deep Learning Essentials"
 questions:
-  - q: "You train a 3-class intent classifier. The model assigns probability 0.02 to the true class. What is the cross-entropy contribution for that example (natural log)?"
+  - q: "You train a 3-class intent classifier. The model assigns probability 0.02 to the true class. What is the cross-entropy loss for that example (natural log)?"
     options:
-      - "log(0.02) ~= -3.91 (so loss ~= +3.91)"
+      - "-log(0.02) ~= 3.91"
       - "0.02"
       - "1 - 0.02 = 0.98"
       - "0.02^2 = 0.0004"
     answer: 0
-    why: "Multi-class CE is -log p_true. A tiny probability on the correct class yields a large positive loss, punishing confident mistakes."
+    why: "Multi-class cross-entropy is -log(p_true). A tiny probability on the correct class yields a large positive loss, punishing confident mistakes."
 
-  - q: "When is MSE a better default loss than cross-entropy?"
+  - q: "When is mean squared error (MSE) a better default loss than cross-entropy?"
     options:
       - "Predicting a continuous temperature from sensors"
       - "Choosing one of 40 support ticket categories"
       - "Next-token prediction over a vocabulary"
       - "Binary spam vs not-spam with calibrated probabilities as the only metric"
     answer: 0
-    why: "MSE (or related regression losses) matches numeric targets; classification/LM heads usually use CE-family losses on probabilities."
+    why: "MSE matches numeric (regression) targets. Classification and language-model heads use cross-entropy-family losses on probabilities."
 
   - q: "Softmax logits are [2.0, 1.0, 0.1]. Which statement is true?"
     options:
@@ -45,14 +45,14 @@ questions:
     answer: 1
     why: "Dividing logits by T<1 amplifies gaps (peakier); T>1 shrinks gaps (flatter), trading certainty for diversity."
 
-  - q: "Backpropagation’s core job in gradient descent is to..."
+  - q: "Backpropagation's core job in gradient descent is to..."
     options:
       - "Randomly reset all weights each step"
-      - "Compute how loss changes w.r.t. each parameter via the chain rule"
+      - "Compute how loss changes with respect to each parameter via the chain rule"
       - "Delete the training set after one epoch"
-      - "Guarantee a global minimum on non-convex nets"
+      - "Guarantee a global minimum on non-convex networks"
     answer: 1
-    why: "Backprop efficiently applies the chain rule so optimizers can step parameters against the loss gradient."
+    why: "Backpropagation efficiently applies the chain rule so optimizers can step parameters in the direction that reduces loss."
 
   - q: "Learning rate is too high. What symptom is most characteristic?"
     options:
@@ -61,9 +61,9 @@ questions:
       - "Gradients become exactly zero forever on day one"
       - "The dataset shrinks automatically"
     answer: 1
-    why: "Oversized steps overshoot minima; training becomes unstable. Too-small LRs crawl; too-large LRs blow up."
+    why: "Oversized steps overshoot minima; training becomes unstable. Too-small learning rates crawl; too-large ones blow up."
 
-  - q: "Why do CNNs share convolutional filters across spatial locations?"
+  - q: "Why do convolutional neural networks (CNNs) share convolutional filters across spatial locations?"
     options:
       - "To force every pixel to use a unique unrelated weight"
       - "To detect local patterns translation-equivariantly with far fewer parameters than a dense layer"
@@ -75,8 +75,26 @@ questions:
   - q: "Compared with a vanilla RNN, what problem do LSTMs primarily mitigate?"
     options:
       - "Inability to process any sequence shorter than 2 tokens"
-      - "Vanishing/exploding gradients that erase long-range signal through many timesteps"
+      - "Vanishing/exploding gradients that erase long-range signal through many time steps"
       - "The need for any nonlinearity"
       - "GPU memory becoming free"
     answer: 1
-    why: "Gating (and cell state highways) help preserve and control information over longer sequences than naive RNNs."
+    why: "Gating and the cell-state highway help preserve and control information over longer sequences than naive RNNs."
+
+  - q: "What is the 'Picasso problem' in CNNs?"
+    options:
+      - "CNNs cannot process color images"
+      - "Max pooling discards spatial layout, so scrambled features can still be classified as a normal face"
+      - "CNNs require infinite GPU memory"
+      - "Filters must always be 1x1 in size"
+    answer: 1
+    why: "Pooling saves memory but loses precise positioning — a CNN may detect eyes and a mouth without knowing their spatial arrangement."
+
+  - q: "In an LSTM, what does the forget gate do?"
+    options:
+      - "Deletes the entire training dataset"
+      - "Filters out old, irrelevant context from the cell state"
+      - "Forces the model to always remember everything"
+      - "Converts text to one-hot vectors"
+    answer: 1
+    why: "The forget gate decides how much of the previous cell state to keep vs discard, preventing stale memory from polluting predictions."

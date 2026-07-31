@@ -36,7 +36,7 @@
       <h1>Alignment Overview: RLHF and DPO</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>SFT teaches the model to imitate demonstrations. Alignment methods teach it to prefer better answers over worse ones—helpfulness, harmlessness, and style trade-offs that are hard to encode as a single gold string. This lesson is a map of RLHF and DPO for engineers who need to know when to reach for them.</p>
+    <p>SFT teaches the model to copy good examples. Alignment methods teach it to prefer better answers over worse ones—helpfulness, harmlessness, and style trade-offs that are hard to encode as a single gold string.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Humans often cannot write the perfect answer, but they can say &quot;A is better than B.&quot; Preference learning turns those comparisons into training signal.</p>
     <div class="code-block" data-lang="text">
@@ -48,8 +48,13 @@ Prefs: learn to rank y_w &gt; y_l given x</code></pre>
       <p class="callout-title">Key idea</p>
     <p>Use SFT to get into the right format neighborhood; use preference tuning when &quot;which answer is better?&quot; is clearer than &quot;what is the one true answer?&quot;</p>
     </aside>
-    <p><strong>RLHF</strong> (Reinforcement Learning from Human Feedback) trains a <strong>reward model</strong> on preferences, then optimizes the policy (the LLM) to score high under that reward while staying close to an SFT reference.</p>
-    <p><strong>DPO</strong> (Direct Preference Optimization) skips the explicit RL loop and reward model: it updates the policy directly from preference pairs with a closed-form objective relative to a reference model.</p>
+    <p><strong>RLHF</strong> (reinforcement learning from human feedback) trains a <strong>reward model</strong> on preferences, then optimizes the policy (the language model) to score high under that reward while staying close to an SFT reference.</p>
+    <p><strong>DPO</strong> (direct preference optimization) skips the explicit reinforcement learning loop and reward model: it updates the policy directly from preference pairs with a closed-form objective relative to a reference model.</p>
+    <p>Picture the difference:</p>
+    <ul>
+    <li>SFT says: &quot;Copy this exact answer.&quot;</li>
+    <li>Preference tuning says: &quot;This answer is better than that one—learn the gap.&quot;</li>
+    </ul>
     <h2 id="how-it-works">How it works</h2>
     <h3>Shared ingredients</h3>
     <ol>
@@ -79,9 +84,9 @@ flowchart LR
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">maximize  E[r(x, y)] - beta * KL(pi_theta || pi_ref)</code></pre>
     </div>
-    <p>Engineering cost: sampling trajectories, unstable training, more moving parts (RM + policy + value/critic depending on stack).</p>
+    <p>Engineering cost: sampling trajectories, unstable training, more moving parts (reward model + policy + value/critic depending on stack).</p>
     <h3>DPO sketch</h3>
-    <p>DPO reparameterizes the problem so that increasing the likelihood gap between <code>y_w</code> and <code>y_l</code> (relative to the reference) improves the preference objective—no separate RM training loop in the common recipe.</p>
+    <p>DPO reparameterizes the problem so that increasing the likelihood gap between <code>y_w</code> and <code>y_l</code> (relative to the reference) improves the preference objective—no separate reward model training loop in the common recipe.</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">increase log pi(y_w|x) - log pi(y_l|x)
@@ -92,29 +97,30 @@ relative to the same gap under pi_ref
     <h3>When to use what</h3>
     <table>
       <thead><tr>
-        <th>Situation</th>
-        <th>Lean toward</th>
+        <th>Strategy</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Need format/style imitation only</td>
-          <td>SFT</td>
+          <td><strong>SFT</strong></td>
+          <td>Copy gold demonstrations.</td>
+          <td>Format and style imitation only.</td>
         </tr>
         <tr>
-          <td>Clear pairwise judgments at scale</td>
-          <td>DPO or RLHF</td>
+          <td><strong>DPO</strong></td>
+          <td>Learn from winner/loser pairs directly.</td>
+          <td>Clear pairwise judgments at scale; small team without RL ops.</td>
         </tr>
         <tr>
-          <td>Complex multi-objective reward already modeled</td>
-          <td>RLHF-style stacks</td>
+          <td><strong>RLHF</strong></td>
+          <td>Train a reward model, then optimize with RL.</td>
+          <td>Complex multi-objective reward already modeled.</td>
         </tr>
         <tr>
-          <td>Small team, limited RL ops experience</td>
-          <td>DPO (or SFT+better data) first</td>
-        </tr>
-        <tr>
-          <td>Safety-critical nuanced refusals</td>
-          <td>Preference data + strong eval; not vibes</td>
+          <td><strong>Preference + strong eval</strong></td>
+          <td>Rank answers, then measure regressions.</td>
+          <td>Safety-critical nuanced refusals.</td>
         </tr>
       </tbody>
     </table>
@@ -165,6 +171,7 @@ for step in range(5):
     <li><strong>Skipping SFT</strong> — Preference tuning from a raw base model is unstable; SFT first.</li>
     <li><strong>Over-optimizing win rate</strong> — Anchor and safety metrics silently degrade.</li>
     <li><strong>Tiny preference sets</strong> — Easy to overfit comparative quirks; diversity matters.</li>
+    <li><strong>Catastrophic forgetting</strong> — Narrow preference tuning can erode general skills, just like aggressive SFT.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
@@ -177,16 +184,17 @@ for step in range(5):
     <h3>KL and over-optimization (plain language)</h3>
     <p>The reference model is a leash. Without it, optimizers invent high-reward nonsense: endless apologies, empty hedging, or keyword stuffing that fooled the reward model. If outputs get strangely verbose or sycophantic after preference tuning, strengthen the leash (higher beta / KL) and revisit the preference labels.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p><strong>RLHF</strong> learns a reward model and optimizes the policy with RL; <strong>DPO</strong> learns from preference pairs more directly—both refine an SFT model toward ranked human (or proxy) judgments.</p>
+    <p><strong>RLHF</strong> learns a reward model and optimizes the policy with reinforcement learning; <strong>DPO</strong> learns from preference pairs more directly—both refine an SFT model toward ranked human (or proxy) judgments.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Alignment</strong> — Steering models toward preferred, safe, policy-compliant behavior.</li>
-    <li><strong>RLHF</strong> — Train a reward model from feedback, then RL-optimize the policy.</li>
+    <li><strong>RLHF</strong> (reinforcement learning from human feedback) — Train a reward model from feedback, then RL-optimize the policy.</li>
     <li><strong>Reward model (RM)</strong> — Model that scores responses the way raters would.</li>
-    <li><strong>DPO</strong> — Preference optimization method that updates the policy from pairs without a separate RM RL loop.</li>
+    <li><strong>DPO</strong> (direct preference optimization) — Preference optimization method that updates the policy from pairs without a separate reward model RL loop.</li>
     <li><strong>Reference model</strong> — Frozen baseline (often SFT) used to limit drift via KL or DPO terms.</li>
     <li><strong>Preference pair</strong> — Same prompt with a chosen (winner) and rejected (loser) response.</li>
     <li><strong>KL penalty</strong> — Term that keeps the new policy close to the reference distribution.</li>
+    <li><strong>Catastrophic forgetting</strong> — When fine-tuning on one task makes the model lose older capabilities.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

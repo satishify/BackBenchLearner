@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="How large language models generate text via next-token prediction, tokens, context windows, and why fluent output is not a database.">
+  <meta name="description" content="What a large language model actually is, how it writes text one piece at a time, and why fluent answers are not the same as a verified database.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/what-are-llms-and-text-generation.html">
   <meta property="og:title" content="What LLMs Are and How They Generate Text | BackbenchLearner">
-  <meta property="og:description" content="How large language models generate text via next-token prediction, tokens, context windows, and why fluent output is not a database.">
+  <meta property="og:description" content="What a large language model actually is, how it writes text one piece at a time, and why fluent answers are not the same as a verified database.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/what-are-llms-and-text-generation.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="What LLMs Are and How They Generate Text | BackbenchLearner">
-  <meta name="twitter:description" content="How large language models generate text via next-token prediction, tokens, context windows, and why fluent output is not a database.">
+  <meta name="twitter:description" content="What a large language model actually is, how it writes text one piece at a time, and why fluent answers are not the same as a verified database.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,25 +36,46 @@
       <h1>What LLMs Are and How They Generate Text</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Large language models (LLMs) feel like they “know” things because they produce fluent paragraphs on demand. Under the hood they are not search engines or knowledge graphs: they are <strong>next-token predictors</strong> trained to continue text. That single idea explains their strengths (style, paraphrase, code patterns) and their failures (confident nonsense, stale facts, invented citations).</p>
+    <p>Large language models (LLMs) feel like they &quot;know&quot; things because they write smooth paragraphs on demand. Under the hood they are <strong>not</strong> search engines or fact databases. They are <strong>next-token predictors</strong> — programs trained to guess what text comes next. That one idea explains both their strengths (style, paraphrase, code patterns) and their failures (confident wrong answers, stale facts, invented citations).</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine finishing your friend’s sentence. Given “The capital of France is”, you almost always say “Paris”. An LLM does a scaled-up version of that game over <strong>tokens</strong> (subword pieces), not whole words only.</p>
-    <p>Generation is <strong>autoregressive</strong>: predict one token, append it, predict the next, repeat until a stop condition. Each step conditions on everything already in the <strong>context window</strong> — the sliding (or fixed-size) buffer of recent tokens the model can attend to.</p>
+    <p><strong>What is an LLM?</strong> A neural network trained on huge amounts of text to predict the next small piece of language.</p>
+    <p><strong>Why does that matter?</strong> It explains why the model can sound brilliant and still be wrong. Fluency comes from language patterns, not from looking up verified facts.</p>
+    <p>Imagine finishing your friend&#x27;s sentence. Given &quot;The capital of France is&quot;, you almost always say &quot;Paris.&quot; An LLM does a scaled-up version of that game over <strong>tokens</strong> (subword pieces), not always whole words.</p>
+    <p>Generation is <strong>autoregressive</strong> (one token at a time, feeding each output back as input): predict one token, append it, predict the next, repeat until a stop condition. Each step only &quot;sees&quot; what fits in the <strong>context window</strong> — the fixed-size buffer of recent tokens the model can attend to.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>An LLM is a probability machine over sequences. Fluency comes from modeling language statistics well — not from looking up a verified fact table.</p>
+    <p>An LLM is a probability machine over text sequences. Smooth writing means the model learned language statistics well — not that it checked a verified fact table.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Tokens (high level)</h3>
-    <p>Text is split into tokens before the model sees it. Roughly:</p>
-    <ul>
-    <li>Short common words may be one token (<code>the</code>).</li>
-    <li>Rare or long words may split (<code>unbelievable</code> -&gt; pieces).</li>
-    <li>Spaces and punctuation count.</li>
-    </ul>
-    <p>Exact tokenization depends on the model’s vocabulary. For mental math, English often lands around ~0.75 words per token — useful for estimating context limits, not for precision.</p>
+    <p>Before the model reads your text, a <strong>tokenizer</strong> splits it into <strong>tokens</strong> — vocabulary pieces the model actually processes.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Token</strong></td>
+          <td>A small chunk of text (often a subword) the model reads and writes</td>
+        </tr>
+        <tr>
+          <td><strong>Common words</strong></td>
+          <td>Often one token each (<code>the</code>, <code>cat</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>Rare or long words</strong></td>
+          <td>May split into several pieces</td>
+        </tr>
+        <tr>
+          <td><strong>Spaces and punctuation</strong></td>
+          <td>Count toward the token budget</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Exact tokenization depends on the model. For rough planning in English, think ~0.75 words per token — useful for estimating context limits, not for billing.</p>
     <h3>Next-token prediction</h3>
-    <p>Training pushes the model to assign high probability to the actual next token in vast amounts of text. At inference time you sample (or greedily pick) from the predicted distribution.</p>
+    <p>During <strong>pretraining</strong> (learning from massive text), the model learns to assign high probability to the actual next token. At <strong>inference</strong> (when you call the model), you pick from that probability distribution — either the top choice (greedy) or a random sample.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -66,25 +87,24 @@ flowchart LR
       </div>
     </div>
     <h3>Context window</h3>
-    <p>The <strong>context window</strong> is the maximum number of tokens the model can consider at once (prompt + generated so far, depending on API). If you overflow it, earlier tokens fall out of view — the model literally cannot “see” them. Long documents therefore need truncation, summarization, or retrieval, not wishful thinking.</p>
-    <p>Context is also where <em>instructions</em> live. System prompts, few-shot examples, retrieved snippets, and the user’s question all compete for the same budget. A 128k window sounds large until you paste three PDFs and wonder why the model ignored the policy buried on page one.</p>
+    <p>The <strong>context window</strong> is the maximum number of tokens the model can consider at once (prompt + generated text, depending on the API). If you overflow it, earlier tokens fall out of view — the model literally cannot &quot;see&quot; them.</p>
+    <p>Context is also where instructions live. System prompts, few-shot examples, retrieved snippets, and the user&#x27;s question all compete for the same budget. A 128k window sounds huge until you paste three PDFs and wonder why the model ignored the policy on page one.</p>
     <h3>Decoding choices (preview)</h3>
     <p>At each step the model emits a full distribution over the vocabulary. You then choose:</p>
     <ul>
-    <li><strong>Greedy</strong> — always take the top token (stable, sometimes dull or repetitive).</li>
+    <li><strong>Greedy decoding</strong> — always take the highest-probability token (stable, sometimes dull or repetitive).</li>
     <li><strong>Sampling</strong> — draw randomly according to probabilities (more variety, more risk).</li>
-    <li>Later knobs (temperature, top-p, top-k) reshape that distribution before you choose.</li>
     </ul>
-    <p>You do not need the full decoding toolkit yet; you only need to remember that “the model said X” always means “given this context and this decoding policy, X was produced.”</p>
+    <p>Later lessons cover <strong>temperature</strong>, <strong>top-p</strong>, and <strong>top-k</strong> — knobs that reshape that distribution before you choose. For now, remember: &quot;the model said X&quot; always means &quot;given this context and this decoding policy, X was produced.&quot;</p>
     <h3>Why they feel smart but are not databases</h3>
-    <p>LLMs compress statistical regularities of training text into weights. That yields:</p>
+    <p>LLMs compress statistical regularities of training text into <strong>weights</strong> (learned numbers inside the network). That yields:</p>
     <ul>
     <li>Strong pattern completion and style matching.</li>
     <li>Weak guarantees on factuality, freshness, or citation integrity.</li>
-    <li>No built-in notion of “I looked this up in our CRM.”</li>
+    <li>No built-in notion of &quot;I looked this up in our customer database.&quot;</li>
     </ul>
-    <p>A useful analogy: the model is closer to a very flexible <strong>autocomplete</strong> trained on the public internet (plus whatever else was in the mix) than to a curated encyclopedia with citations. Autocomplete can draft a brilliant email and still invent a meeting that never happened.</p>
-    <p>Treat them as <strong>generators</strong> you can steer with prompts, tools, and retrieval — not as authoritative stores.</p>
+    <p>A useful analogy: the model is closer to a very flexible <strong>autocomplete</strong> trained on public text than to a curated encyclopedia with citations. Autocomplete can draft a brilliant email and still invent a meeting that never happened.</p>
+    <p>Treat them as <strong>generators</strong> you can steer with prompts, tools, and retrieval — not as authoritative stores of truth.</p>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
     <p>When you need a fact that must be right, ground the model with retrieved documents or an API call, then ask it to use that evidence — do not rely on memorized weights alone.</p>
@@ -125,49 +145,15 @@ def generate(max_words: int = 12) -&gt; str:
 print(generate())
 # The cat sat on the mat.</code></pre>
     </div>
-    <p>Swap the greedy <code>max</code> for random sampling weighted by counts and you get variety — the same trade-off real LLMs face between deterministic decoding and creative sampling (temperature, top-p, etc., covered later).</p>
-    <p>A slightly richer metaphor: store a few “prompt prefixes” and continue from them to show conditioning.</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">def continue_from(seed: list[str], steps: int = 4) -&gt; str:
-    words = list(seed)
-    for _ in range(steps):
-        prev = words[-1]
-        if prev not in bigrams:
-            break
-        words.append(greedy_next(prev))
-        if words[-1] == &quot;.&quot;:
-            break
-    return &quot; &quot;.join(words).replace(&quot; .&quot;, &quot;.&quot;)
-
-
-print(continue_from([&quot;The&quot;, &quot;cat&quot;]))
-# The cat sat on the mat.</code></pre>
-    </div>
-    <p>Sampling instead of greedy makes the “feels creative” path visible even with a tiny table:</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">import random
-
-
-def sample_next(prev: str) -&gt; str:
-    choices = bigrams[prev]
-    words, weights = zip(*choices.items())
-    return random.choices(words, weights=weights, k=1)[0]
-
-
-random.seed(0)
-print(sample_next(&quot;The&quot;))  # often &quot;cat&quot;, sometimes &quot;dog&quot;</code></pre>
-    </div>
+    <p>Swap the greedy <code>max</code> for random sampling weighted by counts and you get variety — the same trade-off real LLMs face between deterministic decoding and creative sampling.</p>
     <p>Real LLMs replace this hand-built table with a neural net that conditions on <em>many</em> previous tokens at once. The control loop — score candidates, pick one, append, repeat — stays the same.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Hallucinations</strong> — The model invents plausible names, APIs, or papers because those strings fit the local pattern.</li>
-    <li><strong>Context blindness</strong> — Critical instructions at the start of a huge prompt may get diluted or truncated; put constraints where the model still sees them and keep prompts lean.</li>
-    <li><strong>Mistaking memorization for retrieval</strong> — Asking “what did Alice email last Tuesday?” without tools yields fiction or generic guesses.</li>
+    <li><strong>Context blindness</strong> — Critical instructions at the start of a huge prompt may get diluted or truncated; keep prompts lean.</li>
+    <li><strong>Mistaking memorization for retrieval</strong> — Asking &quot;what did Alice email last Tuesday?&quot; without tools yields fiction or generic guesses.</li>
     <li><strong>Over-trusting fluency</strong> — Smooth prose raises perceived confidence; it does not raise truth probability.</li>
     <li><strong>Stopping rules</strong> — Without max tokens or stop sequences, generation can ramble; with bad stops, it cuts mid-thought.</li>
-    <li><strong>Toy models mislead</strong> — Bigram greed is local; real transformers condition on the whole context window with attention, which is why they handle long-range agreement better — but the <em>loop</em> (predict -&gt; append -&gt; repeat) is the same.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
@@ -179,7 +165,7 @@ print(sample_next(&quot;The&quot;))  # often &quot;cat&quot;, sometimes &quot;do
     <ul>
     <li><strong>LLM (Large Language Model)</strong> — A neural model trained on large text corpora to predict and generate language.</li>
     <li><strong>Token</strong> — A vocabulary unit (often a subword) that the model reads and writes.</li>
-    <li><strong>Next-token prediction</strong> — Training/inference objective of guessing the following token given prior tokens.</li>
+    <li><strong>Next-token prediction</strong> — The training and inference goal of guessing the following token given prior tokens.</li>
     <li><strong>Autoregressive generation</strong> — Producing a sequence one token at a time, feeding outputs back as inputs.</li>
     <li><strong>Context window</strong> — Maximum token span the model can attend to in one pass.</li>
     <li><strong>Greedy decoding</strong> — Always choosing the highest-probability next token.</li>

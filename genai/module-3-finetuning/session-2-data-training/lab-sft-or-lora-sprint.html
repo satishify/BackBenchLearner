@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, train conceptually, and checkpoint against validation.">
+  <meta name="description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, understand the training loop, and checkpoint against validation.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html">
   <meta property="og:title" content="Lab: SFT or LoRA Sprint | BackbenchLearner">
-  <meta property="og:description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, train conceptually, and checkpoint against validation.">
+  <meta property="og:description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, understand the training loop, and checkpoint against validation.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Lab: SFT or LoRA Sprint | BackbenchLearner">
-  <meta name="twitter:description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, train conceptually, and checkpoint against validation.">
+  <meta name="twitter:description" content="Run a focused adaptation sprint: choose LoRA vs light SFT, configure a recipe, understand the training loop, and checkpoint against validation.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,18 +36,61 @@
       <h1>Lab: SFT or LoRA Sprint</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>With baseline numbers in hand, run a short adaptation sprint. Default recommendation for this lab: <strong>LoRA SFT</strong> on your chat JSONL. Full fine-tuning is optional only if you already know PEFT underfits and you have the hardware. You can complete the learning goals with dry-run configs and toy loops if GPUs are unavailable.</p>
+    <p>With baseline numbers in hand, run a short adaptation sprint. This lesson covers the machinery underneath every fine-tune — the loop, stability tricks, learning-rate (LR) schedules, batch size, and how to read loss curves.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Sprint means constrained ambition:</p>
     <ul>
     <li>One task, one schema, one adapter name.</li>
     <li>One recipe change at a time.</li>
-    <li>Validation-guided early stop—not &quot;train overnight and hope.&quot;</li>
+    <li>Validation-guided early stop — not &quot;train overnight and hope.&quot;</li>
     </ul>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>The sprint deliverable is a versioned artifact plus a scorecard delta vs baseline—not a vibes-based chat demo.</p>
+    <p>The sprint deliverable is a versioned artifact plus a scorecard delta vs baseline — not a vibes-based chat demo.</p>
     </aside>
+    <h3>How large language models (LLMs) learn during fine-tuning</h3>
+    <p>At training time, the model repeatedly sees a mini-batch of token IDs. It predicts the next token at every position, compares those predictions with the true text, and adjusts its parameters a tiny bit in the direction that lowers loss.</p>
+    <ul>
+    <li><strong>Tokenization</strong> turns raw text into numbers; the model never sees letters directly.</li>
+    <li>Training data is packed into fixed-length context windows so the GPU can process many examples efficiently.</li>
+    <li><strong>Mini-batches</strong> sit between exact but slow full-batch learning and noisy one-example learning.</li>
+    <li>The model predicts the next token at every position, not just once at the end.</li>
+    </ul>
+    <p>Each step follows this path:</p>
+    <table>
+      <thead><tr>
+        <th>Stage</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Logits</strong></td>
+          <td>Raw model scores before normalization</td>
+        </tr>
+        <tr>
+          <td><strong>Softmax</strong></td>
+          <td>Turns scores into a probability distribution</td>
+        </tr>
+        <tr>
+          <td><strong>Cross-entropy</strong></td>
+          <td>Measures how wrong the predicted distribution is</td>
+        </tr>
+        <tr>
+          <td><strong>Backpropagation</strong></td>
+          <td>Computes the gradient for every trainable parameter</td>
+        </tr>
+        <tr>
+          <td><strong>Optimizer step</strong></td>
+          <td>Moves the weights to reduce loss</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Conceptually: <code>theta &lt;- theta - eta * dL/dtheta</code></p>
+    <ul>
+    <li>A <strong>step</strong> is one parameter update.</li>
+    <li>An <strong>epoch</strong> is one full pass over the training set.</li>
+    <li>Training usually stops when validation loss stops improving — not when training loss becomes tiny.</li>
+    </ul>
     <h2 id="how-it-works">How it works</h2>
     <h3>Decision: LoRA vs full SFT</h3>
     <table>
@@ -58,7 +101,7 @@
       <tbody>
         <tr>
           <td>Weekend / single GPU</td>
-          <td>Proven PEFT ceiling with good data</td>
+          <td>Proven parameter-efficient fine-tuning (PEFT) ceiling with good data</td>
         </tr>
         <tr>
           <td>Format/style/triage tasks</td>
@@ -70,7 +113,146 @@
         </tr>
       </tbody>
     </table>
-    <p>For BackbenchLearner labs, pick LoRA unless your instructor says otherwise.</p>
+    <p>For BackBenchLearner labs, pick LoRA unless your instructor says otherwise.</p>
+    <h3>Training instability and how to stabilize</h3>
+    <p>Fine-tuning becomes unstable when one update is too large, or when the system is numerically fragile. A single bad batch can create a spike; repeated spikes can end in divergence.</p>
+    <table>
+      <thead><tr>
+        <th>Failure mode</th>
+        <th>What it looks like</th>
+        <th>Why it happens</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Loss spike</strong></td>
+          <td>One sudden jump that later recovers</td>
+          <td>A batch produced an outlier gradient</td>
+        </tr>
+        <tr>
+          <td><strong>Gradient explosion</strong></td>
+          <td>Gradient norms grow rapidly over steps</td>
+          <td>Bad updates feed back into even larger updates</td>
+        </tr>
+        <tr>
+          <td><strong>Divergence</strong></td>
+          <td>Loss rises or flatlines near random-guess level</td>
+          <td>The model has left the useful part of the loss surface</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>How to stabilize:</p>
+    <ul>
+    <li>Use <strong>gradient clipping</strong> so any gradient above the cap is rescaled instead of allowed to explode.</li>
+    <li>Use <strong>warmup</strong> and then a decaying LR schedule so the early fragile phase gets gentle steps.</li>
+    <li>Watch outlier batches — unusually long, corrupted, or strange-token sequences.</li>
+    <li>Prefer Adam-like adaptive optimizers for LLM fine-tuning; plain stochastic gradient descent (SGD) is rarely the default choice.</li>
+    </ul>
+    <h3>Learning-rate scheduling</h3>
+    <p>One learning rate is rarely ideal for an entire run. Early training needs large enough steps to move quickly; late training needs smaller steps so the model can settle safely.</p>
+    <table>
+      <thead><tr>
+        <th>Schedule</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Constant + warmup</strong></td>
+          <td>Keep the same LR after a short ramp-up</td>
+          <td>Short, controlled runs</td>
+        </tr>
+        <tr>
+          <td><strong>Linear decay</strong></td>
+          <td>Drop the LR in a straight line to zero</td>
+          <td>Clean baseline choice</td>
+        </tr>
+        <tr>
+          <td><strong>Cosine decay</strong></td>
+          <td>Stay productive early, then glide gently into small steps</td>
+          <td>Modern default for many LLM fine-tunes</td>
+        </tr>
+        <tr>
+          <td><strong>Step decay</strong></td>
+          <td>Drop LR at milestones or on plateaus</td>
+          <td>When you want sharp, reactive changes</td>
+        </tr>
+        <tr>
+          <td><strong>Cosine restarts</strong></td>
+          <td>Decay, then jump back up and decay again</td>
+          <td>When exploring multiple basins is useful</td>
+        </tr>
+        <tr>
+          <td><strong>WSD</strong></td>
+          <td>Warmup, stable plateau, then final decay</td>
+          <td>Longer runs or open-ended budgets</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Warmup protects the fragile start of training. Peak LR is the single most important knob in many fine-tunes.</p>
+    <h3>Batch size and effective batch</h3>
+    <p>Batch size is not only about memory — it changes stability, throughput, and generalization. What matters is the <strong>effective batch size</strong>, not just the per-GPU micro-batch.</p>
+    <table>
+      <thead><tr>
+        <th>Term</th>
+        <th>Meaning</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Micro-batch</strong></td>
+          <td>Samples processed in one forward/backward pass on one GPU</td>
+        </tr>
+        <tr>
+          <td><strong>Gradient accumulation</strong></td>
+          <td>How many micro-batches are combined before one optimizer update</td>
+        </tr>
+        <tr>
+          <td><strong>Effective batch</strong></td>
+          <td>Micro-batch × accumulation steps × number of GPUs</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">micro_batch = 2
+grad_accum = 16
+gpus = 4
+effective_batch = micro_batch * grad_accum * gpus  # 128</code></pre>
+    </div>
+    <ul>
+    <li>If the batch is too small, gradients are noisy and the loss jitters.</li>
+    <li>If the batch is too large, the model may underfit because it gets too few optimizer updates.</li>
+    <li>When batch size increases, the learning rate often needs to increase too.</li>
+    </ul>
+    <h3>Reading loss curves</h3>
+    <table>
+      <thead><tr>
+        <th>Curve pattern</th>
+        <th>Meaning</th>
+        <th>What to do</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Underfitting</strong></td>
+          <td>Both train and validation loss stay high</td>
+          <td>Train longer, tune the model more, or improve data</td>
+        </tr>
+        <tr>
+          <td><strong>Overfitting</strong></td>
+          <td>Train loss keeps falling while validation loss turns up</td>
+          <td>Stop earlier, regularize, freeze more, or add data</td>
+        </tr>
+        <tr>
+          <td><strong>No learning</strong></td>
+          <td>Both curves stay flat near the initial level</td>
+          <td>Check the optimizer, gradients, labels, and data pipeline</td>
+        </tr>
+        <tr>
+          <td><strong>Healthy fine-tune</strong></td>
+          <td>Both losses fall together with a small stable gap</td>
+          <td>Stop near the validation minimum</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>Sprint checklist</h3>
     <ol>
     <li>Confirm train JSONL validates (lesson 3.1.2 checks).</li>
@@ -106,7 +288,30 @@ flowchart TD
     <p>Name adapters like <code>triage_lora_r16_2026-07-30</code>. Include rank and date. Future incidents love boring names.</p>
     </aside>
     <h2 id="in-code">In code</h2>
-    <p>Dry-run config + a micro training loop that early-stops on val loss (CPU toy).</p>
+    <p>The training loop in plain Python — then a dry-run config and early-stopping toy.</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python"># One-step training picture (conceptual)
+for batch in train_loader:
+    logits = model(batch[&quot;input_ids&quot;])
+    loss = cross_entropy(logits, batch[&quot;labels&quot;])
+    loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+    optimizer.step()
+    scheduler.step()
+    optimizer.zero_grad()</code></pre>
+    </div>
+    <p>HuggingFace-style training arguments (illustrative):</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">TrainingArguments(
+    learning_rate=2e-5,
+    lr_scheduler_type=&quot;cosine&quot;,
+    warmup_ratio=0.03,
+    max_grad_norm=1.0,
+)</code></pre>
+    </div>
+    <p>Dry-run config + a micro training loop that early-stops on val loss (CPU toy):</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass, asdict
@@ -174,6 +379,8 @@ anchor_pass not collapsing</code></pre>
     <li><strong>Infinite epochs</strong> — Classic overfit; use patience on val.</li>
     <li><strong>Ignoring trainable%</strong> — If it prints 100%, you are not doing LoRA.</li>
     <li><strong>No artifact metadata</strong> — Orphan weights without config or data hash.</li>
+    <li><strong>Loss jitters forever</strong> — Batch too small or LR too high; raise effective batch or lower LR.</li>
+    <li><strong>Removing warmup on a fragile start</strong> — Early large updates can spike loss before the run settles.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
@@ -186,26 +393,25 @@ anchor_pass not collapsing</code></pre>
     <li><strong>Val up, anchors down</strong> — Lower LR, fewer steps, mix replay data.</li>
     <li><strong>Trainable% ~100%</strong> — PEFT wrapping failed; stop and fix.</li>
     </ul>
-    <p>Write the symptom -&gt; check mapping in your notes; it will save the second experiment.</p>
+    <p>Write the symptom → check mapping in your notes; it will save the second experiment.</p>
     <h3>Resource-honest scope</h3>
     <p>If you only have a laptop CPU, still produce: validated JSONL, config file, toy loop proving you understand gradients on adapters, and a filled scorecard with &quot;simulated&quot; or API-evaluated numbers if you call a hosted base model for baselines. The sprint grades process rigor.</p>
     <h3>Optional stretch</h3>
-    <p>Add a second run that changes exactly one knob (rank 16 -&gt; 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.</p>
+    <p>Add a second run that changes exactly one knob (rank 16 → 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.</p>
     <h3>Logging fields worth keeping</h3>
-    <p>Even in a short sprint, log: timestamp, run_id, step, train_loss, val_schema_rate, val_intent_acc, anchor_pass, lr, epoch. A CSV with those columns is enough to reconstruct why you pinned a checkpoint. If you only save the final adapter, you cannot explain the curve later.</p>
-    <h3>Collaboration note</h3>
-    <p>If two people tune prompts while one trains, stop. Parallel edits to <code>system_prompt.txt</code> invalidate the experiment. Appoint one owner for the frozen prompt during the sprint window.</p>
+    <p>Even in a short sprint, log: timestamp, run_id, step, train_loss, val_schema_rate, val_intent_acc, anchor_pass, lr, epoch. A CSV with those columns is enough to reconstruct why you pinned a checkpoint.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Run a <strong>named LoRA SFT sprint</strong> with a fixed recipe, validation-based early stopping, and checkpoints you can score—holdout stays sealed until the writeup.</p>
+    <p>Run a <strong>named LoRA SFT sprint</strong> with a stable training loop, sane LR schedule and batch size, validation-based early stopping, and checkpoints you can score — holdout stays sealed until the writeup.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Run id</strong> — Unique name for a training experiment.</li>
     <li><strong>LoRA SFT</strong> — Supervised fine-tuning via low-rank adapters.</li>
     <li><strong>Early stopping</strong> — Halt when validation stops improving.</li>
     <li><strong>Checkpoint</strong> — Saved weights at a point in training.</li>
-    <li><strong>Dry-run config</strong> — Complete training specification exercised without GPUs.</li>
-    <li><strong>Trainable%</strong> — Fraction of parameters being optimized.</li>
-    <li><strong>Artifact</strong> — Saved adapter or merged model plus metadata.</li>
+    <li><strong>Gradient clipping</strong> — Safety mechanism that limits very large gradients.</li>
+    <li><strong>Warmup</strong> — Short early phase where learning rate rises gradually.</li>
+    <li><strong>Effective batch</strong> — Samples that influence one optimizer update.</li>
+    <li><strong>Cross-entropy</strong> — Loss that punishes low probability on the correct token.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -1,9 +1,9 @@
 ---
 title: "Lab: Eval and Writeup"
-description: "Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, and write a crisp experiment report."
+description: "Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, read loss curves, and write a crisp experiment report."
 ---
 
-Training without a writeup is a demo. This lesson is the finish line of the sprint: evaluate the pinned checkpoint on **holdout + anchors**, compare to baseline, and document what you would ship—or why you would not.
+Training without a writeup is a demo. This lesson is the finish line: evaluate the pinned checkpoint on holdout and anchors, compare to baseline, and document what you would ship — or why you would not.
 
 ## Intuition
 
@@ -42,7 +42,7 @@ Decision rules (example):
 
 - Require task metric lift >= 5 absolute points (or agreed threshold).
 - Reject if anchor drop > 10 points.
-- Flag for review if lift looks "too good" on tiny N—check contamination.
+- Flag for review if lift looks "too good" on tiny N — check contamination.
 
 ```mermaid
 flowchart TD
@@ -56,6 +56,23 @@ flowchart TD
     D -->|No| N[Writeup + next experiments]
 ```
 
+### Reading loss curves in your writeup
+
+Include a short "training health" paragraph alongside task metrics. The loss curve tells you *how* the run behaved, not just whether it finished.
+
+| Curve pattern | Plain-English idea | What to note in the writeup |
+| --- | --- | --- |
+| **Underfitting** | Both train and validation loss stayed high | "Model never learned — check data, LR, or train longer" |
+| **Overfitting** | Train loss fell but validation loss turned up | "Stopped too late — pinned earlier checkpoint or reduce epochs" |
+| **No learning** | Both curves flat near the start | "Pipeline bug — check labels, template, or optimizer" |
+| **Healthy fine-tune** | Both losses fell together with a small gap | "Stopped near validation minimum — run looks sane" |
+
+If training loss fell but holdout task score did not improve, say so plainly. A low loss number is not the product metric.
+
+:::tip
+Paste the exact config and data hash into the writeup. Reproducibility is part of the grade in real teams — and in this lab.
+:::
+
 ### Writeup outline
 
 ```text
@@ -63,15 +80,40 @@ flowchart TD
 ## Task
 ## Data (counts, split rule, PII scrub)
 ## Method (base, LoRA r/alpha/targets, LR, epochs)
+## Training health (loss curve pattern)
 ## Results (table)
 ## Error analysis (top clusters)
 ## Risks (forgetting, leakage, serving mode)
 ## Decision + next steps
 ```
 
-:::tip
-Paste the exact config and data hash into the writeup. Reproducibility is part of the grade in real teams—and in this lab.
-:::
+### Qualitative review without cherry-picking
+
+Sort holdout failures by error type. Pick the first two from each cluster, not your favorite dramatic examples. For each, note whether more data, cleaner labels, retrieval-augmented generation (RAG), or prompt changes would help more than another training run.
+
+### Stakeholder summary (five lines)
+
+Busy readers need:
+
+1. Metric lift vs baseline.
+2. Anchor health.
+3. Artifact id.
+4. Ship/no-ship.
+5. Next experiment if no-ship.
+
+Put the essay below that block, not above it.
+
+### After no-ship
+
+Common productive next steps: relabel contradictions, add 50 hard cases, switch targets to include MLP projections, lower LR, or abandon fine-tuning for a tool call. Write the choice down so the next sprint does not repeat the same config hoping for magic.
+
+### Numbers to always include
+
+State N for holdout and anchors. A jump from 8/10 to 9/10 is not the same story as 40/50 to 45/50. When N is small, phrase results as "promising, needs more labels" rather than "solved."
+
+### Serving paragraph (required)
+
+End every writeup with how the artifact would be served (merged vs adapter), how to roll back, and which base revision it requires. Offline wins that cannot be deployed safely are incomplete wins.
 
 ## In code
 
@@ -117,7 +159,6 @@ Optional contamination sniff:
 
 ```python
 def flag_overlap(holdout_texts, train_texts, thresh=0.8):
-    # reuse a simple jaccard from fundamentals eval lesson
     from difflib import SequenceMatcher
     flags = []
     for h in holdout_texts:
@@ -134,42 +175,15 @@ def flag_overlap(holdout_texts, train_texts, thresh=0.8):
 - **No serving note** — Say merged vs adapter and how to roll back.
 - **Moving goalposts** — Changing metrics after seeing results.
 - **Declaring victory on N=15** — State confidence limits; gather more labels.
+- **Ignoring the loss curve** — A pretty task chart with a diverging val loss means you pinned the wrong checkpoint.
 
 :::warn
 If anchors fall hard, the writeup's correct conclusion is "do not ship," even if the JSON accuracy chart looks pretty.
 :::
 
-### Qualitative review without cherry-picking
-
-Sort holdout failures by error type. Pick the first two from each cluster, not your favorite dramatic examples. For each, note whether more data, cleaner labels, RAG, or prompt changes would help more than another training run.
-
-### Stakeholder summary (five lines)
-
-Busy readers need:
-
-1. Metric lift vs baseline.
-2. Anchor health.
-3. Artifact id.
-4. Ship/no-ship.
-5. Next experiment if no-ship.
-
-Put the essay below that block, not above it.
-
-### After no-ship
-
-Common productive next steps: relabel contradictions, add 50 hard cases, switch targets to include MLP projections, lower LR, or abandon FT for a tool call. Write the choice down so the next sprint does not repeat the same config hoping for magic.
-
-### Numbers to always include
-
-State N for holdout and anchors. A jump from 8/10 to 9/10 is not the same story as 40/50 to 45/50. When N is small, phrase results as "promising, needs more labels" rather than "solved."
-
-### Serving paragraph (required)
-
-End every writeup with how the artifact would be served (merged vs adapter), how to roll back, and which base revision it requires. Offline wins that cannot be deployed safely are incomplete wins.
-
 ## One-line summary
 
-Close the lab by **scoring holdout and anchors against baseline**, then write a short reproducible report that ends in an explicit ship or no-ship decision.
+Close the lab by **scoring holdout and anchors against baseline**, interpreting the loss curve honestly, and writing a short reproducible report that ends in an explicit ship or no-ship decision.
 
 ## Key terms
 

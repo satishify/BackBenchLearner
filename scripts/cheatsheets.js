@@ -62,7 +62,7 @@ window.BBL.CHEATSHEETS = {
       "id": "genai/module-2-prompting-rag",
       "slug": "module-2-prompting-rag",
       "title": "Module 2 - Prompting, RAG & Agents revision",
-      "description": "APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.",
+      "description": "APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — beginner-friendly revision.",
       "minutes": 35,
       "module": "Module 2",
       "path": "cheatsheets/genai/module-2-prompting-rag.html"

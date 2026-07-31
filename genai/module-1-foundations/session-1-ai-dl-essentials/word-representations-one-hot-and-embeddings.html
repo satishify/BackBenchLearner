@@ -36,11 +36,17 @@
       <h1>Word Representations — One-Hot and Embeddings</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Before a neural net can “read,” words must become numbers. The two classic encodings are <strong>one-hot</strong> vectors and <strong>embeddings</strong>. One-hots are honest but barren: every word is an orthogonal spike with no notion of similarity. Embeddings are dense, learned coordinates where <em>cat</em> and <em>kitten</em> can sit near each other. Every modern language model starts with an embedding table—so this short lesson is the bridge from vocabulary IDs to the geometry that later layers actually compute on.</p>
+    <p>Machine learning models cannot read raw text — they need numbers. <strong>One-hot</strong> vectors and <strong>embeddings</strong> are the two classic ways to turn words into numbers. This topic exists because models need a numeric form they can actually compute on.</p>
+    <ul>
+    <li><strong>One-hot</strong> gives each word a long vector that is all zeros except one 1 — simple but no notion of similarity.</li>
+    <li><strong>Embeddings</strong> are short, dense vectors where similar words sit close together.</li>
+    <li>In one-hot, &quot;cat&quot; and &quot;dog&quot; look as unrelated as &quot;cat&quot; and &quot;quantum.&quot;</li>
+    <li>In embeddings, similar words end up nearby — so king - man + woman is approximately queen.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine a dictionary with 10,000 entries. A <strong>one-hot</strong> encoding gives each word a 10,000-dimensional vector that is all zeros except a single <code>1</code> at that word’s index. “Dog” and “puppy” look as unrelated as “dog” and “quantum”—their dot product is zero. The model must rediscover every synonym from scratch through later weights.</p>
-    <p>An <strong>embedding</strong> is a short dense vector (say 64 or 768 numbers) looked up by word ID. Training nudges those vectors so words that appear in similar contexts drift together. Distance and direction start to mean something: analogies, clustering of sentiment words, and smoother generalization to rare synonyms. You are no longer storing a flag; you are storing a <em>point in meaning-space</em>.</p>
-    <p>Think of one-hot as a locker number and embedding as a GPS coordinate for the idea behind the word. Lockers don’t know which neighbors are related; GPS does.</p>
+    <p>Imagine a dictionary with 10,000 entries. A <strong>one-hot</strong> encoding gives each word a 10,000-dimensional vector that is all zeros except a single <code>1</code> at that word&#x27;s index. &quot;Dog&quot; and &quot;puppy&quot; look as unrelated as &quot;dog&quot; and &quot;quantum&quot; — their dot product is zero. The model must rediscover every synonym from scratch through later weights.</p>
+    <p>An <strong>embedding</strong> is a short dense vector (say 64 or 768 numbers) looked up by word ID. Training nudges those vectors so words that appear in similar contexts drift together. Distance and direction start to mean something: analogies, clustering of sentiment words, and smoother generalization to rare synonyms. You are no longer storing a flag; you are storing a <strong>point in meaning-space</strong>.</p>
+    <p>Think of one-hot as a locker number and embedding as a GPS coordinate for the idea behind the word. Lockers don&#x27;t know which neighbors are related; GPS does.</p>
     <h2 id="how-it-works">How it works</h2>
     <p><strong>Vocabulary and IDs.</strong> Map each unique token to an integer <code>0 ... V-1</code>. Unknown words often share an <code>&lt;unk&gt;</code> id.</p>
     <p><strong>One-hot.</strong> For token id <code>i</code> and vocab size <code>V</code>:</p>
@@ -54,8 +60,30 @@
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">x = E[i]          # shape (d,)</code></pre>
     </div>
-    <p>During training, gradients update <code>E[i]</code> (and only rows that appear in the batch). Downstream layers see dense vectors; the one-hot is never materialized in practice—lookup <em>is</em> “multiply by a one-hot” in matrix form.</p>
-    <p><strong>Why geometry helps.</strong> If two rows of <code>E</code> are close (cosine similarity high), linear layers and attention treat those tokens more alike. That is the seed of transfer: learning about <em>run</em> helps with <em>running</em>.</p>
+    <p>During training, gradients update <code>E[i]</code> (and only rows that appear in the batch). Downstream layers see dense vectors; the one-hot is never materialized in practice — lookup <em>is</em> &quot;multiply by a one-hot&quot; in matrix form.</p>
+    <p><strong>One-hot vs embeddings:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>One-hot</strong> — sparse code; every word is an orthogonal spike with no shared meaning</td>
+          <td>Baseline encoding, tiny vocabularies, teaching the concept</td>
+        </tr>
+        <tr>
+          <td><strong>Embeddings</strong> — dense code; similar words end up close in vector space</td>
+          <td>Semantic tasks, language models, any modern NLP pipeline</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Why geometry helps.</strong> If two rows of <code>E</code> are close (high <strong>cosine similarity</strong>), linear layers and attention treat those tokens more alike. Cosine similarity measures how aligned two vectors are:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">cos(theta) = dot(A, B) / (||A|| * ||B||)</code></pre>
+    </div>
+    <p>That is the seed of transfer: learning about <em>run</em> helps with <em>running</em>.</p>
     <h2 id="in-code">In code</h2>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -83,19 +111,20 @@ print(&quot;dot(one-hot cat, one-hot sat):&quot;,
     <p>In frameworks this is <code>nn.Embedding(V, d)</code>. LLMs use the same idea at token (subword) level, not whole words.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <p><strong>Huge one-hots in the forward pass.</strong> Materializing <code>V</code>-length vectors for every position wastes memory; always use embedding lookup.</p>
-    <p><strong>Frozen random embeddings.</strong> If you never train <code>E</code> (and have no pretrained table), later layers get arbitrary coordinates—learning is much harder.</p>
+    <p><strong>Frozen random embeddings.</strong> If you never train <code>E</code> (and have no pretrained table), later layers get arbitrary coordinates — learning is much harder.</p>
     <p><strong>Vocab mismatch.</strong> A token id from a different tokenizer indexes the wrong row. Always keep tokenizer and embedding table paired.</p>
-    <p><strong>Thinking embeddings “are” meaning.</strong> They encode distributional similarity from data, including bias and corpus quirks—not a clean dictionary definition.</p>
+    <p><strong>Thinking embeddings &quot;are&quot; meaning.</strong> They encode distributional similarity from data, including bias and corpus quirks — not a clean dictionary definition.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>One-hot marks which word you mean; embeddings learn where that word lives in a dense space so similar words can share structure.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Vocabulary</strong> — Ordered set of tokens the model knows, each with an integer id.</li>
-    <li><strong>One-hot</strong> — Sparse vector with a single 1 at the token’s index.</li>
+    <li><strong>One-hot</strong> — Sparse vector with a single 1 at the token&#x27;s index.</li>
     <li><strong>Embedding</strong> — Dense learned vector for a token, usually a row in a lookup table.</li>
     <li><strong>Embedding dimension (<code>d</code>)</strong> — Length of each dense vector.</li>
     <li><strong>Lookup table / embedding matrix</strong> — Parameter tensor of shape <code>(V, d)</code> indexed by token id.</li>
     <li><strong>Distributional hypothesis</strong> — Words in similar contexts tend to get similar embeddings.</li>
+    <li><strong>Cosine similarity</strong> — Measure of how aligned two vectors are, used to compare word meanings.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

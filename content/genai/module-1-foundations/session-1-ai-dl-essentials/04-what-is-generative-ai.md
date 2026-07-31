@@ -3,31 +3,35 @@ title: "What is Generative AI (Gen AI)"
 description: "Generative AI vs discriminative models, sampling new content, LLMs, modalities, and a tiny Python categorical sampling demo — without the magic."
 ---
 
-Generative AI systems create new artifacts — sentences, images, audio, code, molecules — by sampling from a model of how data is distributed. Chatbots feel magical because fluent text arrives instantly, but under the hood GenAI is still probabilistic modeling plus a lot of data and compute. Understanding that keeps expectations honest and designs safer: you optimize sampling, conditioning, and evaluation — not “intelligence” as a vague vibe.
+Generative AI (GenAI) systems **create new content** — sentences, images, audio, code — by sampling from a model of how data is distributed. They exist because many products need to produce artifacts, not just classify or score them.
+
+- A **discriminative** model asks: "Given this input, what label fits?"
+- A **generative** model asks: "What would a plausible new example look like?"
+- **Generation** means drawing a new sample — not retrieving a stored document.
+- Chatbots feel magical, but under the hood it is probabilistic modeling plus data and compute.
 
 ## Intuition
 
-A **discriminative** model answers: “Given this email, is it spam?” It learns `p(y | x)` or a decision boundary. A **generative** model answers: “What would a plausible email look like?” or jointly models `p(x, y)` / `p(x)`. Generation means drawing a new sample from that learned distribution — not retrieving a stored document (though retrieval can help ground generation).
+A **discriminative** model answers: "Given this email, is it spam?" It learns the probability of a label given the input, or a decision boundary. A **generative** model answers: "What would a plausible email look like?" Generation means drawing a new sample from that learned distribution — not looking up a stored document (though retrieval can help ground generation).
 
-Think of weather. Discriminative: given today’s sensors, will it rain? Generative: simulate tomorrow’s radar map consistent with climate statistics. Both are useful; they optimize different questions. Product teams often need both: generate a draft reply, then classify whether it is safe to send.
+Think of weather. Discriminative: given today's sensors, will it rain? Generative: simulate tomorrow's radar map consistent with climate statistics. Both are useful; they optimize different questions. Product teams often need both: generate a draft reply, then classify whether it is safe to send.
 
-GenAI sits inside the AI -> ML -> DL nesting for most modern systems: deep networks learn a distribution; decoding samples from it. Older generative ideas (n-gram LMs, HMMs, classic topic models) share the *sampling* idea with far less capacity.
+GenAI sits inside the AI -> ML -> DL nesting for most modern systems: deep networks learn a distribution; decoding samples from it. Older generative ideas (n-gram language models, hidden Markov models, classic topic models) share the **sampling** idea with far less capacity.
 
 ## How it works
 
-**Discriminative vs generative (practical view).**
+**Discriminative vs generative:**
 
-|  | Discriminative | Generative |
-| --- | --- | --- |
-| Typical question | What label fits this input? | What new example looks realistic? |
-| Classic examples | Logistic regression, ResNet classifier | GANs, VAEs, diffusion, autoregressive LMs |
-| Output | Class / score | Text, image, audio, structured object |
+| Plain-English idea | When to use it |
+| --- | --- |
+| **Discriminative** — predict a label or score for a given input | Spam filters, fraud scores, image classifiers |
+| **Generative** — produce new text, images, audio, or structured objects | Chatbots, image generators, code assistants |
 
-Many modern systems blend both: an LLM generates text (generative) while a separate classifier filters toxicity (discriminative). Choosing the wrong family wastes budget — do not sample essays when you only needed a calibrated yes/no.
+Many modern systems blend both: a Large Language Model (LLM) generates text (generative) while a separate classifier filters toxicity (discriminative). Choosing the wrong family wastes budget — do not sample essays when you only needed a calibrated yes/no.
 
-**Sampling new content.** After training, you do not dump the entire distribution — you *sample*. Autoregressive language models generate one token at a time from `p(next_token | previous_tokens)`. Diffusion models iteratively denoise random noise toward an image. GANs push a generator to fool a discriminator. Different architectures, same idea: randomness + learned probabilities -> novel outputs. Decoding choices (greedy, temperature, top-k, top-p) trade diversity against coherence.
+**Sampling new content.** After training, you do not dump the entire distribution — you **sample**. Autoregressive language models generate one token at a time from the probability of the next token given previous tokens. Diffusion models iteratively denoise random noise toward an image. Generative Adversarial Networks (GANs) push a generator to fool a discriminator. Different architectures, same idea: randomness plus learned probabilities -> novel outputs. Decoding choices (greedy, temperature, top-k, top-p) trade diversity against coherence.
 
-**LLMs as generative models.** Large Language Models are (usually) deep neural nets trained to predict the next token on massive text. At inference they are generative: given a prompt, they sample a continuation. Instruction tuning and RLHF shape *which* continuations users prefer, but the core act remains sampling from a conditional distribution over tokens. Tools, RAG, and structured outputs are ways to steer that sampling toward usefulness and truthfulness — they do not turn the model into a database by themselves.
+**LLMs as generative models.** Large Language Models are (usually) deep neural nets trained to predict the next token on massive text. At inference they are generative: given a prompt, they sample a continuation. Instruction tuning and Reinforcement Learning from Human Feedback (RLHF) shape **which** continuations users prefer, but the core act remains sampling from a conditional distribution over tokens. Tools, Retrieval-Augmented Generation (RAG), and structured outputs steer that sampling toward usefulness — they do not turn the model into a database by themselves.
 
 **Modalities.** GenAI is not only text:
 
@@ -48,7 +52,7 @@ flowchart LR
 
 ## In code
 
-Illustrate “generation” by sampling from a categorical distribution — the same conceptual step an LLM takes at each token, stripped to bare Python.
+Illustrate "generation" by sampling from a categorical distribution — the same conceptual step an LLM takes at each token, stripped to bare Python.
 
 ```python
 import random
@@ -81,9 +85,9 @@ Real LLMs use huge vocabularies and context-dependent probabilities, plus decodi
 
 ## What goes wrong
 
-- **Hallucinations.** Fluent samples can be false; probability != correctness.
+- **Hallucinations.** Fluent samples can be false; probability does not equal correctness.
 - **Mode collapse / blandness.** Poor training or overly greedy decoding yields repetitive, low-diversity outputs.
-- **Prompt sensitivity.** Small wording changes can flip behavior; brittle UX without eval harnesses.
+- **Prompt sensitivity.** Small wording changes can flip behavior; brittle user experience without eval harnesses.
 - **Data and IP risk.** Models may regurgitate sensitive or copyrighted material; policy and filtering matter.
 - **Category error.** Using a generative model when you needed a calibrated classifier (or a database lookup) wastes money and adds failure modes.
 - **Automation bias.** Users over-trust polished text; keep humans in the loop for high-stakes decisions.

@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Coarse clustering with IVF, residual product quantization, ADC scoring, and the memory/latency trade-offs that make million-scale ANN practical.">
+  <meta name="description" content="Cluster with IVF, compress with PQ, score with ADC—how million-scale ANN search becomes practical.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-8-production-rag/ivf-and-product-quantization.html">
   <meta property="og:title" content="IVF and Product Quantization | BackbenchLearner">
-  <meta property="og:description" content="Coarse clustering with IVF, residual product quantization, ADC scoring, and the memory/latency trade-offs that make million-scale ANN practical.">
+  <meta property="og:description" content="Cluster with IVF, compress with PQ, score with ADC—how million-scale ANN search becomes practical.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-8-production-rag/ivf-and-product-quantization.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="IVF and Product Quantization | BackbenchLearner">
-  <meta name="twitter:description" content="Coarse clustering with IVF, residual product quantization, ADC scoring, and the memory/latency trade-offs that make million-scale ANN practical.">
+  <meta name="twitter:description" content="Cluster with IVF, compress with PQ, score with ADC—how million-scale ANN search becomes practical.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,54 +36,78 @@
       <h1>IVF and Product Quantization</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Exact nearest-neighbor search compares a query to every vector. At a million 768-dim embeddings that is a million distance computations and gigabytes of float32 RAM. <strong>IVF</strong> (inverted file) cuts the search space with coarse clusters. <strong>Product quantization (PQ)</strong> compresses each vector into a short code so more of the corpus fits in memory. Together they are the workhorse behind many production ANN engines at medium-to-large scale.</p>
+    <p>Exact nearest-neighbor search compares a query to <strong>every</strong> vector. At a million 768-dimensional embeddings that is a million distance computations and gigabytes of <strong>float32</strong> RAM. <strong>IVF</strong> (inverted file index) cuts the search space with coarse clusters. <strong>PQ</strong> (product quantization) compresses each vector into a short code. Together they make large-scale search practical.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Picture a city of one million addresses. Instead of walking every street, you divide the city into about a thousand neighborhoods (clusters). For a new query you visit only the eight most promising neighborhoods. That is IVF: <strong>probe a few lists, not all N points</strong>.</p>
-    <p>Even inside those neighborhoods, storing every full float32 vector is expensive. Product quantization replaces each vector with a tiny codebook index — like filing a book as “shelf 12, slot 3, bin 7” instead of photocopying every page. Distance becomes a table lookup over those codes (<strong>asymmetric distance computation</strong>, ADC). You lose a little accuracy; you gain RAM headroom and cache-friendly scans.</p>
+    <table>
+      <thead><tr>
+        <th>Technique</th>
+        <th>Plain-English question it answers</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>IVF</strong></td>
+          <td>&quot;Which few neighborhoods should I search?&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>PQ</strong></td>
+          <td>&quot;How little can I store each vector while still ranking neighbors?&quot;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Picture a city of one million addresses. <strong>IVF</strong> divides it into about a thousand neighborhoods—you visit only the eight most promising ones, not every street.</p>
+    <p><strong>PQ</strong> replaces each full vector with a tiny code—like filing a book as &quot;shelf 12, slot 3&quot; instead of photocopying every page. Distance becomes a table lookup (<strong>ADC</strong>—asymmetric distance computation).</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>IVF answers “where should I look?” PQ answers “how little can I store while still ranking neighbors?” Tune both against a flat recall baseline, not against blog defaults.</p>
+    <p>IVF answers &quot;where should I look?&quot; PQ answers &quot;how little can I store?&quot; Tune both against a flat recall baseline, not blog defaults.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>IVF: coarse quantizer + inverted lists</h3>
+    <h3>IVF (inverted file index)</h3>
     <ol>
-    <li>Run <strong>k-means</strong> (or similar) on a training sample of vectors to learn <code>nlist</code> centroids. Typical starting point: <code>nlist</code> near <code>sqrt(N)</code> — for N = 1e6, that is about 1000 lists.</li>
-    <li>Assign every corpus vector to its nearest centroid. Each centroid owns an <strong>inverted list</strong> of member ids (and vectors or PQ codes).</li>
-    <li>At query time, find the <code>nprobe</code> nearest centroids to the query and scan only those lists.</li>
+    <li>Run <strong>k-means</strong> on vectors to learn <strong>nlist</strong> centroids (cluster centers). Typical start: <code>nlist ~= sqrt(N)</code>—for N = 1,000,000, about 1000 lists.</li>
+    <li>Assign every vector to its nearest centroid. Each centroid owns an <strong>inverted list</strong>.</li>
+    <li>At query time, find the <strong>nprobe</strong> nearest centroids and scan only those lists.</li>
     </ol>
-    <p><strong>Scan cost (approximate).</strong> If lists are balanced, each list holds about <code>N / nlist</code> vectors. Probing <code>nprobe</code> lists visits roughly:</p>
+    <p><strong>Scan cost (approximate):</strong></p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">scanned ~= (nprobe / nlist) * N</code></pre>
+      <pre><code class="language-text">scanned ~= (nprobe / nlist) × N</code></pre>
     </div>
-    <p><strong>Numeric example.</strong> N = 1,000,000, nlist ~= 1000, nprobe = 8:</p>
+    <p><strong>Example:</strong> N = 1,000,000, nlist = 1000, nprobe = 8:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">scanned ~= (8 / 1000) * 1_000_000 = 8000</code></pre>
+      <pre><code class="language-text">scanned ~= (8 / 1000) × 1,000,000 = 8,000</code></pre>
     </div>
-    <p>You compare against about <strong>8,000</strong> candidates instead of <strong>1,000,000</strong> — roughly a <strong>125x</strong> reduction in distance work, before PQ and before SIMD tricks. Raising <code>nprobe</code> improves recall and raises latency almost linearly in the scanned set. Raising <code>nlist</code> shrinks each list but makes centroid selection noisier if training data is thin.</p>
-    <h3>Memory: float32 vs PQ codes</h3>
-    <p>A single 768-dimensional float32 vector:</p>
-    <div class="code-block" data-lang="text">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">768 * 4 bytes = 3072 bytes</code></pre>
-    </div>
-    <p>A common PQ setup encodes the vector into an <strong>8-byte</strong> code (for example 8 subspaces x 1 byte each, or similar bit budgets). Compression ratio:</p>
-    <div class="code-block" data-lang="text">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">3072 / 8 = 384</code></pre>
-    </div>
-    <p>So an 8-byte PQ code is about <strong>384x smaller</strong> than the float32 vector. One million float32 vectors need roughly 3 GB just for coordinates; the same corpus in 8-byte codes needs about 8 MB for codes (plus codebooks and inverted-list bookkeeping — still far cheaper than full floats).</p>
-    <h3>IVF+PQ pipeline (residuals)</h3>
+    <p>About <strong>125×</strong> fewer comparisons than scanning all one million vectors.</p>
+    <table>
+      <thead><tr>
+        <th>Knob</th>
+        <th>Plain-English effect</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>nlist</strong></td>
+          <td>Number of clusters/buckets</td>
+        </tr>
+        <tr>
+          <td><strong>nprobe</strong></td>
+          <td>Number of clusters searched at query time—higher recall, higher latency</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>PQ (product quantization)</h3>
+    <p>Split each vector into sub-vectors; replace each piece with a <strong>centroid ID</strong> from a small codebook.</p>
+    <p><strong>Memory example:</strong> a 768-dim float32 vector = 768 × 4 = <strong>3072 bytes</strong>. An <strong>8-byte</strong> PQ code is about <strong>384× smaller</strong> (3072 ÷ 8).</p>
+    <p><strong>ADC:</strong> the query stays full precision; stored vectors are compressed. Expensive work is done once per query, not once per database vector.</p>
+    <h3>IVF + PQ together (residuals)</h3>
     <p>Production stacks usually quantize <strong>residuals</strong>, not raw vectors:</p>
     <ol>
-    <li><strong>Train IVF centroids</strong> with k-means on the embedding space.</li>
-    <li><strong>Assign</strong> each vector <code>x</code> to nearest centroid <code>c</code>.</li>
-    <li>Form the <strong>residual</strong> <code>r = x - c</code> (what remains after the coarse code).</li>
-    <li>Train <strong>PQ</strong> on residuals: split <code>r</code> into <code>m</code> subvectors; for each subspace learn a small codebook (often 256 centroids -&gt; 1 byte per subspace).</li>
-    <li>Store for each point: list id + PQ code of the residual.</li>
-    <li>At query time: pick <code>nprobe</code> lists; for each candidate, estimate distance with <strong>ADC</strong> — compare the query (or query residual relative to that list’s centroid) against codebook tables without reconstructing full float vectors.</li>
+    <li>Train IVF centroids with k-means.</li>
+    <li>Assign each vector <strong>x</strong> to nearest centroid <strong>c</strong>.</li>
+    <li>Form <strong>residual</strong> <code>r = x - c</code>.</li>
+    <li>Train <strong>PQ</strong> on residuals; store list id + PQ code.</li>
+    <li>At query time: pick <strong>nprobe</strong> lists; score with ADC.</li>
     </ol>
+    <p><strong>Why residuals?</strong> The coarse centroid already explains much of the vector. PQ only models what&#x27;s left—better distance estimates at the same code length.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -97,79 +121,35 @@ flowchart LR
   ADC --> TopK[Top-k ids]
       </div>
     </div>
-    <p><strong>Why residuals?</strong> The coarse centroid already explains a large chunk of the vector. PQ only has to model the leftover, which usually yields better distance estimates at the same code length.</p>
-    <h3>Knobs that matter</h3>
-    <table>
-      <thead><tr>
-        <th>Knob</th>
-        <th>Effect if you increase it</th>
-      </tr></thead>
-      <tbody>
-        <tr>
-          <td><code>nlist</code></td>
-          <td>Smaller lists, coarser training demand</td>
-        </tr>
-        <tr>
-          <td><code>nprobe</code></td>
-          <td>Higher recall, higher latency</td>
-        </tr>
-        <tr>
-          <td>PQ <code>m</code> / bits</td>
-          <td>Better fidelity, larger codes</td>
-        </tr>
-        <tr>
-          <td>Training sample size</td>
-          <td>Stabler centroids and codebooks</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>Always measure <strong>recall@k</strong> against a flat exact index on a held-out query set. Latency without recall is vanity.</p>
     <h2 id="in-code">In code</h2>
-    <p>A teaching-scale demo: IVF assignment, scan-fraction math, and a toy PQ byte budget. Not a production index — the shapes are what matter.</p>
+    <p>Scan math and a toy PQ intuition.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">import numpy as np
-
-rng = np.random.default_rng(7)
-N, D, nlist, nprobe = 1_000_000, 768, 1000, 8
+      <pre><code class="language-python">N, nlist, nprobe = 1_000_000, 1000, 8
 print(&quot;scanned ~=&quot;, (nprobe / nlist) * N)          # 8000
+D = 768
 print(&quot;float32 bytes&quot;, D * 4, &quot;PQ bytes&quot;, 8,
-      &quot;ratio&quot;, (D * 4) // 8)                       # 3072, 8, 384x
-
-# Mini IVF on a toy sample (16-d): assign -&gt; residual -&gt; 4-byte PQ
-sample = rng.normal(size=(2000, 16)).astype(np.float32)
-centroids = sample[rng.choice(len(sample), size=32, replace=False)]
-labels = ((sample[:, None, :] - centroids[None, :, :]) ** 2).sum(axis=2).argmin(axis=1)
-x, c = sample[0], centroids[labels[0]]
-residual = x - c
-codebooks = [rng.normal(size=(256, 4)).astype(np.float32) for _ in range(4)]
-codes = []
-for i, cb in enumerate(codebooks):
-    sub = residual[i * 4 : (i + 1) * 4]
-    codes.append(int(((cb - sub) ** 2).sum(axis=1).argmin()))
-print(&quot;PQ code&quot;, codes)</code></pre>
+      &quot;ratio&quot;, (D * 4) // 8)                       # 3072, 8, 384x</code></pre>
     </div>
-    <p>In Faiss / managed DBs this is <code>IndexIVFPQ</code>: train, add, set <code>nprobe</code> at search.</p>
+    <p>In FAISS this is <code>IndexIVFPQ</code>: train, add, set <code>nprobe</code> at search time.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>nprobe stuck at 1.</strong> Fast demos, quietly missing true neighbors when the query sits near a cell boundary. Sweep nprobe on a recall curve.</li>
-    <li><strong>Unbalanced lists.</strong> Hot centroids swallow most traffic; p99 latency spikes. Re-train, split hot cells, or use better initialization.</li>
-    <li><strong>PQ without residuals.</strong> Encoding raw vectors when IVF already assigned a centroid wastes code capacity and hurts recall.</li>
-    <li><strong>Training on the wrong distribution.</strong> Centroids fit last month’s embeddings; a new embedder or domain shift invalidates lists. Re-train after model changes.</li>
-    <li><strong>Celebrating compression only.</strong> 384x smaller codes with 40% recall@10 is not a win for RAG. Gate on recall and answer faithfulness, not RAM alone.</li>
-    <li><strong>Filter + IVF interaction.</strong> Aggressive metadata filters can empty the probed lists. Engines differ on filter-then-probe vs probe-then-filter; measure under real ACL predicates.</li>
+    <li><strong>nprobe stuck at 1</strong> — Fast demos, quietly missing true neighbors near cell boundaries.</li>
+    <li><strong>Unbalanced lists</strong> — Hot centroids swallow traffic; p99 latency spikes.</li>
+    <li><strong>PQ without residuals</strong> — Wastes code capacity; hurts recall.</li>
+    <li><strong>Training on wrong distribution</strong> — New embedder invalidates centroids; re-train after model changes.</li>
+    <li><strong>Celebrating compression only</strong> — 384× smaller with 40% recall@10 is not a win for RAG.</li>
     </ul>
-    <p>Use IVF+PQ when HNSW RAM hurts and you can retrain after embedder changes; keep a flat sample index for recall baselines. Version model id with <code>nlist</code>/PQ params, and document shipped <code>nprobe</code> so on-call does not “fix latency” by silently killing recall.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>IVF probes a few coarse clusters so you scan about <code>(nprobe / nlist) * N</code> vectors, and PQ stores residuals as tiny codes (~384x smaller than 768-d float32 at 8 bytes) scored with ADC at query time.</p>
+    <p>IVF probes a few coarse clusters so you scan roughly <code>(nprobe / nlist) × N</code> vectors, and PQ stores residuals as tiny codes (~384× smaller than 768-d float32 at 8 bytes) scored with ADC.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>IVF (inverted file):</strong> partition vectors into lists by nearest coarse centroid; search probes <code>nprobe</code> lists.</li>
+    <li><strong>IVF (inverted file index):</strong> partition vectors into lists by nearest coarse centroid.</li>
     <li><strong>nlist / nprobe:</strong> number of clusters vs number of lists scanned per query.</li>
-    <li><strong>Product quantization (PQ):</strong> split a vector into subspaces and replace each with a codebook index.</li>
+    <li><strong>PQ (product quantization):</strong> compress vectors into short codebook indices.</li>
     <li><strong>Residual:</strong> <code>x - centroid</code>; what PQ usually encodes after IVF assignment.</li>
-    <li><strong>ADC:</strong> asymmetric distance computation — estimate distances from PQ codes via lookup tables.</li>
-    <li><strong>Recall@k:</strong> fraction of true nearest neighbors recovered in the approximate top-k.</li>
+    <li><strong>ADC (asymmetric distance computation):</strong> estimate distances from PQ codes via lookup tables.</li>
+    <li><strong>Recall@k:</strong> fraction of true nearest neighbors recovered in approximate top-k.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

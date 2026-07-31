@@ -36,55 +36,86 @@
       <h1>Why PEFT: Adapters Intuition</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Full fine-tuning a multi-billion-parameter model for every product skill is rarely how teams ship. Parameter-efficient fine-tuning (PEFT) freezes the backbone and trains a thin layer of new weights—adapters—so you get task adaptation without copying the whole model for every experiment.</p>
+    <p>Training every weight in a large language model for each new task is slow, expensive, and risky. <strong>Parameter-efficient fine-tuning (PEFT)</strong> keeps the pretrained model mostly frozen and trains only a small add-on—so you get task-specific behavior without copying the whole model for every experiment.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine a large, expensive engine that already runs. Instead of rebuilding the engine for each car body, you bolt on a small custom gearbox. The engine stays put; the gearbox absorbs the specialization.</p>
+    <p>Think of a large engine that already runs well. Instead of rebuilding the engine for each car body, you bolt on a small custom gearbox. The engine stays put; the gearbox handles the specialization.</p>
     <ul>
-    <li><strong>Backbone</strong> — Pretrained LLM weights, frozen (or mostly frozen).</li>
-    <li><strong>Adapter</strong> — Small modules or low-rank updates trained on your data.</li>
-    <li><strong>Compose</strong> — At inference, backbone + adapter behave like a specialized model.</li>
+    <li><strong>Backbone</strong> — The pretrained model weights, kept frozen (or mostly frozen).</li>
+    <li><strong>Adapter</strong> — A small trainable module that learns a task-specific tweak around the frozen features.</li>
+    <li><strong>Compose</strong> — At inference, backbone plus adapter behave like a specialized model.</li>
     </ul>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>PEFT buys specialization with few trainable parameters: cheaper training, smaller artifacts, less forgetting, easier multi-skill serving.</p>
+    <p>PEFT buys specialization with very few trainable parameters: cheaper training, smaller saved files, less forgetting, and easier multi-skill serving.</p>
     </aside>
-    <p>Why this works: pretrained transformers already contain rich features. Many tasks only need a light remap of those features—not a rewrite of every matrix.</p>
+    <p>Why this works: pretrained transformers already hold rich language knowledge. Many tasks only need a light remap of those features—not a rewrite of every weight matrix.</p>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Goals PEFT optimizes for</h3>
+    <h3>What PEFT is trying to achieve</h3>
     <table>
       <thead><tr>
-        <th>Goal</th>
-        <th>How adapters help</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td><strong>Memory</strong></td>
-          <td>Gradients/optimizer states only for tiny modules</td>
+          <td><strong>Save GPU memory</strong></td>
+          <td>Gradients and optimizer states only touch tiny modules, not billions of weights.</td>
         </tr>
         <tr>
-          <td><strong>Storage</strong></td>
-          <td>Save megabytes of adapter weights, not full checkpoints</td>
+          <td><strong>Save disk space</strong></td>
+          <td>Store megabytes of adapter weights instead of full checkpoints.</td>
         </tr>
         <tr>
-          <td><strong>Forgetting</strong></td>
-          <td>Frozen backbone keeps general skills</td>
+          <td><strong>Protect general skills</strong></td>
+          <td>A frozen backbone keeps what the model already knew before your task.</td>
         </tr>
         <tr>
-          <td><strong>Modularity</strong></td>
-          <td>Swap adapters per tenant, task, or locale</td>
+          <td><strong>Swap skills easily</strong></td>
+          <td>Change adapters per tenant, task, or locale without reloading the whole model.</td>
         </tr>
         <tr>
-          <td><strong>Iteration speed</strong></td>
-          <td>More experiments per GPU-week</td>
+          <td><strong>Run more experiments</strong></td>
+          <td>Cheaper runs mean more tries per GPU week.</td>
         </tr>
       </tbody>
     </table>
-    <h3>Adapter patterns (family view)</h3>
+    <h3>Where PEFT sits in the fine-tuning family</h3>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Selective tuning</strong> (e.g. BitFit)</td>
+          <td>Train only a chosen subset of existing parameters.</td>
+        </tr>
+        <tr>
+          <td><strong>Additive adapters</strong></td>
+          <td>Insert small trainable blocks into the network.</td>
+        </tr>
+        <tr>
+          <td><strong>Low-rank updates</strong> (LoRA, QLoRA — next lesson)</td>
+          <td>Express weight changes as two small matrices multiplied together.</td>
+        </tr>
+        <tr>
+          <td><strong>Soft prompting</strong> (later lesson)</td>
+          <td>Learn virtual prompt tokens instead of changing backbone weights.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Adapter patterns</h3>
     <ol>
-    <li><strong>Inserted modules</strong> — Small MLPs added after attention/FFN blocks (classic adapters).</li>
-    <li><strong>Low-rank updates</strong> — Approximate a weight change as a product of thin matrices (LoRA—next lesson).</li>
-    <li><strong>Prompt-side PEFT</strong> — Train virtual tokens or prefixes (prompt/prefix tuning—later lesson).</li>
+    <li><strong>Inserted modules</strong> — Small MLP blocks added after attention or feed-forward layers. A common pattern: shrink the hidden state, apply a non-linearity, project back up, then add the result to the original stream.</li>
+    <li><strong>Low-rank updates</strong> — Approximate a weight change as a product of thin matrices (LoRA — covered next).</li>
+    <li><strong>Prompt-side PEFT</strong> — Train virtual tokens or prefixes (prompt/prefix tuning — covered later).</li>
     </ol>
+    <p>The adapter formula in plain terms:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">updated hidden state = original hidden state + up-project( nonlinearity( down-project(original) ) )</code></pre>
+    </div>
+    <p>Sequential adapters sit in the main path. <strong>Residual adapters</strong> run in parallel and add their output back—often better for generation because the original stream stays intact.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -97,23 +128,23 @@ flowchart LR
     </div>
     <h3>When PEFT is the default</h3>
     <ul>
-    <li>Product SFT for format, tone, triage, tool-call syntax.</li>
-    <li>Multiple customers needing slight behavior variants.</li>
+    <li>Product SFT for format, tone, triage, or tool-call syntax.</li>
+    <li>Multiple customers needing slightly different behavior.</li>
     <li>Single-GPU or modest multi-GPU budgets.</li>
-    <li>You need fast rollback: unload adapter, restore base behavior.</li>
+    <li>You need fast rollback: unload the adapter and restore base behavior.</li>
     </ul>
-    <h3>When full FT still wins</h3>
+    <h3>When full fine-tuning still wins</h3>
     <ul>
     <li>Massive domain shift with huge data and budget.</li>
     <li>Research on new architectures or continued pretraining.</li>
-    <li>You have proven PEFT capacity is the bottleneck after raising rank/coverage.</li>
+    <li>You have proven PEFT capacity is the bottleneck after raising rank or coverage.</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Treat &quot;full fine-tune&quot; as an escalation after a PEFT recipe plateaus with healthy data—not as step one.</p>
+    <p>Treat full fine-tuning as an escalation after a PEFT recipe plateaus with healthy data—not as step one.</p>
     </aside>
     <h2 id="in-code">In code</h2>
-    <p>Count parameters: adapters are a rounding error next to the backbone.</p>
+    <p>Adapters are a rounding error next to the backbone in parameter count.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def count_params(modules: dict[str, tuple[int, ...]]) -&gt; int:
@@ -150,10 +181,14 @@ def forward_block(x_dim: int, use_adapter: bool) -&gt; str:
 
 print(forward_block(4096, True))</code></pre>
     </div>
-    <p>Conceptual PEFT training switch:</p>
+    <p>Conceptual adapter block and training switch:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python"># for p in backbone.parameters():
+      <pre><code class="language-python"># class Adapter(nn.Module):
+#     def forward(self, h):
+#         return h + self.up(F.relu(self.down(h)))
+#
+# for p in backbone.parameters():
 #     p.requires_grad = False
 # for p in adapters.parameters():
 #     p.requires_grad = True
@@ -166,14 +201,14 @@ print(forward_block(4096, True))</code></pre>
     <li><strong>Under-allocating capacity</strong> — Tiny adapters on a hard reasoning shift underfit; raise rank or unfreeze last layers.</li>
     <li><strong>Adapter sprawl</strong> — Dozens of undocumented adapters with no eval owners.</li>
     <li><strong>Train/serve mismatch</strong> — Training with adapters then forgetting to load them in prod (or double-applying).</li>
-    <li><strong>Comparing unfairly to full FT</strong> — Different LRs, epochs, and data make &quot;PEFT is worse&quot; a false conclusion.</li>
+    <li><strong>Comparing unfairly to full FT</strong> — Different learning rates, epochs, and data make &quot;PEFT is worse&quot; a false conclusion.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
-    <p>PEFT reduces how much can change—it does not remove the need for held-out eval and anchor regressions.</p>
+    <p>PEFT limits how much can change—it does not remove the need for held-out eval and anchor regressions.</p>
     </aside>
     <h3>Multi-skill product reality</h3>
-    <p>A support product might need triage, tone rewrite, and summarization. Full FT would mean three large checkpoints or one messy multi-task soup. PEFT lets you train three adapters from one base and route by endpoint. Storage stays manageable; rollback is &quot;unpin adapter v3.&quot;</p>
+    <p>A support product might need triage, tone rewrite, and summarization. Full fine-tuning would mean three large checkpoints or one messy multi-task soup. PEFT lets you train three adapters from one base and route by endpoint. Storage stays manageable; rollback is &quot;unpin adapter v3.&quot;</p>
     <h3>What &quot;capacity&quot; means for adapters</h3>
     <p>Adapters have limited degrees of freedom. That is a feature for small datasets. If your task needs new factual associations for thousands of entities, you are probably asking PEFT to be a database—use RAG. If your task needs a stable syntactic habit, adapters usually have enough capacity.</p>
     <h3>Team workflow</h3>
@@ -184,17 +219,18 @@ print(forward_block(4096, True))</code></pre>
     <li>Register adapter metadata (data hash, metrics).</li>
     <li>Canary, then promote.</li>
     </ol>
-    <p>Skipping (4) is how orphan adapters accumulate in object storage with no owner.</p>
+    <p>Skipping step 4 is how orphan adapters accumulate in object storage with no owner.</p>
     <h3>Cost intuition</h3>
-    <p>If a full FT stores tens of gigabytes per experiment and an adapter stores tens of megabytes, your experiment culture changes. Teams take more swings, keep more losers for analysis, and fear rollback less. That cultural shift is often the real ROI of PEFT—not only the GPU bill for a single run.</p>
+    <p>If full fine-tuning stores tens of gigabytes per experiment and an adapter stores tens of megabytes, your experiment culture changes. Teams take more swings, keep more losers for analysis, and fear rollback less. That cultural shift is often the real return on PEFT—not only the GPU bill for a single run.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p><strong>PEFT</strong> freezes a strong backbone and trains small adapters so you adapt behavior affordably, with less forgetting and modular deployment.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>PEFT</strong> — Parameter-efficient fine-tuning methods that train few weights.</li>
-    <li><strong>Backbone / base model</strong> — Frozen pretrained network.</li>
-    <li><strong>Adapter</strong> — Small trainable module or update applied on top of the backbone.</li>
-    <li><strong>Trainable parameter count</strong> — Number of weights updated by the optimizer.</li>
+    <li><strong>PEFT</strong> — Parameter-efficient fine-tuning: update only a small part of the model instead of every weight.</li>
+    <li><strong>Backbone / base model</strong> — The frozen pretrained network.</li>
+    <li><strong>Adapter</strong> — A small trainable module inserted into the network to adjust hidden states.</li>
+    <li><strong>Residual adapter</strong> — An adapter that adds its output back to the original stream in parallel.</li>
+    <li><strong>Trainable parameter count</strong> — Number of weights the optimizer actually updates.</li>
     <li><strong>Modularity</strong> — Ability to swap or combine task-specific adapters.</li>
     <li><strong>Continued pretraining</strong> — Large-scale domain training that is not classic small-adapter SFT.</li>
     <li><strong>Escalation path</strong> — PEFT first, then wider updates if capacity is proven insufficient.</li>

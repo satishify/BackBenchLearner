@@ -3,47 +3,47 @@ questions:
   - q: "Classical RNN seq2seq without attention failed on long inputs mainly because..."
     options:
       - "Softmax was undefined for text"
-      - "The encoder crushed the whole source into a fixed bottleneck vector"
+      - "The encoder squeezed the whole source into one fixed bottleneck vector"
       - "Decoders could not emit more than one token"
       - "Positional encodings made RNNs illegal"
     answer: 1
-    why: "Early encoder–decoder models passed a single context vector; early details were easily lost before attention provided soft lookup over source states."
+    why: "Early encoder–decoder models passed a single context vector. Early details were easily lost before attention let the decoder look back at all source states."
 
   - q: "In scaled dot-product self-attention, dividing by sqrt(d_k) is important because..."
     options:
       - "It makes attention exactly sparse like a hard switch"
-      - "Large d_k makes dot products huge, saturating softmax and shrinking gradients"
+      - "Large d_k makes dot products huge, which saturates softmax and shrinks gradients"
       - "It removes the need for value vectors"
-      - "It converts QKV into one-hot tokens"
+      - "It converts Q/K/V into one-hot tokens"
     answer: 1
-    why: "Variance of dot products grows with dimension; the scale keeps scores in a healthier range for softmax training."
+    why: "Dot product variance grows with dimension. The scale keeps scores in a healthier range for softmax training."
 
-  - q: "A sequence has length n=512 and head dimension d_k=64. Roughly how do the QK^T scores scale in compute?"
+  - q: "A sequence has length n=512 and head dimension d_k=64. Roughly how do the Q*K^T scores scale in compute?"
     options:
       - "O(n) only"
-      - "O(n^2 d_k) for the score matrix path (quadratic in sequence length)"
+      - "O(n^2 * d_k) for the score matrix path (quadratic in sequence length)"
       - "O(log n) always"
       - "O(1) independent of n"
     answer: 1
-    why: "Forming nxn attention scores (and related matmuls) is quadratic in sequence length, which dominates long-context cost."
+    why: "Forming an n×n attention score matrix is quadratic in sequence length, which dominates long-context cost."
 
   - q: "Why must Transformers inject positional information?"
     options:
-      - "Self-attention without positions is permutation-invariant and cannot recover order"
+      - "Self-attention without positions is permutation-invariant and cannot recover word order"
       - "Softmax requires sine waves by IEEE law"
       - "Positional encodings delete residual connections"
       - "They eliminate the need for multi-head attention"
     answer: 0
-    why: "Pure content-based attention treats bags of tokens alike under permutation; positions (absolute or relative) restore order."
+    why: "Pure content-based attention treats shuffled tokens the same. Positions (absolute or relative) restore order."
 
-  - q: "Causal masking in a decoder LM training step at position i does what?"
+  - q: "Causal masking in a decoder language model training step at position i does what?"
     options:
       - "Hides all past tokens so only the future is visible"
       - "Blocks attention to positions j > i so the model cannot peek at answer tokens"
       - "Disables cross-attention forever"
       - "Forces every token to attend uniformly to padding"
     answer: 1
-    why: "The look-ahead mask sets future logits to -inf before softmax, matching left-to-right generation."
+    why: "The look-ahead mask sets future scores to -inf before softmax, matching left-to-right generation."
 
   - q: "Cross-attention in an encoder–decoder Transformer lets the decoder..."
     options:
@@ -52,21 +52,21 @@ questions:
       - "Train without any loss"
       - "Replace embeddings with random bits"
     answer: 1
-    why: "Decoder queries attend over encoder keys/values—the soft alignment that replaced brittle fixed bottlenecks."
+    why: "Decoder queries attend over encoder keys and values — the soft alignment that replaced brittle fixed bottlenecks."
 
-  - q: "Multi-head attention’s practical benefit is mainly that..."
+  - q: "Multi-head attention's (MHA) practical benefit is mainly that..."
     options:
       - "One head is mathematically impossible"
       - "Different heads can specialize on distinct relation types in parallel subspaces"
       - "It reduces attention complexity from O(n^2) to O(1)"
       - "It removes the need for feed-forward layers"
     answer: 1
-    why: "Splitting into heads lets the model jointly attend to different patterns (syntax, coreference, etc.) before concatenating."
+    why: "Splitting into heads lets the model track different patterns (syntax, coreference, etc.) at the same time before concatenating."
 
   - q: "During autoregressive decoding, lowering temperature typically..."
     options:
       - "Flattens the next-token distribution toward uniform noise"
-      - "Sharpens toward high-probability tokens (more greedy/stable)"
+      - "Sharpens toward high-probability tokens (more greedy and stable)"
       - "Retrains the embedding table online"
       - "Disables KV caching by law"
     answer: 1

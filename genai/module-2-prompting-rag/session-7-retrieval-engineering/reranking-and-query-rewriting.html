@@ -36,9 +36,33 @@
       <h1>Reranking and Query Rewriting</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>First-stage retrieval is built for <strong>recall at speed</strong>: grab fifty maybe-relevant chunks cheaply. <strong>Reranking</strong> is built for <strong>precision</strong>: score those candidates carefully and keep the best five for the LLM. <strong>Query rewriting</strong> fixes the input so the first stage has a fighting chance — expanding acronyms, turning chatty questions into search queries, or splitting multi-part asks.</p>
+    <p>First-stage retrieval is built for <strong>recall at speed</strong>: grab many maybe-relevant chunks cheaply. <strong>Reranking</strong> is built for <strong>precision</strong>: score those candidates carefully and keep the best few for the LLM. <strong>Query rewriting</strong> fixes the input so the first stage has a fighting chance.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A wide net (bi-encoder / BM25) throws fish on the deck. A careful sorter (cross-encoder reranker) picks the keepers. Separately, users ask like humans: “hey can u explain that leave thing from last email?” Search indexes prefer “casual leave policy carry over.” Rewriting is the translator between chat and search.</p>
+    <table>
+      <thead><tr>
+        <th>Stage</th>
+        <th>Plain-English idea</th>
+        <th>Analogy</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>First-stage retrieve</strong></td>
+          <td>Cast a wide net cheaply</td>
+          <td>Throw fish on the deck</td>
+        </tr>
+        <tr>
+          <td><strong>Rerank</strong></td>
+          <td>Pick the keepers carefully</td>
+          <td>Sort the catch</td>
+        </tr>
+        <tr>
+          <td><strong>Query rewrite</strong></td>
+          <td>Turn chat into search language</td>
+          <td>Translator between chat and search</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Users ask like humans: &quot;hey can u explain that leave thing?&quot; Search indexes prefer &quot;casual leave policy carry over.&quot;</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -49,27 +73,92 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Query rewriting patterns.</strong></p>
-    <ul>
-    <li><strong>Normalize:</strong> fix spelling, expand product codenames using a glossary.</li>
-    <li><strong>HyDE:</strong> ask an LLM to draft a hypothetical answer passage, embed that for dense search (risky if the draft invents facts — use for retrieval only).</li>
-    <li><strong>Multi-query:</strong> generate 3 paraphrases, retrieve for each, fuse with RRF.</li>
-    <li><strong>Step-back / decomposition:</strong> for complex questions, retrieve for a broader or split sub-question first.</li>
-    </ul>
-    <p>Keep rewrites <strong>instrumented</strong>: log original vs rewritten and A/B hit rates.</p>
-    <p><strong>Rerankers.</strong></p>
-    <ul>
-    <li><strong>Cross-encoders:</strong> jointly encode <code>(query, document)</code> for a relevance score; accurate, slower — perfect for N&lt;=100.</li>
-    <li><strong>LLM rerankers:</strong> prompt a model to order passages; flexible, costlier.</li>
-    <li><strong>Feature rerankers:</strong> boost by recency, click priors, or metadata match.</li>
-    </ul>
-    <p><strong>Typical cascade.</strong> Hybrid retrieve N=50 -&gt; cross-encode -&gt; keep k=5 -&gt; generate. Most quality gains per dollar sit in this cascade, not in doubling LLM size.</p>
+    <h3>Pre-retrieval and post-retrieval</h3>
+    <table>
+      <thead><tr>
+        <th>Phase</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Pre-retrieval</strong></td>
+          <td>Rewrite the query so the retriever sees better keywords or context</td>
+        </tr>
+        <tr>
+          <td><strong>Post-retrieval</strong></td>
+          <td>Rerank or filter chunks after retrieval, before the LLM sees them</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The raw user question is not always the best search query. The first chunks returned are not always the best evidence.</p>
+    <h3>Query rewriting patterns</h3>
+    <table>
+      <thead><tr>
+        <th>Method</th>
+        <th>What it does</th>
+        <th>Example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Rewriting</strong></td>
+          <td>Expand vague prompts into precise search questions</td>
+          <td>&quot;OOMKilled&quot; → &quot;What causes OOMKilled container exit code in Kubernetes?&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Follow-up question</strong></td>
+          <td>Turn context-dependent question into standalone</td>
+          <td>&quot;Does it apply to contractors?&quot; → &quot;Does parental leave apply to contract employees?&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-query</strong></td>
+          <td>Generate several related queries in parallel</td>
+          <td>Split a comparison into one query per system</td>
+        </tr>
+        <tr>
+          <td><strong>Step-back prompting</strong></td>
+          <td>Ask a broader question first for foundational context</td>
+          <td>Specific case → broader system-level question</td>
+        </tr>
+        <tr>
+          <td><strong>HyDE</strong></td>
+          <td>Hypothetical Document Embeddings—LLM writes a pretend answer/doc, embed that for search</td>
+          <td>Risky if the draft invents facts</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Keep rewrites <strong>instrumented</strong>: log original vs rewritten and measure hit rates.</p>
+    <h3>Rerankers</h3>
+    <table>
+      <thead><tr>
+        <th>Type</th>
+        <th>Plain-English idea</th>
+        <th>Speed</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Cross-encoder</strong></td>
+          <td>Encodes query and document together for a relevance score</td>
+          <td>Slow but accurate—for N ≤ 100</td>
+        </tr>
+        <tr>
+          <td><strong>LLM reranker</strong></td>
+          <td>Prompt a model to order passages</td>
+          <td>Flexible, costlier</td>
+        </tr>
+        <tr>
+          <td><strong>Feature reranker</strong></td>
+          <td>Boost by recency, clicks, metadata match</td>
+          <td>Fast add-on</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Typical cascade</h3>
+    <p>Hybrid retrieve N=50 → cross-encode → keep k=5 → generate. Most quality gains per dollar sit here, not in doubling LLM size.</p>
     <h2 id="in-code">In code</h2>
-    <p>Toy rewrite (glossary + strip chitchat) and a cross-encoder stand-in that scores token overlap with a length penalty — swap for a real model later.</p>
+    <p>Toy rewrite plus a stand-in cross-encoder (token overlap).</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import re
-import numpy as np
 
 GLOSSARY = {&quot;pto&quot;: &quot;paid time off&quot;, &quot;hpa&quot;: &quot;horizontal pod autoscaling&quot;}
 
@@ -83,7 +172,6 @@ def rewrite(query: str) -&gt; str:
 candidates = [
     &quot;Employees receive 12 casual leaves; unused leaves may carry over up to 5.&quot;,
     &quot;Horizontal pod autoscaling adds replicas when CPU is high.&quot;,
-    &quot;Chocolate cake recipe with three layers of frosting.&quot;,
 ]
 
 def fake_cross_encoder(query: str, doc: str) -&gt; float:
@@ -92,44 +180,37 @@ def fake_cross_encoder(query: str, doc: str) -&gt; float:
     overlap = len(q_toks &amp; set(d_toks))
     return overlap / (1.0 + 0.01 * len(d_toks))
 
-def rerank(query: str, docs: list[str], k: int = 2) -&gt; list[tuple[str, float]]:
-    scored = [(d, fake_cross_encoder(query, d)) for d in docs]
-    scored.sort(key=lambda x: x[1], reverse=True)
-    return scored[:k]
-
 original = &quot;hey can u explain PTO carry over?&quot;
 q = rewrite(original)
 print(&quot;rewritten:&quot;, q)
-for doc, score in rerank(q, candidates):
+for doc, score in sorted(
+    [(d, fake_cross_encoder(q, d)) for d in candidates],
+    key=lambda x: x[1], reverse=True,
+):
     print(f&quot;{score:.3f} | {doc[:64]}...&quot;)</code></pre>
     </div>
-    <p>In production, measure recall@50 after rewrite and nDCG@5 after rerank on a labeled set.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Rewrite hallucination.</strong> HyDE invents a wrong API name and retrieval locks onto fiction. Constrain glossaries; prefer multi-query over creative fiction when stakes are high.</li>
-    <li><strong>Reranking too few.</strong> If stage-one never retrieved the truth (N too small or bad hybrid), rerankers cannot resurrect it.</li>
-    <li><strong>Reranking too many.</strong> Cross-encoding 5,000 docs blows latency SLOs.</li>
-    <li><strong>Chatty context pollution.</strong> Feeding the whole conversation as the search query dilutes keywords; rewrite to a standalone search string.</li>
-    <li><strong>Ignoring freshness.</strong> Relevance-only rerankers promote obsolete policies; add a recency feature when policies churn.</li>
+    <li><strong>Rewrite hallucination</strong> — HyDE invents a wrong API name; retrieval locks onto fiction.</li>
+    <li><strong>Reranking too few</strong> — If stage-one never retrieved the truth, rerankers cannot resurrect it.</li>
+    <li><strong>Reranking too many</strong> — Cross-encoding thousands of docs blows latency budgets.</li>
+    <li><strong>Chatty context pollution</strong> — Feeding the whole conversation as the search query dilutes keywords.</li>
+    <li><strong>Ignoring freshness</strong> — Relevance-only rerankers promote obsolete policies.</li>
     </ul>
-    <h2 id="putting-rewrite-and-rerank-in-production">Putting rewrite and rerank in production</h2>
-    <p><strong>Latency budgets.</strong> If the user SLO is 2s for the full answer, retrieval + rerank might own only 300–600ms. That caps candidate count and model size. Distilled cross-encoders or vendor rerank APIs exist specifically for this slice. Measure p95 separately from generation time.</p>
-    <p><strong>Rewrite guardrails.</strong> Limit rewrite output length; ban invention of part numbers not in a glossary; fall back to the original query if the rewrite model times out. Log both strings. Product and legal teams will eventually ask why a search ran against a transformed query — be ready.</p>
-    <p><strong>Learning from clicks.</strong> If your UI shows sources, anonymized click and pin data can train or tune rerankers. Start with simple boosts (“title match +0.1”) before a full learning-to-rank project. Even crude features often beat a generic cross-encoder alone on enterprise jargon.</p>
-    <p><strong>A/B discipline.</strong> Change one stage at a time: rewrite on/off, then rerank on/off, then hybrid weights. Simultaneous changes make wins impossible to attribute.</p>
-    <h2 id="failure-stories-worth-remembering">Failure stories worth remembering</h2>
-    <p>A rewrite that expands “RI” to “Rhode Island” in a cloud-cost corpus full of “reserved instances” will retrieve tourism pages of nonsense if such text exists — or simply miss. Domain glossaries beat unconstrained LLM expansion. Likewise, a reranker trained on open-web relevance may demote your internal runbooks because they look stylistically dull; calibrate on <em>your</em> labeled pairs.</p>
-    <p>Always keep a kill switch: serve first-stage hybrid top-k if the rerank service errors. Degraded relevance beats total outage. Track the fallback rate as a reliability metric beside latency.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Change one stage at a time in A/B tests: rewrite on/off, then rerank on/off, then hybrid weights. Simultaneous changes make wins impossible to attribute.</p>
+    </aside>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Rewrite user questions into searchable forms, retrieve broadly, then rerank with a stronger model so only the best evidence reaches the generator.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Query rewriting:</strong> transforming user text into better search queries.</li>
     <li><strong>Multi-query retrieval:</strong> paraphrases fused for higher recall.</li>
-    <li><strong>HyDE:</strong> hypothetical document embeddings for dense search.</li>
+    <li><strong>HyDE (Hypothetical Document Embeddings):</strong> embed a synthetic answer/doc to improve dense search.</li>
     <li><strong>Reranker / cross-encoder:</strong> joint query–document scorer for precision.</li>
     <li><strong>Cascade retrieval:</strong> cheap wide retrieval followed by expensive precise ranking.</li>
-    <li><strong>nDCG / MRR:</strong> ranking metrics for evaluating ordered results.</li>
+    <li><strong>Step-back prompting:</strong> broader question first to recover foundational context.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

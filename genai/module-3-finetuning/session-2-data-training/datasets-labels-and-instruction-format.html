@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="How to shape SFT data: instruction/response pairs, chat templates, labels, quality filters, and leakage traps.">
+  <meta name="description" content="How to shape supervised fine-tuning (SFT) data: instruction and response pairs, chat templates, labels, quality checks, and leakage traps.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html">
   <meta property="og:title" content="Datasets, Labels, and Instruction Format | BackbenchLearner">
-  <meta property="og:description" content="How to shape SFT data: instruction/response pairs, chat templates, labels, quality filters, and leakage traps.">
+  <meta property="og:description" content="How to shape supervised fine-tuning (SFT) data: instruction and response pairs, chat templates, labels, quality checks, and leakage traps.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Datasets, Labels, and Instruction Format | BackbenchLearner">
-  <meta name="twitter:description" content="How to shape SFT data: instruction/response pairs, chat templates, labels, quality filters, and leakage traps.">
+  <meta name="twitter:description" content="How to shape supervised fine-tuning (SFT) data: instruction and response pairs, chat templates, labels, quality checks, and leakage traps.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,11 +36,11 @@
       <h1>Datasets, Labels, and Instruction Format</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Fine-tuning quality is mostly dataset quality. A mediocre base model with clean, consistent examples often beats a strong model trained on noisy Slack dumps. This lesson covers how engineers structure labels and instruction formats so training teaches the behavior you intend.</p>
+    <p>Most fine-tune wins come from clean data, not a magic learning rate. This lesson shows how to shape rows so training teaches the behavior you actually want at serving time.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Supervised fine-tuning (SFT) teaches: &quot;given this instruction (and context), produce that completion.&quot; Every row is a tiny contract:</p>
+    <p>Supervised fine-tuning (SFT) teaches one simple pattern: <strong>given this instruction (and context), produce that completion.</strong> Every row is a tiny contract.</p>
     <ul>
-    <li><strong>Input side</strong> — user request, system rules, optional retrieved context, tools results.</li>
+    <li><strong>Input side</strong> — the user request, system rules, optional retrieved context, tool results.</li>
     <li><strong>Output side</strong> — the ideal assistant reply (and sometimes tool calls).</li>
     <li><strong>Format</strong> — how roles and special tokens wrap those fields so the tokenizer and chat template agree.</li>
     </ul>
@@ -48,7 +48,9 @@
       <p class="callout-title">Key idea</p>
     <p>The model learns the distribution of your targets. Inconsistent labels train inconsistency.</p>
     </aside>
-    <p>If half your rows say &quot;return bare JSON&quot; and half wrap answers in prose, the model will randomly pick a style. Labels are not just &quot;correct answers&quot;—they are the style guide baked into weights.</p>
+    <p>If half your rows say &quot;return bare JSON&quot; and half wrap answers in prose, the model will randomly pick a style. Labels are not just correct answers — they are the style guide baked into weights.</p>
+    <h3>How your rows connect to the training loop</h3>
+    <p>Before a trainer runs, raw text becomes token IDs, gets packed into fixed-length windows, and flows through a mini-batch loop. The model predicts the next token at every position and gets graded with cross-entropy loss. You do not need to implement that loop here — but your <strong>row shape and label quality</strong> are what that loop actually learns from.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Common record shapes</h3>
     <p><strong>Instruction / response (Alpaca-style):</strong></p>
@@ -71,12 +73,57 @@ output: User blocked on MFA reset after updating their phone number.</code></pre
     </div>
     <p>Chat format matters because production inference uses the same <strong>chat template</strong> (special tokens for roles). Train the way you serve.</p>
     <h3>What &quot;label&quot; means here</h3>
-    <p>For causal LMs, the usual SFT loss is next-token prediction on the assistant tokens. You often <strong>mask</strong> system/user tokens so the loss focuses on what the assistant should say. Conceptually:</p>
+    <p>For causal language models (LMs), the usual SFT loss is next-token prediction on the assistant tokens. You often <strong>mask</strong> system and user tokens so the loss focuses on what the assistant should say. Conceptually:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">loss = -mean(log p(token_t | tokens_&lt;t))  for t in assistant_span</code></pre>
     </div>
-    <p>Bad labels (wrong JSON, leaked PII, contradictory policies) pull probability mass toward those mistakes.</p>
+    <p>Bad labels (wrong JSON, leaked personally identifiable information (PII), contradictory policies) pull probability mass toward those mistakes.</p>
+    <h3>Data problems that quietly break fine-tunes</h3>
+    <p>Good fine-tuning starts with good data. These five problems show up in almost every messy corpus:</p>
+    <table>
+      <thead><tr>
+        <th>Problem</th>
+        <th>What goes wrong</th>
+        <th>Typical fix</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Noisy data</strong></td>
+          <td>Menus, ads, boilerplate, OCR errors, spam, or AI slop pollute the corpus</td>
+          <td>Filter aggressively and deduplicate</td>
+        </tr>
+        <tr>
+          <td><strong>Incorrect labels</strong></td>
+          <td>Wrong answers teach the model bad behavior</td>
+          <td>Audit labels and quality scores</td>
+        </tr>
+        <tr>
+          <td><strong>Duplicates</strong></td>
+          <td>Memorization increases and evaluation becomes contaminated</td>
+          <td>Remove exact and near duplicates</td>
+        </tr>
+        <tr>
+          <td><strong>Inconsistent formatting</strong></td>
+          <td>HTML, Markdown, PDF text, and LaTeX mix together badly</td>
+          <td>Normalize text and structure</td>
+        </tr>
+        <tr>
+          <td><strong>Outdated information</strong></td>
+          <td>Old facts, old APIs, and old policies mislead the model</td>
+          <td>Refresh the corpus and track cutoffs</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>More data risks to watch for</h3>
+    <ul>
+    <li><strong>Small datasets</strong> — high variance and easy overfitting.</li>
+    <li><strong>Limited edge-case coverage</strong> — the model fails exactly where failures matter most.</li>
+    <li><strong>Lack of diversity</strong> — works for some groups, fails for others.</li>
+    <li><strong>Imbalanced datasets</strong> — looks accurate while missing the rare class you care about.</li>
+    <li><strong>Bad train/validation/test splits</strong> — leakage and inflated scores.</li>
+    <li><strong>Domain and distribution shift</strong> — deployment data stops looking like training data.</li>
+    </ul>
     <h3>Quality bar before training</h3>
     <table>
       <thead><tr>
@@ -106,7 +153,7 @@ output: User blocked on MFA reset after updating their phone number.</code></pre
         </tr>
         <tr>
           <td>Difficulty mix</td>
-          <td>Only easy rows -&gt; brittle on live mess</td>
+          <td>Only easy rows → brittle on live mess</td>
         </tr>
       </tbody>
     </table>
@@ -120,7 +167,7 @@ output: User blocked on MFA reset after updating their phone number.</code></pre
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Freeze a <code>SYSTEM_PROMPT</code> and output schema in a shared file. Generate training rows and prod prompts from the same source of truth.</p>
+    <p>Freeze a <code>SYSTEM_PROMPT</code> and output schema in a shared file. Generate training rows and production prompts from the same source of truth.</p>
     </aside>
     <h2 id="in-code">In code</h2>
     <p>Validate and lightly normalize JSONL before any trainer sees it.</p>
@@ -200,13 +247,14 @@ for i, row in enumerate(demo):
     <li><strong>Hidden instructions in user text</strong> — Unfiltered user content that contradicts system policy teaches the model to ignore the system role.</li>
     <li><strong>Over-cleaning</strong> — Removing all hard cases makes train loss look great and production look worse.</li>
     <li><strong>Unlabeled multi-task soup</strong> — Mixing summarization, coding, and SQL without task tags confuses the model unless volume is huge and balanced.</li>
+    <li><strong>Weak data, clever schedules</strong> — No amount of learning-rate tuning fully rescues a noisy or duplicated corpus.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
     <p>Never put API keys, customer PII, or internal secrets into SFT corpora. Memorization is a feature of gradient descent, not a bug you can ignore.</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Structure SFT data as consistent instruction or chat turns, put the quality bar on assistant labels, and train with the same template you will use at serving time.</p>
+    <p>Structure SFT data as consistent instruction or chat turns, fix the five common data problems before training, and use the same chat template you will use at serving time.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>SFT dataset</strong> — Labeled instruction/response or chat examples for supervised fine-tuning.</li>
@@ -216,6 +264,7 @@ for i, row in enumerate(demo):
     <li><strong>JSONL</strong> — Line-delimited JSON, common for training corpora.</li>
     <li><strong>Gold label</strong> — Human-approved target response.</li>
     <li><strong>Data leakage</strong> — Eval contamination or secrets appearing in training text.</li>
+    <li><strong>Domain shift</strong> — The gap between training data and deployment data.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

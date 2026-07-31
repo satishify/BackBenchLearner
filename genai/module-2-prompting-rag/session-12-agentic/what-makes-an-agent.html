@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="An agent is goal-driven: it plans, acts through tools, observes results, and adjusts until the job is done or stopped.">
+  <meta name="description" content="An agent is a large language model (LLM) wrapped with tools, memory, and planning so it can act on the world—not just reply once.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/what-makes-an-agent.html">
   <meta property="og:title" content="What Makes an AI System an Agent | BackbenchLearner">
-  <meta property="og:description" content="An agent is goal-driven: it plans, acts through tools, observes results, and adjusts until the job is done or stopped.">
+  <meta property="og:description" content="An agent is a large language model (LLM) wrapped with tools, memory, and planning so it can act on the world—not just reply once.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/what-makes-an-agent.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="What Makes an AI System an Agent | BackbenchLearner">
-  <meta name="twitter:description" content="An agent is goal-driven: it plans, acts through tools, observes results, and adjusts until the job is done or stopped.">
+  <meta name="twitter:description" content="An agent is a large language model (LLM) wrapped with tools, memory, and planning so it can act on the world—not just reply once.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,9 +36,45 @@
       <h1>What Makes an AI System an Agent</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A chatbot answers. An <strong>agent</strong> pursues a goal: it decides steps, uses tools, reads outcomes, and keeps going until success, failure, or a stop condition. The difference is not “smarter text” — it is a control loop with side effects.</p>
+    <p><strong>What is this for?</strong> To explain what turns a plain LLM (large language model) into an <strong>agent</strong>—a system that can plan, use tools, remember context, and keep working until the job is done or stopped.</p>
+    <p><strong>Why does it exist?</strong> A chat model by itself only predicts the next word. It can talk, but it cannot check logs, restart a server, or search again when the first answer is incomplete. Agents add the control loop that real work needs.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Give a model a question and it returns prose. Give an agent a goal like “prepare the weekly sales pack” and it must choose a sequence: fetch data, clean it, summarize, attach a chart, post to a channel. Between steps it looks at tool results and revises the plan. That observe–adjust cycle is what people mean by agency in product systems.</p>
+    <p>A one-shot retrieval-augmented generation (RAG) pipeline looks like this:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">query  -&gt;  retrieve top documents  -&gt;  generate answer</code></pre>
+    </div>
+    <p>That works for simple questions. It breaks when the task needs several steps—read a code diff, check live logs, compare both, maybe search again.</p>
+    <p>An <strong>agentic</strong> flow looks like this:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">observe  -&gt;  think  -&gt;  act  -&gt;  observe  -&gt;  think  -&gt;  ...  -&gt;  answer</code></pre>
+    </div>
+    <p>Plain English: an agent watches what is happening, reasons about it, chooses an action, reads the result, and decides again. Linear retrieval is a helper inside that loop—it is not the whole control system.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Chat / one-shot RAG</strong></td>
+          <td>Read evidence once, answer once</td>
+        </tr>
+        <tr>
+          <td><strong>Agent</strong></td>
+          <td>Loop: plan, act with tools, observe, adjust</td>
+        </tr>
+        <tr>
+          <td><strong>Agency</strong></td>
+          <td>The system can change things in the world, not only print text</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>An agent is an LLM plus tools, memory, and planning—not &quot;smarter text,&quot; but a goal-seeking loop with side effects.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -49,27 +85,30 @@ flowchart LR
     E --> B
       </div>
     </div>
-    <p>If there is no goal, no tools, and no loop, you have a single-turn completer — useful, but not an agent.</p>
+    <p>If there is no goal, no tools, and no loop, you have a single-turn completer. Useful—but not an agent.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Core properties</h3>
+    <p>Every agent needs at least these pieces:</p>
     <ol>
-    <li><strong>Explicit goal</strong> — success criteria the loop can test (“report posted,” “tests green,” “ticket resolved”).</li>
-    <li><strong>Planning / sequencing</strong> — break the goal into ordered steps with dependencies.</li>
-    <li><strong>Action through tools/APIs</strong> — search, databases, calendars, code runners, ticket systems.</li>
-    <li><strong>Observation</strong> — parse tool results, errors, and environment state.</li>
-    <li><strong>Adjustment</strong> — retry, replan, escalate to a human, or stop.</li>
+    <li><strong>Explicit goal</strong> — something checkable (&quot;report posted,&quot; &quot;ticket closed,&quot; &quot;tests green&quot;).</li>
+    <li><strong>Planning</strong> — break the goal into ordered steps.</li>
+    <li><strong>Tools</strong> — search, databases, APIs, code runners, ticket systems.</li>
+    <li><strong>Observation</strong> — read tool results, errors, and environment state.</li>
+    <li><strong>Adjustment</strong> — retry, replan, ask a human, or stop.</li>
     </ol>
-    <p>Not every property must be maximal. A narrow agent with two tools and a fixed checklist is still an agent if it loops on results. A free-chat LLM with no tools is not.</p>
-    <h3>Anatomy of a turn</h3>
-    <p>Typical runtime:</p>
-    <ol>
-    <li>Load goal, memory, and allowed tools.</li>
-    <li>Model proposes either a final answer or a tool call.</li>
-    <li>Host validates and executes the tool.</li>
-    <li>Result is appended to context.</li>
-    <li>Repeat until final answer, max steps, timeout, or human gate.</li>
-    </ol>
-    <p>Budgets matter: max steps, max tokens, max dollars, max wall-clock. Without them, “agency” becomes an infinite bill.</p>
+    <p>Not every property must be fancy. A narrow agent with two tools and a fixed checklist is still an agent if it loops on results. A free-chat LLM with no tools is not.</p>
+    <h3>The agent loop (ASCII)</h3>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">agent_loop(input):
+    while not done:
+        thought   = llm_think(state)
+        action    = choose_tool(thought)
+        observation = run_tool(action)
+        state     = update_state(observation)
+    return final_answer</code></pre>
+    </div>
+    <p><strong>Budgets matter:</strong> max steps, max tokens, max cost, max time. Without them, &quot;agency&quot; becomes an infinite bill.</p>
     <h3>Degrees of autonomy</h3>
     <table>
       <thead><tr>
@@ -85,13 +124,13 @@ flowchart LR
         </tr>
         <tr>
           <td>Supervised</td>
-          <td>Auto on low risk; HITL on high</td>
-          <td>Auto-tag tickets; human for refunds</td>
+          <td>Auto on low risk; human-in-the-loop (HITL) on high</td>
+          <td>Auto-tag tickets; human approves refunds</td>
         </tr>
         <tr>
           <td>Autonomous (scoped)</td>
           <td>Full loop inside a sandbox</td>
-          <td>Nightly report in read-only BI</td>
+          <td>Nightly report in read-only business intelligence (BI)</td>
         </tr>
       </tbody>
     </table>
@@ -101,11 +140,11 @@ flowchart LR
     <li>Multi-agent teams</li>
     <li>Fancy frameworks</li>
     <li>Perfect long-term memory</li>
-    <li>Open-ended “do anything” tools</li>
+    <li>Open-ended &quot;do anything&quot; tools</li>
     </ul>
-    <p>Those are optional upgrades. The defining loop is goal -&gt; plan -&gt; act -&gt; observe -&gt; adjust.</p>
+    <p>Those are optional upgrades. The defining loop is <strong>goal → plan → act → observe → adjust</strong>.</p>
     <h2 id="in-code">In code</h2>
-    <p>A tiny agent loop with a stop budget. The “model” is faked so the control flow is obvious.</p>
+    <p>A tiny agent loop with a stop budget. The &quot;model&quot; is faked so the control flow is obvious.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
@@ -156,26 +195,28 @@ print(run_agent(Goal(&quot;weekly sales pack&quot;, &quot;posted&quot;)))</code>
     <p>Replace <code>fake_policy</code> with an LLM that emits structured tool calls; keep the budget and validation in your host code.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Goal mush.</strong> “Be helpful” is not a terminating condition; loops wander.</li>
+    <li><strong>Goal mush.</strong> &quot;Be helpful&quot; is not a terminating condition; loops wander.</li>
     <li><strong>No observation.</strong> Ignoring tool errors and retrying blindly burns tokens.</li>
-    <li><strong>Unbounded autonomy.</strong> Missing max-steps/timeouts creates runaway agents.</li>
-    <li><strong>Chatbot cosplay.</strong> Marketing calls every chat UI an “agent” and skips tools and loops.</li>
-    <li><strong>Hidden side effects.</strong> Acting without audit logs makes incidents undebuggable.</li>
+    <li><strong>Unbounded autonomy.</strong> Missing max-steps or timeouts creates runaway agents.</li>
+    <li><strong>Chatbot cosplay.</strong> Marketing calls every chat UI an &quot;agent&quot; and skips tools and loops.</li>
+    <li><strong>Hidden side effects.</strong> Acting without audit logs makes incidents hard to debug.</li>
     <li><strong>Premature multi-agent.</strong> Split into many agents before a single loop works end to end.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Before you rename a feature an “agent,” write three sentences: the goal, the tools, and the stop conditions. If any sentence is empty, you still have a chatbot or a script. Instrument the loop from day one: log step index, tool name, latency, and whether the run ended in success, budget exhaustion, or escalation. Those four fields will teach you more than another framework tutorial.</p>
-    <p>When stakeholders ask for “full autonomy,” translate the request into an autonomy level table and pick Supervised as the default launch mode. Expand only after task success rate and safety probes clear a written bar for two consecutive weeks. Agency without instrumentation is just unpredictability with better copy.</p>
+    <p>Before you rename a feature an &quot;agent,&quot; write three sentences: the <strong>goal</strong>, the <strong>tools</strong>, and the <strong>stop conditions</strong>. If any sentence is empty, you still have a chatbot or a script.</p>
+    <p>Instrument the loop from day one: log step index, tool name, latency, and whether the run ended in success, budget exhaustion, or escalation. Those four fields teach you more than another framework tutorial.</p>
+    <p>When stakeholders ask for &quot;full autonomy,&quot; translate the request into the autonomy table above and pick <strong>Supervised</strong> as the default launch mode. Expand only after task success rate and safety probes clear a written bar for two consecutive weeks.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>An AI agent is a goal-seeking loop that plans, uses tools, observes results, and adjusts — under explicit budgets and stop conditions — not merely a model that replies in chat.</p>
+    <p>An AI agent is a goal-seeking loop that plans, uses tools, observes results, and adjusts—under explicit budgets and stop conditions—not merely a model that replies in chat.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Agent:</strong> goal-driven system with plan–act–observe–adjust loops.</li>
-    <li><strong>Tool / action:</strong> external capability the host executes on the model’s request.</li>
+    <li><strong>Agent:</strong> LLM wrapped with tools, memory, and planning so it can act.</li>
+    <li><strong>Tool / action:</strong> external capability the host executes on the model&#x27;s request.</li>
     <li><strong>Observation:</strong> tool result or environment feedback fed back into context.</li>
     <li><strong>Autonomy level:</strong> how much the system may do without a human.</li>
     <li><strong>Step budget:</strong> hard cap on iterations, time, or cost.</li>
     <li><strong>Success criterion:</strong> checkable condition that ends the loop.</li>
+    <li><strong>Agentic RAG:</strong> RAG upgraded with planning, looping, tools, and memory.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

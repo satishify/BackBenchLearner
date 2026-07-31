@@ -7,12 +7,12 @@ questions:
       - "Asking for 'be nice' in the system prompt only"
       - "Logging tokens without checking types"
     answer: 1
-    why: "Contracts need machine-checkable structure and a runtime that rejects or repairs invalid payloads—not vibes."
+    why: "Contracts need machine-checkable structure and a runtime that rejects or repairs invalid payloads — not vibes."
 
   - q: "Your validator rejects 8% of model outputs. Best next product move?"
     options:
       - "Ship invalid JSON to the payment API unchanged"
-      - "Retry with a repair prompt, constrained decoding, or fall back to a safe path—and track the rate"
+      - "Retry with a repair prompt, constrained decoding, or fall back to a safe path — and track the rate"
       - "Raise temperature to 2.0 to increase variety of broken shapes"
       - "Delete the schema because it is inconvenient"
     answer: 1
@@ -21,11 +21,11 @@ questions:
   - q: "When would you prefer a locally hosted open model over a hosted API?"
     options:
       - "You need data residency, custom routing, or predictable unit economics at high volume"
-      - "You want zero ops and never care about GPUs"
+      - "You want zero operations work and never care about GPUs"
       - "Local models always beat frontier APIs on every benchmark automatically"
       - "Hosted APIs cannot do tool calling"
     answer: 0
-    why: "Self-hosting trades ops burden for control over privacy, cost curves, and deployment topology."
+    why: "Self-hosting trades operations burden for control over privacy, cost curves, and deployment topology."
 
   - q: "For a summarization task eval, which metric suite is most product-aligned?"
     options:
@@ -66,7 +66,7 @@ questions:
   - q: "A hosted API returns finish_reason=length mid-JSON. What failed?"
     options:
       - "The tokenizer deleted JSON forever"
-      - "Max output tokens cut the completion before the object closed—budget or prompt verbosity issue"
+      - "Max output tokens cut the completion before the object closed — budget or prompt verbosity issue"
       - "Temperature became a string"
       - "The system role was too short"
     answer: 1
@@ -75,8 +75,17 @@ questions:
   - q: "Local vs hosted serving: which operational risk is uniquely yours when self-hosting?"
     options:
       - "Provider rate limits on their multi-tenant fleet"
-      - "GPU capacity planning, batching, and model upgrade rollouts on your infra"
-      - "The vendor’s SOC2 report"
+      - "GPU capacity planning, batching, and model upgrade rollouts on your infrastructure"
+      - "The vendor's SOC2 report"
       - "DNS for api.openai.com only"
     answer: 1
-    why: "Self-hosting shifts reliability and scaling work onto your team’s serving stack."
+    why: "Self-hosting shifts reliability and scaling work onto your team's serving stack."
+
+  - q: "What are the three practical ways to run open-source LLMs covered in this module?"
+    options:
+      - "Email, fax, and carrier pigeon"
+      - "Local Transformers, Hugging Face hosted inference, and Ollama"
+      - "Only GPT-4 and nothing else"
+      - "Training from scratch on every laptop"
+    answer: 1
+    why: "The module covers local PyTorch/Transformers, hosted Hugging Face API calls, and Ollama for simple local serving."

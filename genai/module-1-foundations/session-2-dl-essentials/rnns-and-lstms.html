@@ -36,38 +36,86 @@
       <h1>RNNs and LSTMs</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Images have height and width; language and sensor streams have <strong>time</strong>. A <strong>recurrent neural network (RNN)</strong> processes a sequence one step at a time, carrying a <strong>hidden state</strong> that summarizes “what I’ve seen so far.” That idea powered early machine translation, speech recognition, and next-token models—until transformers took the crown for most large-scale NLP. You still need RNNs and <strong>LSTMs</strong> in your mental toolkit: they explain sequential state, why long dependencies were hard, and what attention later fixed. Interview questions and older production systems still speak this dialect fluently.</p>
+    <p><strong>What is a recurrent neural network (RNN)?</strong> It is a neural network with memory. Instead of treating each input independently, an RNN carries a <strong>hidden state</strong> — a rolling summary of everything seen so far — from one time step to the next.</p>
+    <p><strong>Why do RNNs matter?</strong> Images have height and width; language, speech, and sensor streams have <strong>time</strong>. Order dictates meaning: &quot;The dog bit the man&quot; is not the same as &quot;The man bit the dog.&quot; Standard feedforward networks cannot track that. RNNs (and their upgrade, LSTMs) were the backbone of early machine translation, speech recognition, and next-word prediction — and they explain why long dependencies were hard before transformers.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>RNNs thread a shared-weight hidden state through time. LSTMs add a gated cell-state highway so longer dependencies can survive training instead of vanishing in the unroll.</p>
+    </aside>
     <h2 id="intuition">Intuition</h2>
-    <p>Read a sentence left to right while holding a sticky note of your current understanding. At each word you update the note: new evidence in, old summary revised. The sticky note is the hidden state <code>h_t</code>. The update rule is shared across time—same weights for word 1 and word 100—so the model learns <em>how to update memory</em>, not a separate brain per position.</p>
-    <p>A vanilla RNN updates with a single squash (tanh or ReLU-ish). Over many steps, gradients that teach “remember the subject from 40 tokens ago” must pass through 40 multiplications by the same recurrent Jacobian. If those factors are usually <code>&lt; 1</code>, the signal <strong>vanishes</strong>; if <code>&gt; 1</code>, it <strong>explodes</strong>. Training becomes deaf to long-range credit.</p>
-    <p>An <strong>LSTM</strong> (Long Short-Term Memory) adds an explicit <strong>cell state</strong> highway and <strong>gates</strong> that learn what to forget, what to write, and what to read out. Think of a conveyor belt (cell) with controllable doors: information can coast forward with less repeated squash, so distant signals have a fighting chance. <strong>GRUs</strong> are a lighter cousin with fewer gates; same spirit.</p>
-    <p>RNNs are naturally online: you can consume tokens as they arrive. Their cost per step is modest, but training is sequential—step <code>t</code> waits on <code>t-1</code>—so GPUs parallelize less cleanly than transformers.</p>
+    <p>Read a sentence left to right while holding a sticky note of your current understanding. At each word you update the note: new evidence in, old summary revised. The sticky note is the hidden state <code>h_t</code>. The update rule uses the same weights at every step — so the model learns <em>how to update memory</em>, not a separate brain per position.</p>
+    <p><strong>Example — predicting the next word.</strong> An RNN reads: &quot;The clouds are in the _____&quot;</p>
+    <ol>
+    <li>Reads &quot;The&quot; → stores it in memory.</li>
+    <li>Reads &quot;clouds&quot; → combines with memory of &quot;The&quot; → updates memory.</li>
+    <li>Reads &quot;are&quot; → combines with past memory → updates again.</li>
+    <li>By the blank, memory holds the context of the whole sentence → easily predicts &quot;sky&quot;.</li>
+    </ol>
+    <p>A vanilla RNN updates with a single squash (tanh). Over many steps, gradients that teach &quot;remember the subject from 40 tokens ago&quot; must pass through 40 multiplications by the same recurrent weights. If those factors are usually less than 1, the signal <strong>vanishes</strong>; if greater than 1, it <strong>explodes</strong>.</p>
+    <p>An <strong>LSTM (Long Short-Term Memory)</strong> adds an explicit <strong>cell state</strong> highway and <strong>gates</strong> that learn what to forget, what to write, and what to read out. Think of a conveyor belt with controllable doors: information can coast forward with less repeated squash, so distant signals have a fighting chance.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Vanilla RNN step.</strong> Inputs <code>x_t</code> (e.g. embedding) and previous state <code>h_{t-1}</code>:</p>
+    <p><strong>Vanilla RNN step.</strong> Inputs <code>x_t</code> (e.g. word embedding) and previous state <code>h_{t-1}</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">h_t = tanh( W_h @ h_{t-1} + W_x @ x_t + b )</code></pre>
     </div>
-    <p>For classification of a whole sequence, people often take the last <code>h_T</code> or pool all <code>h_t</code>. For language modeling, each step predicts the next token from <code>h_t</code>.</p>
-    <p><strong>Unrolling.</strong> A length-<code>T</code> sequence is a deep net of depth <code>T</code> with tied weights. Backpropagation through time (BPTT) runs the chain rule backward along that unroll.</p>
-    <p><strong>LSTM gates (intuition + equations).</strong> Let <code>[h_{t-1}, x_t]</code> be the concatenated input to affine maps. Four vectors in <code>(0, 1)</code> or <code>(-1, 1)</code>:</p>
+    <p>For language modeling, each step predicts the next token from <code>h_t</code>.</p>
+    <p><strong>Unrolling.</strong> A length-T sequence is a deep network of depth T with tied weights. <strong>Backpropagation through time (BPTT)</strong> runs the chain rule backward along that unroll — repeating a multiplication step for every single word in the sequence.</p>
+    <p><strong>Where RNNs fail — the long-distance problem:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Problem</th>
+        <th>Plain-English idea</th>
+        <th>What happens</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Exploding gradients</strong></td>
+          <td>Memory weights slightly greater than 1.0 get multiplied over and over (1.1 × 1.1 × 1.1...)</td>
+          <td>Training numbers grow exponentially → crashes, wild graphs, or model breakdown. <strong>Fix:</strong> gradient clipping (hard cap on how large numbers can grow).</td>
+        </tr>
+        <tr>
+          <td><strong>Vanishing gradients</strong></td>
+          <td>Memory weights less than 1.0 shrink repeatedly (0.9 × 0.9 × 0.9...)</td>
+          <td>By the time the signal reaches early words, it is practically zero → model forgets early clues (e.g. &quot;France&quot; at the start of a long essay).</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>LSTM solution — the cell state conveyor belt.</strong> LSTMs separate long-term memory onto an isolated track called the <strong>cell state</strong>. This track updates using simple addition and subtraction instead of risky repeated multiplication.</p>
+    <p>Three smart <strong>gates</strong> control what goes on and off the conveyor belt:</p>
+    <table>
+      <thead><tr>
+        <th>Gate</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Forget gate</strong></td>
+          <td>Looks at new data and throws away old memory that is no longer useful</td>
+        </tr>
+        <tr>
+          <td><strong>Input gate</strong></td>
+          <td>Decides which new information from the current word is important enough to save</td>
+        </tr>
+        <tr>
+          <td><strong>Output gate</strong></td>
+          <td>Decides what parts of the updated cell state to pull off for the next hidden state prediction</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>LSTM equations (one time step):</strong></p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">f_t = sigmoid(W_f @ [h_{t-1}, x_t] + b_f)   # forget
-i_t = sigmoid(W_i @ [h_{t-1}, x_t] + b_i)   # input
-o_t = sigmoid(W_o @ [h_{t-1}, x_t] + b_o)   # output
+      <pre><code class="language-text">f_t = sigmoid(W_f @ [h_{t-1}, x_t] + b_f)   # forget gate
+i_t = sigmoid(W_i @ [h_{t-1}, x_t] + b_i)   # input gate
+o_t = sigmoid(W_o @ [h_{t-1}, x_t] + b_o)   # output gate
 g_t = tanh(W_g @ [h_{t-1}, x_t] + b_g)      # candidate write
 
-c_t = f_t * c_{t-1} + i_t * g_t             # cell update
+c_t = f_t * c_{t-1} + i_t * g_t             # cell update (the key fix)
 h_t = o_t * tanh(c_t)                       # hidden readout</code></pre>
     </div>
-    <ul>
-    <li><strong>Forget gate</strong> <code>f_t</code>: how much of old cell to keep (near 0 = erase).</li>
-    <li><strong>Input gate</strong> <code>i_t</code>: how much of the new candidate <code>g_t</code> to write.</li>
-    <li><strong>Output gate</strong> <code>o_t</code>: how much of cell content to expose as <code>h_t</code>.</li>
-    </ul>
-    <p>The additive cell update <code>c_t = f * c_old + i * g</code> is the key structural fix: gradients can flow along the cell path without a tanh at every single step.</p>
-    <p><strong>Bidirectional RNN.</strong> Run one RNN forward and one backward; concatenate states. Great for tagging when the whole utterance is available; wrong for true left-to-right generation (leaks the future).</p>
+    <p>The additive cell update <code>c_t = f * c_old + i * g</code> lets gradients flow along the cell path without a tanh at every single step.</p>
+    <p><strong>Bidirectional RNN (BiLSTM).</strong> Standard LSTMs only read left to right — missing clues that come after a word. A <strong>bidirectional LSTM</strong> runs two tracks simultaneously: one forward, one backward. For each word, the network chains both outputs together. Example: &quot;The crane flew away&quot; vs &quot;The crane lifted the steel beam&quot; — BiLSTM knows both preceding and trailing words, giving a complete picture of context.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -80,14 +128,43 @@ flowchart LR
   h3 --> y[Prediction]
       </div>
     </div>
+    <p><strong>Text representations — why context matters:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Method</th>
+        <th>Plain-English idea</th>
+        <th>Limitation</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>One-hot vector</strong></td>
+          <td>A long array of zeros with a single 1 at the word&#x27;s slot</td>
+          <td>Wastes memory; treats every word as completely unrelated</td>
+        </tr>
+        <tr>
+          <td><strong>Word embedding</strong></td>
+          <td>A short dense array (100–300 numbers) where related words sit close together</td>
+          <td>Static — one vector per word regardless of context</td>
+        </tr>
+        <tr>
+          <td><strong>Word2Vec</strong></td>
+          <td>Maps words so analogies work: King - Man + Woman ~= Queen</td>
+          <td>Cannot distinguish homonyms (&quot;bank&quot; river vs &quot;bank&quot; money)</td>
+        </tr>
+        <tr>
+          <td><strong>ELMo</strong></td>
+          <td>Dynamic embeddings from stacked BiLSTMs — &quot;bank&quot; gets different vectors in &quot;fish bank&quot; vs &quot;money bank&quot;</td>
+          <td>Heavier to compute; largely superseded by transformers for large-scale NLP</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="in-code">In code</h2>
-    <p>Minimal NumPy RNN step and a toy LSTM gate update for one timestep:</p>
+    <p>Minimal NumPy RNN step and a toy LSTM gate update for one time step:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
 
 def rnn_step(x_t, h_prev, W_x, W_h, b):
-    # x_t: (d_in,), h_prev: (d_h,)
     z = W_x @ x_t + W_h @ h_prev + b
     return np.tanh(z)
 
@@ -106,7 +183,6 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 def lstm_step(x_t, h_prev, c_prev, W, b):
-    # W: (4*d_h, d_h + d_in) maps [h; x] -&gt; forget, input, output, candidate
     hx = np.concatenate([h_prev, x_t])
     gates = W @ hx + b
     d = h_prev.shape[0]
@@ -125,22 +201,25 @@ print(&quot;LSTM h:&quot;, h, &quot;c:&quot;, c)</code></pre>
     </div>
     <p>Frameworks expose <code>nn.RNN</code>, <code>nn.LSTM</code>, <code>nn.GRU</code> with batch-first options and packed padded sequences for variable lengths.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
-    <p><strong>Vanishing / exploding gradients.</strong> Long unrolls without LSTM/GRU, gradient clipping, or careful init make early tokens unteachable or blow up to NaNs.</p>
-    <p><strong>Truncated BPTT misuse.</strong> Truncating history speeds training but can hide dependencies longer than the truncation window—your model never sees the credit path you care about.</p>
-    <p><strong>Leaky bidirectionality.</strong> Using a bi-LSTM for next-token prediction or live streaming lets the model cheat with future context; keep causal direction for generation.</p>
-    <p><strong>Hidden state as a trash can.</strong> Dumping a long document into a single final <code>h_T</code> for translation is the classic <strong>bottleneck</strong> (next lesson in the transformer track). LSTMs help; they do not create infinite memory.</p>
-    <p><strong>Assuming RNNs are obsolete everywhere.</strong> For low-latency streaming, tiny devices, or strong temporal inductive bias with limited data, compact recurrent models can still win. For large-scale NLP, attention usually wins on parallelism and long-range routing.</p>
+    <ul>
+    <li><strong>Vanishing / exploding gradients</strong> — Long unrolls without LSTM/GRU, gradient clipping, or careful init make early tokens unteachable or blow up to NaNs.</li>
+    <li><strong>Truncated BPTT misuse</strong> — Truncating history speeds training but can hide dependencies longer than the truncation window.</li>
+    <li><strong>Leaky bidirectionality</strong> — Using a BiLSTM for next-token prediction lets the model cheat with future context; keep causal direction for generation.</li>
+    <li><strong>Hidden state as a trash can</strong> — Dumping a long document into a single final hidden state for translation is a classic bottleneck. LSTMs help; they do not create infinite memory.</li>
+    <li><strong>Assuming RNNs are obsolete everywhere</strong> — For low-latency streaming, tiny devices, or strong temporal inductive bias with limited data, compact recurrent models can still win.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>RNNs thread a shared-weight hidden state through time; LSTMs add gated cell memory so longer dependencies can survive training instead of vanishing in the unroll.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Hidden state (<code>h_t</code>)</strong> — Vector summary of the sequence so far at step <code>t</code>.</li>
-    <li><strong>Recurrence / unroll</strong> — Feeding state from <code>t-1</code> into <code>t</code>; training expands this into a deep chain.</li>
-    <li><strong>BPTT</strong> — Backpropagation through time; reverse-mode AD on the unrolled net.</li>
+    <li><strong>Hidden state (h_t)</strong> — Vector summary of the sequence so far at step t.</li>
+    <li><strong>Recurrence / unroll</strong> — Feeding state from t-1 into t; training expands this into a deep chain.</li>
+    <li><strong>BPTT (backpropagation through time)</strong> — Reverse-mode differentiation on the unrolled network.</li>
     <li><strong>Vanishing / exploding gradients</strong> — Unstable products of recurrent derivatives over long sequences.</li>
-    <li><strong>LSTM</strong> — Gated recurrent unit with cell state plus forget/input/output gates.</li>
-    <li><strong>GRU</strong> — Simpler gated recurrent alternative to LSTM.</li>
-    <li><strong>Bidirectional RNN</strong> — Forward + backward passes concatenated; needs full sequence context.</li>
+    <li><strong>LSTM (Long Short-Term Memory)</strong> — Gated recurrent unit with cell state plus forget/input/output gates.</li>
+    <li><strong>Cell state</strong> — The linear conveyor-belt highway within an LSTM that preserves long-term context.</li>
+    <li><strong>Gradient clipping</strong> — Hard cap on gradient values to prevent numerical explosion.</li>
+    <li><strong>BiLSTM (bidirectional LSTM)</strong> — Forward + backward memory tracks concatenated; needs full sequence context.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

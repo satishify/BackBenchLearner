@@ -2,12 +2,21 @@ title: "2.9 Agentic AI & Multi-Agent Orchestration"
 questions:
   - q: "What primarily distinguishes an agent from a chatbot that only replies in text?"
     options:
-      - "Agents always have more parameters"
-      - "Agents plan and take actions via tools/environment, not only emit conversational text"
+      - "Agents always have more model parameters"
+      - "Agents plan and take actions via tools and environment—not only emit conversational text"
       - "Chatbots cannot use system prompts"
       - "Agents never need memory"
     answer: 1
-    why: "Agency is about goal-directed action loops (tools, state, stop conditions), not chat tone alone."
+    why: "Agency is about goal-directed loops: tools, state, memory, and stop conditions—not chat tone alone."
+
+  - q: "Why does a single linear RAG (retrieve-then-generate) pipeline struggle with multi-step incident debugging?"
+    options:
+      - "Because retrieval cannot return text and code in the same answer"
+      - "Because the large language model (LLM) cannot summarize a commit diff"
+      - "Because the task needs a loop with tool use and re-planning—not a one-shot retrieve-then-generate pass"
+      - "Because the query is too short for embedding models"
+    answer: 2
+    why: "Real incidents need inspect → think → act → observe → maybe loop again. That is agent territory, not static RAG."
 
   - q: "A minimal agent loop often combines which capabilities?"
     options:
@@ -16,7 +25,16 @@ questions:
       - "Only static FAQ templates"
       - "Only offline batch ETL"
     answer: 0
-    why: "The chapter frames agents as reasoning + planning + tools + memory working together over multiple steps."
+    why: "Agents combine reasoning, planning, tools, and memory working together over multiple steps."
+
+  - q: "Why do clear tool descriptions matter in tool calling?"
+    options:
+      - "Because the name alone is enough, but the model prefers a longer prompt"
+      - "Because the LLM chooses tools based on the description of what the tool does—not just its function name"
+      - "Because the tool description is only used by humans, not by the model"
+      - "Because descriptions replace the need for the tool output"
+    answer: 1
+    why: "Good descriptions help the model pick the right tool, format parameters correctly, and read results. Bad descriptions invite wrong calls and tool hallucination."
 
   - q: "Prefer a single agent over multi-agent when..."
     options:
@@ -25,16 +43,25 @@ questions:
       - "Tasks require strict separation of roles with independent tools and review"
       - "You have no eval harness either way"
     answer: 1
-    why: "Multi-agent adds handoff/latency complexity; use it when specialization and checks justify the cost."
+    why: "Multi-agent adds handoff and latency complexity. Use it when specialization and checks justify the cost—not by default."
 
-  - q: "Human-in-the-loop is most justified for..."
+  - q: "What is the planner's main job in a planner/executor split?"
     options:
-      - "Capitalizing titles"
-      - "High-risk irreversible actions (payments, access changes, legal filings)"
+      - "To write final answers directly and skip tool use"
+      - "To execute each API call exactly once"
+      - "To break a complex request into a step-by-step plan"
+      - "To cache previous answers and return them quickly"
+    answer: 2
+    why: "The planner decides structure and order. The executor carries out one step safely and returns the payload."
+
+  - q: "Human-in-the-loop (HITL) is most justified for..."
+    options:
+      - "Capitalizing titles in documents"
+      - "High-risk irreversible actions (payments, access changes, production restarts)"
       - "Caching embedding vectors"
       - "Choosing font size in docs"
     answer: 1
-    why: "HITL inserts approval gates where mistakes are expensive or ethically sensitive."
+    why: "HITL inserts approval gates where mistakes are expensive, hard to undo, or ethically sensitive."
 
   - q: "Task decomposition helps agents by..."
     options:
@@ -43,25 +70,34 @@ questions:
       - "Removing the need for any planner"
       - "Guaranteeing zero tool errors"
     answer: 1
-    why: "Smaller steps are easier to verify, retry, and assign to tools or specialist agents."
+    why: "Smaller named steps are easier to verify, retry, and assign to tools or specialist agents."
 
   - q: "In function calling, who should execute the side-effecting API call?"
     options:
-      - "The model’s imagination only"
-      - "Your runtime after validating name, args, and authorization"
+      - "The model's imagination only"
+      - "Your runtime (host) after validating name, args, and authorization"
       - "A random web scraper with admin cookies"
       - "The embedding index"
     answer: 1
-    why: "The model proposes structured calls; trusted code validates and executes them."
+    why: "The model proposes structured calls. Trusted application code validates and executes them."
 
-  - q: "Short-term vs long-term memory in agents maps best to..."
+  - q: "Episodic vs semantic memory in agents maps best to..."
     options:
-      - "Temperature vs top-p"
-      - "Working context / scratchpad for the active task vs durable stores (profiles, vector memories) across sessions"
+      - "Temperature vs top-p sampling"
+      - "Short-term conversation thread (like RAM) vs long-term fact store across sessions (like a hard drive)"
       - "GPU vs CPU"
       - "System vs assistant role colors"
     answer: 1
-    why: "STM is the live episode state; LTM persists knowledge that must be retrieved later."
+    why: "Episodic memory is the live thread state. Semantic memory persists facts and lessons you retrieve later—often from a vector database."
+
+  - q: "How does ReAct (Reason + Act) improve on pure chain-of-thought reasoning?"
+    options:
+      - "It replaces all reasoning with a database lookup"
+      - "It alternates between reasoning and action so the model can fact-check itself against tool observations"
+      - "It removes the need for prompts"
+      - "It only works for math problems, not real tools"
+    answer: 1
+    why: "Closed-book reasoning can drift after one wrong assumption. ReAct grounds thought in observations from the real world."
 
   - q: "Reflection / self-correction loops are most valuable when..."
     options:
@@ -72,20 +108,29 @@ questions:
     answer: 1
     why: "Critique-and-revise catches errors cheaply—if bounded by budgets and exit criteria."
 
-  - q: "LangChain vs LlamaIndex vs AutoGen/CrewAI—how should you choose?"
+  - q: "What is the core difference between LangChain and LangGraph?"
     options:
-      - "Always pick the longest name"
-      - "Match the framework’s center of gravity (chains/tools, RAG indices, or multi-agent orchestration) to your problem"
-      - "Frameworks replace the need for evals and auth"
-      - "Only use one file with no abstractions ever, in all companies"
+      - "LangChain is cyclic and LangGraph is linear"
+      - "LangChain is mainly a component framework; LangGraph adds cyclic stateful control flow for agent graphs"
+      - "LangChain is for memory only, and LangGraph is for vector search only"
+      - "LangGraph replaces LLMs, while LangChain does not"
     answer: 1
-    why: "Libraries optimize different layers; pick based on workflow shape, then keep policy and tests in your code."
+    why: "LangChain assembles prompts, tools, and models. LangGraph wires them into a graph that can loop, branch, pause, and resume."
 
   - q: "Orchestration/workflow control should enforce..."
     options:
       - "Unlimited retries forever on failing tools"
-      - "Budgets, timeouts, idempotency, and explicit success/fail states for each step"
+      - "Budgets, timeouts, recursion limits, idempotency, and explicit success/fail states for each step"
       - "Hiding errors from logs"
       - "Letting any agent mint production credentials"
     answer: 1
-    why: "Production agents need operational controls, not infinite autonomous wandering."
+    why: "Production agents need operational controls—state machines, caps, and audit hooks—not infinite autonomous wandering."
+
+  - q: "What is provenance in a multi-agent system?"
+    options:
+      - "A way to store embeddings faster"
+      - "A method for compressing the state graph"
+      - "The origin of a piece of information—which agent or tool call produced it"
+      - "A type of reranker for citations"
+    answer: 2
+    why: "Provenance lets you trace a claim back to the exact tool call or specialist that produced it—making answers auditable."

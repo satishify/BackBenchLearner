@@ -42,80 +42,97 @@
     <h1>Module 3 - Fine-tuning revision</h1>
     <p class="cheat-banner">Revision guide · ~25 min · dense bullets, not full lessons</p>
 
-    <p>Chapters <strong>3.1–3.3</strong>. Prefer PEFT mental models over memorizing every hyperparameter.</p>
+    <p>Chapters <strong>3.1–3.3</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
     <h2 id="31-fine-tuning-fundamentals">3.1 Fine-tuning fundamentals</h2>
     <h3>When to fine-tune</h3>
     <ul>
-    <li>Prompting / RAG already fail after real effort: style, domain jargon, structured formats, latency (smaller specialist), or offline/on-prem needs.</li>
-    <li>Don’t fine-tune to “store facts” — use retrieval. Fine-tune for <em>behavior and format</em>.</li>
+    <li>Try prompting and RAG first. Fine-tune when you need a <strong>stable habit</strong>—tone, schema, domain phrasing—that clear instructions cannot fix.</li>
+    <li>Do not fine-tune to store facts. Use retrieval for knowledge that changes.</li>
     </ul>
     <h3>Flavors</h3>
     <ul>
-    <li><strong>SFT (supervised fine-tuning)</strong> — train on instruction -&gt; ideal response pairs.</li>
-    <li><strong>Preference / RLHF / DPO-style</strong> — learn from ranked pairs (chosen vs rejected). Aligns tone and policy; needs careful data.</li>
-    <li><strong>Continued pretraining</strong> — domain corpus without instruction format (legal text, codebases).</li>
+    <li><strong>SFT (supervised fine-tuning)</strong> — Train on instruction → ideal response pairs.</li>
+    <li><strong>Preference / RLHF / DPO-style</strong> — Learn from ranked pairs (chosen vs rejected). Aligns tone and policy; needs careful data.</li>
+    <li><strong>Continued pretraining</strong> — Domain corpus without instruction format (legal text, codebases).</li>
     </ul>
     <h3>Data</h3>
     <ul>
-    <li>Quality matters more than quantity. Deduplicate, strip PII, balance tasks, fix label noise.</li>
-    <li>Instruction format consistency (roles, special tokens) must match serving chat template.</li>
-    <li>Hold out eval that mirrors production; watch <strong>catastrophic forgetting</strong> of general skills.</li>
+    <li>Quality beats quantity. Deduplicate, strip PII, balance tasks, fix label noise.</li>
+    <li>Instruction format must match your serving chat template.</li>
+    <li>Hold out eval that mirrors production; watch <strong>catastrophic forgetting</strong> (losing old skills after narrow training).</li>
     </ul>
     <h2 id="32-data-prep-training-mechanisms">3.2 Data prep &amp; training mechanisms</h2>
     <ul>
-    <li>Packing / packing efficiency; max length truncation strategy.</li>
+    <li>Watch max length and truncation—do not chop away the assistant label.</li>
     <li>Loss usually on assistant tokens only (mask user/system).</li>
-    <li>Overfit signs: train loss drops a lot, val / prod quality drops, or the model regurgitates train examples.</li>
-    <li>Checkpoints, early stopping on a task metric (not only loss).</li>
+    <li>Overfit signs: train loss drops a lot, but val or prod quality drops, or the model regurgitates train examples.</li>
+    <li>Checkpoints and early stopping on a task metric—not loss alone.</li>
     </ul>
     <h2 id="33-peft-adapters-soft-prompts">3.3 PEFT, adapters, soft prompts</h2>
-    <h3>Why PEFT</h3>
+    <h3>Why PEFT exists</h3>
     <ul>
-    <li>Full finetune updates all weights -&gt; expensive, huge artifacts, hard multi-tenant.</li>
-    <li><strong>Adapters / LoRA</strong>: train small low-rank updates; freeze base. Serve many adapters on one base.</li>
-    <li><strong>LoRA</strong>: approximates the weight update as two small matrices B and A multiplied together (low rank). Higher rank means more capacity and VRAM. Common start: modest rank, then tune learning rate.</li>
-    <li><strong>QLoRA</strong>: quantize base (e.g. 4-bit) + LoRA — consumer GPU friendly; watch quality/latency tradeoffs.</li>
-    <li><strong>Prompt / prefix tuning</strong>: learn soft tokens; even smaller footprint; sometimes weaker than LoRA for complex tasks.</li>
+    <li>Full fine-tuning updates every weight → expensive, huge artifacts, harder multi-tenant serving.</li>
+    <li><strong>PEFT (parameter-efficient fine-tuning)</strong> freezes the backbone and trains a tiny add-on instead.</li>
+    </ul>
+    <h3>Adapters and LoRA</h3>
+    <ul>
+    <li><strong>Adapters</strong> — Small trainable blocks inserted into the network; learn a task-specific tweak around frozen features.</li>
+    <li><strong>LoRA (Low-Rank Adaptation)</strong> — Express the weight update as two small matrices: weight update ~= B times A (low rank). Higher rank = more capacity and VRAM.</li>
+    <li><strong>QLoRA (Quantized LoRA)</strong> — Quantize the frozen base (e.g. 4-bit) + train LoRA adapters. Fits big models on smaller GPUs; always check quality.</li>
+    </ul>
+    <h3>Soft prompts</h3>
+    <ul>
+    <li><strong>Prompt tuning</strong> — Learn virtual token embeddings prepended to the input; backbone stays frozen.</li>
+    <li><strong>Prefix tuning</strong> — Learn prefixes injected into layer attention; more expressive than prompt tuning alone.</li>
+    <li>Smallest footprint, but may underfit hard generative tasks—escalate to LoRA when needed.</li>
+    </ul>
+    <h3>Training recipe (LoRA defaults)</h3>
+    <ul>
+    <li>Learning rate ~1e-4 to 3e-4 (higher than full FT).</li>
+    <li>Start rank 16, alpha 32 on attention projections.</li>
+    <li>One to two epochs on clean data; change one knob at a time.</li>
     </ul>
     <h3>Serving</h3>
     <ul>
-    <li>Merge LoRA into base for single-model deploy, or load adapters dynamically.</li>
+    <li><strong>Merge</strong> LoRA into base → one simple checkpoint per skill.</li>
+    <li><strong>Keep separate</strong> → many small adapters on one base; hot-swap and cheap rollback.</li>
     <li>Version base + adapter + tokenizer + chat template together.</li>
     </ul>
     <h2 id="decision-cheat">Decision cheat</h2>
     <table>
       <thead><tr>
-        <th>Need</th>
-        <th>Prefer</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Fresh facts</td>
-          <td>RAG</td>
+          <td><strong>RAG</strong></td>
+          <td>Facts change often or must come from private docs.</td>
         </tr>
         <tr>
-          <td>Tone / schema / domain phrasing</td>
-          <td>SFT / LoRA</td>
+          <td><strong>SFT / LoRA</strong></td>
+          <td>Stable tone, schema, or domain phrasing.</td>
         </tr>
         <tr>
-          <td>Safety / preference</td>
-          <td>Preference data + policy</td>
+          <td><strong>Preference data</strong></td>
+          <td>Safety, tone alignment, ranked choices.</td>
         </tr>
         <tr>
-          <td>Tiny GPU</td>
-          <td>QLoRA / smaller base</td>
+          <td><strong>QLoRA</strong></td>
+          <td>Tight GPU budget; validate quality after.</td>
         </tr>
         <tr>
-          <td>Many customers’ styles</td>
-          <td>Per-tenant adapters</td>
+          <td><strong>Per-tenant adapters</strong></td>
+          <td>Many customers, one shared base model.</td>
         </tr>
       </tbody>
     </table>
-    <h2 id="30-minute-drill">30-minute drill</h2>
+    <h2 id="25-minute-drill">25-minute drill</h2>
     <ol>
-    <li>Argue for RAG vs LoRA on a “company FAQ bot”.</li>
+    <li>Argue for RAG vs LoRA on a &quot;company FAQ bot.&quot;</li>
     <li>Name two evals that catch forgetting.</li>
     <li>Explain LoRA rank in one sentence (how big the two small matrices are).</li>
+    <li>When would you merge vs keep adapters separate?</li>
     </ol>
 
     <footer>

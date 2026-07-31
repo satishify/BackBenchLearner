@@ -36,9 +36,50 @@
       <h1>Reasoning + Planning + Tool Use + Memory</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Useful agents combine four capabilities: <strong>reasoning</strong> (what does success mean?), <strong>planning</strong> (in what order?), <strong>tool use</strong> (how do we affect the world?), and <strong>memory</strong> (what must we remember?). Missing any one turns a demo into a fragile script or a chatty dead end.</p>
+    <p><strong>What is this for?</strong> To show the four building blocks that turn a demo into a useful agent: <strong>reasoning</strong>, <strong>planning</strong>, <strong>tool use</strong>, and <strong>memory</strong>.</p>
+    <p><strong>Why does it exist?</strong> Missing any one piece turns a system into a fragile script or a chatty dead end. Together they let an agent finish real multi-step jobs.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch -&gt; clean -&gt; summarize -&gt; visualize -&gt; deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.</p>
+    <p>Imagine a weekly sales report request:</p>
+    <ul>
+    <li><strong>Reasoning</strong> clarifies what success means (&quot;last 7 days, US dollars, exclude test accounts&quot;).</li>
+    <li><strong>Planning</strong> orders the work (fetch → clean → summarize → deliver).</li>
+    <li><strong>Tools</strong> talk to your business intelligence (BI) system and docs.</li>
+    <li><strong>Memory</strong> recalls that this stakeholder wants three bullet points, not a novel.</li>
+    </ul>
+    <p>Alone, each piece is ordinary. Together they complete jobs.</p>
+    <table>
+      <thead><tr>
+        <th>Capability</th>
+        <th>Plain-English idea</th>
+        <th>What it does</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Reasoning</strong></td>
+          <td>&quot;What does done look like?&quot;</td>
+          <td>Turns a vague ask into constraints and success checks</td>
+        </tr>
+        <tr>
+          <td><strong>Planning</strong></td>
+          <td>&quot;In what order?&quot;</td>
+          <td>Breaks the goal into named, retryable steps</td>
+        </tr>
+        <tr>
+          <td><strong>Tool use</strong></td>
+          <td>&quot;How do we touch the world?&quot;</td>
+          <td>Calls APIs, search, databases, automations</td>
+        </tr>
+        <tr>
+          <td><strong>Memory</strong></td>
+          <td>&quot;What must we remember?&quot;</td>
+          <td>Keeps session state and durable facts</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Reasoning sets the target. Planning sets the route. Tools do the work. Memory keeps context from vanishing between steps.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -50,26 +91,61 @@ flowchart TB
     </div>
     <h2 id="how-it-works">How it works</h2>
     <h3>Reasoning</h3>
-    <p>Interpret intent, constraints, and success conditions. Distinguish must-haves from nice-to-haves. Detect underspecified goals (“optimize the funnel”) and ask or assume explicitly. Reasoning here is not mystical chain-of-thought theater — it is producing a machine-checkable brief: inputs, outputs, limits, risk level.</p>
+    <p>Interpret intent, constraints, and success conditions. Distinguish must-haves from nice-to-haves. Detect underspecified goals (&quot;optimize the funnel&quot;) and ask or assume explicitly.</p>
+    <p>Reasoning here is not mystical chain-of-thought theater—it is producing a machine-checkable brief: inputs, outputs, limits, risk level.</p>
     <h3>Planning</h3>
-    <p>Split the goal into ordered subtasks with dependencies. Good plans are short, named, and retryable. Prefer checkpoints (“data fetched”) over vague phases (“analyze”). Replan when observations invalidate assumptions (API empty, schema changed). For many production workflows, a fixed playbook beats open-ended free planning — use the LLM to fill slots inside a known DAG.</p>
+    <p>Split the goal into ordered subtasks with dependencies. Good plans are short, named, and retryable. Prefer checkpoints (&quot;data fetched&quot;) over vague phases (&quot;analyze&quot;).</p>
+    <p><strong>Planner vs executor (plain English):</strong></p>
+    <table>
+      <thead><tr>
+        <th>Role</th>
+        <th>Plain-English idea</th>
+        <th>Focus</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Planner</strong></td>
+          <td>Decides <em>what</em> should happen</td>
+          <td>Outputs a step list</td>
+        </tr>
+        <tr>
+          <td><strong>Executor</strong></td>
+          <td>Does <em>one</em> step safely</td>
+          <td>Outputs tool calls and reads results</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Why split them?</p>
+    <ul>
+    <li>Less mental load per model call.</li>
+    <li>Cheaper runs—not every step needs the biggest model.</li>
+    <li>Better fault tolerance—a failed step can be re-planned without throwing away everything.</li>
+    </ul>
+    <p>Example plan for a payment outage:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Planner:   Check code diff  -&gt;  Check logs  -&gt;  Compare  -&gt;  Synthesize
+Executor:  Run github.get_commit_diff(...)
+Executor:  Run splunk.query_logs(...)</code></pre>
+    </div>
+    <p>Replan when observations invalidate assumptions (empty API response, schema changed). For many production workflows, a fixed playbook beats open-ended free planning.</p>
     <h3>Tool use</h3>
-    <p>Call APIs, search, run scripts, query databases, trigger automations. The model proposes; the host validates and executes. Design tools as narrow verbs with typed args (<code>get_orders(start, end)</code>), not a single <code>do_anything(command)</code>. Return structured, truncated results so the context window stays usable.</p>
+    <p>Call APIs, search, run scripts, query databases, trigger automations. The model proposes; the <strong>host</strong> (your application code) validates and executes.</p>
+    <p>Design tools as narrow verbs with typed arguments (<code>get_orders(start, end)</code>), not a single <code>do_anything(command)</code>. Return structured, truncated results so the context window stays usable.</p>
     <h3>Memory</h3>
     <p>Retain what future steps need:</p>
     <ul>
-    <li><strong>Working memory:</strong> current plan, recent tool results (session).</li>
-    <li><strong>Episodic notes:</strong> what happened last Tuesday’s run.</li>
-    <li><strong>Preferences / profiles:</strong> durable user or org settings.</li>
+    <li><strong>Working memory (episodic):</strong> current plan, recent tool results—like RAM for this session.</li>
+    <li><strong>Semantic memory:</strong> durable facts and lessons across sessions—like a hard drive or knowledge base.</li>
     </ul>
     <p>Write memory deliberately. Dumping full transcripts forever creates cost, privacy risk, and confusion.</p>
     <h3>Example workflow</h3>
     <ol>
     <li>User asks for weekly sales report.</li>
     <li>Agent reasons: date range, currency, audience.</li>
-    <li>Plans: fetch -&gt; clean -&gt; summarize -&gt; chart -&gt; post.</li>
+    <li>Plans: fetch → clean → summarize → chart → post.</li>
     <li>Calls BI and spreadsheet tools.</li>
-    <li>Reads memory for preferred format; stores “posted URL” for next week.</li>
+    <li>Reads memory for preferred format; stores &quot;posted URL&quot; for next week.</li>
     </ol>
     <h3>How the four fail together</h3>
     <table>
@@ -160,21 +236,24 @@ print(run(&quot;weekly sales please&quot;))</code></pre>
     <li><strong>Memory bloat.</strong> Entire histories stuffed into every prompt; cost and distraction rise.</li>
     <li><strong>Stale memory.</strong> Old preferences override new instructions.</li>
     <li><strong>Over-planning.</strong> Twenty-step plans for a two-step task; fragility multiplies.</li>
-    <li><strong>Skipping success checks.</strong> Declaring victory because the model said “done.”</li>
+    <li><strong>Skipping success checks.</strong> Declaring victory because the model said &quot;done.&quot;</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>On a whiteboard, draw four boxes — Reason, Plan, Tools, Memory — and assign owners: which parts are LLM-generated vs deterministic code. Most teams should keep tool execution and memory writes in code; let the model propose plans and arguments. Add one eval case per box: wrong-goal detection, bad step order, invalid tool args, and stale preference override. If a box has no test, it will rot.</p>
-    <p>For the sales-report example, freeze the playbook steps in YAML and only ask the model to fill parameters (date range, channel). Free-form planning can wait until the playbook’s pass rate plateaus. That ordering — scripted skeleton first, freer reasoning later — is how you get reliability without giving up future flexibility.</p>
+    <p>On a whiteboard, draw four boxes—Reason, Plan, Tools, Memory—and assign owners: which parts are LLM-generated vs deterministic code. Most teams should keep tool execution and memory writes in code; let the model propose plans and arguments.</p>
+    <p>Add one eval case per box: wrong-goal detection, bad step order, invalid tool args, and stale preference override. If a box has no test, it will rot.</p>
+    <p>For the sales-report example, freeze the playbook steps in YAML and only ask the model to fill parameters (date range, channel). Free-form planning can wait until the playbook&#x27;s pass rate plateaus.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Wire reasoning, planning, tool use, and memory as separate, testable pieces so the agent interprets the goal, sequences work, acts on systems, and remembers only what future steps need.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Reasoning:</strong> turning a request into constraints and success criteria.</li>
     <li><strong>Planning:</strong> ordered, dependent subtasks toward the goal.</li>
+    <li><strong>Planner:</strong> part that breaks a complex task into steps.</li>
+    <li><strong>Executor:</strong> part that performs one planned step safely.</li>
     <li><strong>Tool use:</strong> host-executed actions proposed by the model.</li>
-    <li><strong>Working memory:</strong> short-lived state for the current run.</li>
-    <li><strong>Long-term memory:</strong> durable preferences or facts across sessions.</li>
-    <li><strong>Playbook / DAG:</strong> fixed workflow skeleton the model fills rather than invents.</li>
+    <li><strong>Episodic memory:</strong> short-term thread state for the current interaction.</li>
+    <li><strong>Semantic memory:</strong> long-term stored facts across sessions.</li>
+    <li><strong>Playbook / DAG (directed acyclic graph):</strong> fixed workflow skeleton the model fills rather than invents.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

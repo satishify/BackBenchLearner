@@ -38,33 +38,85 @@
 
     <p>When a RAG answer is wrong, the bug might be chunking, hybrid weights, reranking, prompting, or the model ignoring perfect evidence. <strong>Evaluation</strong> splits the pipeline so you fix the guilty stage. Without metrics, teams endlessly tweak prompts while the retriever never saw the right document.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Grade the librarian and the writer apart. <strong>Retrieval metrics</strong> ask: was the needed chunk in the top-k? <strong>Generation metrics</strong> ask: given those chunks (or ideal chunks), was the answer faithful and complete? End-to-end scores matter for releases, but stage metrics tell you where to invest engineering time.</p>
+    <p>Grade the <strong>librarian</strong> (retrieval) and the <strong>writer</strong> (generation) apart.</p>
+    <table>
+      <thead><tr>
+        <th>Stage</th>
+        <th>Plain-English question</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Retrieval metrics</strong></td>
+          <td>Was the needed chunk in the top-k?</td>
+        </tr>
+        <tr>
+          <td><strong>Generation metrics</strong></td>
+          <td>Given those chunks, was the answer faithful and complete?</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>End-to-end scores matter for releases; stage metrics tell you where to invest time.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
-  Q[Labeled questions] --> R[Retrieval metrics: recall@k, MRR]
-  Q --> G[Generation metrics: faithfulness, answer relevance]
+  Q[Labeled questions] --> R[Retrieval metrics]
+  Q --> G[Generation metrics]
   R --> D[Diagnose stage]
   G --> D
   D --> F[Fix chunking / hybrid / prompt / model]
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Offline dataset.</strong> Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (“what is our policy on teleportation?” -&gt; should refuse).</p>
-    <p><strong>Retrieval metrics.</strong></p>
-    <ul>
-    <li><strong>Recall@k:</strong> fraction of questions where at least one gold chunk appears in top-k.</li>
-    <li><strong>MRR / nDCG:</strong> care about rank position, not only presence.</li>
-    <li><strong>Context precision/recall</strong> (RAGAS-style): estimated relevance of packed context.</li>
-    </ul>
-    <p><strong>Generation metrics.</strong></p>
-    <ul>
-    <li><strong>Faithfulness / groundedness:</strong> claims supported by context (LLM-judge or NLI-style).</li>
-    <li><strong>Answer relevance:</strong> addresses the question asked.</li>
-    <li><strong>Exact / token F1</strong> against references when answers are short and stable.</li>
-    <li><strong>Citation accuracy:</strong> cited IDs actually contain the claim.</li>
-    </ul>
-    <p><strong>Classic failure modes (debug map).</strong></p>
+    <h3>Offline dataset</h3>
+    <p>Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (&quot;teleportation policy?&quot; → should refuse).</p>
+    <h3>Retrieval metrics</h3>
+    <table>
+      <thead><tr>
+        <th>Metric</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Recall@k</strong></td>
+          <td>Fraction of questions where a gold chunk appears in top-k</td>
+        </tr>
+        <tr>
+          <td><strong>MRR / nDCG</strong></td>
+          <td>Care about rank position, not only presence</td>
+        </tr>
+        <tr>
+          <td><strong>Context precision</strong> (RAGAS)</td>
+          <td>How much retrieved context was actually useful</td>
+        </tr>
+        <tr>
+          <td><strong>Context recall</strong> (RAGAS)</td>
+          <td>Did we fetch enough needed evidence</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>RAGAS</strong> (Retrieval-Augmented Generation Assessment Suite) is an open-source framework for these scores.</p>
+    <h3>Generation metrics</h3>
+    <table>
+      <thead><tr>
+        <th>Metric</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Faithfulness / groundedness</strong></td>
+          <td>Claims supported by context</td>
+        </tr>
+        <tr>
+          <td><strong>Answer relevancy</strong></td>
+          <td>Addresses the question asked</td>
+        </tr>
+        <tr>
+          <td><strong>Citation accuracy</strong></td>
+          <td>Cited IDs actually contain the claim</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Classic failure modes</h3>
     <table>
       <thead><tr>
         <th>Symptom</th>
@@ -81,7 +133,7 @@ flowchart TB
         </tr>
         <tr>
           <td>In prompt, answer invents</td>
-          <td>Prompt, temperature, or weak model adherence</td>
+          <td>Prompt, temperature, model adherence</td>
         </tr>
         <tr>
           <td>Mixes two policies</td>
@@ -97,33 +149,43 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <p><strong>Online signals.</strong> Thumbs-down, “wrong source,” escalation to humans — route into the golden set weekly.</p>
+    <h3>Retrieval vs context vs generation failures</h3>
+    <table>
+      <thead><tr>
+        <th>Category</th>
+        <th>Examples</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Retrieval</strong></td>
+          <td>Wrong chunk; incomplete multi-doc fetch; stale knowledge base</td>
+        </tr>
+        <tr>
+          <td><strong>Context</strong></td>
+          <td>Lost in the middle; too many chunks; irrelevant noise</td>
+        </tr>
+        <tr>
+          <td><strong>Generation</strong></td>
+          <td>Hallucination despite retrieval; knowledge conflict; wrong citation</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="in-code">In code</h2>
-    <p>Compute recall@k and a toy faithfulness check (answer tokens subset of context) on a mini labeled set.</p>
+    <p>Toy recall@k and faithfulness check.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
 
 @dataclass
 class Example:
-    q: str
     gold_ids: set[str]
-    retrieved_ids: list[str]  # ranked
+    retrieved_ids: list[str]
     context: str
     answer: str
 
-examples = [
-    Example(&quot;casual leaves?&quot;, {&quot;hr_1&quot;}, [&quot;hr_1&quot;, &quot;eng_1&quot;],
-            &quot;Employees receive 12 casual leaves per year.&quot;,
-            &quot;You get 12 casual leaves per year.&quot;),
-    Example(&quot;teleportation policy?&quot;, {&quot;none&quot;}, [&quot;eng_1&quot;, &quot;hr_2&quot;],
-            &quot;Services must expose /healthz.&quot;,
-            &quot;Not in sources.&quot;),
-]
-
 def recall_at_k(ex: Example, k: int) -&gt; float:
     if ex.gold_ids == {&quot;none&quot;}:
-        return 1.0  # no gold doc expected
+        return 1.0
     top = set(ex.retrieved_ids[:k])
     return 1.0 if top &amp; ex.gold_ids else 0.0
 
@@ -132,40 +194,29 @@ def toy_faithfulness(ex: Example) -&gt; float:
         return 1.0
     ctx = set(ex.context.lower().split())
     ans = [t for t in ex.answer.lower().split() if t.isalnum()]
-    if not ans:
-        return 0.0
-    return sum(t in ctx for t in ans) / len(ans)
-
-rec = sum(recall_at_k(e, 2) for e in examples) / len(examples)
-faith = sum(toy_faithfulness(e) for e in examples) / len(examples)
-print(f&quot;recall@2={rec:.2f} toy_faithfulness={faith:.2f}&quot;)</code></pre>
+    return sum(t in ctx for t in ans) / len(ans) if ans else 0.0</code></pre>
     </div>
-    <p>Replace the toy faithfulness scorer with a calibrated judge or entailment model for production.</p>
+    <p>Replace toy faithfulness with a calibrated judge or entailment model in production.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Only end-to-end vibes.</strong> You never learn that recall@50 is 40%.</li>
-    <li><strong>Gold labels on wrong chunk IDs.</strong> Metrics lie; curation matters.</li>
-    <li><strong>Judge circularity.</strong> Same model family judges itself generously; spot-check with humans.</li>
-    <li><strong>Optimizing k until metrics pass.</strong> Huge k inflates recall and destroys generation; report generation quality at the k you actually ship.</li>
-    <li><strong>Ignoring empty-retrieval cases.</strong> Systems must abstain cleanly when nothing is relevant.</li>
+    <li><strong>Only end-to-end vibes</strong> — You never learn that recall@50 is 40%.</li>
+    <li><strong>Gold labels on wrong chunk IDs</strong> — Metrics lie.</li>
+    <li><strong>Judge circularity</strong> — Same model family judges itself generously.</li>
+    <li><strong>Optimizing k until metrics pass</strong> — Huge k inflates recall and destroys generation.</li>
+    <li><strong>Ignoring empty-retrieval cases</strong> — Systems must abstain cleanly when nothing is relevant.</li>
     </ul>
-    <h2 id="building-an-eval-practice-that-sticks">Building an eval practice that sticks</h2>
-    <p><strong>Ownership.</strong> Assign a DRI for the golden set. Without ownership, suites rot and everyone ignores failing dashboards. Pair eng with a domain expert who can adjudicate controversial gold labels.</p>
-    <p><strong>Synthetic + real.</strong> LLM-generated questions help coverage early, but always include real user phrasings — typos, code-switches, and terse fragments. Synthetic-only suites overestimate readiness.</p>
-    <p><strong>Regression gates.</strong> Block deploys on: recall@k drop beyond epsilon, faithfulness drop beyond epsilon, or any failed mandatory abstention case. Allow UX wording changes to ship with softer gates if retrieval metrics hold.</p>
-    <p><strong>Incident learning.</strong> After each wrong-answer incident, add one example that would have caught it, link the PR that fixed the stage, and note which metric moved. That feedback loop is how RAG systems mature past demo quality.</p>
-    <h2 id="metric-pitfalls">Metric pitfalls</h2>
-    <p>Recall@k can look perfect while every packed chunk is only tangentially related — hence context precision. Faithfulness can look perfect on extractive answers that ignore the question — hence answer relevance. Report a small <strong>scorecard</strong>, not a single vanity number. When stakeholders ask “is RAG good now?”, answer with the scorecard and the top failing slices (<code>ids</code>, <code>multi-hop</code>, <code>multilingual</code>), not a gut feel.</p>
-    <h2 id="slice-level-reporting">Slice-level reporting</h2>
-    <p>Always break metrics down by question type. A system can post 90% average recall while scoring 20% on <code>error_code</code> queries — exactly the tickets your support org cares about. Maintain a living taxonomy of slices in the golden YAML (<code>ids</code>, <code>paraphrase</code>, <code>multi-hop</code>, <code>abstain</code>, <code>acl</code>) and review the worst two slices in every sprint planning meeting.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Report a small scorecard—recall@k, faithfulness, answer relevancy—not a single vanity number.</p>
+    </aside>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Evaluate retrieval and generation separately, map symptoms to stages, and feed production failures back into a labeled suite so RAG improves on purpose.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Recall@k:</strong> whether gold evidence appears in the top k results.</li>
-    <li><strong>MRR / nDCG:</strong> rank-aware retrieval quality metrics.</li>
-    <li><strong>Faithfulness / groundedness:</strong> answer claims supported by context.</li>
-    <li><strong>Context precision:</strong> how much packed context is actually relevant.</li>
+    <li><strong>Faithfulness:</strong> answer claims supported by retrieved context.</li>
+    <li><strong>RAGAS:</strong> open-source RAG evaluation framework.</li>
+    <li><strong>Context precision / recall:</strong> quality and completeness of retrieved context.</li>
     <li><strong>Failure-mode map:</strong> linking symptoms to pipeline stages.</li>
     <li><strong>Offline vs online eval:</strong> labeled suites versus live user feedback.</li>
     </ul>

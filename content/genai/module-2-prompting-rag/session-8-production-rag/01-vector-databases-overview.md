@@ -1,13 +1,18 @@
 ---
-title: "Vector Databases"
-description: "Store embeddings, run approximate nearest-neighbor search, filter with metadata, and operate indexes for RAG at scale."
+title: "Vector Databases for Production RAG"
+description: "Choose between search libraries and vector databases, pick the right index, and avoid silent configuration bugs."
 ---
 
-A **vector database** (or vector index inside a general store) persists embeddings and serves nearest-neighbor queries fast enough for interactive RAG. At ten documents, a numpy scan is fine. At ten million chunks, you need indexing, filtering, replication, and operational discipline — that is the product category vector DBs occupy.
+At production scale, you need more than a numpy loop. This lesson covers **FAISS** (Facebook AI Similarity Search—a fast vector search library) vs **ChromaDB** (a database that wraps vector search with text and metadata), how to pick an index, and the **bi-encoder / cross-encoder / ColBERT** scoring options that sit in front of the index.
 
 ## Intuition
 
-Think of a library that shelves books not by title alone but by “topic coordinates.” When a question arrives, the librarian walks to the right region of the shelves instead of reading every spine. Exact search would compare the query to every vector (`O(n)`). Approximate indexes (HNSW, IVF, product quantization) jump through a graph or coarse clusters to find *mostly* the best neighbors in sublinear time. You trade a little recall for orders-of-magnitude speed.
+| Tool | Plain-English idea | Good for |
+| --- | --- | --- |
+| **FAISS** | The engine that finds nearest vectors—you manage text and metadata yourself | Huge scale, full control |
+| **ChromaDB** | Stores vectors, chunk text, and metadata together | Prototypes and quick RAG apps |
+
+**Classic bug:** FAISS returns a vector ID, but if your ID-to-text map is lost, the LLM gets numbers instead of useful documents.
 
 ```mermaid
 flowchart TB
@@ -20,100 +25,84 @@ flowchart TB
 
 ## How it works
 
-**Core API.**
+### FAISS vs ChromaDB
 
-- **Upsert:** store `id -> vector`, plus metadata (`source`, `tenant`, `updated_at`).
-- **Query:** vector + `top_k` + optional metadata filter (`tenant = acme AND lang = en`).
-- **Delete / tombstone:** remove outdated chunks when docs change.
+| Tool | What it is | Good for |
+| --- | --- | --- |
+| **FAISS** | Fast similarity-search library | Millions+ vectors, custom indexes |
+| **ChromaDB** | Database wrapping vector search | Persistence, metadata, prototypes |
 
-**Indexes (conceptual).**
+### Which FAISS index to use?
 
-- **Flat / brute force:** exact, great for small corpora and recall baselines.
-- **HNSW:** graph of near neighbors; strong recall/latency trade-off; memory hungry.
-- **IVF / clustering:** probe a few clusters; good at scale with tuning.
-- **PQ / compression:** store coarse codes to shrink RAM at some quality cost.
+| Index | Plain-English idea | When |
+| --- | --- | --- |
+| **IndexFlatIP / IndexFlatL2** | Exact brute-force search | Up to ~1M vectors or need full recall |
+| **IVFFlat** | Clustered search; skip most vectors | Millions of vectors; small recall loss OK |
+| **IVF + PQ** | IVF prunes; PQ compresses | Massive corpus; tight memory |
+| **HNSW** | Graph-based ANN | Strong recall/speed on CPU |
 
-**Metadata filtering.** Essential for multi-tenant SaaS and ACL. Filter-then-search vs search-then-filter changes performance; engines differ. Always enforce authorization in your app layer too — the index filter is necessary but not sufficient if misconfigured.
+**Decision rule:** if you can afford exact search, use it. If not, move to IVF, HNSW, or IVF+PQ based on RAM, recall needs, and tuning appetite.
 
-**Hybrid storage.** Many teams keep keywords in Elasticsearch/OpenSearch and vectors in a specialist (or use one engine that does both). Postgres + `pgvector` is a popular starting point when operational simplicity beats peak ANN performance.
+### Bi-encoder, cross-encoder, and ColBERT
 
-**Common systems.** Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension x cardinality.
+Different ways to score query–document relevance—balancing speed, accuracy, and storage.
 
-**Operations.** Version embedding models: a model change requires **full re-embed**. Track index build time, recall@k vs a flat baseline, p95 query latency, and staleness of upserts. Back up ids and metadata; vectors can be regenerated if you keep source text.
+| Model | How it scores | Speed | Accuracy |
+| --- | --- | --- | --- |
+| **Bi-encoder** | Encode query and doc separately; dot product | Fast | Good |
+| **Cross-encoder** | Encode query and doc together | Slow | Best |
+| **ColBERT** | Token-level late interaction with MaxSim | Middle | Near cross-encoder |
+
+**Two-stage pattern (industry standard):**
+
+```
+1. Retrieve candidates cheaply with bi-encoder + ANN index
+2. Rerank top candidates with cross-encoder
+3. Pass best chunks to the generator
+```
+
+### Common silent failures
+
+| Bug | Plain-English idea |
+| --- | --- |
+| **Empty chunks** | Scanned PDF has no text layer—nothing to embed without OCR |
+| **Prefix bug** | Asymmetric models need `query:` and `passage:` prefixes |
+| **Metric bug** | Wrong distance metric (L2 vs cosine) quietly hurts recall |
+
+:::key
+Many retrieval bugs are configuration bugs, not model bugs. Read the model card before blaming the architecture.
+:::
 
 ## In code
 
-Simulate a tiny in-memory vector store with cosine search and metadata filters — the mental model behind every hosted API.
+Two-stage retrieve-then-rerank sketch.
 
 ```python
-import numpy as np
-from dataclasses import dataclass
+# Stage 1: fast bi-encoder retrieval (vectors precomputed)
+scores = bi_encoder.dot(query_vec, doc_vecs)
+topk_ids = retrieve_top_k(scores, k=200)
 
-@dataclass
-class Row:
-    id: str
-    vector: np.ndarray
-    meta: dict
-
-class TinyVectorDB:
-    def __init__(self):
-        self.rows: list[Row] = []
-
-    def upsert(self, id: str, vector: np.ndarray, meta: dict):
-        v = vector / (np.linalg.norm(vector) + 1e-9)
-        self.rows = [r for r in self.rows if r.id != id]
-        self.rows.append(Row(id, v, meta))
-
-    def query(self, vector: np.ndarray, k: int = 3, where: dict | None = None):
-        q = vector / (np.linalg.norm(vector) + 1e-9)
-        scored = []
-        for r in self.rows:
-            if where and any(r.meta.get(key) != val for key, val in where.items()):
-                continue
-            scored.append((float(np.dot(q, r.vector)), r))
-        scored.sort(key=lambda x: x[0], reverse=True)
-        return scored[:k]
-
-db = TinyVectorDB()
-rng = np.random.default_rng(2)
-db.upsert("a", rng.normal(size=4), {"tenant": "acme", "topic": "hr"})
-db.upsert("b", rng.normal(size=4), {"tenant": "acme", "topic": "eng"})
-db.upsert("c", rng.normal(size=4), {"tenant": "other", "topic": "hr"})
-
-hits = db.query(rng.normal(size=4), k=2, where={"tenant": "acme"})
-print([(score, r.id, r.meta["topic"]) for score, r in hits])
+# Stage 2: precise cross-encoder rerank
+reranked = cross_encoder.score(query, topk_ids)
+final_context = select_top(reranked, n=10)
 ```
-
-Production APIs mirror `upsert` / `query`; the difference is ANN structures, durability, and distributed filters.
 
 ## What goes wrong
 
-- **Silent model skew.** Half the corpus embedded with `text-emb-3`, new docs with another model — scores become meaningless. Pin and migrate atomically.
-- **Filter bugs.** Forgetting `tenant` in the query leaks another customer’s chunks into the prompt.
-- **Over-sharding early.** Premature multi-index complexity; start simple, measure recall and latency, then specialize.
-- **Unbounded k.** Huge `top_k` into the LLM blows tokens; the DB is happy, your bill is not. Re-rank down.
-- **Treating the DB as source of truth for text.** Store canonical documents elsewhere; the vector store is an index, not your CMS.
-- **Ignoring delete/re-index.** Updated PDFs leave ghost chunks that contradict new policy.
-
-## Operating indexes without drama
-
-**Capacity planning.** Memory roughly scales with `num_vectors * dimensions * bytes_per_dim` plus graph overhead for HNSW. Quantization reduces RAM at a recall cost — measure before celebrating the savings. Disk-based indexes help huge corpora but add latency variance.
-
-**Blue/green re-embeds.** When switching embedding models, build a parallel collection, backfill, flip traffic on recall/latency gates, then delete the old collection. Half-migrated corpora are a classic outage class: queries and docs in different geometries.
-
-**SLOs worth having.** p95 query latency, upsert lag (time from doc publish to searchable), and recall@k versus a flat sample. Alert on upsert lag; stale policy is a correctness bug, not a cosmetic delay.
-
-**Local vs managed.** `pgvector` or a lightweight engine is perfect for learning and early products. Managed specialist stores buy ops time when you need multi-region, strong hybrid, or billion-scale ANN. Migrate when metrics — not Twitter threads — say you must.
+- **Wrong index for corpus size** — Exact search on 50M vectors times out; IVF with nprobe=1 misses neighbors.
+- **Lost ID-to-text map** — ANN returns IDs; without metadata you cannot show sources.
+- **Cross-encoder on full corpus** — Latency explodes; use only on top-N.
+- **Half-migrated embedding model** — Old and new vectors in one index; scores meaningless.
 
 ## One-line summary
 
-Vector databases index embeddings for fast approximate similarity search with metadata filters so RAG can retrieve the right chunks at interactive latency.
+Pick FAISS or ChromaDB for your scale, match the index to recall and RAM needs, and use bi-encoder retrieval plus cross-encoder reranking in production.
 
 ## Key terms
 
-- **Vector database / index:** store optimized for nearest-neighbor lookup over embeddings.
-- **ANN (HNSW, IVF, PQ):** approximate indexes trading recall for speed/memory.
-- **Upsert:** insert or update a vector and its metadata.
-- **Metadata filter:** constraining search by fields like tenant, date, or language.
-- **Recall@k:** fraction of true neighbors found in the top k under approximation.
-- **Re-embedding:** recomputing vectors after an embedding-model change.
+- **FAISS:** library for fast similarity search over dense vectors.
+- **ChromaDB:** vector database storing text, metadata, and vectors together.
+- **Bi-encoder:** encodes query and document separately for fast search.
+- **Cross-encoder:** scores query and document jointly—accurate but slow.
+- **ColBERT:** late-interaction model with token-level embeddings and MaxSim scoring.
+- **IndexFlat:** exact brute-force FAISS search.

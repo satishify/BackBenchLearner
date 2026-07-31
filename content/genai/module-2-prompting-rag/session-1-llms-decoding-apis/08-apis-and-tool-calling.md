@@ -3,32 +3,35 @@ title: "LLM APIs and Tool Calling"
 description: "Use chat APIs, message roles, and tool/function calling so models can act on real data instead of inventing it."
 ---
 
-Chat completions alone make fluent text. Production systems need **side effects and facts**: prices, tickets, calendars, SQL. Tool calling is the bridge — the model proposes a typed function call; your server executes it; the model reads the result and answers the user. Skip that loop and you are asking the weights to pretend they are your database.
+Chat completions alone make fluent text. Production systems need **side effects and facts**: prices, tickets, calendars, SQL. **Tool calling** is the bridge — the model proposes a typed function call; your server executes it; the model reads the result and answers the user. Skip that loop and you are asking the weights to pretend they are your database.
 
 ## Intuition
 
-Treat the LLM as a **router with language skills**, not as a system of record:
+**What is tool calling?** The model does not magically execute your Python function. It emits a structured call; your application executes the function; then you pass the result back to the model.
+
+**Why does it matter?** Treat the LLM as a **router with language skills**, not as a system of record:
 
 1. User asks in natural language.
 2. Model chooses a tool (or none) and fills arguments from the schema.
 3. Your app validates args, runs the tool, returns a tool result message.
 4. Model drafts the final answer grounded in that result.
 
-If step 3 is missing, “What’s Alice’s balance?” becomes creative writing.
-
 :::key
-The model suggests; your code decides. Never execute tool calls without authz, validation, and allowlists.
+The model suggests; your code decides. Never execute tool calls without authorization, validation, and allowlists.
 :::
 
 ## How it works
 
-### What model APIs typically expose
+### Roles and instruction priority
 
-- Chat completions with role-structured messages
-- Model tiers trading cost, latency, and quality
-- Optional modalities (vision, audio) and embeddings endpoints
-- Token-based billing and rate limits
-- Tool / function schemas attached to a request
+| Role | Plain-English meaning | Example |
+| --- | --- | --- |
+| developer/system | Application-level behavior, business rules, safety boundaries | You are a refund assistant. Never issue refunds above Rs. 5000 without approval. |
+| user | The end user's task or question | Refund order 123 because it arrived damaged. |
+| assistant | Previous model responses | I can help. Please share the order ID. |
+| tool | External result returned after a tool was executed | Order 123 status: delivered; amount: Rs. 3400. |
+
+Modern OpenAI-style APIs use a messages array. Newer documentation emphasizes separating developer instructions from user-specific content. The stable lesson is **role separation**, not a particular endpoint name.
 
 ### Tool-calling loop
 
@@ -69,54 +72,62 @@ Tools should be **narrow, typed, and boring**:
 }
 ```
 
-Descriptions are part of the prompt. Vague tool names (“do_stuff”) cause wrong calls. Overlapping tools cause thrash — prefer one clear verb per capability.
+Descriptions are part of the prompt. Vague tool names ("do_stuff") cause wrong calls. Overlapping tools cause thrash — prefer one clear verb per capability.
 
 ### Why this reduces hallucination
 
-The model still might invent an argument, but the **payload** of truth comes from your tool. Grounded answers cite returned fields; empty tool results should produce an honest “not found,” not a fabricated row.
+The model still might invent an argument, but the **payload** of truth comes from your tool. Grounded answers cite returned fields; empty tool results should produce an honest "not found," not a fabricated row.
 
-### API practicalities GenAI engineers hit daily
+### Tool calling safety checklist
 
-- **Idempotency** — retries after timeouts can double-charge if your tool is not idempotent; use keys for writes.
-- **Timeouts** — tool latency sits inside the user-visible request; set budgets and degrade gracefully (“weather unavailable”).
-- **Model routing** — cheap model for classification, stronger model for tool planning; do not pay frontier rates for every “yes/no.”
-- **Observability** — log tool name, latency, arg hashes (not secrets), and whether the final answer used the result.
-- **Parallel tool calls** — some APIs return several calls at once; execute independently when safe, serialize when there are dependencies.
+- Validate all tool arguments before execution.
+- Use allowlists for tools and APIs; never let the model construct arbitrary shell commands or SQL unchecked.
+- Separate read-only tools from action tools such as purchase, refund, email, delete, or update.
+- Require confirmation for irreversible or high-value actions.
+- Log tool calls, arguments, results, and model versions for debugging.
+- Treat retrieved web pages, PDFs, emails, and tool outputs as untrusted data, not instructions.
 
-### Parallel vs sequential tools
+### Building a reliable LLM application
 
-If the user asks for “weather in two cities,” two independent `get_weather` calls can run together. If the second tool needs an ID from the first, force a sequence and feed intermediate results back through the model or through your orchestrator. Blind parallelism on dependent steps causes empty IDs and wasted hops.
+| Problem | Naive approach | Better approach |
+| --- | --- | --- |
+| Changing facts | Ask the model from memory | Use retrieval or tools, then answer only from supplied evidence |
+| JSON parsing failures | Tell it "return JSON" | Use structured outputs or schema validation plus retry/repair |
+| Long documents | Paste everything | Chunk, retrieve relevant sections, summarize with citations |
+| Hallucinated actions | Let the model decide silently | Expose tool plans and require confirmation for risky actions |
+| Cost explosion | Send full history every turn | Summarize or compact history, cache stable context, cap max tokens |
 
 ## In code
 
-Illustrative client (requests-style, no real key):
+Illustrative OpenAI-style minimal text call:
 
 ```python
-# Pseudocode — teaches the shape; do not commit secrets
-payload = {
-    "model": "chat-mid",
-    "messages": [
-        {"role": "system", "content": "Use tools for facts. Do not invent IDs."},
-        {"role": "user", "content": "Weather in Bengaluru?"},
+from openai import OpenAI
+
+client = OpenAI()
+response = client.responses.create(
+    model="gpt-4o-mini",
+    instructions="Explain concepts clearly for a beginner.",
+    input="Explain RAG in one sentence.",
+)
+print(response.output_text)
+```
+
+Illustrative Anthropic-style minimal message call:
+
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+message = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=256,
+    system="Explain concepts clearly for a beginner.",
+    messages=[
+        {"role": "user", "content": "Explain RAG in one sentence."}
     ],
-    "tools": [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_weather",
-                "description": "Current weather for a city.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "location": {"type": "string"},
-                    },
-                    "required": ["location"],
-                },
-            },
-        }
-    ],
-}
-# resp = requests.post(URL, json=payload, headers={"Authorization": f"Bearer {KEY}"})
+)
+print(message.content[0].text)
 ```
 
 Local dispatcher with allowlist + validation:
@@ -150,20 +161,7 @@ def run_tool_call(name: str, args_json: str) -> dict:
 print(run_tool_call("get_weather", '{"location": "Bengaluru"}'))
 ```
 
-Append tool results as structured messages (shape varies by vendor; concept is stable):
-
-```python
-def after_tool(messages: list, call_id: str, result: dict) -> list:
-    messages = list(messages)
-    messages.append(
-        {
-            "role": "tool",
-            "tool_call_id": call_id,
-            "content": json.dumps(result),
-        }
-    )
-    return messages
-```
+Why use a tool for arithmetic? The model can often do small math directly, but a tool makes the result deterministic, auditable, and reusable. This matters more for databases, payment actions, calendars, search, and private enterprise APIs.
 
 Hop limit:
 
@@ -177,12 +175,11 @@ def agent_loop(max_hops: int = 3):
 
 ## What goes wrong
 
-- **Blind execution** — model asks `transfer_funds`; app runs it without authz.
+- **Blind execution** — model asks `transfer_funds`; app runs it without authorization.
 - **Giant kitchen-sink tools** — one `run_sql(query)` with no guardrails is a breach waiting for a prompt.
 - **Schema drift** — renamed parameters; model still emits old keys; silent failures.
-- **Leaking tool dumps into the UI** — raw JSON errors shown as “assistant personality.”
 - **Infinite tool loops** — no hop cap; latency and bill explode.
-- **Using tools as optional decoration** — model answers from memory even when a tool exists; force tool use for high-stakes fact classes when your API supports it, or check that facts came from results.
+- **Using tools as optional decoration** — model answers from memory even when a tool exists.
 
 :::warn
 Tool arguments are untrusted. Validate types, ranges, and tenancy (user can only access their rows) in application code before any side effect.

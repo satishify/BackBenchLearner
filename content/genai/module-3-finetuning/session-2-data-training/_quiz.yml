@@ -1,82 +1,109 @@
 title: "3.2 Data Prep & Training Mechanisms"
 questions:
-  - q: "A high-quality SFT JSONL row should minimally include..."
+  - q: "A good SFT JSONL row should include..."
     options:
-      - "Only a free-form essay with no task boundary"
-      - "A clear instruction/input and the target assistant response in a consistent chat/schema format"
-      - "Raw HTML of the whole website"
-      - "Unlabeled embeddings"
+      - "Only a free-form essay with no clear task"
+      - "A clear instruction or input plus the target assistant reply in a consistent chat format"
+      - "Raw HTML from a whole website"
+      - "Unlabeled embedding vectors"
     answer: 1
-    why: "Instruction format consistency lets the model learn the mapping you will use at inference."
+    why: "Consistent instruction format teaches the model the same pattern you will use at inference time."
 
-  - q: "Label noise at 15% on a 2-class intent set most likely causes..."
+  - q: "Noisy or wrong labels on a small intent dataset most likely cause..."
     options:
-      - "Perfect calibration automatically"
-      - "Ceiling on accuracy and confusing gradients—clean labels beat clever optimizers"
-      - "Faster convergence to the global optimum"
-      - "Zero need for a validation split"
+      - "Automatic perfect calibration"
+      - "A ceiling on accuracy — clean labels usually beat clever optimizers"
+      - "Faster convergence every time"
+      - "No need for a validation split"
     answer: 1
-    why: "Noisy supervision caps achievable quality; data cleaning usually outperforms hyperparameter heroics."
+    why: "Bad supervision caps what the model can learn; fix the data before chasing hyperparameters."
 
   - q: "Catastrophic forgetting after domain SFT shows up as..."
     options:
-      - "Better scores on unrelated general instruction anchors"
-      - "Regressions on general/anchor tasks while the niche task improves"
-      - "Lower training loss on all tasks forever"
-      - "Tokenizer shrink"
+      - "Better scores on general instruction anchors"
+      - "The niche task improves but general or anchor tasks get worse"
+      - "Training loss stays low on every task forever"
+      - "The tokenizer shrinks"
     answer: 1
-    why: "Heavy updates can erase pretrained skills; track anchors and mitigate with replay/PEFT/lower LR."
+    why: "Heavy updates can erase older skills; track anchors and use replay, PEFT, or a lower learning rate."
 
-  - q: "Why capture a prompt-only baseline before any LoRA/SFT sprint?"
+  - q: "Why capture a prompt-only baseline before a LoRA or SFT sprint?"
     options:
-      - "Baselines are illegal in science"
-      - "Without it you cannot tell whether training helped versus better prompting/RAG"
-      - "Training always wins by definition"
-      - "GPUs require a baseline file to power on"
+      - "Baselines are not allowed in experiments"
+      - "Without one you cannot tell if training helped or a better prompt would have"
+      - "Training always beats prompting by default"
+      - "GPUs need a baseline file to start"
     answer: 1
-    why: "The lab workflow freezes metrics first; adaptation must beat a measured non-trained control."
+    why: "The lab freezes metrics first; adaptation must beat a measured control that did not update weights."
 
-  - q: "During a LoRA sprint, trainable parameters report ~100%. What should you do?"
+  - q: "During a LoRA sprint, trainable parameters report about 100%. What should you do?"
     options:
       - "Celebrate maximum PEFT efficiency"
-      - "Stop—PEFT wrapping likely failed and you may be full-tuning by accident"
-      - "Double the learning rate immediately"
+      - "Stop — the adapter setup likely failed and you may be full-tuning by accident"
+      - "Double the learning rate right away"
       - "Merge adapters into the tokenizer"
     answer: 1
-    why: "Healthy LoRA trains a small percent of weights; ~100% means the freeze/adapter setup is wrong."
+    why: "Healthy LoRA trains a small fraction of weights; near 100% means the freeze or adapter wrap is wrong."
 
-  - q: "You train 5 epochs; train loss falls but holdout task score peaks at epoch 1 then worsens. Interpretation?"
+  - q: "Train loss keeps falling but holdout task score peaks at epoch 1 then gets worse. That suggests..."
     options:
-      - "Keep going until train loss is zero"
-      - "Overfitting—early-stop near the holdout peak and/or reduce epochs/LR"
-      - "Underfitting that needs 50 more epochs"
-      - "Proof labels were perfect"
+      - "Keep training until train loss is zero"
+      - "Overfitting — early-stop near the holdout peak and/or use fewer epochs or a lower LR"
+      - "Underfitting that needs many more epochs"
+      - "Proof the labels were perfect"
     answer: 1
-    why: "Diverging train vs holdout signals memorization; use early stopping and cleaner data."
+    why: "When train improves but holdout worsens, the model is memorizing; stop earlier or add cleaner data."
 
-  - q: "Eval writeups for a fine-tune should compare..."
+  - q: "A fine-tune writeup should compare..."
     options:
-      - "Only qualitative vibes from one friend"
-      - "Baseline vs adapted model on task metrics plus anchor/regression suites"
+      - "Only one friend's informal opinion"
+      - "Baseline vs adapted model on task metrics plus anchor or regression checks"
       - "Parameter count alone"
       - "Git commit message length"
     answer: 1
-    why: "The lab asks for measured deltas on the target task and checks that general behavior did not collapse."
+    why: "The lab asks for measured deltas on the target task and proof that general behavior did not collapse."
 
-  - q: "Mixing a small replay of general instruct data during domain SFT mainly fights..."
+  - q: "Mixing a small replay of general instruct data during domain SFT mainly helps prevent..."
     options:
       - "GPU underutilization only"
       - "Catastrophic forgetting of broad skills"
       - "The need for any domain data"
       - "Tokenizer Unicode bugs"
     answer: 1
-    why: "Replay keeps some gradient mass on general behaviors while specializing."
+    why: "Replay keeps some gradient signal on general behaviors while the model specializes."
 
-  - q: "A Module 3 review checklist item you should not skip before claiming success?"
+  - q: "Fixed-length token windows in training mainly exist so that..."
     options:
-      - "Confirm lever choice (prompt/RAG/FT) matches the failure mode"
-      - "Delete all failed runs from notes"
-      - "Ship without reading holdout errors"
-      - "Skip schema validation because demos looked fine"
+      - "Humans can read the text more easily"
+      - "The GPU can batch and process tokenized data efficiently"
+      - "The model learns from only one document at a time"
+      - "Tokenization is no longer needed"
+    answer: 1
+    why: "Packed token windows let the GPU process many examples in parallel after tokenization."
+
+  - q: "Which step most directly stops one very large gradient from blowing up an update?"
+    options:
+      - "Training for more epochs"
+      - "Gradient clipping"
+      - "Removing warmup from the schedule"
+      - "Using a longer context length"
+    answer: 1
+    why: "Gradient clipping rescales oversized gradients while keeping their direction."
+
+  - q: "Micro-batch 2, gradient accumulation 8, and 4 GPUs give an effective batch size of..."
+    options:
+      - "14"
+      - "32"
+      - "64"
+      - "128"
+    answer: 2
+    why: "Effective batch = 2 x 8 x 4 = 64 samples per optimizer update."
+
+  - q: "Before claiming Module 3 complete, you should not skip..."
+    options:
+      - "Checking that your lever choice (prompt, RAG, or fine-tune) matches the failure mode"
+      - "Deleting all failed runs from your notes"
+      - "Shipping without reading holdout errors"
+      - "Schema validation because demos looked fine"
     answer: 0
-    why: "The checklist starts with choosing the right lever and verifying eval discipline—not just running a trainer."
+    why: "The review gate starts with choosing the right lever and honest eval discipline — not just running a trainer."

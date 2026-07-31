@@ -36,9 +36,39 @@
       <h1>Single-Agent vs Multi-Agent Systems</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A <strong>single-agent</strong> system puts one loop in charge of the whole job. A <strong>multi-agent</strong> system splits work across specialized agents that collaborate. Multi-agent is not automatically smarter — it is an organizational choice with real coordination costs.</p>
+    <p><strong>What is this for?</strong> To explain when one agent should own the whole job vs when to split work across a <strong>multi-agent</strong> team.</p>
+    <p><strong>Why does it exist?</strong> One giant agent with dozens of tools gets overloaded. Its context fills up, tool selection gets noisy, and <strong>tool hallucination</strong> (inventing or misusing tool calls) becomes more likely. Specialists are easier to trust than one overworked generalist.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>One skilled generalist can close a ticket: research policy, draft a reply, file the note. That is single-agent. A newsroom-style pipeline — researcher, writer, fact-checker — is multi-agent. The second can be higher quality at scale, but you now own handoffs, shared memory, and “who is stuck?” debugging.</p>
+    <p>One skilled generalist can close a ticket: research policy, draft a reply, file the note. That is <strong>single-agent</strong>.</p>
+    <p>A newsroom-style pipeline—researcher, writer, fact-checker—is <strong>multi-agent</strong>. The second can be higher quality at scale, but you now own handoffs, shared memory, and &quot;who is stuck?&quot; debugging.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>Single-agent</th>
+        <th>Multi-agent</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Who does the work?</strong></td>
+          <td>One loop, all tools</td>
+          <td>Several specialists, each with narrow tools</td>
+        </tr>
+        <tr>
+          <td><strong>Tracing</strong></td>
+          <td>One timeline</td>
+          <td>Must track which agent produced what</td>
+        </tr>
+        <tr>
+          <td><strong>Default?</strong></td>
+          <td>Yes—start here</td>
+          <td>Only when specialization clearly wins</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Multi-agent is not automatically smarter—it is an organizational choice with real coordination costs.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -58,21 +88,45 @@ flowchart LR
     <ul>
     <li>One policy prompt, one tool set (possibly gated), one memory.</li>
     <li>Easier tracing: one timeline of thoughts and calls.</li>
-    <li>Best for moderate workflows: “triage + draft,” “report fetch + summarize.”</li>
+    <li>Best for moderate workflows: &quot;triage + draft,&quot; &quot;report fetch + summarize.&quot;</li>
     <li>Risk: prompt and tool catalog grow into a swamp; the model juggles too many roles.</li>
     </ul>
-    <h3>Multi-agent</h3>
-    <ul>
-    <li>Specialized roles with narrower prompts and tools.</li>
-    <li>Useful pipelines: planner -&gt; researcher -&gt; implementer -&gt; reviewer.</li>
-    <li>Needs <strong>orchestration</strong>: who speaks when, what is passed, how disagreements resolve.</li>
-    <li>Needs <strong>contracts</strong>: typed artifacts between agents (brief, sources, draft, verdict).</li>
-    </ul>
+    <h3>Multi-agent — enterprise specialist roles</h3>
+    <table>
+      <thead><tr>
+        <th>Agent role</th>
+        <th>Plain-English idea</th>
+        <th>Typical tools</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Triage agent</strong></td>
+          <td>Front door that routes the task to the right specialist</td>
+          <td>Classifier, router</td>
+        </tr>
+        <tr>
+          <td><strong>Infrastructure agent</strong></td>
+          <td>Reads live telemetry, logs, cluster signals</td>
+          <td>Splunk, metrics APIs</td>
+        </tr>
+        <tr>
+          <td><strong>Codebase agent</strong></td>
+          <td>Checks commit diffs, pull requests, source code</td>
+          <td>GitHub, git</td>
+        </tr>
+        <tr>
+          <td><strong>Policy &amp; HR agent</strong></td>
+          <td>Looks up runbooks, policy, knowledge base entries</td>
+          <td>RAG over docs</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Each specialist gets a <strong>small, relevant toolset</strong>—not every API in the company.</p>
     <h3>Collaboration patterns</h3>
     <table>
       <thead><tr>
         <th>Pattern</th>
-        <th>Idea</th>
+        <th>Plain-English idea</th>
         <th>Watch-out</th>
       </tr></thead>
       <tbody>
@@ -84,7 +138,7 @@ flowchart LR
         <tr>
           <td>Supervisor</td>
           <td>Boss agent delegates</td>
-          <td>Boss becomes a bottleneck / single point of failure</td>
+          <td>Boss becomes a bottleneck</td>
         </tr>
         <tr>
           <td>Peer debate</td>
@@ -92,12 +146,14 @@ flowchart LR
           <td>Cost explodes; needs a judge and stop rule</td>
         </tr>
         <tr>
-          <td>Router</td>
+          <td>Router / triage</td>
           <td>Classifier picks one specialist</td>
-          <td>Mis-routing causes confident wrong specialist</td>
+          <td>Mis-routing causes confident wrong answers</td>
         </tr>
       </tbody>
     </table>
+    <h3>Hierarchical ReAct (plain English)</h3>
+    <p>At enterprise scale, the <strong>triage agent</strong> becomes a meta-planner. Specialist agents become its &quot;tools.&quot; The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.</p>
     <h3>Decision guide</h3>
     <p>Stay single-agent while:</p>
     <ul>
@@ -114,7 +170,7 @@ flowchart LR
     </ul>
     <p>Measure before splitting: if a single agent plus a deterministic reviewer script hits your bar, skip the second LLM.</p>
     <h2 id="in-code">In code</h2>
-    <p>A supervisor that delegates to two specialists with a shared artifact — still simple enough to debug.</p>
+    <p>A supervisor that delegates to two specialists with a shared artifact—still simple enough to debug.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
@@ -140,7 +196,6 @@ def reviewer(art: Artifact) -&gt; Artifact:
 
 def single_agent(brief: str) -&gt; Artifact:
     art = Artifact(brief=brief)
-    # one brain does all roles sequentially
     return reviewer(writer(researcher(art)))
 
 def multi_pipeline(brief: str) -&gt; Artifact:
@@ -157,28 +212,30 @@ print(multi_pipeline(&quot;weekly support themes&quot;).verdict)</code></pre>
     <p>Frameworks differ in APIs; the invariant is explicit artifacts and stop conditions.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Multi-agent as fashion.</strong> Extra agents without eval gains — only latency and bill.</li>
+    <li><strong>Multi-agent as fashion.</strong> Extra agents without eval gains—only latency and bill.</li>
     <li><strong>Fuzzy handoffs.</strong> Free-text dumps between agents lose requirements.</li>
-    <li><strong>Permission soup.</strong> Every agent gets every tool “for flexibility.”</li>
+    <li><strong>Permission soup.</strong> Every agent gets every tool &quot;for flexibility.&quot;</li>
     <li><strong>Infinite debates.</strong> Agents critique forever without a round limit.</li>
     <li><strong>Opaque orchestration.</strong> No trace of which agent caused a bad tool call.</li>
     <li><strong>Split too early.</strong> You never finished a working single-agent path.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Run an honest A/B on your golden set: single-agent baseline vs a two-role pipeline (implementer + reviewer). Compare pass rate, p95 latency, and cost per success. Promote multi-agent only if the quality lift beats the cost/latency hit by a margin you would defend to finance. Many “reviewer agents” can be replaced by schema validators and unit tests at a fraction of the price.</p>
-    <p>If you do split, publish a one-page orchestration diagram: roles, tools per role, artifact schema, and max turns. On-call engineers should debug from that page at 2 a.m. Without it, multi-agent systems become blame pinatas where nobody knows which role invented the bad refund call.</p>
+    <p>Run an honest A/B on your golden set: single-agent baseline vs a two-role pipeline (implementer + reviewer). Compare pass rate, p95 latency, and cost per success. Promote multi-agent only if the quality lift beats the cost/latency hit.</p>
+    <p>If you do split, publish a one-page orchestration diagram: roles, tools per role, artifact schema, and max turns. On-call engineers should debug from that page at 2 a.m.</p>
     <h2 id="cost-and-latency-math">Cost and latency math</h2>
-    <p>Rough planning math helps. If each agent turn costs about C dollars and takes T seconds, a supervisor plus three specialists that each speak twice costs roughly 8CT in the worst chatter pattern. A single agent that makes four tool calls costs about 4CT plus tool time. Unless eval quality rises enough to justify the multiplier — or parallelism cuts wall-clock — the multi-agent bill is vanity. Write the inequality down before the rewrite.</p>
+    <p>Rough planning math helps. If each agent turn costs about C dollars and takes T seconds, a supervisor plus three specialists that each speak twice costs roughly 8CT in the worst chatter pattern. A single agent that makes four tool calls costs about 4CT plus tool time. Unless eval quality rises enough to justify the multiplier, the multi-agent bill is vanity. Write the inequality down before the rewrite.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Use one agent until specialization clearly improves measured quality or safety; only then add multi-agent roles with typed handoffs, narrow tools, and hard stop rules.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Single-agent:</strong> one loop owns the goal end to end.</li>
     <li><strong>Multi-agent:</strong> collaborating specialized loops.</li>
+    <li><strong>Triage agent:</strong> router that decides which specialist handles the task.</li>
+    <li><strong>Specialist agent:</strong> narrow agent focused on one domain (logs, code, policy).</li>
     <li><strong>Orchestration:</strong> control of turn-taking, routing, and retries.</li>
     <li><strong>Handoff contract:</strong> structured artifact passed between agents.</li>
-    <li><strong>Supervisor pattern:</strong> a coordinator delegates to workers.</li>
-    <li><strong>Orchestration tax:</strong> extra cost/latency/complexity of coordination.</li>
+    <li><strong>Tool hallucination:</strong> when the model invents or misuses a tool call.</li>
+    <li><strong>Orchestration tax:</strong> extra cost, latency, and complexity of coordination.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back — safely.">
+  <meta name="description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back—safely.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/tool-calling-function-calling.html">
   <meta property="og:title" content="Tool Calling / Function Calling | BackbenchLearner">
-  <meta property="og:description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back — safely.">
+  <meta property="og:description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back—safely.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/tool-calling-function-calling.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Tool Calling / Function Calling | BackbenchLearner">
-  <meta name="twitter:description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back — safely.">
+  <meta name="twitter:description" content="Models emit structured tool requests; your app validates arguments, executes APIs, and feeds results back—safely.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,9 +36,40 @@
       <h1>Tool Calling / Function Calling</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Function calling</strong> (tool calling) lets the model return structured arguments so your application can invoke a real API. The model does not magically gain network access — your host grants it, which is exactly why this pattern is powerful and dangerous.</p>
+    <p><strong>What is this for?</strong> To explain <strong>tool calling</strong> (also called <strong>function calling</strong>)—how an LLM chooses external actions and your app runs them.</p>
+    <p><strong>Why does it exist?</strong> The model does not magically gain network access. Your <strong>host</strong> (application code) grants it. That is exactly why this pattern is powerful and dangerous.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Without tools, the model invents a weather report. With tools, it emits something like <code>get_weather(city=&quot;Delhi&quot;)</code>; your code calls the API; the model turns the JSON into a user-facing answer. Structure beats brittle “please output JSON” begging, and the app — not the model — owns credentials, allowlists, and audits.</p>
+    <p>Without tools, the model invents a weather report.</p>
+    <p>With tools, it emits something like <code>get_weather(city=&quot;Delhi&quot;)</code>; your code calls the API; the model turns the JSON into a user-facing answer.</p>
+    <p>Structure beats brittle &quot;please output JSON&quot; begging. The app—not the model—owns credentials, allowlists, and audits.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Tool schema</strong></td>
+          <td>Name, description, and argument types for each tool</td>
+        </tr>
+        <tr>
+          <td><strong>Tool description</strong></td>
+          <td>Text the model reads to decide <em>when</em> and <em>how</em> to call a tool</td>
+        </tr>
+        <tr>
+          <td><strong>Observation</strong></td>
+          <td>The result returned by a tool after an action</td>
+        </tr>
+        <tr>
+          <td><strong>Host / runtime</strong></td>
+          <td>Your code that validates and executes tool calls</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>The model chooses tools from their <strong>descriptions</strong>—not just function names. Clear descriptions lower wrong calls and tool hallucination.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 sequenceDiagram
@@ -57,6 +88,24 @@ sequenceDiagram
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
+    <h3>Anatomy of one turn</h3>
+    <p>The agent loop inside each tool call:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">observe  -&gt;  think  -&gt;  act (tool)  -&gt;  observe (result)  -&gt;  think again</code></pre>
+    </div>
+    <p>Example:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">fetch_server_logs(server_id=&#x27;db-12&#x27;, minutes_ago=10)
+  -&gt; &#x27;Database connection pool exhausted&#x27;</code></pre>
+    </div>
+    <p>A good tool description tells the model:</p>
+    <ul>
+    <li><strong>When</strong> to use the tool.</li>
+    <li><strong>What arguments</strong> it needs.</li>
+    <li><strong>How to read</strong> the returned data.</li>
+    </ul>
     <h3>The contract</h3>
     <ol>
     <li>You register tools with names, descriptions, and JSON schemas for arguments.</li>
@@ -65,17 +114,10 @@ sequenceDiagram
     <li>The host executes allowed tools with real credentials.</li>
     <li>Results (truncated) return as tool messages; the model continues.</li>
     </ol>
-    <h3>Why it beats free-form text</h3>
-    <ul>
-    <li>Parsers stop guessing from markdown fences.</li>
-    <li>Unknown tools can be rejected before execution.</li>
-    <li>Each call is auditable: name, args, latency, status.</li>
-    <li>You can require confirmation for risky tools.</li>
-    </ul>
     <h3>Design tips for tools</h3>
     <ul>
     <li><strong>Narrow verbs:</strong> <code>get_order(order_id)</code> not <code>run_sql(query)</code>.</li>
-    <li><strong>Descriptions matter:</strong> models pick tools from docs — write crisp when-to-use / when-not.</li>
+    <li><strong>Descriptions matter:</strong> write crisp when-to-use / when-not-to-use text.</li>
     <li><strong>Typed args:</strong> enums over free strings when possible.</li>
     <li><strong>Small results:</strong> return summaries; page large lists.</li>
     <li><strong>Errors as data:</strong> structured <code>{ok: false, error: &quot;...&quot;}</code> so the model can recover.</li>
@@ -99,10 +141,15 @@ from dataclasses import dataclass
 
 TOOLS = {
     &quot;get_weather&quot;: {
-        &quot;description&quot;: &quot;Current weather for a city&quot;,
+        &quot;description&quot;: &quot;Current weather for a city. Use when user asks about weather.&quot;,
         &quot;properties&quot;: {&quot;city&quot;: {&quot;type&quot;: &quot;str&quot;}},
         &quot;required&quot;: [&quot;city&quot;],
-    }
+    },
+    &quot;fetch_server_logs&quot;: {
+        &quot;description&quot;: &quot;Fetch recent logs for a server. Use for outage debugging.&quot;,
+        &quot;properties&quot;: {&quot;server_id&quot;: {&quot;type&quot;: &quot;str&quot;}, &quot;minutes_ago&quot;: {&quot;type&quot;: &quot;int&quot;}},
+        &quot;required&quot;: [&quot;server_id&quot;, &quot;minutes_ago&quot;],
+    },
 }
 
 @dataclass
@@ -117,13 +164,14 @@ def validate(call: ToolCall) -&gt; str | None:
     for req in spec[&quot;required&quot;]:
         if req not in call.arguments:
             return f&quot;missing {req}&quot;
-    if not isinstance(call.arguments[&quot;city&quot;], str) or not call.arguments[&quot;city&quot;].strip():
-        return &quot;bad city&quot;
     return None
 
 def execute(call: ToolCall) -&gt; dict:
-    # real code would HTTP GET; model never holds API keys
-    return {&quot;city&quot;: call.arguments[&quot;city&quot;], &quot;temp_c&quot;: 38, &quot;cond&quot;: &quot;clear&quot;}
+    if call.name == &quot;get_weather&quot;:
+        return {&quot;city&quot;: call.arguments[&quot;city&quot;], &quot;temp_c&quot;: 38, &quot;cond&quot;: &quot;clear&quot;}
+    if call.name == &quot;fetch_server_logs&quot;:
+        return {&quot;log&quot;: &quot;Database connection pool exhausted&quot;}
+    return {&quot;error&quot;: &quot;not implemented&quot;}
 
 def handle_model_tool_payload(payload: str) -&gt; str:
     data = json.loads(payload)
@@ -143,29 +191,32 @@ print(handle_model_tool_payload(
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Schema too loose.</strong> <code>command: string</code> invites injection into shells.</li>
-    <li><strong>Blind execution.</strong> Skipping validation because “the model is usually right.”</li>
-    <li><strong>Huge tool dumps.</strong> Entire DB rows blow the context window.</li>
-    <li><strong>Tool hallucination.</strong> Model invents a tool name — host must reject, not invent a handler.</li>
-    <li><strong>Parallel chaos.</strong> Concurrent writes without locking create races.</li>
+    <li><strong>Blind execution.</strong> Skipping validation because &quot;the model is usually right.&quot;</li>
+    <li><strong>Huge tool dumps.</strong> Entire database rows blow the context window.</li>
+    <li><strong>Tool hallucination.</strong> Model invents a tool name—host must reject, not invent a handler.</li>
+    <li><strong>Bad descriptions.</strong> Vague docs invite wrong tool choice and wrong parameters.</li>
     <li><strong>No user-visible receipt.</strong> Side effects happen with no explanation in the UI.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Document each tool like an external API: auth, rate limits, error codes, and example successful payloads. Put those examples in the tool description — models imitate what they see. Add a canary tool in staging that only echoes args; run adversarial prompts that try to call write tools and assert the host blocked them.</p>
-    <p>Prefer returning <code>ok/error</code> envelopes over throwing opaque exceptions into the prompt. Models recover better from structured failure than from truncated stack traces. And keep a kill switch: a config flag that disables write tools globally when an incident is underway.</p>
+    <p>Document each tool like an external API: auth, rate limits, error codes, and example successful payloads. Put those examples in the tool description—models imitate what they see.</p>
+    <p>Add a canary tool in staging that only echoes args; run adversarial prompts that try to call write tools and assert the host blocked them.</p>
+    <p>Prefer returning <code>ok/error</code> envelopes over throwing opaque exceptions into the prompt. Models recover better from structured failure than from truncated stack traces.</p>
     <h2 id="multi-tool-turns">Multi-tool turns</h2>
-    <p>Some model APIs propose several tools in one turn. Execute read-only tools in parallel if safe; serialize writes. After results return, do not skip re-validation of the model’s next proposal — a later write may depend on a forged interpretation of an earlier read. Your host remains the authority on ordering for anything that mutates state.</p>
+    <p>Some model APIs propose several tools in one turn. Execute read-only tools in parallel if safe; serialize writes. After results return, re-validate the model&#x27;s next proposal—a later write may depend on a forged interpretation of an earlier read.</p>
     <h2 id="versioning-tools">Versioning tools</h2>
-    <p>Treat tool schemas like public APIs. Additive optional fields are fine; renaming or removing fields needs a version suffix (<code>get_order_v2</code>) and a deprecation window. Agents in flight may still emit v1 calls after you deploy. Run compatibility tests: old and new argument shapes against the same host validators before you flip production traffic.</p>
+    <p>Treat tool schemas like public APIs. Additive optional fields are fine; renaming or removing fields needs a version suffix (<code>get_order_v2</code>) and a deprecation window.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Tool calling is a structured handshake: the model proposes typed actions, your host validates and executes them, and results return as data — never as unchecked power.</p>
+    <p>Tool calling is a structured handshake: the model proposes typed actions, your host validates and executes them, and results return as data—never as unchecked power.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Function / tool calling:</strong> model emits structured invoke requests.</li>
     <li><strong>Tool schema:</strong> name, description, and argument types.</li>
+    <li><strong>Tool description:</strong> text the model uses to choose the right tool.</li>
+    <li><strong>Observation:</strong> result returned by a tool after an action.</li>
     <li><strong>Host / runtime:</strong> application code that validates and executes tools.</li>
     <li><strong>Allowlist:</strong> permitted tools for a given agent.</li>
+    <li><strong>Tool hallucination:</strong> when the model invents or misuses a tool call.</li>
     <li><strong>Idempotency key:</strong> token preventing duplicate side effects on retry.</li>
-    <li><strong>Tool message:</strong> channel that carries execution results back to the model.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

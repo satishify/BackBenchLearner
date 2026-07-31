@@ -1,21 +1,45 @@
 ---
 title: "Reflection / Self-Correction Loops"
-description: "Draft, check against criteria, revise — improve quality with bounded loops that do not bankrupt latency or trust."
+description: "Draft, check against criteria, revise—improve quality with bounded loops that do not bankrupt latency or trust."
 ---
 
-A **reflection loop** has the agent critique its own draft against explicit criteria and revise before the user sees a final answer. Done well, it catches format breaks and shallow errors. Done poorly, it burns tokens arguing with itself.
+**What is this for?** To explain **reflection loops** and the **ReAct** pattern—how agents think, act, observe, and correct themselves before finishing.
+
+**Why does it exist?** Pure reasoning can drift into wrong assumptions if an early guess is wrong. ReAct adds an **observation** step so the model can verify itself against reality—not imagination.
 
 ## Intuition
 
-Humans rarely ship the first draft of a critical email. Agents can do the same: produce -> check -> revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.
+**ReAct** (Reason + Act) in plain English: **think, take one action, read the result, then think again.**
+
+```
+t1 = 'I should check auth-service logs.'
+a1 = fetch_server_logs(service='auth-service', timeframe='1h')
+o1 = 'ConnectionTimeout: Cannot reach db-primary'
+t2 = 'Now I should check db-primary status.'
+```
+
+Closed-book reasoning can drift after one wrong assumption. ReAct grounds thought in **tool observations**, so the model can correct itself using reality.
+
+A **reflection loop** is the same idea applied to quality: produce → check → revise before the user sees the final answer.
+
+| Pattern | Plain-English idea |
+| --- | --- |
+| **ReAct** | Alternate reasoning and action with observations |
+| **Reflection** | Draft → check criteria → revise (bounded) |
+| **Hierarchical ReAct** | Triage agent plans; specialists act and report back |
+
+:::key
+Without a stop rule, reflection becomes infinite polish—and ReAct becomes infinite tool calls. Always cap rounds, tokens, and time.
+:::
 
 ```mermaid
 flowchart LR
-    A[Draft] --> B[Check criteria]
-    B --> C{Pass?}
-    C -- No --> D[Revise]
-    D --> B
-    C -- Yes --> E[Final]
+    A[Draft / Think] --> B[Act or Check]
+    B --> C[Observe result]
+    C --> D{Pass?}
+    D -- No --> E[Revise / Replan]
+    E --> A
+    D -- Yes --> F[Final answer]
 ```
 
 ## How it works
@@ -25,10 +49,10 @@ flowchart LR
 - **Factual consistency** with tool results or retrieved docs.
 - **Format compliance** (JSON schema, required sections).
 - **Policy / safety** constraints and refusal rules.
-- **Coverage** of the user’s constraints (dates, audience, language).
+- **Coverage** of the user's constraints (dates, audience, language).
 - **Tool plan sanity** (no missing dependency, no forbidden tool).
 
-Prefer programmatic checkers when possible. Use an LLM judge for semantic properties, and calibrate it.
+Prefer programmatic checkers when possible. Use an LLM-as-judge for semantic properties, and calibrate it.
 
 ### Loop designs
 
@@ -38,23 +62,24 @@ Prefer programmatic checkers when possible. Use an LLM judge for semantic proper
 | Dual model | Stronger / other model judges | Better diversity; more cost |
 | Rules first | Schema & regex before LLM | Fast fail on structure |
 | Test-driven | Run unit tests / tools | Best for code agents |
+| ReAct | Think → act → observe → repeat | Best for multi-step evidence gathering |
 
 ### Budgets
 
-Cap revisions (e.g. 2). Cap extra tokens. Cap wall-clock. If still failing, escalate to a human or return a partial with an explicit uncertainty note — do not silently loop.
+Cap revisions (e.g., 2). Cap extra tokens. Cap wall-clock. If still failing, escalate to a human or return a partial with an explicit uncertainty note—do not silently loop.
 
 ### When reflection helps most
 
 - Structured outputs that must parse.
-- Grounded answers that must cite.
+- Grounded answers that must cite sources.
 - Code that must pass tests.
 - Tone-sensitive external messages.
 
 Skip heavy reflection for low-stakes chitchat; the latency is pure tax.
 
-### Trade-off
+### Hierarchical ReAct at enterprise scale
 
-More reflection can raise quality and reduce embarrassing mistakes, but increases latency and cost. Measure lift on a golden set: if pass rate does not move, delete the loop.
+The **triage agent** becomes a meta-planner. Specialist agents (infrastructure, codebase, policy) become its tools. The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.
 
 ## In code
 
@@ -75,14 +100,11 @@ def check(answer: str) -> Critique:
     issues = []
     if "30 days" not in answer:
         issues.append("missing refund window")
-    if "http://" in answer or "https://" in answer:
-        issues.append("unexpected link")
     if len(answer) < 40:
         issues.append("too thin")
     return Critique(ok=not issues, issues=issues)
 
 def revise(answer: str, issues: list[str]) -> str:
-    # stand-in for a second model call conditioned on issues
     fix = " You can request a refund within 30 days of purchase."
     return answer + fix if "missing refund window" in issues else answer
 
@@ -103,36 +125,37 @@ print(reflect_loop("How long do I have to request a refund?"))
 
 ## What goes wrong
 
-- **Vibes rubric.** “Be better” yields random rewrites.
+- **Vibes rubric.** "Be better" yields random rewrites.
 - **Unbounded loops.** Cost spikes; users wait.
 - **Shared delusion.** Self-reflection misses systematic model biases.
-- **Over-refusal after critique.** Safety pass becomes unhelpful paranoia.
+- **Reasoning without observation.** ReAct skipped; model guesses instead of checking logs.
 - **Ignoring failing checks.** Logging issues but shipping the first draft anyway.
 - **Reflecting on wrong artifacts.** Polishing prose while the tool data is wrong.
 
 ## Putting it into practice
 
-Add reflection only behind a feature flag and measure delta on the golden set for one week. Track extra tokens per successful answer; if cost rises 40% for a 1% pass-rate lift, the loop is vanity. Prefer a cheap rule pass before any LLM critique — schema failures should never consume a judge call.
+Add reflection only behind a feature flag and measure delta on the golden set for one week. Prefer a cheap rule pass before any LLM critique—schema failures should never consume a judge call.
 
-For code agents, make tests the reflector: draft patch -> run tests -> feed failures back -> revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.
+For code agents, make tests the reflector: draft patch → run tests → feed failures back → revise, with a hard cap of two attempts before human handoff.
 
 ## Critique prompts that work
 
-A usable critique prompt lists pass/fail bullets and demands JSON like `{ "pass": false, "issues": ["..."] }`. Ban vague advice (“improve clarity”) unless paired with a concrete defect. Feed only the draft plus evidence (tool JSON, citations), not the entire chat history, so the judge cannot be distracted by earlier role-play. Pin the judge model version in CI the same way you pin the actor model.
+A usable critique prompt lists pass/fail bullets and demands JSON like `{ "pass": false, "issues": ["..."] }`. Feed only the draft plus evidence (tool JSON, citations), not the entire chat history.
 
 ## Stop conditions beyond round caps
 
-End reflection early on success, on repeated identical issues (the reviser is stuck), or when the judge confidence is low and the task is high risk — escalate instead of polishing. Stuck loops often oscillate between two phrasings; detect duplicate issue sets and bail. Record the reason the loop stopped so you can tune budgets with data, not folklore.
+End reflection early on success, on repeated identical issues (the reviser is stuck), or when the judge confidence is low and the task is high risk—escalate instead of polishing.
 
 ## One-line summary
 
-Add bounded draft–check–revise loops with concrete criteria (and programmatic checks first) so quality rises without open-ended self-debate.
+Use ReAct to ground reasoning in tool observations, and add bounded draft–check–revise loops with concrete criteria so quality rises without open-ended self-debate.
 
 ## Key terms
 
+- **ReAct (Reason + Act):** loop that alternates reasoning and action with observations.
+- **Observation:** result returned by a tool after an action.
 - **Reflection loop:** iterative self-critique and revision before final output.
-- **Rubric:** explicit scoring or pass/fail criteria.
-- **LLM-as-judge:** model that scores another model’s draft.
-- **Revision budget:** max rounds / tokens / time for correction.
-- **Escalation:** handoff when checks still fail after the budget.
+- **Hierarchical ReAct:** triage agent delegates to specialist agents.
+- **LLM-as-judge:** model that scores another model's draft.
+- **Revision budget:** max rounds, tokens, or time for correction.
 - **Test-driven agent:** uses executable tests as the checker.

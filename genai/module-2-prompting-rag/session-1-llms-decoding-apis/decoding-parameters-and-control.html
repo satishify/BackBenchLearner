@@ -36,15 +36,34 @@
       <h1>Decoding Parameters and Output Control</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Sampling knobs are how you turn a probability distribution into a product behavior. The same prompt can yield a crisp JSON object or a meandering poem depending on decoding. Engineers who treat these as afterthoughts spend their weeks chasing “flaky” models that were never configured for the job.</p>
+    <p><strong>Decoding</strong> is how you turn a probability distribution into actual text. The same prompt can yield a crisp JSON object or a meandering poem depending on decoding settings. Engineers who treat these as afterthoughts spend their weeks chasing &quot;flaky&quot; models that were never configured for the job.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>At each step the model scores the whole vocabulary. Decoding is the policy that picks one token:</p>
-    <ul>
-    <li><strong>Greedy / near-greedy</strong> — take the best (or nearly best) option -&gt; stable, repetitive risk.</li>
-    <li><strong>Truncated sampling</strong> — only consider a shortlist (top-k or nucleus / top-p) -&gt; controlled variety.</li>
-    <li><strong>Penalties and stops</strong> — reshape scores or force an exit -&gt; fight loops and enforce boundaries.</li>
-    </ul>
-    <p>Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends. Latency and cost scale with how long you let that loop run.</p>
+    <p><strong>What is decoding?</strong> At each step the model scores the whole vocabulary. Decoding is the policy that picks one token and repeats until a stop condition.</p>
+    <table>
+      <thead><tr>
+        <th>Strategy</th>
+        <th>Plain-English idea</th>
+        <th>Trade-off</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Greedy / near-greedy</strong></td>
+          <td>Take the best (or nearly best) option</td>
+          <td>Stable, but can sound dull or repetitive</td>
+        </tr>
+        <tr>
+          <td><strong>Truncated sampling</strong></td>
+          <td>Only consider a shortlist (top-k or top-p)</td>
+          <td>Controlled variety</td>
+        </tr>
+        <tr>
+          <td><strong>Penalties and stops</strong></td>
+          <td>Reshape scores or force an exit</td>
+          <td>Fight loops and enforce boundaries</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Decode for the contract: factual extraction wants a short leash; ideation wants room. Defaults are rarely optimal for either.</p>
@@ -70,7 +89,7 @@
         </tr>
         <tr>
           <td>top_p</td>
-          <td>Keep nucleus with mass &gt;= p</td>
+          <td>Keep nucleus with mass ≥ p</td>
           <td>Adaptive shortlist</td>
         </tr>
         <tr>
@@ -95,9 +114,9 @@
     <li>Model emits logits <code>z</code>.</li>
     <li>Optional penalties adjust logits for tokens already used.</li>
     <li>Temperature scales: <code>z&#x27; = z / T</code>.</li>
-    <li>Softmax -&gt; probabilities.</li>
+    <li>Softmax → probabilities.</li>
     <li>Top-k and/or top-p mask the allowed set.</li>
-    <li>Sample (or argmax) one token; append; repeat until EOS, stop string, or max length.</li>
+    <li>Sample (or argmax) one token; append; repeat until end-of-sequence, stop string, or max length.</li>
     </ol>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -110,27 +129,58 @@ flowchart LR
     C --> L
       </div>
     </div>
+    <h3>Greedy decoding weakness</h3>
+    <p>Greedy decoding chooses the highest-probability token at each step. It is fast and deterministic, but locally best choices can block a globally better sequence.</p>
+    <p>Worked example: at the first step, suppose &quot;yes&quot; has probability 0.5 and &quot;ok&quot; has probability 0.4. Greedy chooses &quot;yes.&quot; If the next best continuation after &quot;yes&quot; has probability 0.4, the sequence probability is 0.5 × 0.4 = 0.20. But the path &quot;ok ok&quot; may have probability 0.4 × 0.7 = 0.28, which is globally better. Greedy missed it because it committed too early.</p>
+    <h3>Beam search</h3>
+    <p><strong>Beam search</strong> keeps the k best partial sequences at each step. It is a compromise between exhaustive search and greedy decoding.</p>
+    <ul>
+    <li>Beam width 1 is greedy decoding.</li>
+    <li>Larger beam widths explore more alternatives but cost more compute.</li>
+    <li>In open-ended chat, beam search can sound dull; sampling is often preferred for naturalness.</li>
+    </ul>
     <h3>Top-k vs top-p</h3>
     <ul>
-    <li><strong>Top-k = 40</strong> always keeps forty tokens even if thirty-nine are near-zero junk when the model is confident — or truncates useful mass when the distribution is flat.</li>
+    <li><strong>Top-k = 40</strong> always keeps forty tokens even if thirty-nine are near-zero junk when the model is confident.</li>
     <li><strong>Top-p = 0.9</strong> grows/shrinks with uncertainty — usually the better default when you want one adaptive knob.</li>
     </ul>
-    <p>Using both is fine if you understand the order your API applies them; setting both extremely tight (tiny k and tiny p) can leave an empty or brittle candidate set.</p>
-    <h3>Penalties</h3>
-    <ul>
-    <li><strong>Presence penalty</strong> — punish tokens that appeared at least once -&gt; pushes topic diversity.</li>
-    <li><strong>Frequency penalty</strong> — punish in proportion to count -&gt; fights “the the the” loops.</li>
-    </ul>
-    <p>Overdoing penalties on code or legal text makes identifiers and defined terms drift. Prefer clearer prompts and lower temperature before cranking penalties.</p>
-    <h3>Stops and max tokens</h3>
-    <p>Stop sequences are surgical: end at <code>\n\nUser:</code>, <code> </code>`<code> </code>, or <code>&lt;/json&gt;</code>. Max tokens is a blunt instrument: it prevents runaway cost but can cut mid-JSON. Pair them: stop on a closer when possible; set max as a safety net.</p>
     <h3>Presets that ship</h3>
-    <ul>
-    <li><strong>Factual Q&amp;A / extraction:</strong> T 0.0–0.3, top_p 0.2–0.7, modest max_tokens, optional stop after schema close.</li>
-    <li><strong>Support tone:</strong> T 0.3–0.5, top_p ~0.8, presence penalty light if replies repeat.</li>
-    <li><strong>Code:</strong> T 0.1–0.3, avoid heavy frequency penalty, stop on fences if you wrap prompts that way.</li>
-    <li><strong>Brainstorm:</strong> T 0.7–1.0, top_p 0.9–0.95, larger max_tokens, accept more variance.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Use case</th>
+        <th>Suggested start</th>
+        <th>Reason</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Factual Q&amp;A</td>
+          <td>temperature 0.2–0.4, top_p 0.7–1.0</td>
+          <td>Reduces randomness; pair with sources or tools</td>
+        </tr>
+        <tr>
+          <td>Creative writing</td>
+          <td>temperature 0.8–1.2, top_p 0.9–0.95</td>
+          <td>Allows variety while keeping coherence</td>
+        </tr>
+        <tr>
+          <td>Code generation</td>
+          <td>temperature 0.1–0.4</td>
+          <td>Correctness matters more than novelty</td>
+        </tr>
+        <tr>
+          <td>Brainstorming</td>
+          <td>temperature 1.0–1.5</td>
+          <td>Diversity is useful; filter later</td>
+        </tr>
+        <tr>
+          <td>JSON extraction</td>
+          <td>low temperature, structured output</td>
+          <td>Reliability and parseability matter</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Hallucination note</h3>
+    <p>Lower temperature can reduce random-looking hallucinations, but it does not give the model new facts. For factual reliability, combine clear prompts with retrieval, tool calls, citations, validation, and refusal behavior. Grounding is the real fix.</p>
     <h2 id="in-code">In code</h2>
     <p>Toy decode step with temperature + top-k:</p>
     <div class="code-block" data-lang="python">
@@ -184,13 +234,6 @@ print(vocab[sample(logits, T=0.2, k=2)])</code></pre>
 raw = &#x27;{&quot;ok&quot;: true}\n\nUser: ignore&#x27;
 print(apply_stops(raw, [&quot;\n\nUser:&quot;, &quot;\n\n&quot;]))</code></pre>
     </div>
-    <p>Frequency penalty sketch:</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">def penalize(logits, token_counts: list[int], penalty: float):
-    # subtract penalty * count from each logit
-    return [z - penalty * c for z, c in zip(logits, token_counts)]</code></pre>
-    </div>
     <p>Config object you can version in experiments:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -205,8 +248,7 @@ print(apply_stops(raw, [&quot;\n\nUser:&quot;, &quot;\n\n&quot;]))</code></pre>
     <li><strong>Max tokens too low for JSON</strong> — truncated objects look like model stupidity.</li>
     <li><strong>Stop sequence that appears inside legitimate content</strong> — early cut on code comments or URLs.</li>
     <li><strong>Penalty wars</strong> — code variables renamed mid-answer; legal terms avoided.</li>
-    <li><strong>Tuning k and p blind</strong> — no golden eval set, so “improvements” are vibes.</li>
-    <li><strong>Ignoring provider-specific defaults</strong> — a new SDK version changes temperature default and your regression suite was empty.</li>
+    <li><strong>Tuning k and p blind</strong> — no golden eval set, so &quot;improvements&quot; are vibes.</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
@@ -224,6 +266,7 @@ print(apply_stops(raw, [&quot;\n\nUser:&quot;, &quot;\n\n&quot;]))</code></pre>
     <li><strong>Max tokens</strong> — Upper bound on generated length.</li>
     <li><strong>Stop sequence</strong> — String that forces generation to end when emitted or matched.</li>
     <li><strong>Greedy decoding</strong> — Always pick the highest-probability next token.</li>
+    <li><strong>Beam search</strong> — Keeps the top k partial hypotheses rather than one path.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Session scratchpad versus durable preferences — store only what helps, expire what ages, and protect sensitive data.">
+  <meta name="description" content="Session scratchpad versus durable preferences—store only what helps, expire what ages, and protect sensitive data.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/short-term-vs-long-term-memory.html">
   <meta property="og:title" content="Short-Term vs Long-Term Memory | BackbenchLearner">
-  <meta property="og:description" content="Session scratchpad versus durable preferences — store only what helps, expire what ages, and protect sensitive data.">
+  <meta property="og:description" content="Session scratchpad versus durable preferences—store only what helps, expire what ages, and protect sensitive data.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/short-term-vs-long-term-memory.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Short-Term vs Long-Term Memory | BackbenchLearner">
-  <meta name="twitter:description" content="Session scratchpad versus durable preferences — store only what helps, expire what ages, and protect sensitive data.">
+  <meta name="twitter:description" content="Session scratchpad versus durable preferences—store only what helps, expire what ages, and protect sensitive data.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,57 +36,38 @@
       <h1>Short-Term vs Long-Term Memory</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Agents need memory so they do not rediscover the same facts every turn. The design mistake is treating “memory” as infinite chat history. Split <strong>short-term</strong> (this task) from <strong>long-term</strong> (across sessions), and write both on purpose.</p>
+    <p><strong>What is this for?</strong> To explain how agents remember the current conversation vs facts that should persist across sessions.</p>
+    <p><strong>Why does it exist?</strong> LLMs are stateless by default. Without memory, the agent forgets what happened as soon as the next API call begins. The design mistake is treating &quot;memory&quot; as infinite chat history.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Short-term memory is the sticky note on your monitor: current question, open plan, last tool result. Long-term memory is the filing cabinet: preferred report format, project codenames, recurring constraints. Dumping the cabinet into every prompt is expensive and noisy; never writing to it makes every session amnesiac.</p>
     <table>
       <thead><tr>
         <th>Memory type</th>
+        <th>Plain-English idea</th>
         <th>Lifetime</th>
-        <th>Example</th>
+        <th>Like...</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Short-term</td>
+          <td><strong>Episodic (short-term)</strong></td>
+          <td>Live conversation thread</td>
           <td>Current session / task</td>
-          <td>User question, plan step, tool JSON</td>
+          <td>RAM</td>
         </tr>
         <tr>
-          <td>Long-term</td>
+          <td><strong>Semantic (long-term)</strong></td>
+          <td>Lasting facts and solutions</td>
           <td>Across sessions</td>
-          <td>Tone preference, default timezone, project IDs</td>
+          <td>Hard drive / knowledge base</td>
         </tr>
       </tbody>
     </table>
-    <h2 id="how-it-works">How it works</h2>
-    <h3>Short-term (working) memory</h3>
-    <p>Holds what the loop needs right now:</p>
-    <ul>
-    <li>Conversation turns (often summarized as they age).</li>
-    <li>Active plan and step index.</li>
-    <li>Recent tool results (truncated).</li>
-    <li>Scratch variables (“selected_order_id”).</li>
-    </ul>
-    <p>Implementations: in-process dict, Redis with session TTL, the model context window itself. Always assume the window is smaller than your ambition — summarize and drop.</p>
-    <h3>Long-term memory</h3>
-    <p>Holds durable facts and preferences:</p>
-    <ul>
-    <li>User/org settings.</li>
-    <li>Prior decisions (“always cite policy IDs”).</li>
-    <li>Entity memory (account quirks) with careful privacy review.</li>
-    <li>Sometimes embeddings of past docs for retrieval (RAG-as-memory).</li>
-    </ul>
-    <p>Implementations: database rows, vector stores, CRM fields. Prefer structured fields over free-text blobs when you can query them reliably.</p>
-    <h3>Write policies</h3>
-    <ul>
-    <li><strong>Salience:</strong> store preferences and durable constraints; do not store every joke.</li>
-    <li><strong>Consent &amp; PII:</strong> long-term personal data needs retention rules and deletion paths.</li>
-    <li><strong>Expiration:</strong> decay or re-confirm stale facts (“still on the Acme project?”).</li>
-    <li><strong>Conflict:</strong> new explicit user instruction overrides old memory.</li>
-    <li><strong>Scope:</strong> team memory vs user memory vs run memory — do not mix casually.</li>
-    </ul>
-    <h3>Read policies</h3>
-    <p>Retrieve top-k relevant memories, not the whole store. Inject them in a labeled section (“MEMORY, may be outdated”) so the model does not treat them as system law. For safety-critical settings (refund limits), prefer application config over model-readable memory.</p>
+    <p><strong>Episodic memory</strong> is the sticky note on your monitor: current question, open plan, last tool result.</p>
+    <p><strong>Semantic memory</strong> is the filing cabinet: preferred report format, project codenames, lessons from past incidents.</p>
+    <p>Dumping the cabinet into every prompt is expensive and noisy. Never writing to it makes every session amnesiac.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>More context is not always better context. Too much historical memory can hide the important facts in a haystack of irrelevant history.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -100,6 +81,51 @@ flowchart LR
   Write -->|durable| LTM
       </div>
     </div>
+    <h2 id="how-it-works">How it works</h2>
+    <h3>Episodic memory (short-term / working)</h3>
+    <p>Holds what the loop needs right now:</p>
+    <ul>
+    <li>Conversation turns (often summarized as they age).</li>
+    <li>Active plan and step index.</li>
+    <li>Recent tool results (truncated).</li>
+    <li>Scratch variables (&quot;selected_order_id&quot;).</li>
+    </ul>
+    <p>Stored in the <strong>thread state</strong>—in-process dict, Redis with session TTL, or the model context window itself. Always assume the window is smaller than your ambition—summarize and drop.</p>
+    <h3>Semantic memory (long-term)</h3>
+    <p>Holds durable facts and preferences:</p>
+    <ul>
+    <li>User or org settings.</li>
+    <li>Prior decisions (&quot;always cite policy IDs&quot;).</li>
+    <li>Learned solutions from solved incidents.</li>
+    <li>Sometimes embeddings of past docs for retrieval (RAG-as-memory).</li>
+    </ul>
+    <p>Stored in a <strong>vector database (vector DB)</strong> or knowledge base (KB). Prefer structured fields over free-text blobs when you can query them reliably.</p>
+    <h3>Memory tools (example pattern)</h3>
+    <p>Before planning, search semantic memory:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">&#x27;Have we seen this error before?&#x27;</code></pre>
+    </div>
+    <p>After solving, optionally save:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Save_To_Knowledge_Base(fact: str)</code></pre>
+    </div>
+    <h3>Write policies</h3>
+    <ul>
+    <li><strong>Salience:</strong> store preferences and durable constraints; do not store every joke.</li>
+    <li><strong>Consent &amp; PII (personally identifiable information):</strong> long-term personal data needs retention rules and deletion paths.</li>
+    <li><strong>Expiration:</strong> decay or re-confirm stale facts (&quot;still on the Acme project?&quot;).</li>
+    <li><strong>Conflict:</strong> new explicit user instruction overrides old memory.</li>
+    <li><strong>Scope:</strong> team memory vs user memory vs run memory—do not mix casually.</li>
+    </ul>
+    <h3>Two cautionary notes</h3>
+    <ol>
+    <li><strong>Contradictory memory</strong> can make the agent trust stale facts as if they are still current. Use timestamps and memory updates.</li>
+    <li><strong>Too much memory</strong> can dilute attention. Good retrieval is <strong>selective</strong> retrieval—not &quot;return everything.&quot;</li>
+    </ol>
+    <h3>Read policies</h3>
+    <p>Retrieve top-k relevant memories, not the whole store. Inject them in a labeled section (&quot;MEMORY, may be outdated&quot;) so the model does not treat them as system law. For safety-critical settings (refund limits), prefer application config over model-readable memory.</p>
     <h2 id="in-code">In code</h2>
     <p>Two stores with TTL-style expiration for long-term notes.</p>
     <div class="code-block" data-lang="python">
@@ -112,15 +138,15 @@ class MemoryItem:
     key: str
     value: str
     created: float
-    ttl_sec: float | None = None  # None = session-only handled elsewhere
+    ttl_sec: float | None = None
 
     def alive(self, now: float) -&gt; bool:
         return self.ttl_sec is None or now - self.created &lt; self.ttl_sec
 
 @dataclass
 class AgentMemory:
-    short: dict = field(default_factory=dict)
-    long: dict[str, MemoryItem] = field(default_factory=dict)
+    short: dict = field(default_factory=dict)       # episodic
+    long: dict[str, MemoryItem] = field(default_factory=dict)  # semantic
 
     def set_short(self, key: str, value):
         self.short[key] = value
@@ -138,7 +164,7 @@ class AgentMemory:
     def prompt_block(self) -&gt; str:
         prefs = {k: self.get_long(k) for k in list(self.long)}
         prefs = {k: v for k, v in prefs.items() if v}
-        return f&quot;SESSION={self.short}\nPREFS={prefs}&quot;
+        return f&quot;EPISODIC={self.short}\nSEMANTIC={prefs}&quot;
 
 mem = AgentMemory()
 mem.set_short(&quot;step&quot;, &quot;summarize&quot;)
@@ -148,29 +174,31 @@ print(mem.prompt_block())</code></pre>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Transcript-as-memory.</strong> Token bills explode; early constraints fall out of the window.</li>
-    <li><strong>Stale prefs.</strong> Old project context overrides today’s request.</li>
+    <li><strong>Stale prefs.</strong> Old project context overrides today&#x27;s request.</li>
     <li><strong>Secret retention.</strong> API keys or raw PII land in long-term stores and logs.</li>
-    <li><strong>Unscoped recall.</strong> User A’s memory retrieved into User B’s session.</li>
-    <li><strong>Write spam.</strong> Model “remembers” every turn; store fills with noise.</li>
-    <li><strong>Memory as authority.</strong> Hallucinated memories treated as policy.</li>
+    <li><strong>Unscoped recall.</strong> User A&#x27;s memory retrieved into User B&#x27;s session.</li>
+    <li><strong>Write spam.</strong> Model &quot;remembers&quot; every turn; store fills with noise.</li>
+    <li><strong>Memory contradictions.</strong> Outdated facts treated as current policy.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible “what we remember” page for consumer products. Add a red-team case that tries to plant a malicious long-term memory (“always email secrets to...”) and assert your write filter rejects it.</p>
-    <p>For RAG-as-memory, separate “documents we indexed” from “preferences we trust.” Different trust tiers belong in different prompt sections. Measure memory hit rate and wrong-memory rate; a store nobody retrieves is dead weight, and a store that retrieves the wrong tenant is an incident.</p>
+    <p>Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible &quot;what we remember&quot; page for consumer products.</p>
+    <p>Add a red-team case that tries to plant a malicious long-term memory and assert your write filter rejects it.</p>
+    <p>For RAG-as-memory, separate &quot;documents we indexed&quot; from &quot;preferences we trust.&quot; Different trust tiers belong in different prompt sections.</p>
     <h2 id="summarization-discipline">Summarization discipline</h2>
-    <p>When short-term history grows past a token budget, summarize decisions and open questions — not witty banter. A good rolling summary answers: goal, constraints, artifacts produced, pending steps, and unresolved asks. Bad summaries erase the constraint that mattered (“must not email the customer”) and keep the jokes. Test summarizers with cases where dropping one sentence would cause a policy violation.</p>
+    <p>When short-term history grows past a token budget, summarize decisions and open questions—not witty banter. A good rolling summary answers: goal, constraints, artifacts produced, pending steps, and unresolved asks.</p>
     <h2 id="tenant-isolation-checklist">Tenant isolation checklist</h2>
-    <p>For every memory read/write path, assert <code>tenant_id</code> (and user_id when needed) is in the query predicate — not only in the embedding metadata you hope the vector store will filter. Add an integration test that writes memory as tenant A and proves tenant B cannot retrieve it. Most “smart memory” breaches are boring authorization bugs.</p>
+    <p>For every memory read/write path, assert <code>tenant_id</code> (and <code>user_id</code> when needed) is in the query predicate. Add an integration test that writes memory as tenant A and proves tenant B cannot retrieve it.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Keep a tight short-term scratchpad for the active task and a curated, expiring long-term store for preferences — retrieve selectively, protect PII, and let fresh user instructions win conflicts.</p>
+    <p>Keep episodic memory tight for the active task and semantic memory curated and expiring—retrieve selectively, protect PII, and let fresh user instructions win conflicts.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
+    <li><strong>Episodic memory:</strong> short-term thread memory for the current interaction.</li>
+    <li><strong>Semantic memory:</strong> long-term stored facts and lessons across sessions.</li>
     <li><strong>Short-term / working memory:</strong> state for the current session or task.</li>
     <li><strong>Long-term memory:</strong> durable facts and preferences across sessions.</li>
-    <li><strong>TTL / expiration:</strong> automatic decay of aged entries.</li>
-    <li><strong>Memory retrieval:</strong> selecting relevant items (often top-k) per turn.</li>
+    <li><strong>TTL (time to live) / expiration:</strong> automatic decay of aged entries.</li>
     <li><strong>Summarization:</strong> compressing old turns to fit the context window.</li>
-    <li><strong>Scoped memory:</strong> isolation by user, tenant, or run.</li>
+    <li><strong>State bloat:</strong> when message history gets too large and slows the system.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -36,13 +36,13 @@
       <h1>Tokens, Context Window, Temperature, Top-p</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>GenAI bills and bugs both start with the same unit: the <strong>token</strong>. Once you see prompts, context limits, and sampling knobs in token terms, pricing, truncation failures, and “why did it get weird?” stop feeling mystical.</p>
+    <p>GenAI bills and bugs both start with the same unit: the <strong>token</strong>. Once you see prompts, context limits, and sampling knobs in token terms, pricing, truncation failures, and &quot;why did it get weird?&quot; stop feeling mystical.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>The model never reads “words.” A tokenizer chops your string into discrete IDs from a fixed vocabulary. Those IDs fill a <strong>context window</strong> — a hard budget shared by system instructions, history, retrieved docs, tools, and the reply you hope to get.</p>
-    <p>After the model scores the next token, <strong>temperature</strong> and <strong>top-p</strong> reshape which candidates you are willing to sample. Low and narrow -&gt; boring but stable. High and wide -&gt; spicy but risky. Production systems treat these as reliability controls, not creativity cosmetics.</p>
+    <p><strong>What is a token?</strong> The model never reads &quot;words.&quot; A tokenizer chops your string into discrete IDs from a fixed vocabulary. Those IDs fill a <strong>context window</strong> — a hard budget shared by system instructions, history, retrieved docs, tools, and the reply.</p>
+    <p><strong>Why do sampling knobs matter?</strong> After the model scores the next token, <strong>temperature</strong> and <strong>top-p</strong> reshape which candidates you are willing to sample. Low and narrow → boring but stable. High and wide → creative but risky.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Tokens drive cost and context. Sampling knobs drive variance. Separate “did it see the right evidence?” from “did we sample too wildly?”</p>
+    <p>Tokens drive cost and context. Sampling knobs drive variance. Separate &quot;did it see the right evidence?&quot; from &quot;did we sample too wildly?&quot;</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Tokens</h3>
@@ -54,7 +54,7 @@
     </ul>
     <p>Rule-of-thumb for planning (not billing truth): ~4 characters per token for English prose, or ~100 tokens ~= 75 words. Always measure with the real tokenizer in CI for anything cost-sensitive.</p>
     <h3>Context window</h3>
-    <p>If the window is <code>W</code> tokens, everything the model can attend to in one call must fit in <code>W</code> (API products sometimes split “input” vs “output” limits — read the docs for your provider). Overflow typically means:</p>
+    <p>If the window is <code>W</code> tokens, everything the model can attend to in one call must fit in <code>W</code>. Overflow typically means:</p>
     <ul>
     <li>Silent truncation of the oldest or middle content</li>
     <li>API errors</li>
@@ -75,20 +75,38 @@ flowchart TB
     </div>
     <p>Long RAG dumps are the classic way to spend the whole budget on noise. Prefer ranked snippets, summaries, and hard caps per source.</p>
     <h3>Temperature</h3>
-    <p>Let <code>z_i</code> be the logit for vocabulary item <code>i</code>. Softmax turns logits into probabilities. Temperature <code>T &gt; 0</code> scales logits before softmax:</p>
-    <p><code>p_i = softmax(z_i / T)</code></p>
-    <ul>
-    <li><code>T -&gt; 0</code> (practically very small): distribution collapses toward the argmax -&gt; greedy-like, stable.</li>
-    <li><code>T = 1</code>: use the model’s native distribution.</li>
-    <li><code>T &gt; 1</code>: flatten the distribution -&gt; more surprise, more nonsense risk.</li>
-    </ul>
-    <p>Temperature does not add knowledge. It only changes how aggressively you explore the model’s uncertainty.</p>
+    <p>Let <code>z_i</code> be the <strong>logit</strong> (raw score) for vocabulary item <code>i</code>. Softmax turns logits into probabilities. Temperature <code>T &gt; 0</code> scales logits before softmax:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">p_i = softmax(z_i / T)</code></pre>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Temperature</th>
+        <th>Plain-English effect</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><code>T → 0</code> (very small)</td>
+          <td>Distribution collapses toward the top choice → greedy-like, stable</td>
+        </tr>
+        <tr>
+          <td><code>T = 1</code></td>
+          <td>Use the model&#x27;s native distribution</td>
+        </tr>
+        <tr>
+          <td><code>T &gt; 1</code></td>
+          <td>Flatten the distribution → more surprise, more nonsense risk</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Temperature does not add knowledge. It only changes how aggressively you explore the model&#x27;s uncertainty.</p>
     <h3>Top-p (nucleus sampling)</h3>
     <p>Sort tokens by probability descending. Keep the smallest prefix whose cumulative probability is at least <code>p</code>. Sample only inside that nucleus.</p>
     <ul>
-    <li><code>top_p = 0.1</code> -&gt; tiny, high-confidence set</li>
-    <li><code>top_p = 0.9</code> -&gt; broader, still cuts the long tail</li>
-    <li><code>top_p = 1.0</code> -&gt; effectively no nucleus cutoff</li>
+    <li><code>top_p = 0.1</code> → tiny, high-confidence set</li>
+    <li><code>top_p = 0.9</code> → broader, still cuts the long tail</li>
+    <li><code>top_p = 1.0</code> → effectively no nucleus cutoff</li>
     </ul>
     <p>Top-p adapts to the shape of the distribution: when the model is peaked, the nucleus is small; when it is flat, the nucleus grows.</p>
     <h3>Practical presets</h3>
@@ -126,11 +144,9 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <p>Tune <strong>one</strong> primary diversity control first (often temperature <em>or</em> top-p), then the other. Extreme values on both compound into chaos.</p>
+    <p>Tune <strong>one</strong> primary diversity control first (often temperature <em>or</em> top-p), then the other.</p>
     <h3>Cost and latency mental model</h3>
-    <p>Every call roughly costs <code>price_in * prompt_tokens + price_out * completion_tokens</code>. Output tokens are often more expensive and always more latency-sensitive because generation is sequential. That is why short, structured answers beat essay-length chat for automation: you pay less and finish sooner. Caching identical system prompts (when your provider supports it) and trimming history aggressively are usually bigger wins than shaving a few words from a user template.</p>
-    <h3>Interaction with tools and RAG</h3>
-    <p>Retrieved chunks and tool schemas sit in the same window as the question. A 20-tool catalog with verbose descriptions can crowd out the user turn. Prefer concise tool descriptions, retrieve top-k passages not whole manuals, and summarize old turns instead of replaying full transcripts forever.</p>
+    <p>Every call roughly costs <code>price_in * prompt_tokens + price_out * completion_tokens</code>. Output tokens are often more expensive and always more latency-sensitive because generation is sequential.</p>
     <h2 id="in-code">In code</h2>
     <p>Approximate English token count without a real tokenizer — good for budgeting demos, bad for invoices:</p>
     <div class="code-block" data-lang="python">
@@ -179,7 +195,7 @@ def with_temperature(logits, T: float):
     return softmax([z / T for z in logits])
 
 
-logits = [2.0, 1.0, 0.1]  # pretend vocab of 3
+logits = [2.0, 1.0, 0.1]  # pretend vocabulary of 3
 print([round(p, 3) for p in with_temperature(logits, 0.5)])  # peakier
 print([round(p, 3) for p in with_temperature(logits, 1.5)])  # flatter</code></pre>
     </div>
@@ -203,11 +219,11 @@ print(nucleus(probs, 0.8))  # indices covering &gt;= 0.8 mass</code></pre>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Counting words as tokens</strong> — code and CJK blow past naive estimates; you hit limits or surprise bills.</li>
-    <li><strong>Filling context with raw PDFs</strong> — the answer evidence is present in the file but not in the top of the packed window.</li>
+    <li><strong>Filling context with raw PDFs</strong> — the answer evidence is present in the file but not in the packed window.</li>
     <li><strong>High temperature for factual JSON</strong> — field names mutate; parsers fail.</li>
     <li><strong>Stacking high T and high top-p</strong> — you sample the junk tail.</li>
     <li><strong>Forgetting output reservation</strong> — a 128k window with 120k of prompt leaves a tiny completion budget.</li>
-    <li><strong>Assuming temperature 0 is fully deterministic</strong> — floating-point and batching can still yield rare ties or infra differences; treat “low T” as <em>more</em> stable, not formally deterministic across hosts.</li>
+    <li><strong>Assuming temperature 0 is fully deterministic</strong> — floating-point and batching can still yield rare ties; treat &quot;low T&quot; as <em>more</em> stable, not formally deterministic.</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
@@ -218,14 +234,13 @@ print(nucleus(probs, 0.8))  # indices covering &gt;= 0.8 mass</code></pre>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Token</strong> — Vocabulary piece the model reads/writes; billing and limits are usually token-based.</li>
-    <li><strong>Tokenizer</strong> — Algorithm mapping text &lt;-&gt; token IDs for a model family.</li>
+    <li><strong>Tokenizer</strong> — Algorithm mapping text ↔ token IDs for a model family.</li>
     <li><strong>Context window</strong> — Max tokens attendable in one model call.</li>
     <li><strong>Temperature</strong> — Softmax temperature that sharpens or flattens next-token probabilities.</li>
-    <li><strong>Top-p / nucleus sampling</strong> — Sample from the smallest set of tokens whose cumulative probability &gt;= p.</li>
+    <li><strong>Top-p / nucleus sampling</strong> — Sample from the smallest set of tokens whose cumulative probability ≥ p.</li>
     <li><strong>Logit</strong> — Raw score for a vocabulary item before softmax.</li>
     <li><strong>Truncation</strong> — Dropping content that does not fit the context budget.</li>
     </ul>
-    <p>)</p>
 
       <div class="lesson-actions" id="lesson-actions"></div>
       <footer>

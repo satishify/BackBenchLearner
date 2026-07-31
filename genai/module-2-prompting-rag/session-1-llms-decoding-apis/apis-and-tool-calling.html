@@ -36,29 +36,52 @@
       <h1>LLM APIs and Tool Calling</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Chat completions alone make fluent text. Production systems need <strong>side effects and facts</strong>: prices, tickets, calendars, SQL. Tool calling is the bridge — the model proposes a typed function call; your server executes it; the model reads the result and answers the user. Skip that loop and you are asking the weights to pretend they are your database.</p>
+    <p>Chat completions alone make fluent text. Production systems need <strong>side effects and facts</strong>: prices, tickets, calendars, SQL. <strong>Tool calling</strong> is the bridge — the model proposes a typed function call; your server executes it; the model reads the result and answers the user. Skip that loop and you are asking the weights to pretend they are your database.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Treat the LLM as a <strong>router with language skills</strong>, not as a system of record:</p>
+    <p><strong>What is tool calling?</strong> The model does not magically execute your Python function. It emits a structured call; your application executes the function; then you pass the result back to the model.</p>
+    <p><strong>Why does it matter?</strong> Treat the LLM as a <strong>router with language skills</strong>, not as a system of record:</p>
     <ol>
     <li>User asks in natural language.</li>
     <li>Model chooses a tool (or none) and fills arguments from the schema.</li>
     <li>Your app validates args, runs the tool, returns a tool result message.</li>
     <li>Model drafts the final answer grounded in that result.</li>
     </ol>
-    <p>If step 3 is missing, “What’s Alice’s balance?” becomes creative writing.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>The model suggests; your code decides. Never execute tool calls without authz, validation, and allowlists.</p>
+    <p>The model suggests; your code decides. Never execute tool calls without authorization, validation, and allowlists.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>What model APIs typically expose</h3>
-    <ul>
-    <li>Chat completions with role-structured messages</li>
-    <li>Model tiers trading cost, latency, and quality</li>
-    <li>Optional modalities (vision, audio) and embeddings endpoints</li>
-    <li>Token-based billing and rate limits</li>
-    <li>Tool / function schemas attached to a request</li>
-    </ul>
+    <h3>Roles and instruction priority</h3>
+    <table>
+      <thead><tr>
+        <th>Role</th>
+        <th>Plain-English meaning</th>
+        <th>Example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>developer/system</td>
+          <td>Application-level behavior, business rules, safety boundaries</td>
+          <td>You are a refund assistant. Never issue refunds above Rs. 5000 without approval.</td>
+        </tr>
+        <tr>
+          <td>user</td>
+          <td>The end user&#x27;s task or question</td>
+          <td>Refund order 123 because it arrived damaged.</td>
+        </tr>
+        <tr>
+          <td>assistant</td>
+          <td>Previous model responses</td>
+          <td>I can help. Please share the order ID.</td>
+        </tr>
+        <tr>
+          <td>tool</td>
+          <td>External result returned after a tool was executed</td>
+          <td>Order 123 status: delivered; amount: Rs. 3400.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Modern OpenAI-style APIs use a messages array. Newer documentation emphasizes separating developer instructions from user-specific content. The stable lesson is <strong>role separation</strong>, not a particular endpoint name.</p>
     <h3>Tool-calling loop</h3>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -95,48 +118,82 @@ sequenceDiagram
   }
 }</code></pre>
     </div>
-    <p>Descriptions are part of the prompt. Vague tool names (“do_stuff”) cause wrong calls. Overlapping tools cause thrash — prefer one clear verb per capability.</p>
+    <p>Descriptions are part of the prompt. Vague tool names (&quot;do_stuff&quot;) cause wrong calls. Overlapping tools cause thrash — prefer one clear verb per capability.</p>
     <h3>Why this reduces hallucination</h3>
-    <p>The model still might invent an argument, but the <strong>payload</strong> of truth comes from your tool. Grounded answers cite returned fields; empty tool results should produce an honest “not found,” not a fabricated row.</p>
-    <h3>API practicalities GenAI engineers hit daily</h3>
+    <p>The model still might invent an argument, but the <strong>payload</strong> of truth comes from your tool. Grounded answers cite returned fields; empty tool results should produce an honest &quot;not found,&quot; not a fabricated row.</p>
+    <h3>Tool calling safety checklist</h3>
     <ul>
-    <li><strong>Idempotency</strong> — retries after timeouts can double-charge if your tool is not idempotent; use keys for writes.</li>
-    <li><strong>Timeouts</strong> — tool latency sits inside the user-visible request; set budgets and degrade gracefully (“weather unavailable”).</li>
-    <li><strong>Model routing</strong> — cheap model for classification, stronger model for tool planning; do not pay frontier rates for every “yes/no.”</li>
-    <li><strong>Observability</strong> — log tool name, latency, arg hashes (not secrets), and whether the final answer used the result.</li>
-    <li><strong>Parallel tool calls</strong> — some APIs return several calls at once; execute independently when safe, serialize when there are dependencies.</li>
+    <li>Validate all tool arguments before execution.</li>
+    <li>Use allowlists for tools and APIs; never let the model construct arbitrary shell commands or SQL unchecked.</li>
+    <li>Separate read-only tools from action tools such as purchase, refund, email, delete, or update.</li>
+    <li>Require confirmation for irreversible or high-value actions.</li>
+    <li>Log tool calls, arguments, results, and model versions for debugging.</li>
+    <li>Treat retrieved web pages, PDFs, emails, and tool outputs as untrusted data, not instructions.</li>
     </ul>
-    <h3>Parallel vs sequential tools</h3>
-    <p>If the user asks for “weather in two cities,” two independent <code>get_weather</code> calls can run together. If the second tool needs an ID from the first, force a sequence and feed intermediate results back through the model or through your orchestrator. Blind parallelism on dependent steps causes empty IDs and wasted hops.</p>
+    <h3>Building a reliable LLM application</h3>
+    <table>
+      <thead><tr>
+        <th>Problem</th>
+        <th>Naive approach</th>
+        <th>Better approach</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Changing facts</td>
+          <td>Ask the model from memory</td>
+          <td>Use retrieval or tools, then answer only from supplied evidence</td>
+        </tr>
+        <tr>
+          <td>JSON parsing failures</td>
+          <td>Tell it &quot;return JSON&quot;</td>
+          <td>Use structured outputs or schema validation plus retry/repair</td>
+        </tr>
+        <tr>
+          <td>Long documents</td>
+          <td>Paste everything</td>
+          <td>Chunk, retrieve relevant sections, summarize with citations</td>
+        </tr>
+        <tr>
+          <td>Hallucinated actions</td>
+          <td>Let the model decide silently</td>
+          <td>Expose tool plans and require confirmation for risky actions</td>
+        </tr>
+        <tr>
+          <td>Cost explosion</td>
+          <td>Send full history every turn</td>
+          <td>Summarize or compact history, cache stable context, cap max tokens</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="in-code">In code</h2>
-    <p>Illustrative client (requests-style, no real key):</p>
+    <p>Illustrative OpenAI-style minimal text call:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python"># Pseudocode — teaches the shape; do not commit secrets
-payload = {
-    &quot;model&quot;: &quot;chat-mid&quot;,
-    &quot;messages&quot;: [
-        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;Use tools for facts. Do not invent IDs.&quot;},
-        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Weather in Bengaluru?&quot;},
+      <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI()
+response = client.responses.create(
+    model=&quot;gpt-4o-mini&quot;,
+    instructions=&quot;Explain concepts clearly for a beginner.&quot;,
+    input=&quot;Explain RAG in one sentence.&quot;,
+)
+print(response.output_text)</code></pre>
+    </div>
+    <p>Illustrative Anthropic-style minimal message call:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+message = client.messages.create(
+    model=&quot;claude-sonnet-4-20250514&quot;,
+    max_tokens=256,
+    system=&quot;Explain concepts clearly for a beginner.&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Explain RAG in one sentence.&quot;}
     ],
-    &quot;tools&quot;: [
-        {
-            &quot;type&quot;: &quot;function&quot;,
-            &quot;function&quot;: {
-                &quot;name&quot;: &quot;get_weather&quot;,
-                &quot;description&quot;: &quot;Current weather for a city.&quot;,
-                &quot;parameters&quot;: {
-                    &quot;type&quot;: &quot;object&quot;,
-                    &quot;properties&quot;: {
-                        &quot;location&quot;: {&quot;type&quot;: &quot;string&quot;},
-                    },
-                    &quot;required&quot;: [&quot;location&quot;],
-                },
-            },
-        }
-    ],
-}
-# resp = requests.post(URL, json=payload, headers={&quot;Authorization&quot;: f&quot;Bearer {KEY}&quot;})</code></pre>
+)
+print(message.content[0].text)</code></pre>
     </div>
     <p>Local dispatcher with allowlist + validation:</p>
     <div class="code-block" data-lang="python">
@@ -168,20 +225,7 @@ def run_tool_call(name: str, args_json: str) -&gt; dict:
 
 print(run_tool_call(&quot;get_weather&quot;, &#x27;{&quot;location&quot;: &quot;Bengaluru&quot;}&#x27;))</code></pre>
     </div>
-    <p>Append tool results as structured messages (shape varies by vendor; concept is stable):</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">def after_tool(messages: list, call_id: str, result: dict) -&gt; list:
-    messages = list(messages)
-    messages.append(
-        {
-            &quot;role&quot;: &quot;tool&quot;,
-            &quot;tool_call_id&quot;: call_id,
-            &quot;content&quot;: json.dumps(result),
-        }
-    )
-    return messages</code></pre>
-    </div>
+    <p>Why use a tool for arithmetic? The model can often do small math directly, but a tool makes the result deterministic, auditable, and reusable. This matters more for databases, payment actions, calendars, search, and private enterprise APIs.</p>
     <p>Hop limit:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -193,12 +237,11 @@ print(run_tool_call(&quot;get_weather&quot;, &#x27;{&quot;location&quot;: &quot;
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Blind execution</strong> — model asks <code>transfer_funds</code>; app runs it without authz.</li>
+    <li><strong>Blind execution</strong> — model asks <code>transfer_funds</code>; app runs it without authorization.</li>
     <li><strong>Giant kitchen-sink tools</strong> — one <code>run_sql(query)</code> with no guardrails is a breach waiting for a prompt.</li>
     <li><strong>Schema drift</strong> — renamed parameters; model still emits old keys; silent failures.</li>
-    <li><strong>Leaking tool dumps into the UI</strong> — raw JSON errors shown as “assistant personality.”</li>
     <li><strong>Infinite tool loops</strong> — no hop cap; latency and bill explode.</li>
-    <li><strong>Using tools as optional decoration</strong> — model answers from memory even when a tool exists; force tool use for high-stakes fact classes when your API supports it, or check that facts came from results.</li>
+    <li><strong>Using tools as optional decoration</strong> — model answers from memory even when a tool exists.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>

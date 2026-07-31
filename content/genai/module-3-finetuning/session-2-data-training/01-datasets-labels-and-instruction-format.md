@@ -1,15 +1,15 @@
 ---
 title: "Datasets, Labels, and Instruction Format"
-description: "How to shape SFT data: instruction/response pairs, chat templates, labels, quality filters, and leakage traps."
+description: "How to shape supervised fine-tuning (SFT) data: instruction and response pairs, chat templates, labels, quality checks, and leakage traps."
 ---
 
-Fine-tuning quality is mostly dataset quality. A mediocre base model with clean, consistent examples often beats a strong model trained on noisy Slack dumps. This lesson covers how engineers structure labels and instruction formats so training teaches the behavior you intend.
+Most fine-tune wins come from clean data, not a magic learning rate. This lesson shows how to shape rows so training teaches the behavior you actually want at serving time.
 
 ## Intuition
 
-Supervised fine-tuning (SFT) teaches: "given this instruction (and context), produce that completion." Every row is a tiny contract:
+Supervised fine-tuning (SFT) teaches one simple pattern: **given this instruction (and context), produce that completion.** Every row is a tiny contract.
 
-- **Input side** — user request, system rules, optional retrieved context, tools results.
+- **Input side** — the user request, system rules, optional retrieved context, tool results.
 - **Output side** — the ideal assistant reply (and sometimes tool calls).
 - **Format** — how roles and special tokens wrap those fields so the tokenizer and chat template agree.
 
@@ -17,7 +17,11 @@ Supervised fine-tuning (SFT) teaches: "given this instruction (and context), pro
 The model learns the distribution of your targets. Inconsistent labels train inconsistency.
 :::
 
-If half your rows say "return bare JSON" and half wrap answers in prose, the model will randomly pick a style. Labels are not just "correct answers"—they are the style guide baked into weights.
+If half your rows say "return bare JSON" and half wrap answers in prose, the model will randomly pick a style. Labels are not just correct answers — they are the style guide baked into weights.
+
+### How your rows connect to the training loop
+
+Before a trainer runs, raw text becomes token IDs, gets packed into fixed-length windows, and flows through a mini-batch loop. The model predicts the next token at every position and gets graded with cross-entropy loss. You do not need to implement that loop here — but your **row shape and label quality** are what that loop actually learns from.
 
 ## How it works
 
@@ -47,13 +51,34 @@ Chat format matters because production inference uses the same **chat template**
 
 ### What "label" means here
 
-For causal LMs, the usual SFT loss is next-token prediction on the assistant tokens. You often **mask** system/user tokens so the loss focuses on what the assistant should say. Conceptually:
+For causal language models (LMs), the usual SFT loss is next-token prediction on the assistant tokens. You often **mask** system and user tokens so the loss focuses on what the assistant should say. Conceptually:
 
 ```text
 loss = -mean(log p(token_t | tokens_<t))  for t in assistant_span
 ```
 
-Bad labels (wrong JSON, leaked PII, contradictory policies) pull probability mass toward those mistakes.
+Bad labels (wrong JSON, leaked personally identifiable information (PII), contradictory policies) pull probability mass toward those mistakes.
+
+### Data problems that quietly break fine-tunes
+
+Good fine-tuning starts with good data. These five problems show up in almost every messy corpus:
+
+| Problem | What goes wrong | Typical fix |
+| --- | --- | --- |
+| **Noisy data** | Menus, ads, boilerplate, OCR errors, spam, or AI slop pollute the corpus | Filter aggressively and deduplicate |
+| **Incorrect labels** | Wrong answers teach the model bad behavior | Audit labels and quality scores |
+| **Duplicates** | Memorization increases and evaluation becomes contaminated | Remove exact and near duplicates |
+| **Inconsistent formatting** | HTML, Markdown, PDF text, and LaTeX mix together badly | Normalize text and structure |
+| **Outdated information** | Old facts, old APIs, and old policies mislead the model | Refresh the corpus and track cutoffs |
+
+### More data risks to watch for
+
+- **Small datasets** — high variance and easy overfitting.
+- **Limited edge-case coverage** — the model fails exactly where failures matter most.
+- **Lack of diversity** — works for some groups, fails for others.
+- **Imbalanced datasets** — looks accurate while missing the rare class you care about.
+- **Bad train/validation/test splits** — leakage and inflated scores.
+- **Domain and distribution shift** — deployment data stops looking like training data.
 
 ### Quality bar before training
 
@@ -64,7 +89,7 @@ Bad labels (wrong JSON, leaked PII, contradictory policies) pull probability mas
 | Deduplication | Near-duplicates inflate overfit |
 | PII / secrets scrub | Models can memorize and regurgitate |
 | Train / eval split by user or ticket | Random split leaks near-duplicates |
-| Difficulty mix | Only easy rows -> brittle on live mess |
+| Difficulty mix | Only easy rows → brittle on live mess |
 
 Aim for **consistency over volume** early. A few hundred excellent rows beat ten thousand noisy ones for many format/style tasks. Scale data once the format is locked.
 
@@ -76,7 +101,7 @@ Aim for **consistency over volume** early. A few hundred excellent rows beat ten
 - **Synthetic expansion** — useful for coverage; always human-spot-check a sample.
 
 :::tip
-Freeze a `SYSTEM_PROMPT` and output schema in a shared file. Generate training rows and prod prompts from the same source of truth.
+Freeze a `SYSTEM_PROMPT` and output schema in a shared file. Generate training rows and production prompts from the same source of truth.
 :::
 
 ## In code
@@ -160,6 +185,7 @@ HuggingFace-style packaging (pseudocode):
 - **Hidden instructions in user text** — Unfiltered user content that contradicts system policy teaches the model to ignore the system role.
 - **Over-cleaning** — Removing all hard cases makes train loss look great and production look worse.
 - **Unlabeled multi-task soup** — Mixing summarization, coding, and SQL without task tags confuses the model unless volume is huge and balanced.
+- **Weak data, clever schedules** — No amount of learning-rate tuning fully rescues a noisy or duplicated corpus.
 
 :::warn
 Never put API keys, customer PII, or internal secrets into SFT corpora. Memorization is a feature of gradient descent, not a bug you can ignore.
@@ -167,7 +193,7 @@ Never put API keys, customer PII, or internal secrets into SFT corpora. Memoriza
 
 ## One-line summary
 
-Structure SFT data as consistent instruction or chat turns, put the quality bar on assistant labels, and train with the same template you will use at serving time.
+Structure SFT data as consistent instruction or chat turns, fix the five common data problems before training, and use the same chat template you will use at serving time.
 
 ## Key terms
 
@@ -178,3 +204,4 @@ Structure SFT data as consistent instruction or chat turns, put the quality bar 
 - **JSONL** — Line-delimited JSON, common for training corpora.
 - **Gold label** — Human-approved target response.
 - **Data leakage** — Eval contamination or secrets appearing in training text.
+- **Domain shift** — The gap between training data and deployment data.

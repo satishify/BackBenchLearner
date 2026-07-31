@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Draft, check against criteria, revise — improve quality with bounded loops that do not bankrupt latency or trust.">
+  <meta name="description" content="Draft, check against criteria, revise—improve quality with bounded loops that do not bankrupt latency or trust.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops.html">
   <meta property="og:title" content="Reflection / Self-Correction Loops | BackbenchLearner">
-  <meta property="og:description" content="Draft, check against criteria, revise — improve quality with bounded loops that do not bankrupt latency or trust.">
+  <meta property="og:description" content="Draft, check against criteria, revise—improve quality with bounded loops that do not bankrupt latency or trust.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Reflection / Self-Correction Loops | BackbenchLearner">
-  <meta name="twitter:description" content="Draft, check against criteria, revise — improve quality with bounded loops that do not bankrupt latency or trust.">
+  <meta name="twitter:description" content="Draft, check against criteria, revise—improve quality with bounded loops that do not bankrupt latency or trust.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,17 +36,52 @@
       <h1>Reflection / Self-Correction Loops</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A <strong>reflection loop</strong> has the agent critique its own draft against explicit criteria and revise before the user sees a final answer. Done well, it catches format breaks and shallow errors. Done poorly, it burns tokens arguing with itself.</p>
+    <p><strong>What is this for?</strong> To explain <strong>reflection loops</strong> and the <strong>ReAct</strong> pattern—how agents think, act, observe, and correct themselves before finishing.</p>
+    <p><strong>Why does it exist?</strong> Pure reasoning can drift into wrong assumptions if an early guess is wrong. ReAct adds an <strong>observation</strong> step so the model can verify itself against reality—not imagination.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Humans rarely ship the first draft of a critical email. Agents can do the same: produce -&gt; check -&gt; revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.</p>
+    <p><strong>ReAct</strong> (Reason + Act) in plain English: <strong>think, take one action, read the result, then think again.</strong></p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">t1 = &#x27;I should check auth-service logs.&#x27;
+a1 = fetch_server_logs(service=&#x27;auth-service&#x27;, timeframe=&#x27;1h&#x27;)
+o1 = &#x27;ConnectionTimeout: Cannot reach db-primary&#x27;
+t2 = &#x27;Now I should check db-primary status.&#x27;</code></pre>
+    </div>
+    <p>Closed-book reasoning can drift after one wrong assumption. ReAct grounds thought in <strong>tool observations</strong>, so the model can correct itself using reality.</p>
+    <p>A <strong>reflection loop</strong> is the same idea applied to quality: produce → check → revise before the user sees the final answer.</p>
+    <table>
+      <thead><tr>
+        <th>Pattern</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>ReAct</strong></td>
+          <td>Alternate reasoning and action with observations</td>
+        </tr>
+        <tr>
+          <td><strong>Reflection</strong></td>
+          <td>Draft → check criteria → revise (bounded)</td>
+        </tr>
+        <tr>
+          <td><strong>Hierarchical ReAct</strong></td>
+          <td>Triage agent plans; specialists act and report back</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Without a stop rule, reflection becomes infinite polish—and ReAct becomes infinite tool calls. Always cap rounds, tokens, and time.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-    A[Draft] --> B[Check criteria]
-    B --> C{Pass?}
-    C -- No --> D[Revise]
-    D --> B
-    C -- Yes --> E[Final]
+    A[Draft / Think] --> B[Act or Check]
+    B --> C[Observe result]
+    C --> D{Pass?}
+    D -- No --> E[Revise / Replan]
+    E --> A
+    D -- Yes --> F[Final answer]
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
@@ -55,10 +90,10 @@ flowchart LR
     <li><strong>Factual consistency</strong> with tool results or retrieved docs.</li>
     <li><strong>Format compliance</strong> (JSON schema, required sections).</li>
     <li><strong>Policy / safety</strong> constraints and refusal rules.</li>
-    <li><strong>Coverage</strong> of the user’s constraints (dates, audience, language).</li>
+    <li><strong>Coverage</strong> of the user&#x27;s constraints (dates, audience, language).</li>
     <li><strong>Tool plan sanity</strong> (no missing dependency, no forbidden tool).</li>
     </ul>
-    <p>Prefer programmatic checkers when possible. Use an LLM judge for semantic properties, and calibrate it.</p>
+    <p>Prefer programmatic checkers when possible. Use an LLM-as-judge for semantic properties, and calibrate it.</p>
     <h3>Loop designs</h3>
     <table>
       <thead><tr>
@@ -87,20 +122,25 @@ flowchart LR
           <td>Run unit tests / tools</td>
           <td>Best for code agents</td>
         </tr>
+        <tr>
+          <td>ReAct</td>
+          <td>Think → act → observe → repeat</td>
+          <td>Best for multi-step evidence gathering</td>
+        </tr>
       </tbody>
     </table>
     <h3>Budgets</h3>
-    <p>Cap revisions (e.g. 2). Cap extra tokens. Cap wall-clock. If still failing, escalate to a human or return a partial with an explicit uncertainty note — do not silently loop.</p>
+    <p>Cap revisions (e.g., 2). Cap extra tokens. Cap wall-clock. If still failing, escalate to a human or return a partial with an explicit uncertainty note—do not silently loop.</p>
     <h3>When reflection helps most</h3>
     <ul>
     <li>Structured outputs that must parse.</li>
-    <li>Grounded answers that must cite.</li>
+    <li>Grounded answers that must cite sources.</li>
     <li>Code that must pass tests.</li>
     <li>Tone-sensitive external messages.</li>
     </ul>
     <p>Skip heavy reflection for low-stakes chitchat; the latency is pure tax.</p>
-    <h3>Trade-off</h3>
-    <p>More reflection can raise quality and reduce embarrassing mistakes, but increases latency and cost. Measure lift on a golden set: if pass rate does not move, delete the loop.</p>
+    <h3>Hierarchical ReAct at enterprise scale</h3>
+    <p>The <strong>triage agent</strong> becomes a meta-planner. Specialist agents (infrastructure, codebase, policy) become its tools. The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.</p>
     <h2 id="in-code">In code</h2>
     <p>Rule checks plus a single revision pass.</p>
     <div class="code-block" data-lang="python">
@@ -119,14 +159,11 @@ def check(answer: str) -&gt; Critique:
     issues = []
     if &quot;30 days&quot; not in answer:
         issues.append(&quot;missing refund window&quot;)
-    if &quot;http://&quot; in answer or &quot;https://&quot; in answer:
-        issues.append(&quot;unexpected link&quot;)
     if len(answer) &lt; 40:
         issues.append(&quot;too thin&quot;)
     return Critique(ok=not issues, issues=issues)
 
 def revise(answer: str, issues: list[str]) -&gt; str:
-    # stand-in for a second model call conditioned on issues
     fix = &quot; You can request a refund within 30 days of purchase.&quot;
     return answer + fix if &quot;missing refund window&quot; in issues else answer
 
@@ -146,29 +183,30 @@ print(reflect_loop(&quot;How long do I have to request a refund?&quot;))</code><
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Vibes rubric.</strong> “Be better” yields random rewrites.</li>
+    <li><strong>Vibes rubric.</strong> &quot;Be better&quot; yields random rewrites.</li>
     <li><strong>Unbounded loops.</strong> Cost spikes; users wait.</li>
     <li><strong>Shared delusion.</strong> Self-reflection misses systematic model biases.</li>
-    <li><strong>Over-refusal after critique.</strong> Safety pass becomes unhelpful paranoia.</li>
+    <li><strong>Reasoning without observation.</strong> ReAct skipped; model guesses instead of checking logs.</li>
     <li><strong>Ignoring failing checks.</strong> Logging issues but shipping the first draft anyway.</li>
     <li><strong>Reflecting on wrong artifacts.</strong> Polishing prose while the tool data is wrong.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Add reflection only behind a feature flag and measure delta on the golden set for one week. Track extra tokens per successful answer; if cost rises 40% for a 1% pass-rate lift, the loop is vanity. Prefer a cheap rule pass before any LLM critique — schema failures should never consume a judge call.</p>
-    <p>For code agents, make tests the reflector: draft patch -&gt; run tests -&gt; feed failures back -&gt; revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.</p>
+    <p>Add reflection only behind a feature flag and measure delta on the golden set for one week. Prefer a cheap rule pass before any LLM critique—schema failures should never consume a judge call.</p>
+    <p>For code agents, make tests the reflector: draft patch → run tests → feed failures back → revise, with a hard cap of two attempts before human handoff.</p>
     <h2 id="critique-prompts-that-work">Critique prompts that work</h2>
-    <p>A usable critique prompt lists pass/fail bullets and demands JSON like <code>{ &quot;pass&quot;: false, &quot;issues&quot;: [&quot;...&quot;] }</code>. Ban vague advice (“improve clarity”) unless paired with a concrete defect. Feed only the draft plus evidence (tool JSON, citations), not the entire chat history, so the judge cannot be distracted by earlier role-play. Pin the judge model version in CI the same way you pin the actor model.</p>
+    <p>A usable critique prompt lists pass/fail bullets and demands JSON like <code>{ &quot;pass&quot;: false, &quot;issues&quot;: [&quot;...&quot;] }</code>. Feed only the draft plus evidence (tool JSON, citations), not the entire chat history.</p>
     <h2 id="stop-conditions-beyond-round-caps">Stop conditions beyond round caps</h2>
-    <p>End reflection early on success, on repeated identical issues (the reviser is stuck), or when the judge confidence is low and the task is high risk — escalate instead of polishing. Stuck loops often oscillate between two phrasings; detect duplicate issue sets and bail. Record the reason the loop stopped so you can tune budgets with data, not folklore.</p>
+    <p>End reflection early on success, on repeated identical issues (the reviser is stuck), or when the judge confidence is low and the task is high risk—escalate instead of polishing.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Add bounded draft–check–revise loops with concrete criteria (and programmatic checks first) so quality rises without open-ended self-debate.</p>
+    <p>Use ReAct to ground reasoning in tool observations, and add bounded draft–check–revise loops with concrete criteria so quality rises without open-ended self-debate.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
+    <li><strong>ReAct (Reason + Act):</strong> loop that alternates reasoning and action with observations.</li>
+    <li><strong>Observation:</strong> result returned by a tool after an action.</li>
     <li><strong>Reflection loop:</strong> iterative self-critique and revision before final output.</li>
-    <li><strong>Rubric:</strong> explicit scoring or pass/fail criteria.</li>
-    <li><strong>LLM-as-judge:</strong> model that scores another model’s draft.</li>
-    <li><strong>Revision budget:</strong> max rounds / tokens / time for correction.</li>
-    <li><strong>Escalation:</strong> handoff when checks still fail after the budget.</li>
+    <li><strong>Hierarchical ReAct:</strong> triage agent delegates to specialist agents.</li>
+    <li><strong>LLM-as-judge:</strong> model that scores another model&#x27;s draft.</li>
+    <li><strong>Revision budget:</strong> max rounds, tokens, or time for correction.</li>
     <li><strong>Test-driven agent:</strong> uses executable tests as the checker.</li>
     </ul>
 

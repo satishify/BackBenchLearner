@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Walk the next-token loop, compare greedy, beam, top-k, and top-p decoding, and see how temperature reshapes LLM output distributions.">
+  <meta name="description" content="How LLMs generate text one token at a time, and how greedy, beam, top-k, and top-p decoding shape the output.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-1-foundations/transformers/autoregressive-decoding.html">
   <meta property="og:title" content="Autoregressive Decoding and Sampling | BackbenchLearner">
-  <meta property="og:description" content="Walk the next-token loop, compare greedy, beam, top-k, and top-p decoding, and see how temperature reshapes LLM output distributions.">
+  <meta property="og:description" content="How LLMs generate text one token at a time, and how greedy, beam, top-k, and top-p decoding shape the output.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-1-foundations/transformers/autoregressive-decoding.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Autoregressive Decoding and Sampling | BackbenchLearner">
-  <meta name="twitter:description" content="Walk the next-token loop, compare greedy, beam, top-k, and top-p decoding, and see how temperature reshapes LLM output distributions.">
+  <meta name="twitter:description" content="How LLMs generate text one token at a time, and how greedy, beam, top-k, and top-p decoding shape the output.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,59 +36,97 @@
       <h1>Autoregressive Decoding and Sampling</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>An LLM does not emit a paragraph in one shot. It runs an <strong>autoregressive loop</strong>: condition on the prompt, score the next token, append the choice, repeat until a stop condition. Architecture (causal Transformer) makes that loop valid; <strong>decoding strategy</strong> decides whether you get a safe factual tone, a creative draft, or a repetitive spiral. If you ship GenAI features, this lesson is the difference between “the model is dumb” and “we sampled badly.”</p>
+    <p><strong>What this is:</strong> An LLM does not emit a paragraph in one shot. It runs an <strong>autoregressive loop</strong>: read the prompt, score the next token, append the choice, repeat until a stop condition.</p>
+    <p><strong>Why it matters:</strong> Architecture (causal Transformer) makes that loop valid; <strong>decoding strategy</strong> decides whether you get a safe factual tone, a creative draft, or a repetitive spiral. If you ship GenAI features, this lesson is the difference between &quot;the model is dumb&quot; and &quot;we sampled badly.&quot;</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of improv storytelling: each sentence must fit everything already said. The model outputs a logit vector over the vocabulary; softmax turns it into probabilities; a policy picks an ID; that ID becomes part of the context for the next round. There is no separate “planning module” unless you add tools or search on top — the default product path <em>is</em> this token treadmill.</p>
-    <p>Greedy pick (always argmax) is like always choosing the safest next word: coherent early, often bland or locally trapped. Sampling from the full distribution is creative but can wander into nonsense. <strong>Top-k</strong> and <strong>top-p (nucleus)</strong> keep only the plausible head of the distribution, then sample — the practical middle ground behind many chat APIs.</p>
+    <p>Think of improv storytelling: each sentence must fit everything already said. The model outputs a <strong>logit</strong> vector over the vocabulary — raw, unnormalized scores. Softmax turns logits into probabilities. A policy picks a token ID. That ID becomes part of the context for the next round.</p>
+    <p>There is no separate &quot;planning module&quot; unless you add tools or search on top — the default product path <em>is</em> this token treadmill.</p>
+    <table>
+      <thead><tr>
+        <th>Strategy</th>
+        <th>Plain-English idea</th>
+        <th>Trade-off</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Greedy</strong></td>
+          <td>Always pick the highest-probability token</td>
+          <td>Fast and stable, but often bland or locally trapped</td>
+        </tr>
+        <tr>
+          <td><strong>Beam search</strong></td>
+          <td>Keep the top-B partial strings alive</td>
+          <td>Better global score, less diversity, heavier compute</td>
+        </tr>
+        <tr>
+          <td><strong>Top-k</strong></td>
+          <td>Sample only from the k largest probabilities</td>
+          <td>Fixed-size candidate set</td>
+        </tr>
+        <tr>
+          <td><strong>Top-p (nucleus)</strong></td>
+          <td>Keep the smallest set whose probabilities sum to at least p</td>
+          <td>Adaptive support; common in chat APIs</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Temperature and nucleus settings change user-visible personality. RAG and tool calling still end in the same loop: retrieved text lands in the prompt, then decoding writes the answer. Log seed and policy when debugging — &quot;flaky model&quot; bugs are often flaky sampling.</p>
+    </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>The loop.</strong></p>
+    <h3>The autoregressive loop</h3>
     <ol>
-    <li>Start with tokenized prompt (and optional BOS).</li>
-    <li>Forward the causal model -&gt; logits for the last position.</li>
+    <li>Start with tokenized prompt (and optional beginning-of-sequence token).</li>
+    <li>Forward the causal model → logits for the last position.</li>
     <li>Optionally divide logits by <strong>temperature</strong> <code>T</code> (<code>logits / T</code>): <code>T &lt; 1</code> sharpens; <code>T &gt; 1</code> flattens.</li>
     <li>Convert to probabilities; apply a decoding policy.</li>
-    <li>Append the chosen token; stop on EOS, stop string, or <code>max_tokens</code>.</li>
+    <li>Append the chosen token; stop on end-of-sequence (EOS), stop string, or <code>max_tokens</code>.</li>
     </ol>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">P(token_t | token_1..t-1) = softmax(logits_t / T)</code></pre>
     </div>
-    <p>Autoregressive factorization of a sequence:</p>
+    <p>The full sequence probability factorizes as:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">P(x_1..x_L) = product_t P(x_t | x_1..x_{t-1})</code></pre>
     </div>
-    <p><strong>Policies.</strong></p>
+    <p>Each token depends only on everything before it — matching the causal mask from the previous lesson.</p>
+    <h3>Decoding policies compared</h3>
     <table>
       <thead><tr>
         <th>Method</th>
         <th>Rule</th>
-        <th>Trade-off</th>
+        <th>Best for</th>
       </tr></thead>
       <tbody>
         <tr>
           <td>Greedy</td>
           <td><code>argmax P</code></td>
-          <td>Fast, deterministic, myopic</td>
+          <td>Fast, deterministic, factual tasks</td>
         </tr>
         <tr>
           <td>Beam search</td>
-          <td>Keep top-<code>B</code> partial strings</td>
-          <td>Better global score, less diversity, heavier</td>
+          <td>Keep top-B partial strings</td>
+          <td>Short, exact tasks (some translation)</td>
         </tr>
         <tr>
           <td>Top-k</td>
           <td>Sample from k largest probs</td>
-          <td>Fixed-size candidate set</td>
+          <td>Controlled creativity</td>
         </tr>
         <tr>
-          <td>Top-p</td>
-          <td>Smallest set with mass &gt;= p</td>
-          <td>Adaptive support; common in chat</td>
+          <td>Top-p (nucleus)</td>
+          <td>Smallest set with mass ≥ p</td>
+          <td>Chat and open-ended generation</td>
         </tr>
       </tbody>
     </table>
-    <p><strong>KV cache (systems note).</strong> Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys/values so each new token only pays for the new row — critical for product latency, even though the <em>algorithm</em> is still left-to-right.</p>
+    <h3>KV cache (systems note)</h3>
+    <p>Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys and values so each new token only pays for the new row — critical for product latency, even though the <em>algorithm</em> is still left-to-right.</p>
+    <h3>Repetition controls</h3>
+    <p>Frequency and presence penalties (API-side) down-weight tokens already used, fighting loops like &quot;Yes. Yes. Yes.&quot; They sit on the same logits the model just produced — product quality is model <em>plus</em> decoding policy.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -103,10 +141,8 @@ flowchart LR
   Stop -->|yes| Out[Final text]
       </div>
     </div>
-    <p><strong>Why this matters for GenAI apps.</strong> Temperature and nucleus settings change user-visible personality. RAG and tool calling still end in the same loop: retrieved text lands in the prompt, then decoding writes the answer. Evaluation should log seed/policy, not only the prompt — otherwise “flaky model” bugs are often flaky sampling.</p>
-    <p><strong>Repetition controls.</strong> Frequency and presence penalties (API-side) down-weight tokens already used, fighting loops like “Yes. Yes. Yes.” They are not part of the Transformer math, but they sit on the same logits you just produced — another reminder that product quality is model <em>plus</em> decoding policy.</p>
     <h2 id="in-code">In code</h2>
-    <p>A toy vocabulary and one decoding step with temperature, greedy, and top-p.</p>
+    <p>A toy vocabulary and one decoding step with temperature, greedy, and top-p:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -141,28 +177,28 @@ nucleus = top_p_filter(probs, p=0.85)
 token = rng.choice(len(vocab), p=nucleus)
 print(&quot;top-p sample -&gt;&quot;, vocab[token], &quot;mass kept&quot;, nucleus[nucleus &gt; 0].sum())</code></pre>
     </div>
-    <p>Lower <code>T</code> concentrates mass on “cat”; higher <code>T</code> lifts the long tail. Nucleus sampling renormalizes after dropping the tail — the same knob exposed as <code>top_p</code> in many APIs.</p>
+    <p>Lower <code>T</code> concentrates mass on &quot;cat&quot;; higher <code>T</code> lifts the long tail. Nucleus sampling renormalizes after dropping the tail — the same knob exposed as <code>top_p</code> in many APIs.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Temperature too high.</strong> Fluent-looking gibberish, contradicted facts, wild code.</li>
     <li><strong>Temperature too low / always greedy.</strong> Repetition loops, generic phrasing, stuck patterns.</li>
-    <li><strong>Beam search for open-ended chat.</strong> Often dull or repetitive; beams shine more on short, exact tasks (some translation setups).</li>
+    <li><strong>Beam search for open-ended chat.</strong> Often dull or repetitive; beams shine more on short, exact tasks.</li>
     <li><strong>Ignoring stop conditions.</strong> Models ramble past usefulness; always set <code>max_tokens</code> and stop sequences.</li>
     <li><strong>Blaming the base model for sampling bugs.</strong> Non-deterministic APIs need logged parameters; compare greedy when debugging grounding issues.</li>
-    <li><strong>Forgetting left-to-right cost.</strong> Latency grows with output length; streaming tokens improves UX but not total FLOPs.</li>
+    <li><strong>Forgetting left-to-right cost.</strong> Latency grows with output length; streaming tokens improves UX but not total compute.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Autoregressive decoding builds text token by token from causal next-token probabilities, with greedy, beam, top-k, and top-p policies shaping the trade-off between reliability and diversity.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Autoregressive:</strong> each token depends on previous tokens only.</li>
-    <li><strong>Logits:</strong> raw scores over the vocabulary before softmax.</li>
-    <li><strong>Temperature:</strong> divides logits to sharpen or flatten the distribution.</li>
-    <li><strong>Greedy decoding:</strong> always pick the highest-probability token.</li>
-    <li><strong>Beam search:</strong> keep multiple partial hypotheses ranked by score.</li>
-    <li><strong>Top-k / top-p (nucleus):</strong> truncate the distribution, then sample.</li>
-    <li><strong>KV cache:</strong> inference optimization reusing past attention keys/values.</li>
-    <li><strong>EOS / stop sequence:</strong> termination signals for the generation loop.</li>
+    <li><strong>Autoregressive</strong> — Each token depends on previous tokens only.</li>
+    <li><strong>Logits</strong> — Raw, unnormalized scores over the vocabulary before softmax.</li>
+    <li><strong>Temperature</strong> — Divides logits to sharpen or flatten the distribution.</li>
+    <li><strong>Greedy decoding</strong> — Always pick the highest-probability token.</li>
+    <li><strong>Beam search</strong> — Keep multiple partial hypotheses ranked by score.</li>
+    <li><strong>Top-k / top-p (nucleus)</strong> — Truncate the distribution, then sample.</li>
+    <li><strong>KV cache</strong> — Inference optimization reusing past attention keys and values.</li>
+    <li><strong>EOS / stop sequence</strong> — Termination signals for the generation loop.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

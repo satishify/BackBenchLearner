@@ -36,31 +36,10 @@
       <h1>Local and Hosted Model Serving</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Serving is how a trained (or frozen) model becomes a <strong>callable dependency</strong>. For product work you will bounce between <strong>local</strong> runtimes (laptop GPU, on-prem box, self-hosted container) and <strong>hosted</strong> APIs (vendor endpoints). The model weights may be identical; the operational contract is not. This lesson is about choosing and wiring that contract without painting yourself into a corner.</p>
+    <p><strong>Model serving</strong> is how a trained model becomes a <strong>callable dependency</strong>. For product work you will bounce between <strong>local</strong> runtimes (laptop GPU, on-prem box, self-hosted container) and <strong>hosted</strong> APIs (vendor endpoints). The model weights may be identical; the operational contract is not.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Local serving means you own the process that loads weights and runs forward passes. Hosted serving means you own an HTTP client and a bill. Local wins on data gravity, air-gapped demos, and per-token cost at steady high volume — if you can staff GPUs and paging. Hosted wins on time-to-first-feature, elastic bursts, and not learning CUDA at 2 a.m.</p>
-    <p>Design your application against a <strong>narrow interface</strong>: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model ids. Swap local &lt;-&gt; hosted behind that interface. Do not sprinkle vendor SDKs through business logic.</p>
-    <aside class="callout callout-key">
-      <p class="callout-title">Key idea</p>
-    <p>Pin a model id and a serving mode in config. “Whatever the playground default is today” is not a deployment strategy.</p>
-    </aside>
-    <h2 id="how-it-works">How it works</h2>
-    <h3>Local stack (conceptual)</h3>
-    <ol>
-    <li><strong>Runtime</strong> loads weights (llama.cpp, vLLM, Ollama, Transformers+accelerate, etc.).</li>
-    <li><strong>Scheduler</strong> batches concurrent requests when the runtime supports continuous batching.</li>
-    <li><strong>API shim</strong> exposes OpenAI-compatible or custom HTTP/gRPC so apps stay portable.</li>
-    <li><strong>Resources</strong> — VRAM caps context length and concurrency; quantization (GGUF Q4, AWQ, etc.) trades quality for fit.</li>
-    </ol>
-    <p>Local checklist: max context, tokens/sec at your concurrency, cold-start time, and how you ship weight updates.</p>
-    <h3>Hosted stack (conceptual)</h3>
-    <ol>
-    <li>Client sends authenticated requests with <code>model</code>, messages, decoding params.</li>
-    <li>Provider handles autoscaling, multi-tenant isolation, and often safety filters.</li>
-    <li>You receive usage meters (input/output tokens), rate limits, and regional endpoints.</li>
-    </ol>
-    <p>Hosted checklist: data retention / training-use policy, SLA, rate-limit headroom, structured-output support, and whether embeddings live on the same bill.</p>
-    <h3>Decision drivers</h3>
+    <p><strong>What is local serving?</strong> You own the process that loads weights and runs forward passes on your machine.</p>
+    <p><strong>What is hosted serving?</strong> You own an HTTP client and a bill; the provider runs the model on their servers.</p>
     <table>
       <thead><tr>
         <th>Factor</th>
@@ -70,13 +49,13 @@
       <tbody>
         <tr>
           <td>Sensitive prompts/docs</td>
-          <td>Air-gapped / VPC self-host</td>
+          <td>Air-gapped / private network</td>
           <td>Enterprise private endpoints</td>
         </tr>
         <tr>
           <td>Spiky traffic</td>
           <td>Painful capacity planning</td>
-          <td>Elastic</td>
+          <td>Elastic scaling</td>
         </tr>
         <tr>
           <td>Latency to first token</td>
@@ -89,19 +68,66 @@
           <td>Switch model string</td>
         </tr>
         <tr>
-          <td>Unit economics at huge steady QPS</td>
+          <td>Unit economics at huge steady volume</td>
           <td>Often cheaper</td>
           <td>Watch margins</td>
         </tr>
       </tbody>
     </table>
-    <p>Hybrid is common: hosted for peak and large models; local small models for classification, routing, and rewrite.</p>
+    <p>Design your application against a <strong>narrow interface</strong>: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model IDs. Swap local ↔ hosted behind that interface.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Pin a model ID and a serving mode in config. &quot;Whatever the playground default is today&quot; is not a deployment strategy.</p>
+    </aside>
+    <h2 id="how-it-works">How it works</h2>
+    <h3>Three practical ways to run open-source models</h3>
+    <p>The lecture covers three deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.</p>
+    <table>
+      <thead><tr>
+        <th>Approach</th>
+        <th>Plain-English idea</th>
+        <th>Trade-off</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Transformers locally</strong></td>
+          <td>Load model + tokenizer in Python with PyTorch</td>
+          <td>Needs GPU/MPS for a good experience; maximum control</td>
+        </tr>
+        <tr>
+          <td><strong>Hugging Face hosted inference</strong></td>
+          <td>Send HTTP requests to provider servers</td>
+          <td>Network latency and rate limits; fast prototyping</td>
+        </tr>
+        <tr>
+          <td><strong>Ollama locally</strong></td>
+          <td>Simple local server with minimal setup</td>
+          <td>Model choice is narrower than the whole HF ecosystem</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Local Transformers flow</h3>
+    <p>For local inference, the basic flow is always the same: load a tokenizer, load the model, move both to the same device, tokenize the prompt, generate, and decode.</p>
+    <ul>
+    <li><strong><code>mps</code></strong> (Metal Performance Shaders) on Apple Silicon uses the GPU and is much faster than CPU-only.</li>
+    <li><strong><code>return_tensors=&#x27;pt&#x27;</code></strong> returns PyTorch tensors so the model can process the input directly.</li>
+    <li><strong><code>generate()</code></strong> performs autoregressive token-by-token generation.</li>
+    </ul>
+    <h3>Hosted stack (conceptual)</h3>
+    <ol>
+    <li>Client sends authenticated requests with <code>model</code>, messages, decoding params.</li>
+    <li>Provider handles autoscaling, multi-tenant isolation, and often safety filters.</li>
+    <li>You receive usage meters (input/output tokens), rate limits, and regional endpoints.</li>
+    </ol>
+    <p>Key mental model: the model is not running on your machine; your code is just making an HTTP call.</p>
+    <h3>Ollama</h3>
+    <p>Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup. The lecture frames it as the simplest private option.</p>
     <h3>Reliability patterns (both)</h3>
     <ul>
     <li>Timeouts shorter than user patience; retry only on idempotent GETs / safe completions with jitter.</li>
-    <li>Circuit breaker when error rate spikes; degrade to cached FAQ or “try again.”</li>
-    <li>Load tests with realistic prompt lengths — tiny “Hello” benches lie.</li>
-    <li>Log model id, latency, token counts; never log secrets or full PII prompts in cleartext.</li>
+    <li>Circuit breaker when error rate spikes; degrade to cached FAQ or &quot;try again.&quot;</li>
+    <li>Load tests with realistic prompt lengths — tiny &quot;Hello&quot; benches lie.</li>
+    <li>Log model ID, latency, token counts; never log secrets or full PII prompts in cleartext.</li>
     </ul>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -114,21 +140,65 @@ flowchart LR
       </div>
     </div>
     <h2 id="in-code">In code</h2>
-    <p>One client protocol, two backends — local OpenAI-compatible server vs hosted. Swap with an env flag.</p>
+    <p>Local Transformers inference:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_id = &quot;HuggingFaceTB/SmolLM2-360M-Instruct&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(model_id)
+device = &quot;mps&quot; if torch.backends.mps.is_available() else &quot;cpu&quot;
+model = model.to(device)
+inputs = tokenizer(&quot;What is quantum computing?&quot;, return_tensors=&quot;pt&quot;).to(device)
+outputs = model.generate(**inputs, max_new_tokens=100)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))</code></pre>
+    </div>
+    <p>Hugging Face hosted inference:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">import requests
+
+API_URL = &quot;https://router.huggingface.co/v1/chat/completions&quot;
+headers = {&quot;Authorization&quot;: &quot;Bearer YOUR_HF_TOKEN&quot;}
+response = requests.post(
+    API_URL,
+    headers=headers,
+    json={
+        &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is quantum computing?&quot;}],
+        &quot;model&quot;: &quot;Qwen/Qwen3-32B:nscale&quot;,
+    },
+)
+print(response.json())</code></pre>
+    </div>
+    <p>Ollama local call:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">import requests
+
+response = requests.post(
+    &quot;http://localhost:11434/api/generate&quot;,
+    json={
+        &quot;model&quot;: &quot;llama3&quot;,
+        &quot;prompt&quot;: &quot;What is quantum computing?&quot;,
+        &quot;stream&quot;: False,
+    },
+)
+print(response.json()[&quot;response&quot;])</code></pre>
+    </div>
+    <p>One client protocol, two backends — swap with an env flag:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import os
 import json
 import urllib.request
 
+
 def chat_completion(base_url: str, api_key: str | None, model: str, messages: list[dict],
                     temperature: float = 0.2, timeout_s: float = 30.0) -&gt; str:
     url = base_url.rstrip(&quot;/&quot;) + &quot;/v1/chat/completions&quot;
-    body = {
-        &quot;model&quot;: model,
-        &quot;messages&quot;: messages,
-        &quot;temperature&quot;: temperature,
-    }
+    body = {&quot;model&quot;: model, &quot;messages&quot;: messages, &quot;temperature&quot;: temperature}
     data = json.dumps(body).encode(&quot;utf-8&quot;)
     headers = {&quot;Content-Type&quot;: &quot;application/json&quot;}
     if api_key:
@@ -137,6 +207,7 @@ def chat_completion(base_url: str, api_key: str | None, model: str, messages: li
     with urllib.request.urlopen(req, timeout=timeout_s) as resp:
         payload = json.loads(resp.read().decode(&quot;utf-8&quot;))
     return payload[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;]
+
 
 def get_backend():
     mode = os.environ.get(&quot;LLM_MODE&quot;, &quot;hosted&quot;)
@@ -150,43 +221,29 @@ def get_backend():
         &quot;base_url&quot;: os.environ[&quot;HOSTED_LLM_URL&quot;],
         &quot;api_key&quot;: os.environ[&quot;HOSTED_API_KEY&quot;],
         &quot;model&quot;: os.environ.get(&quot;HOSTED_MODEL&quot;, &quot;vendor-small-instruct&quot;),
-    }
-
-def ask(user_text: str) -&gt; str:
-    cfg = get_backend()
-    return chat_completion(
-        cfg[&quot;base_url&quot;],
-        cfg[&quot;api_key&quot;],
-        cfg[&quot;model&quot;],
-        messages=[
-            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;Answer briefly and factually.&quot;},
-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_text},
-        ],
-    )
-
-# Smoke: python -c &quot;print(ask(&#x27;Name two HTTP methods.&#x27;))&quot;</code></pre>
+    }</code></pre>
     </div>
     <p>Point <code>LOCAL_LLM_URL</code> at Ollama, vLLM, or any OpenAI-compatible shim. Keep prompts and validators identical across modes so eval suites stay comparable.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>SDK lock-in.</strong> Business code imports one vendor deeply; migration becomes a rewrite. Wrap early.</li>
-    <li><strong>Unbounded context locally.</strong> A 128k model flag does not mean your GPU can hold 128k x batch. OOMs look like “random” crashes.</li>
-    <li><strong>Silent model drift on hosted.</strong> Provider updates a dated alias. Pin versions; re-run golden evals on change.</li>
-    <li><strong>No budget for tokens.</strong> Local feels “free” until electricity and GPU lease show up; hosted feels fine until one recursive agent loop.</li>
-    <li><strong>Different safety stacks.</strong> Hosted filters refuse a prompt local accepts (or the reverse). Document behavior per backend.</li>
-    <li><strong>Clock-skewed timeouts.</strong> Gateway timeout 5s, model p95 8s — cascading retries amplify load.</li>
+    <li><strong>SDK lock-in</strong> — Business code imports one vendor deeply; migration becomes a rewrite. Wrap early.</li>
+    <li><strong>Unbounded context locally</strong> — A 128k model flag does not mean your GPU can hold 128k × batch. Out-of-memory errors look like &quot;random&quot; crashes.</li>
+    <li><strong>Silent model drift on hosted</strong> — Provider updates a dated alias. Pin versions; re-run golden evals on change.</li>
+    <li><strong>No budget for tokens</strong> — Local feels &quot;free&quot; until electricity and GPU lease show up; hosted feels fine until one recursive agent loop.</li>
+    <li><strong>Different safety stacks</strong> — Hosted filters refuse a prompt local accepts (or the reverse). Document behavior per backend.</li>
     </ul>
-    <p>Roll out hosted + pinned id first; mirror prompts on a local 7–8B for privacy paths and offline eval; route classify locally and generate hosted when metrics justify it. Do not assume quantized local equals frontier hosted.</p>
+    <p>Roll out hosted + pinned ID first; mirror prompts on a local 7–8B for privacy paths and offline eval. Do not assume quantized local equals frontier hosted.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Serve models behind a pinned, timeout-aware client interface so you can run the same prompts on local weights or hosted APIs as privacy, cost, and latency demand.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Model serving:</strong> process of loading weights and answering inference requests.</li>
-    <li><strong>Local runtime:</strong> self-hosted engine (vLLM, llama.cpp, Ollama, ...).</li>
-    <li><strong>Hosted API:</strong> vendor-managed inference endpoint.</li>
-    <li><strong>Continuous batching:</strong> packing many in-flight generations onto a GPU efficiently.</li>
-    <li><strong>Quantization:</strong> lower-precision weights/activations to reduce memory and cost.</li>
-    <li><strong>Pinned model id:</strong> immutable reference so prod does not float to a new checkpoint silently.</li>
+    <li><strong>Model serving</strong> — Process of loading weights and answering inference requests.</li>
+    <li><strong>Local runtime</strong> — Self-hosted engine (vLLM, llama.cpp, Ollama, Transformers).</li>
+    <li><strong>Hosted API</strong> — Vendor-managed inference endpoint.</li>
+    <li><strong>Continuous batching</strong> — Packing many in-flight generations onto a GPU efficiently.</li>
+    <li><strong>Quantization</strong> — Lower-precision weights/activations to reduce memory and cost.</li>
+    <li><strong>Pinned model ID</strong> — Immutable reference so production does not float to a new checkpoint silently.</li>
+    <li><strong>MPS (Metal Performance Shaders)</strong> — Apple Silicon GPU acceleration for PyTorch.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

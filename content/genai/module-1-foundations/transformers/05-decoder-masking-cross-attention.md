@@ -3,38 +3,75 @@ title: "Causal Masking and Cross-Attention"
 description: "How triangular masks stop decoders from peeking at future tokens, and how cross-attention aligns target queries with encoder keys and values."
 ---
 
-Training a language model on “The cat sat on the ___” only works if the network cannot peek at the answer token while predicting it. **Causal (look-ahead) masking** enforces that rule inside decoder self-attention. In encoder–decoder models, a second mechanism — **cross-attention** — lets each target position read from the *source* sequence. Together they explain GPT-style stacks (mask only) and classic Transformer translation (mask + cross).
+**What this is:** Training a language model on "The cat sat on the ___" only works if the network cannot peek at the answer while predicting it. **Causal (look-ahead) masking** enforces that rule. In encoder–decoder models, **cross-attention** lets each target position read from the *source* sequence.
+
+**Why it matters:** Together they explain GPT-style stacks (mask only) and classic Transformer translation (mask + cross-attention).
 
 ## Intuition
 
-Think of writing a sentence on a strip of paper covered by a sliding sleeve: you may see everything up to the pen tip, never beyond it. That sleeve is the causal mask. During training we still process the whole target in parallel for speed, but illegal future links get score `-inf` before softmax so their weights become zero.
+### Causal masking — the anti-cheating rule
 
-Cross-attention is a second meeting room. The decoder brings questions (queries from the target side); the encoder brings a library of notes (keys and values from the source). Generating the French word for “cat” can attend strongly to the English token “cat” even though self-attention on the French prefix knows nothing about English.
+Think of writing a sentence on a strip of paper covered by a sliding sleeve: you may see everything up to the pen tip, never beyond it. That sleeve is the **causal mask**.
 
-Decoder-only LLMs skip the encoder library and use the prompt + generated tokens as the only sequence — still causal self-attention, no cross-attn block. Encoder–decoder models (summarization, MT, some T5-style setups) keep both.
+During training we still process the whole target in parallel for speed, but illegal future links get score `-inf` before softmax so their weights become zero.
+
+**Example:** Training sentence "I love neural networks"
+
+When the model runs on word 2 ("love"), the mask forces positions 3 ("neural") and 4 ("networks") to score `-inf`. After softmax, those weights are exactly 0. The model can only look at "I" and "love" to predict what comes next — it must learn language structure, not copy answers.
+
+### Cross-attention — the second meeting room
+
+The decoder brings **questions** (queries from the target side). The encoder brings a **library of notes** (keys and values from the source). Generating the French word for "cat" can attend strongly to the English token "cat" even though decoder self-attention on the French prefix knows nothing about English.
+
+| Model type | What it uses |
+| --- | --- |
+| **Decoder-only LLM** (GPT-style) | Causal self-attention only — prompt and generated tokens in one stream |
+| **Encoder–decoder** (translation, T5) | Causal self-attention + cross-attention to encoder outputs |
+
+:::key
+Encoders should see **both directions** (full source). Decoders must **not** see the future (causal mask on target). Blurring that distinction confuses machine translation explanations.
+:::
 
 ## How it works
 
-**Causal mask.** For length `n`, build an `n x n` matrix `M` where `M_ij = 0` if `j <= i` and `-inf` if `j > i` (upper triangle forbidden). Then:
+### Causal mask formula
+
+For length `n`, build an `n × n` mask matrix `M` where `M_ij = 0` if `j ≤ i` and `-inf` if `j > i`:
 
 ```
-scores = Q K^T / sqrt(d_k) + M
-weights = softmax(scores)   # future positions ~ 0
-output  = weights V
+e_ij = (Q_i * K_j^T) / sqrt(d_k) + M_ij      where M_ij = 0 if j ≤ i else -inf
+
+scores = Q * K^T / sqrt(d_k) + M
+weights = softmax(scores)   # future positions → ~0
+output  = weights * V
 ```
 
-Position `i` may attend to keys `0..i` only. Training can still use teacher forcing: feed the full gold target, predict all next tokens in parallel under the mask — much faster than truly sequential loops.
+Position `i` may attend to keys `0..i` only. Training can still use **teacher forcing**: feed the full gold target, predict all next tokens in parallel under the mask — much faster than truly sequential loops.
 
-**Cross-attention.** Let `H_enc` be encoder outputs `(n_src, d)` and `H_dec` the current decoder states `(n_tgt, d)`:
+The mask is a **lower triangular matrix** — all spaces above the diagonal are blocked.
+
+### Cross-attention
+
+Let `H_enc` be encoder outputs `(n_src, d)` and `H_dec` the current decoder states `(n_tgt, d)`:
 
 ```
-Q = H_dec W_Q
-K = H_enc W_K
-V = H_enc W_V
-CrossAttn = softmax(Q K^T / sqrt(d_k)) V
+Q = H_dec * W_Q       # questions from decoder
+K = H_enc * W_K       # keys from encoder
+V = H_enc * W_V       # values from encoder
+CrossAttn = softmax(Q * K^T / sqrt(d_k)) * V
 ```
 
-No causal mask is required across the source (the encoder already saw the full input). Masking still applies to *decoder self-attention* so the target side remains autoregressive.
+No causal mask is needed across the source — the encoder already saw the full input. Masking still applies to *decoder self-attention* so the target side remains autoregressive.
+
+### Self vs cross — cheat sheet
+
+| Mechanism | Q from | K/V from | Typical role |
+| --- | --- | --- | --- |
+| Decoder self-attention | Target | Target (masked) | Fluency, local target context |
+| Cross-attention | Target | Source / encoder | Alignment to input |
+| Encoder self-attention | Source | Source (unmasked) | Bidirectional source context |
+
+**Padding masks** (separate from causality): set scores for pad tokens to `-inf` so empty slots do not soak probability mass. Production batches always combine padding masks with causal masks on the decoder side.
 
 ```mermaid
 flowchart LR
@@ -50,21 +87,9 @@ flowchart LR
   V --> CA
 ```
 
-**Self vs cross (cheat sheet).**
-
-| Mechanism | Q from | K/V from | Typical role |
-| --- | --- | --- | --- |
-| Decoder self-attn | Target | Target (masked) | Fluency, local target context |
-| Cross-attn | Target | Source / encoder | Alignment to input |
-| Encoder self-attn | Source | Source (unmasked) | Bidirectional source context |
-
-**Padding masks.** Separate from causality: set scores for pad tokens to `-inf` so empty slots do not soak probability mass. Production batches always combine padding masks with causal masks on the decoder side.
-
-**Training vs inference.** Masks make *training* parallel: the whole target length can be predicted in one forward pass under the triangle. At *inference*, you still generate left to right because the true future tokens do not exist yet — the mask’s job is to keep the training objective honest so that skill transfers to that serial loop.
-
 ## In code
 
-Apply a causal mask and contrast with unmasked attention on the same scores.
+Apply a causal mask and contrast with unmasked attention on the same scores:
 
 ```python
 import numpy as np
@@ -101,9 +126,9 @@ Row 1 under the causal mask should put ~0 on columns 2 and 3, while the open mat
 ## What goes wrong
 
 - **Leaking future tokens.** A broken mask yields unrealistically high training accuracy and useless models at inference (where futures do not exist).
-- **Mixing up architectures.** Saying “GPT uses cross-attention to the prompt” is sloppy: the prompt lives in the same causal self-attention stream.
+- **Mixing up architectures.** Saying "GPT uses cross-attention to the prompt" is sloppy: the prompt lives in the same causal self-attention stream.
 - **Forgetting pad masks.** Models attend to padding and waste capacity or invent ghost tokens.
-- **Encoder bidirectional vs decoder causal.** Encoders *should* see both directions; decoders must not. Blurring that distinction confuses MT explanations.
+- **Encoder bidirectional vs decoder causal.** Encoders *should* see both directions; decoders must not.
 - **Assuming masks slow training to serial.** Masks allow parallel teacher-forced training; only *inference* generation is inherently serial (next lesson).
 
 ## One-line summary
@@ -112,10 +137,11 @@ Causal masks stop decoder self-attention from seeing future tokens, while cross-
 
 ## Key terms
 
-- **Causal / look-ahead mask:** triangular mask enforcing `attend only to <= i`.
-- **Teacher forcing:** train on gold prefixes while predicting the next token at each position.
-- **Cross-attention:** Q from decoder, K/V from encoder (or another sequence).
-- **Self-attention:** Q/K/V from the same sequence.
-- **Padding mask:** blocks non-content positions in batched sequences.
-- **Encoder–decoder:** bidirectional encoder + masked decoder with cross-attn.
-- **Decoder-only:** single stack with causal self-attention (typical LLMs).
+- **Causal / look-ahead mask** — Triangular mask enforcing "attend only to positions ≤ i".
+- **Teacher forcing** — Train on gold prefixes while predicting the next token at each position.
+- **Cross-attention** — Q from decoder, K/V from encoder (or another sequence).
+- **Self-attention** — Q/K/V from the same sequence.
+- **Padding mask** — Blocks non-content positions in batched sequences.
+- **Encoder–decoder** — Bidirectional encoder + masked decoder with cross-attention.
+- **Decoder-only** — Single stack with causal self-attention (typical LLMs).
+- **Lower triangular matrix** — Matrix format where all spaces above the diagonal are zero (or blocked).

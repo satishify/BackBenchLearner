@@ -1,46 +1,67 @@
 ---
 title: "Autoregressive Decoding and Sampling"
-description: "Walk the next-token loop, compare greedy, beam, top-k, and top-p decoding, and see how temperature reshapes LLM output distributions."
+description: "How LLMs generate text one token at a time, and how greedy, beam, top-k, and top-p decoding shape the output."
 ---
 
-An LLM does not emit a paragraph in one shot. It runs an **autoregressive loop**: condition on the prompt, score the next token, append the choice, repeat until a stop condition. Architecture (causal Transformer) makes that loop valid; **decoding strategy** decides whether you get a safe factual tone, a creative draft, or a repetitive spiral. If you ship GenAI features, this lesson is the difference between “the model is dumb” and “we sampled badly.”
+**What this is:** An LLM does not emit a paragraph in one shot. It runs an **autoregressive loop**: read the prompt, score the next token, append the choice, repeat until a stop condition.
+
+**Why it matters:** Architecture (causal Transformer) makes that loop valid; **decoding strategy** decides whether you get a safe factual tone, a creative draft, or a repetitive spiral. If you ship GenAI features, this lesson is the difference between "the model is dumb" and "we sampled badly."
 
 ## Intuition
 
-Think of improv storytelling: each sentence must fit everything already said. The model outputs a logit vector over the vocabulary; softmax turns it into probabilities; a policy picks an ID; that ID becomes part of the context for the next round. There is no separate “planning module” unless you add tools or search on top — the default product path *is* this token treadmill.
+Think of improv storytelling: each sentence must fit everything already said. The model outputs a **logit** vector over the vocabulary — raw, unnormalized scores. Softmax turns logits into probabilities. A policy picks a token ID. That ID becomes part of the context for the next round.
 
-Greedy pick (always argmax) is like always choosing the safest next word: coherent early, often bland or locally trapped. Sampling from the full distribution is creative but can wander into nonsense. **Top-k** and **top-p (nucleus)** keep only the plausible head of the distribution, then sample — the practical middle ground behind many chat APIs.
+There is no separate "planning module" unless you add tools or search on top — the default product path *is* this token treadmill.
+
+| Strategy | Plain-English idea | Trade-off |
+| --- | --- | --- |
+| **Greedy** | Always pick the highest-probability token | Fast and stable, but often bland or locally trapped |
+| **Beam search** | Keep the top-B partial strings alive | Better global score, less diversity, heavier compute |
+| **Top-k** | Sample only from the k largest probabilities | Fixed-size candidate set |
+| **Top-p (nucleus)** | Keep the smallest set whose probabilities sum to at least p | Adaptive support; common in chat APIs |
+
+:::key
+Temperature and nucleus settings change user-visible personality. RAG and tool calling still end in the same loop: retrieved text lands in the prompt, then decoding writes the answer. Log seed and policy when debugging — "flaky model" bugs are often flaky sampling.
+:::
 
 ## How it works
 
-**The loop.**
+### The autoregressive loop
 
-1. Start with tokenized prompt (and optional BOS).
-2. Forward the causal model -> logits for the last position.
+1. Start with tokenized prompt (and optional beginning-of-sequence token).
+2. Forward the causal model → logits for the last position.
 3. Optionally divide logits by **temperature** `T` (`logits / T`): `T < 1` sharpens; `T > 1` flattens.
 4. Convert to probabilities; apply a decoding policy.
-5. Append the chosen token; stop on EOS, stop string, or `max_tokens`.
+5. Append the chosen token; stop on end-of-sequence (EOS), stop string, or `max_tokens`.
 
 ```
 P(token_t | token_1..t-1) = softmax(logits_t / T)
 ```
 
-Autoregressive factorization of a sequence:
+The full sequence probability factorizes as:
 
 ```
 P(x_1..x_L) = product_t P(x_t | x_1..x_{t-1})
 ```
 
-**Policies.**
+Each token depends only on everything before it — matching the causal mask from the previous lesson.
 
-| Method | Rule | Trade-off |
+### Decoding policies compared
+
+| Method | Rule | Best for |
 | --- | --- | --- |
-| Greedy | `argmax P` | Fast, deterministic, myopic |
-| Beam search | Keep top-`B` partial strings | Better global score, less diversity, heavier |
-| Top-k | Sample from k largest probs | Fixed-size candidate set |
-| Top-p | Smallest set with mass >= p | Adaptive support; common in chat |
+| Greedy | `argmax P` | Fast, deterministic, factual tasks |
+| Beam search | Keep top-B partial strings | Short, exact tasks (some translation) |
+| Top-k | Sample from k largest probs | Controlled creativity |
+| Top-p (nucleus) | Smallest set with mass ≥ p | Chat and open-ended generation |
 
-**KV cache (systems note).** Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys/values so each new token only pays for the new row — critical for product latency, even though the *algorithm* is still left-to-right.
+### KV cache (systems note)
+
+Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys and values so each new token only pays for the new row — critical for product latency, even though the *algorithm* is still left-to-right.
+
+### Repetition controls
+
+Frequency and presence penalties (API-side) down-weight tokens already used, fighting loops like "Yes. Yes. Yes." They sit on the same logits the model just produced — product quality is model *plus* decoding policy.
 
 ```mermaid
 flowchart LR
@@ -55,13 +76,9 @@ flowchart LR
   Stop -->|yes| Out[Final text]
 ```
 
-**Why this matters for GenAI apps.** Temperature and nucleus settings change user-visible personality. RAG and tool calling still end in the same loop: retrieved text lands in the prompt, then decoding writes the answer. Evaluation should log seed/policy, not only the prompt — otherwise “flaky model” bugs are often flaky sampling.
-
-**Repetition controls.** Frequency and presence penalties (API-side) down-weight tokens already used, fighting loops like “Yes. Yes. Yes.” They are not part of the Transformer math, but they sit on the same logits you just produced — another reminder that product quality is model *plus* decoding policy.
-
 ## In code
 
-A toy vocabulary and one decoding step with temperature, greedy, and top-p.
+A toy vocabulary and one decoding step with temperature, greedy, and top-p:
 
 ```python
 import numpy as np
@@ -97,16 +114,16 @@ token = rng.choice(len(vocab), p=nucleus)
 print("top-p sample ->", vocab[token], "mass kept", nucleus[nucleus > 0].sum())
 ```
 
-Lower `T` concentrates mass on “cat”; higher `T` lifts the long tail. Nucleus sampling renormalizes after dropping the tail — the same knob exposed as `top_p` in many APIs.
+Lower `T` concentrates mass on "cat"; higher `T` lifts the long tail. Nucleus sampling renormalizes after dropping the tail — the same knob exposed as `top_p` in many APIs.
 
 ## What goes wrong
 
 - **Temperature too high.** Fluent-looking gibberish, contradicted facts, wild code.
 - **Temperature too low / always greedy.** Repetition loops, generic phrasing, stuck patterns.
-- **Beam search for open-ended chat.** Often dull or repetitive; beams shine more on short, exact tasks (some translation setups).
+- **Beam search for open-ended chat.** Often dull or repetitive; beams shine more on short, exact tasks.
 - **Ignoring stop conditions.** Models ramble past usefulness; always set `max_tokens` and stop sequences.
 - **Blaming the base model for sampling bugs.** Non-deterministic APIs need logged parameters; compare greedy when debugging grounding issues.
-- **Forgetting left-to-right cost.** Latency grows with output length; streaming tokens improves UX but not total FLOPs.
+- **Forgetting left-to-right cost.** Latency grows with output length; streaming tokens improves UX but not total compute.
 
 ## One-line summary
 
@@ -114,11 +131,11 @@ Autoregressive decoding builds text token by token from causal next-token probab
 
 ## Key terms
 
-- **Autoregressive:** each token depends on previous tokens only.
-- **Logits:** raw scores over the vocabulary before softmax.
-- **Temperature:** divides logits to sharpen or flatten the distribution.
-- **Greedy decoding:** always pick the highest-probability token.
-- **Beam search:** keep multiple partial hypotheses ranked by score.
-- **Top-k / top-p (nucleus):** truncate the distribution, then sample.
-- **KV cache:** inference optimization reusing past attention keys/values.
-- **EOS / stop sequence:** termination signals for the generation loop.
+- **Autoregressive** — Each token depends on previous tokens only.
+- **Logits** — Raw, unnormalized scores over the vocabulary before softmax.
+- **Temperature** — Divides logits to sharpen or flatten the distribution.
+- **Greedy decoding** — Always pick the highest-probability token.
+- **Beam search** — Keep multiple partial hypotheses ranked by score.
+- **Top-k / top-p (nucleus)** — Truncate the distribution, then sample.
+- **KV cache** — Inference optimization reusing past attention keys and values.
+- **EOS / stop sequence** — Termination signals for the generation loop.

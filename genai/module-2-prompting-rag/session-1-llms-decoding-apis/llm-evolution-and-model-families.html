@@ -36,15 +36,39 @@
       <h1>LLM Evolution and Model Families</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>If you only remember one story about modern GenAI, make it this: we went from “finetune a classifier per task” to “prompt a general sequence model,” then to “align it with humans,” then to “wire it to tools and other modalities.” Model names change every quarter; the family shapes below stay useful for years.</p>
+    <p>If you only remember one story about modern GenAI, make it this: we went from &quot;finetune a classifier per task&quot; to &quot;prompt a general sequence model,&quot; then to &quot;align it with humans,&quot; then to &quot;wire it to tools and other modalities.&quot; Model names change every quarter; the family shapes below stay useful for years.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of three different jobs for language models:</p>
+    <p><strong>What changed over time?</strong> Three different jobs for language models:</p>
     <ol>
     <li><strong>Understand</strong> text you already have (classify, extract, embed for search).</li>
     <li><strong>Generate</strong> new text conditioned on a prompt (chat, code, summaries).</li>
     <li><strong>Transform</strong> input into a different output sequence (translate, rewrite under a schema).</li>
     </ol>
-    <p>Encoder-only models excel at (1). Decoder-only models dominate (2) and most chat products. Encoder–decoder models were built for (3) and still shine when both sides of a mapping matter. Everything else — RLHF, mixture-of-experts, multimodal towers, “reasoning” post-training — is a refinement on top of one of these skeletons.</p>
+    <table>
+      <thead><tr>
+        <th>Architecture family</th>
+        <th>Plain-English idea</th>
+        <th>Best at</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Encoder-only (BERT-like)</strong></td>
+          <td>Reads the whole input at once, both directions</td>
+          <td>Classification, extraction, embeddings</td>
+        </tr>
+        <tr>
+          <td><strong>Decoder-only (GPT-like)</strong></td>
+          <td>Reads left-to-right, generates one token at a time</td>
+          <td>Chat, code, agents, summarization</td>
+        </tr>
+        <tr>
+          <td><strong>Encoder–decoder (T5/BART-like)</strong></td>
+          <td>Reads full input, writes full output</td>
+          <td>Translation, structured rewrite</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Everything else — RLHF (Reinforcement Learning from Human Feedback), multimodal towers, &quot;reasoning&quot; post-training — is a refinement on top of one of these skeletons.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Pick the architecture family for the job shape first; pick a vendor or checkpoint second. Marketing names change; encoder / decoder / encoder–decoder do not.</p>
@@ -54,7 +78,7 @@
     <p>Modern foundation models share a two-phase life:</p>
     <ul>
     <li><strong>Pretraining</strong> — optimize a self-supervised objective on massive corpora (masked tokens, next tokens, or denoising). This builds general representations and fluency.</li>
-    <li><strong>Post-training</strong> — supervised instruction data, preference optimization (RLHF / DPO-style methods), safety filters, and sometimes tool-use or chain-of-thought style traces. This turns a raw predictor into a product-shaped assistant.</li>
+    <li><strong>Post-training</strong> — supervised instruction data, preference optimization (RLHF / DPO-style methods), safety filters, and sometimes tool-use or chain-of-thought traces. This turns a raw predictor into a product-shaped assistant.</li>
     </ul>
     <h3>Milestone map (engineer view)</h3>
     <table>
@@ -111,28 +135,51 @@ flowchart LR
     C --> T[Tools + RAG + multimodal]
       </div>
     </div>
-    <h3>Architecture families</h3>
-    <p><strong>Encoder-only (BERT-like).</strong> Bidirectional attention over the input. Great for classification, NER, and dense embeddings. Not a chat generator by default — you usually attach a task head or use the embedding tower.</p>
-    <p><strong>Decoder-only (GPT-like).</strong> Causal (left-to-right) attention. Autoregressive generation is native. Almost every modern chat and coding assistant sits here. Scaling laws, long context, and tool calling all grew fastest in this family.</p>
-    <p><strong>Encoder–decoder (T5/BART-like).</strong> Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups. Less common as the default chat API today, but still a strong mental model for “map X -&gt; Y.”</p>
-    <h3>Why two “similar” models feel different</h3>
-    <p>Same Transformer math does not mean same product behavior. Differences compound from:</p>
-    <ul>
-    <li>Data mix and decontamination quality</li>
-    <li>Alignment recipes and refusal boundaries</li>
-    <li>Context length and positional schemes</li>
-    <li>Tokenizer and vocabulary quirks</li>
-    <li>Inference stack (quantization, speculative decoding, batching)</li>
-    <li>Tool schemas and system-prompt conventions</li>
-    </ul>
-    <p>So “switch vendors” is never a drop-in rename of the model string. Re-run evals on your prompts, latency budget, and failure modes.</p>
+    <h3>Architecture families in detail</h3>
+    <p><strong>Encoder-only (BERT-like).</strong> Bidirectional attention over the input. Great for classification, named entity recognition (NER), and dense embeddings. Not a chat generator by default — you usually attach a task head or use the embedding tower.</p>
+    <p><strong>Decoder-only (GPT-like).</strong> Causal (left-to-right) attention. Autoregressive generation is native. Almost every modern chat and coding assistant sits here.</p>
+    <p><strong>Encoder–decoder (T5/BART-like).</strong> Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups.</p>
+    <h3>Alignment: InstructGPT and RLHF</h3>
+    <p>A raw language model is trained to continue text, not necessarily to help a user. <strong>Instruction tuning</strong> and <strong>RLHF</strong> shift behavior toward answers people prefer:</p>
+    <ol>
+    <li><strong>Supervised fine-tuning (SFT)</strong> — train on human-written demonstrations of good responses.</li>
+    <li><strong>Reward model</strong> — collect human comparisons between candidate answers and train a model to predict preference.</li>
+    <li><strong>Policy optimization</strong> — update the assistant model to get higher reward while staying close to the supervised model.</li>
+    </ol>
+    <p>Why this matters: a smaller aligned model can feel more useful than a larger raw model because it follows instructions, refuses unsafe tasks more often, and formats answers the way users expect.</p>
+    <h3>Open-weight, multimodal, and reasoning models</h3>
+    <p>The recent ecosystem expanded in three directions:</p>
+    <table>
+      <thead><tr>
+        <th>Direction</th>
+        <th>Plain-English idea</th>
+        <th>When it helps</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Open weights</strong></td>
+          <td>Released parameters you can host or finetune</td>
+          <td>Privacy, local deployment, cost control</td>
+        </tr>
+        <tr>
+          <td><strong>Multimodal models</strong></td>
+          <td>Text + images + audio in one interface</td>
+          <td>OCR, chart understanding, visual Q&amp;A</td>
+        </tr>
+        <tr>
+          <td><strong>Reasoning models</strong></td>
+          <td>Spend more compute at answer time on hard tasks</td>
+          <td>Math, coding, planning — at higher latency/cost</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>Choosing a family in practice</h3>
     <ul>
-    <li>Need search embeddings or a cheap classifier -&gt; encoder / embedding models.</li>
-    <li>Need chat, agents, code -&gt; decoder chat models.</li>
-    <li>Need tight X-&gt;Y transforms with clear input/output -&gt; consider encoder–decoder or a decoder with strict structured output.</li>
-    <li>Need private deployment or deep finetuning -&gt; open-weights decoder families.</li>
-    <li>Need images/PDFs in the same loop -&gt; multimodal chat models, not a text-only base plus wishful thinking.</li>
+    <li>Need search embeddings or a cheap classifier → encoder / embedding models.</li>
+    <li>Need chat, agents, code → decoder chat models.</li>
+    <li>Need tight X→Y transforms with clear input/output → consider encoder–decoder or a decoder with strict structured output.</li>
+    <li>Need private deployment or deep finetuning → open-weights decoder families.</li>
+    <li>Need images/PDFs in the same loop → multimodal chat models.</li>
     </ul>
     <h2 id="in-code">In code</h2>
     <p>You do not need a GPU to practice the <em>decision</em> layer. Model a tiny registry that maps product jobs to family recommendations:</p>
@@ -161,7 +208,7 @@ def recommend(job: str) -&gt; list[str]:
 print(recommend(&quot;embed&quot;))   # [&#x27;encoder&#x27;]
 print(recommend(&quot;agents&quot;))  # [&#x27;decoder&#x27;]</code></pre>
     </div>
-    <p>Track a fake “release lineage” so product notes stay honest about base vs chat vs reasoning variants:</p>
+    <p>Track a fake &quot;release lineage&quot; so product notes stay honest about base vs chat vs reasoning variants:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
@@ -183,26 +230,12 @@ lineage = [
 assert lineage[-1].stage == &quot;preference&quot;
 # Chat APIs almost always expose a post-trained checkpoint, not the raw base.</code></pre>
     </div>
-    <p>Illustrative API selection (no real keys):</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python"># Pseudocode: pick model tier by job, not by hype
-def pick_model(job: str, need_vision: bool) -&gt; str:
-    if job in {&quot;embed&quot;, &quot;classify&quot;}:
-        return &quot;text-embedding-or-encoder-small&quot;
-    if need_vision:
-        return &quot;multimodal-chat-mid&quot;
-    if job == &quot;hard_reasoning&quot;:
-        return &quot;reasoning-chat-large&quot;  # higher latency / cost
-    return &quot;chat-mid&quot;</code></pre>
-    </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Using a base model as a product chatbot</strong> — without instruction/preference training, the model continues text instead of following user intent.</li>
-    <li><strong>Treating every decoder as interchangeable</strong> — tokenizers, refusal styles, and tool formats break prompts that “worked on Model A.”</li>
+    <li><strong>Treating every decoder as interchangeable</strong> — tokenizers, refusal styles, and tool formats break prompts that &quot;worked on Model A.&quot;</li>
     <li><strong>Forcing chat models into pure embedding jobs</strong> — possible with tricks, usually worse than a dedicated encoder/embedding model.</li>
-    <li><strong>Ignoring post-training stage</strong> — “7B” is not a quality label; base vs instruct vs reasoning variants behave differently.</li>
-    <li><strong>Chasing multimodal when text + OCR pipeline is enough</strong> — modality expands failure modes (layout, OCR noise, image injection).</li>
+    <li><strong>Ignoring post-training stage</strong> — &quot;7B&quot; is not a quality label; base vs instruct vs reasoning variants behave differently.</li>
     <li><strong>Assuming open weights equal free lunch</strong> — you inherit hosting, eval, safety, and update burden.</li>
     </ul>
     <aside class="callout callout-warn">
@@ -215,15 +248,14 @@ def pick_model(job: str, need_vision: bool) -&gt; str:
     <ul>
     <li><strong>Foundation model</strong> — Large pretrained model adapted to many downstream tasks.</li>
     <li><strong>Encoder-only</strong> — Bidirectional model optimized for understanding / embeddings.</li>
-    <li><strong>Decoder-only</strong> — Causal LM optimized for autoregressive generation and chat.</li>
-    <li><strong>Encoder–decoder</strong> — Seq2seq family for mapping an input sequence to an output sequence.</li>
+    <li><strong>Decoder-only</strong> — Causal language model optimized for autoregressive generation and chat.</li>
+    <li><strong>Encoder–decoder</strong> — Sequence-to-sequence family for mapping an input sequence to an output sequence.</li>
     <li><strong>Pretraining</strong> — Self-supervised training on broad data before task specialization.</li>
     <li><strong>Post-training / alignment</strong> — Instruction and preference stages that shape assistant behavior.</li>
     <li><strong>In-context learning</strong> — Steering a model with examples and instructions inside the prompt.</li>
     <li><strong>Open weights</strong> — Released parameters you can host or finetune yourself.</li>
     <li><strong>Multimodal model</strong> — Model that accepts more than text (e.g. images) in one interface.</li>
     </ul>
-    <p>)</p>
 
       <div class="lesson-actions" id="lesson-actions"></div>
       <footer>

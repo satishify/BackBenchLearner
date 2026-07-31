@@ -36,12 +36,18 @@
       <h1>Artificial Neuron and Perceptron</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Every modern neural network — including the transformers behind large language models — is built from units that do three things: weight their inputs, add a bias, and push the result through an activation. The <strong>perceptron</strong> is the simplest version of that story: a single neuron that draws one straight decision boundary. Understanding it gives you geometric intuition for everything that comes later, and explains why depth and nonlinearity became necessary.</p>
+    <p>A <strong>perceptron</strong> is the simplest neural unit: it combines weighted inputs, adds a bias, and makes a yes/no decision. It exists because we want a machine to score multiple signals and pick a side — like spam or not spam.</p>
+    <ul>
+    <li>Each input gets a <strong>weight</strong> (how much it matters) and a <strong>bias</strong> (how strict the default is).</li>
+    <li>The unit computes a <strong>weighted sum</strong> and checks whether it crosses a <strong>threshold</strong>.</li>
+    <li>On a 2D plane, the decision boundary is a <strong>straight line</strong> — one side is yes, the other is no.</li>
+    <li>A single perceptron can solve <strong>linearly separable</strong> problems (AND, OR) but not <strong>XOR</strong>.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of a gatekeeper who scores a visitor with a checklist. Each trait <code>x_i</code> gets a weight <code>w_i</code> (how much that trait matters). The gatekeeper adds a bias <code>b</code> (how strict the default is), then decides “allow” or “deny” based on whether the total score clears a threshold.</p>
+    <p>Think of a gatekeeper who scores a visitor with a checklist. Each trait <code>x_i</code> gets a weight <code>w_i</code> (how much that trait matters). The gatekeeper adds a bias <code>b</code> (how strict the default is), then decides &quot;allow&quot; or &quot;deny&quot; based on whether the total score clears a threshold.</p>
     <p>That score is a <strong>weighted sum</strong>. On a 2D plane, the set of points where the score equals zero is a straight line. Everywhere on one side of the line, the neuron fires; on the other side, it stays silent. So a single perceptron is a <strong>linear classifier</strong>: it partitions space into two half-planes.</p>
     <p>Bias matters geometrically. Without bias, the decision line must pass through the origin. With bias, you can slide the line anywhere. Weights set the <em>tilt</em>; bias sets the <em>offset</em>.</p>
-    <p>You can also read <code>z</code> as a signed distance (up to scaling by <code>|w|</code>) from the boundary: large positive <code>z</code> means confidently on the positive side; near zero means near the fence. Soft activations in modern nets keep that score continuous so gradients can flow; the classical perceptron simply hard-thresholds it.</p>
+    <p>You can also read <code>z</code> as a signed distance (up to scaling by <code>|w|</code>) from the boundary: large positive <code>z</code> means confidently on the positive side; near zero means near the fence.</p>
     <h2 id="how-it-works">How it works</h2>
     <p>An artificial neuron computes a <strong>score</strong> from its inputs:</p>
     <div class="code-block" data-lang="text">
@@ -64,7 +70,7 @@ else:
       <pre><code class="language-text">w = w + learning_rate * (y - prediction) * x
 b = b + learning_rate * (y - prediction)</code></pre>
     </div>
-    <p>If the prediction was too low (<code>y = 1</code>, <code>prediction = 0</code>), weights move toward <code>x</code>. If too high, they move away. The learning rate controls step size. If the data is <strong>linearly separable</strong>, this procedure is guaranteed to find a separating hyperplane in finite steps (the classic perceptron convergence theorem).</p>
+    <p>If the prediction was too low (<code>y = 1</code>, <code>prediction = 0</code>), weights move toward <code>x</code>. If too high, they move away. The learning rate controls step size. If the data is <strong>linearly separable</strong>, this procedure is guaranteed to find a separating hyperplane in finite steps.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -76,8 +82,9 @@ flowchart LR
   A -->|no| Y0[y_hat = 0]
       </div>
     </div>
+    <p><strong>Example: spam detection.</strong> The model can score features like suspicious words, links, and sender patterns. If the score is high enough, it predicts spam; otherwise not spam.</p>
     <p><strong>AND and OR work; XOR does not.</strong> Plot the four Boolean corners <code>(0,0), (0,1), (1,0), (1,1)</code>. For AND, only <code>(1,1)</code> is positive — one line separates it. For OR, only <code>(0,0)</code> is negative — again one line works. For <strong>XOR</strong>, positives sit on opposite corners <code>(0,1)</code> and <code>(1,0)</code>. No single straight line can put both positives on one side and both negatives on the other. That is the famous <strong>XOR limitation</strong>: one perceptron cannot learn XOR. Multilayer networks with nonlinear activations can.</p>
-    <p>Historically, that limitation (highlighted by Minsky and Papert) cooled enthusiasm for single-layer perceptrons and pushed research toward multilayer networks. The fix was not “more of the same linear unit,” but <strong>composition</strong>: hidden layers remapping features so a final linear readout can finish the job. When you hear that deep nets “learn representations,” this is the geometric ancestor of that idea — first bend or lift the data, then classify.</p>
+    <p>Historically, that limitation (highlighted by Minsky and Papert) cooled enthusiasm for single-layer perceptrons and pushed research toward multilayer networks. The fix was not &quot;more of the same linear unit,&quot; but <strong>composition</strong>: hidden layers remapping features so a final linear readout can finish the job.</p>
     <h2 id="in-code">In code</h2>
     <p>A tiny 2D perceptron step: score points and apply the hard threshold. Then one learning update on a misclassified example.</p>
     <div class="code-block" data-lang="python">
@@ -124,13 +131,13 @@ print(&quot;After one update:&quot;, w, b, &quot;pred=&quot;, perceptron_step(x_
     <p>A perceptron is a weighted sum plus bias passed through a threshold — geometrically a half-plane classifier that succeeds only when classes are linearly separable.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Weighted sum (<code>z</code>):</strong> linear combination of inputs with weights, before activation.</li>
-    <li><strong>Bias (<code>b</code>):</strong> offset that shifts the decision boundary away from the origin.</li>
-    <li><strong>Activation / step function:</strong> maps <code>z</code> to an output; the classic perceptron uses a hard 0/1 threshold.</li>
-    <li><strong>Linear classifier / half-plane:</strong> decision regions separated by a hyperplane (a line in 2D).</li>
-    <li><strong>Linear separability:</strong> whether some hyperplane can perfectly separate the classes.</li>
-    <li><strong>XOR limitation:</strong> XOR (and similar patterns) cannot be solved by a single perceptron; needs multilayer nonlinear nets.</li>
-    <li><strong>Perceptron learning rule:</strong> additive weight update proportional to <code>(y - y_hat)x</code>.</li>
+    <li><strong>Weighted sum (<code>z</code>)</strong> — linear combination of inputs with weights, before activation.</li>
+    <li><strong>Bias (<code>b</code>)</strong> — offset that shifts the decision boundary away from the origin.</li>
+    <li><strong>Activation / step function</strong> — maps <code>z</code> to an output; the classic perceptron uses a hard 0/1 threshold.</li>
+    <li><strong>Linear classifier / half-plane</strong> — decision regions separated by a hyperplane (a line in 2D).</li>
+    <li><strong>Linear separability</strong> — whether some hyperplane can perfectly separate the classes.</li>
+    <li><strong>XOR limitation</strong> — XOR (and similar patterns) cannot be solved by a single perceptron; needs multilayer nonlinear nets.</li>
+    <li><strong>Perceptron learning rule</strong> — additive weight update proportional to <code>(y - y_hat) * x</code>.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

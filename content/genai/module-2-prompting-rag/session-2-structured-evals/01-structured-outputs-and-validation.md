@@ -3,16 +3,20 @@ title: "Structured Outputs, Validation, and Reliability"
 description: "Get machine-readable LLM outputs with schemas, JSON mode, validators, and repair loops that hold up in production."
 ---
 
-Free-form prose is for humans. Downstream code wants **objects**: enums, IDs, date ranges, confidence scores. Structured outputs turn the model from a storyteller into a component you can wire into queues, UI forms, and agents — but only if you validate every response like it came from an untrusted client.
+Free-form prose is for humans. Downstream code wants **objects**: enums, IDs, date ranges, confidence scores. **Structured outputs** turn the model from a storyteller into a component you can wire into queues, UI forms, and agents — but only if you validate every response like it came from an untrusted client.
 
 ## Intuition
 
-Ask for “JSON” in a prompt and you will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:
+**What is a structured output?** A model response constrained to a machine-readable shape (often JSON) that your code can parse and use.
+
+**Why is asking for "JSON" in a prompt not enough?** You will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load.
+
+Reliability is a stack:
 
 1. Tell the model the schema.
 2. Prefer API features that constrain decoding to valid JSON / schema when available.
 3. Validate in your process with a typed model.
-4. Repair or fail closed — never “best-effort parse” into a money path.
+4. Repair or fail closed — never "best-effort parse" into a money path.
 
 :::key
 Schema in the prompt is documentation. Schema in the validator is enforcement. You need both.
@@ -34,20 +38,25 @@ flowchart TB
 
 ### Model-side options
 
-- **Prompt-only JSON** — cheapest to try; weakest guarantee.
-- **JSON mode / response_format** — forces JSON syntax; may not enforce your fields.
-- **Strict structured outputs / grammar constraints** — when offered, binds generation to a schema — strongest.
+| Technique | Plain-English idea | Typical failure it prevents |
+| --- | --- | --- |
+| **Plain JSON prompt** | Ask for JSON in text | Markdown fences, prose, or malformed JSON |
+| **JSON mode / response_format** | Forces JSON syntax | May not enforce your specific fields |
+| **Strict structured outputs** | Binds generation to a schema | Wrong types and silent downstream bugs |
+| **Tool calling** | Structured function arguments from the model | Free-form text where code expects a schema |
 
 Always assume vendor features differ. Your app-side validator is the portable guarantee.
 
 ### App-side validation
 
-Libraries in the Pydantic family (or dataclasses + hand checks) give you:
+Libraries in the **Pydantic** family (or dataclasses + hand checks) give you:
 
 - Required fields and types
 - Enums and ranges
 - Nested objects and lists
 - Clear error messages you can feed back on retry
+
+**Why Pydantic helps:** it validates and can coerce values before they spread through your pipeline. That is especially important when the model says `"42"` as a string but your code needs an integer.
 
 Example conceptual schema:
 
@@ -60,31 +69,24 @@ SearchQuery
 
 ### Retry with feedback
 
-On validation failure, do not only “try again colder.” Send the error:
+On validation failure, do not only "try again colder." Send the error:
 
 `Your previous output failed validation: published_daterange.end is before start. Reply with corrected JSON only.`
 
 Cap retries (e.g. 2). Log failure rates per prompt version — a spike means schema or model drift.
 
-### Partial success and fallbacks
-
-For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object -> no side effect.
-
 ### Designing schemas models can hit
-
-Schemas fail in production when they are written for lawyers instead of generators:
 
 - Prefer flat or shallow nesting; deep trees invite missing braces under token limits.
 - Use enums for closed sets (`"Positive" | "Neutral" | "Negative"`) instead of free strings.
 - Make rarely needed fields optional; required fields should be ones you always have evidence for.
-- Avoid dual meanings (“status” as both HTTP code and business state).
 - Include a first-class abstain path: `status: "ok" | "unknown"` beats forcing a fake value.
 
-When the model must emit dates, demand ISO-8601 in the schema description and reject everything else in the validator. When it must emit IDs, prefer copying from provided context over inventing new ones — and check membership against your database.
+### Constrained generation note
 
-### Where structured output sits in an agent
+Constraints work on **tokens**, not characters. A single token may include a leading space or several characters, so a regex or allowlist must account for the tokenizer, not just the spelling of the output.
 
-Agents often chain: plan JSON -> tool calls -> final answer JSON. Validate **each** stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.
+Use token masking for simple surface constraints (digits-only, yes/no). Use structured decoding when you need grammar correctness, nested JSON, or something that must never become invalid mid-sequence.
 
 ## In code
 
@@ -134,6 +136,21 @@ good = '''
 print(parse_search_query(good))
 ```
 
+Pydantic validation with automatic type coercion:
+
+```python
+from pydantic import BaseModel
+
+
+class Person(BaseModel):
+    name: str
+    age: int
+
+
+p = Person(name="Sam", age="10")
+print(p.age)  # 10, as an int
+```
+
 Strip accidental markdown fences before parse:
 
 ```python
@@ -141,7 +158,6 @@ def strip_fences(text: str) -> str:
     t = text.strip()
     if t.startswith("```"):
         lines = t.splitlines()
-        # drop first and last fence lines
         if lines and lines[0].startswith("```"):
             lines = lines[1:]
         if lines and lines[-1].startswith("```"):
@@ -166,16 +182,7 @@ def complete_structured(call_model, schema_errors_max=2):
     raise RuntimeError("structured_output_failed")
 ```
 
-Illustrative API flag (vendor-specific):
-
-```python
-payload = {
-    "model": "chat-mid",
-    "messages": [...],
-    "response_format": {"type": "json_object"},  # syntax, not full schema
-    "temperature": 0.1,
-}
-```
+With `model_json_schema()`, Pydantic can produce the schema for a tool definition automatically, which removes a lot of brittle manual JSON writing.
 
 ## What goes wrong
 
@@ -184,7 +191,7 @@ payload = {
 - **Silent defaults** — wrong type coerced to empty string; bug ships.
 - **Retry storms** — no budget; one bad schema burns the rate limit.
 - **Schema too clever** — deep nesting and optional everything; model flails; simplify.
-- **Valid JSON, invalid business rule** — types pass but `user_id` belongs to another tenant — validators must include authz invariants.
+- **Valid JSON, invalid business rule** — types pass but `user_id` belongs to another tenant — validators must include authorization invariants.
 
 :::tip
 Version your schemas (`SearchQueryV2`) and keep golden fixtures in CI. Prompt edits that break fixtures should fail the build before they fail production.
@@ -203,3 +210,4 @@ Structured GenAI outputs need a schema, constrained generation when available, s
 - **Repair / retry loop** — Re-prompting with validator errors to fix output.
 - **Fail closed** — Refuse the action when validation fails.
 - **Grammar / constrained decoding** — Generation restricted to strings that match a schema or grammar.
+- **Pydantic** — Python library for data validation and schema generation.

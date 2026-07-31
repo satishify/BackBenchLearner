@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A decision framework for choosing prompting, retrieval, or weight updates—based on failure mode, data freshness, and cost.">
+  <meta name="description" content="A simple way to choose prompting, retrieval, or weight updates—based on what is broken, how fresh your facts are, and what you can afford.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html">
   <meta property="og:title" content="When to Fine-Tune vs Prompt vs RAG | BackbenchLearner">
-  <meta property="og:description" content="A decision framework for choosing prompting, retrieval, or weight updates—based on failure mode, data freshness, and cost.">
+  <meta property="og:description" content="A simple way to choose prompting, retrieval, or weight updates—based on what is broken, how fresh your facts are, and what you can afford.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="When to Fine-Tune vs Prompt vs RAG | BackbenchLearner">
-  <meta name="twitter:description" content="A decision framework for choosing prompting, retrieval, or weight updates—based on failure mode, data freshness, and cost.">
+  <meta name="twitter:description" content="A simple way to choose prompting, retrieval, or weight updates—based on what is broken, how fresh your facts are, and what you can afford.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,72 +36,109 @@
       <h1>When to Fine-Tune vs Prompt vs RAG</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Teams often jump to fine-tuning because it sounds like &quot;real ML.&quot; The expensive truth: most product failures are missing context, unclear instructions, or a weak base model—not missing gradient steps. This lesson gives you a practical ladder so you spend GPU budget only when the failure mode demands it.</p>
+    <p>Most teams reach for fine-tuning too early. In practice, bad answers usually come from missing context, unclear instructions, or a weak base model—not from a lack of training. This lesson gives you a simple ladder so you spend GPU budget only when the problem really needs it.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of three levers that change different things:</p>
+    <p>You have three levers, and each one changes something different.</p>
     <table>
       <thead><tr>
-        <th>Lever</th>
-        <th>What you change</th>
-        <th>Persists across calls?</th>
-        <th>Best for</th>
+        <th>Strategy</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
           <td><strong>Prompting</strong></td>
-          <td>Instructions, examples, format in the input</td>
-          <td>Only if you ship the same prompt</td>
-          <td>Behavior you can describe in text</td>
+          <td>Rewrite the instruction you send to the model.</td>
+          <td>Fast experiments, low cost, or the task is simple enough to describe in text.</td>
         </tr>
         <tr>
-          <td><strong>RAG / tools</strong></td>
-          <td>Evidence and actions at inference</td>
-          <td>Knowledge lives outside the model</td>
-          <td>Fresh facts, docs, systems of record</td>
+          <td><strong>RAG</strong> (retrieval-augmented generation)</td>
+          <td>Fetch fresh documents at answer time and paste them into the prompt.</td>
+          <td>Facts change often, or answers must come from private or current files.</td>
         </tr>
         <tr>
           <td><strong>Fine-tuning</strong></td>
-          <td>Model weights (full or adapters)</td>
-          <td>Yes, until you retrain</td>
-          <td>Stable style, format, domain phrasing</td>
+          <td>Update model weights on your labeled examples.</td>
+          <td>You want a stable style, format, or domain habit that should stick across many future prompts.</td>
         </tr>
       </tbody>
     </table>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Prompt steers behavior. RAG supplies facts. Fine-tuning rewires habits. Pick the lever that matches the bug.</p>
+    <p>Prompting steers behavior. RAG supplies facts. Fine-tuning rewires habits. Pick the lever that matches the bug.</p>
     </aside>
-    <p>If the model &quot;doesn&#x27;t know Tuesday&#x27;s policy,&quot; that is a knowledge problem—RAG or an API, not a fine-tune. If it knows the answer but keeps wrapping JSON in markdown despite a clear schema, that is a habit problem—candidates for fine-tuning after prompting fails.</p>
+    <p>Picture it this way:</p>
+    <ul>
+    <li>Prompting only changes the <strong>instruction</strong> you send in.</li>
+    <li>RAG changes the <strong>context</strong> the model reads at answer time.</li>
+    <li>Fine-tuning changes the <strong>model itself</strong>.</li>
+    </ul>
+    <p>If the model &quot;does not know Tuesday&#x27;s policy,&quot; that is a knowledge problem—use RAG or an API, not fine-tuning. If it knows the answer but keeps wrapping JSON in markdown despite a clear schema, that is a habit problem—fine-tuning may help after prompting fails.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>A decision ladder (use in order)</h3>
     <ol>
-    <li><strong>Stronger base + clearer prompt</strong> — Many &quot;need to fine-tune&quot; tickets die here. Add roles, constraints, few-shot examples, and an output schema.</li>
-    <li><strong>Retrieval / tools</strong> — If errors are wrong or stale facts, fetch docs, tickets, or DB rows. If the task needs actions (create ticket, look up order), wire tools.</li>
+    <li><strong>Stronger base + clearer prompt</strong> — Many &quot;we need to fine-tune&quot; tickets die here. Add roles, constraints, few-shot examples, and an output schema.</li>
+    <li><strong>Retrieval / tools</strong> — If errors are wrong or stale facts, fetch docs, tickets, or database rows. If the task needs actions (create ticket, look up order), wire tools.</li>
     <li><strong>Measure remaining errors</strong> — Label 50–200 real failures. Cluster them: format? tone? missing skill? missing fact?</li>
     <li><strong>Fine-tune only for systematic, data-backed gaps</strong> — You need a clean dataset, an offline eval, and a rollback plan.</li>
     </ol>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TD
-    F[Observed failure] --> Q1{Missing or stale facts?}
-    Q1 -->|Yes| RAG[RAG / tools / DB]
-    Q1 -->|No| Q2{Clear prompt + few-shot fails?}
-    Q2 -->|No| P[Improve prompt / base model]
-    Q2 -->|Yes| Q3{Errors are systematic and labeled?}
+    F[Something went wrong] --> Q1{Missing or stale facts?}
+    Q1 -->|Yes| RAG[RAG / tools / database]
+    Q1 -->|No| Q2{Clear prompt still fails?}
+    Q2 -->|No| P[Improve prompt or base model]
+    Q2 -->|Yes| Q3{Same mistake on many cases?}
     Q3 -->|No| E[Build eval set first]
-    Q3 -->|Yes| FT[Fine-tune SFT / PEFT]
+    Q3 -->|Yes| FT[Fine-tune with SFT or PEFT]
       </div>
     </div>
+    <h3>Five questions from the decision framework</h3>
+    <p>Before you train anything, ask:</p>
+    <ol>
+    <li><strong>Does the knowledge change often?</strong> If yes, start with RAG.</li>
+    <li><strong>Do you need stable, reusable behavior?</strong> If yes, fine-tuning becomes more attractive.</li>
+    <li><strong>How much labeled data do you have?</strong> Small data usually favors prompting, RAG, or PEFT (parameter-efficient fine-tuning) before full fine-tuning.</li>
+    <li><strong>Is this one task or several related tasks?</strong> Related tasks can share one model through multi-task learning (covered in the SFT lesson).</li>
+    <li><strong>Is the base model already close to correct?</strong> If yes, freeze more layers and train less (covered in the freeze-strategies lesson).</li>
+    </ol>
+    <h3>Where should knowledge live?</h3>
+    <p>Research papers like <em>Fine-Tuning or Retrieval? Comparing Knowledge Injection in LLMs</em> help you decide: should facts sit <strong>inside model weights</strong>, or in an <strong>external store</strong> you retrieve from?</p>
+    <table>
+      <thead><tr>
+        <th>If your situation looks like...</th>
+        <th>Lean toward</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Policy docs update every month and must be quoted accurately</td>
+          <td>RAG</td>
+        </tr>
+        <tr>
+          <td>Tone of voice must stay the same across thousands of emails</td>
+          <td>Fine-tuning</td>
+        </tr>
+        <tr>
+          <td>Task is simple and a good prompt already works</td>
+          <td>Prompting only</td>
+        </tr>
+        <tr>
+          <td>Fresh facts for one workflow, permanent style for another</td>
+          <td>RAG for facts, fine-tuning for style</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>Cost and speed trade-offs</h3>
     <ul>
-    <li><strong>Prompting</strong> — Cheapest to try; iteration in hours. Cost scales with prompt length and retries.</li>
-    <li><strong>RAG</strong> — Engineering cost (ingest, chunking, retrieval quality). Knowledge stays editable without retraining.</li>
-    <li><strong>Fine-tuning</strong> — Dataset + training + eval + serving a new artifact. Wins when high volume makes long prompts expensive, or when style/format must be rock-solid.</li>
+    <li><strong>Prompting</strong> — Cheapest to try; you can iterate in hours. Cost grows with prompt length and retries.</li>
+    <li><strong>RAG</strong> — More engineering (ingest, chunking, ranking). Knowledge stays editable without retraining.</li>
+    <li><strong>Fine-tuning</strong> — Dataset + training + eval + serving a new model file. Wins when high volume makes long prompts expensive, or when style and format must be rock-solid.</li>
     </ul>
     <h3>When fine-tuning earns its keep</h3>
     <ul>
-    <li>Stable <strong>output contracts</strong> (JSON schemas, ticket templates) at high QPS where long prompts hurt latency/cost.</li>
-    <li><strong>Domain language</strong> rare in the base model (internal jargon, regulated phrasing) that few-shot cannot fix.</li>
+    <li>Stable <strong>output contracts</strong> (JSON schemas, ticket templates) at high volume where long prompts hurt latency or cost.</li>
+    <li><strong>Domain language</strong> rare in the base model (internal jargon, regulated phrasing) that few-shot examples cannot fix.</li>
     <li>Consistent <strong>tone or workflow</strong> across thousands of similar tasks (support triage, code review comments).</li>
     <li>Preference or safety behavior that prompting alone cannot lock in (later: RLHF / DPO).</li>
     </ul>
@@ -161,11 +198,11 @@ for c in cases:
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Fine-tuning as a CMS</strong> — Policies change; weights do not. Stale &quot;truth&quot; in parameters is a product liability.</li>
+    <li><strong>Fine-tuning as a content store</strong> — Policies change; weights do not. Stale &quot;truth&quot; baked into parameters is a product liability.</li>
     <li><strong>Skipping measurement</strong> — Training on vibes produces a model that looks good in a demo chat and fails on live traffic.</li>
     <li><strong>Prompt debt</strong> — A 4k-token prompt that almost works is a signal to simplify or retrieve—not always to fine-tune.</li>
     <li><strong>Wrong success metric</strong> — Lower training loss is not &quot;users are happier.&quot; Track task rubrics and regression suites.</li>
-    <li><strong>No rollback</strong> — Shipping a fine-tune without keeping the previous artifact and prompt baseline is how weekends get ruined.</li>
+    <li><strong>No rollback</strong> — Shipping a fine-tune without keeping the previous model and prompt baseline is how weekends get ruined.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
@@ -176,12 +213,13 @@ for c in cases:
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Prompting</strong> — Steering the model by changing inputs at inference without updating weights.</li>
-    <li><strong>RAG</strong> — Retrieving external evidence into the prompt so answers can cite current sources.</li>
+    <li><strong>RAG</strong> (retrieval-augmented generation) — Fetching external evidence into the prompt so answers can cite current sources.</li>
     <li><strong>Fine-tuning</strong> — Updating model weights (or adapters) on task-specific data.</li>
+    <li><strong>PEFT</strong> (parameter-efficient fine-tuning) — Updating only a small slice of parameters (e.g., LoRA adapters) instead of the whole model.</li>
     <li><strong>Base model</strong> — Pretrained checkpoint before your adaptation.</li>
     <li><strong>Failure mode</strong> — The recurring error pattern you are trying to fix.</li>
     <li><strong>Eval set</strong> — Held-out examples with rubrics used to decide if a change helped.</li>
-    <li><strong>Systematic error</strong> — A repeated mistake across many cases, not a one-off hallucination.</li>
+    <li><strong>Knowledge injection</strong> — The general goal of putting task or domain knowledge into model behavior—via weights, retrieval, or both.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

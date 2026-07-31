@@ -14,14 +14,14 @@ Training ends when something serves. With LoRA you choose: **merge** adapters in
 Merge for simplicity and peak serving speed of one skill. Keep adapters separate when you need many skills, fast rollback, or per-tenant behavior on one GPU fleet.
 :::
 
-Neither choice fixes a bad eval. Both require versioning: which base SHA + which adapter SHA produced an answer.
+Neither choice fixes a bad eval. Both require versioning: which base revision plus which adapter revision produced an answer.
 
 ## How it works
 
 ### Merged serving
 
-1. Start from base `W`.
-2. Compute `W_merged = W + scale * B A` for each LoRA layer.
+1. Start from the frozen base weight.
+2. Compute merged weight = base weight + scale times (B times A) for each LoRA layer.
 3. Export a standard HuggingFace / GGUF / vLLM-compatible checkpoint.
 4. Serve like any fine-tuned model.
 
@@ -33,7 +33,7 @@ Cons: storage multiplies per skill; switching skill means loading another full m
 1. Load base once.
 2. Register adapters (`support_v3`, `sql_v2`, ...).
 3. Router picks adapter id from tenant, path, or header.
-4. Forward with base + active adapter (or merge in memory temporarily).
+4. Forward with base plus active adapter (or merge in memory temporarily).
 
 Pros: small artifacts, hot-swap, A/B skills, shared memory for the backbone.  
 Cons: routing complexity, possible slight overhead, must prevent "wrong adapter" incidents.
@@ -56,13 +56,13 @@ flowchart TB
 
 ### Operational checklist
 
-| Concern | Merged | Adapters |
-| --- | --- | --- |
-| Disk per skill | Full model | Megabytes |
-| Rollback | Redeploy previous full ckpt | Unload / pin previous adapter id |
-| Multi-tenant | Separate replicas or models | Router + isolation tests |
-| Latency | Usually simplest path | Watch framework overhead |
-| Quantized serve | Re-quantize after merge | Framework must support LoRA+quant |
+| Plain-English idea | When to use it |
+| --- | --- |
+| **Merged: full model per skill** | One static behavior, max kernel simplicity, dedicated replica per skill. |
+| **Adapters: megabytes per skill** | Many tenants or tasks sharing one base; hot-swap and cheap rollback. |
+| **Merged rollback** | Redeploy a previous full checkpoint. |
+| **Adapter rollback** | Unload or pin a previous adapter id—no full model reload. |
+| **Multi-tenant isolation** | Adapters plus router tests; merged needs separate replicas or models. |
 
 ### Safety and isolation
 
@@ -144,7 +144,7 @@ Deployment pseudocode:
 
 - **Silent wrong adapter** — Tenant A gets Tenant B's tone/policy; treat as a sev-level bug.
 - **Double application** — Merged checkpoint plus loading the same LoRA again.
-- **Base drift** — Adapter trained on base SHA X served on base SHA Y.
+- **Base drift** — Adapter trained on base revision X served on base revision Y.
 - **Unbounded adapter registry** — Orphan adapters without owners or evals.
 - **Merge then forget recipe** — Cannot reproduce the training run that created prod.
 

@@ -36,9 +36,37 @@
       <h1>RAG (Retrieval-Augmented Generation)</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Retrieval-Augmented Generation (RAG)</strong> connects a language model to an external knowledge base at inference time. Instead of hoping the model memorized your HR policy or product docs during training, you retrieve relevant snippets and ask the model to answer <em>using</em> them. That is how teams get fresher facts, private data access, and traceable answers without a full fine-tune for every edit.</p>
+    <p><strong>RAG</strong> stands for <strong>retrieval-augmented generation</strong>. Instead of asking a language model to answer from memory alone, you <strong>find relevant text first</strong>, <strong>add it to the prompt</strong>, then <strong>let the model write an answer tied to that evidence</strong>.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>An LLM’s weights are a lossy, frozen encyclopedia. Your company wiki is a living filing cabinet. RAG is the pattern of <strong>look it up, then write</strong>. The retriever is the librarian; the generator is the writer who must stay faithful to the books on the desk. If the librarian brings the wrong books, the writer either hallucinates or honestly says “not in the sources” — your prompts and evaluations decide which.</p>
+    <p>An LLM&#x27;s weights are a frozen, lossy encyclopedia. Your company wiki is a living filing cabinet. RAG is the pattern: <strong>look it up, then write</strong>.</p>
+    <table>
+      <thead><tr>
+        <th>Problem with plain LLMs</th>
+        <th>Plain-English idea</th>
+        <th>How RAG helps</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Hallucination</strong></td>
+          <td>Confident answers with no real source</td>
+          <td>Answers must lean on retrieved text</td>
+        </tr>
+        <tr>
+          <td><strong>Verifiability</strong></td>
+          <td>Hard to check where a claim came from</td>
+          <td>Citations point to source chunks</td>
+        </tr>
+        <tr>
+          <td><strong>Knowledge cutoff</strong></td>
+          <td>Model only knows training data up to a date</td>
+          <td>Fresh docs can be indexed and fetched live</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>RAG is useful when the answer must come from current, private, or auditable information—not from the model&#x27;s memory alone.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -53,30 +81,75 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Offline (ingest).</strong></p>
+    <h3>Core workflow</h3>
+    <ol>
+    <li><strong>Index</strong> documents so they can be searched.</li>
+    <li><strong>Receive</strong> the user question.</li>
+    <li><strong>Retrieve</strong> the most relevant chunks.</li>
+    <li><strong>Optionally</strong> rewrite or rerank the retrieved text.</li>
+    <li><strong>Build</strong> a prompt with the question and the evidence.</li>
+    <li><strong>Generate</strong> an answer using only that prompt.</li>
+    <li><strong>Evaluate</strong> whether the answer is supported by the evidence.</li>
+    </ol>
+    <h3>Offline (ingest)</h3>
     <ol>
     <li>Collect documents (PDFs, HTML, tickets, markdown).</li>
-    <li>Clean and split into chunks with overlap and metadata (source URL, updated_at, ACL).</li>
-    <li>Embed chunks and upsert into a vector index (and often a keyword index).</li>
+    <li>Clean and split into <strong>chunks</strong> with overlap and metadata (source URL, updated date, access tags).</li>
+    <li>Embed chunks and store them in a vector index (often plus a keyword index).</li>
     </ol>
-    <p><strong>Online (query).</strong></p>
+    <h3>Online (query)</h3>
     <ol>
     <li>Optionally rewrite the user question for search.</li>
     <li>Retrieve top-k chunks (dense, sparse, or hybrid).</li>
-    <li>Optionally re-rank to a smaller set that fits the context window.</li>
-    <li>Pack question + chunks into a prompt with clear delimiters and citation IDs.</li>
-    <li>Generate an answer; require the model to cite chunk IDs or refuse when evidence is missing.</li>
+    <li>Optionally rerank to a smaller set that fits the context window.</li>
+    <li>Pack question + chunks into a prompt with clear labels and citation IDs.</li>
+    <li>Generate; require citations or refusal when evidence is missing.</li>
     </ol>
-    <p><strong>Why not only fine-tune?</strong> Fine-tuning shapes style and specialized behavior; it is a poor CMS. Policies change weekly; re-indexing beats re-training. Many production systems combine light fine-tuning or adapters with RAG for facts.</p>
-    <p><strong>Context packing.</strong> Order chunks by relevance, cap tokens, and label each block:</p>
-    <div class="code-block" data-lang="text">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">[doc_3] ...text...
-[doc_7] ...text...</code></pre>
-    </div>
-    <p>Instruct: “Use only these sources. Cite <code>[doc_id]</code>. If absent, say you lack evidence.”</p>
+    <h3>Naive RAG vs advanced RAG</h3>
+    <table>
+      <thead><tr>
+        <th>Mode</th>
+        <th>What happens</th>
+        <th>When it helps</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Naive RAG</strong></td>
+          <td>Raw query → retrieve top chunks → answer</td>
+          <td>Simple factual questions</td>
+        </tr>
+        <tr>
+          <td><strong>Advanced RAG</strong></td>
+          <td>Rewrite query, rerank, compress context, then answer</td>
+          <td>Vague, multi-hop, or domain-specific questions</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Retriever vs generator</h3>
+    <table>
+      <thead><tr>
+        <th>Role</th>
+        <th>Job</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Retriever</strong></td>
+          <td>Finds the best supporting chunks</td>
+        </tr>
+        <tr>
+          <td><strong>Generator (LLM)</strong></td>
+          <td>Writes the final answer from those chunks</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The retriever decides what the model <strong>sees</strong>. The generator decides how that evidence is <strong>explained</strong>. If retrieval is weak, the answer will be weak too.</p>
+    <h3>Grounding</h3>
+    <p><strong>Grounding</strong> means tying the response to retrieved evidence instead of letting the model freewheel.</p>
+    <p>Example: if the retrieved policy says &quot;leave requests must be filed 3 days in advance,&quot; the answer should repeat that rule—not invent a different one.</p>
+    <h3>Why not only fine-tune?</h3>
+    <p>Fine-tuning shapes style and behavior; it is a poor content management system. Policies change weekly; re-indexing beats re-training. Many production systems combine light fine-tuning with RAG for facts.</p>
     <h2 id="in-code">In code</h2>
-    <p>A bare-metal RAG loop with toy retrieval (cosine over bag embeddings) and a prompt packer. Swap stubs for a real embedder and LLM.</p>
+    <p>A bare-metal RAG loop with toy retrieval and a prompt packer.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -116,35 +189,100 @@ QUESTION: {question}
 &quot;&quot;&quot;
 
 hits = retrieve(&quot;How many casual leaves do I get?&quot;)
-prompt = pack_prompt(&quot;How many casual leaves do I get?&quot;, hits)
-print(prompt)
-# answer = llm.complete(prompt)</code></pre>
+print(pack_prompt(&quot;How many casual leaves do I get?&quot;, hits))</code></pre>
     </div>
-    <p>Even with a fake embedder, the packer shape is what production RAG looks like: retrieve -&gt; label -&gt; constrain -&gt; generate.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
+    <h3>Retrieval failures</h3>
     <ul>
-    <li><strong>Retrieval miss.</strong> Right answer exists but never enters the prompt; the model invents or hedges wrongly. Fix chunking, hybrid search, and query rewriting before blaming the LLM.</li>
-    <li><strong>Context stuffing.</strong> Dumping 40 mediocre chunks dilutes attention; the model quotes noise. Re-rank and keep fewer, better snippets.</li>
-    <li><strong>Unfaithful generation.</strong> Evidence is present but ignored. Tighten prompts, lower temperature, add citation checks, or use a faithfulness grader.</li>
-    <li><strong>Stale indexes.</strong> Docs updated in Confluence but not re-embedded. Treat ingest as a pipeline with freshness SLAs.</li>
-    <li><strong>ACL leaks.</strong> Retriever returns a doc the user cannot see. Filter by permissions <em>before</em> packing the prompt.</li>
-    <li><strong>Conflicting sources.</strong> Two policies disagree; without guidance the model averages them. Prefer newest metadata or explicit conflict handling.</li>
+    <li><strong>Wrong chunk</strong> — Search matches related but incorrect text.</li>
+    <li><strong>Incomplete retrieval</strong> — The answer needs facts from multiple docs, but only one comes back.</li>
+    <li><strong>Stale knowledge base</strong> — Documents were not updated; outdated text is retrieved.</li>
     </ul>
-    <h2 id="designing-the-prompt-pack-carefully">Designing the prompt pack carefully</h2>
-    <p>The packer is a product surface. Put <strong>instructions first or last</strong> (test both; models differ), keep sources clearly bounded, and include a machine-readable citation scheme from day one. If you postpone citations, users will ask “where did you get that?” and you will retrofit IDs under pressure.</p>
-    <p><strong>Token budgeting.</strong> Count tokens for system rules + question + sources. When over budget, drop lowest-ranked chunks, do not silently truncate mid-sentence inside the best chunk. Log <code>dropped_chunk_ids</code> for debugging “it was in the index but not in the answer.”</p>
-    <p><strong>Caching.</strong> Identical questions under stable indexes can reuse retrieval results (and sometimes full answers) with a TTL. Invalidate on re-ingest of cited docs. Cache keys should include embedder version and index generation, not only the question string.</p>
-    <p><strong>Human escalation.</strong> For workflows that change money, access, or medical/legal advice, RAG should propose — not finalize. Grounded drafts with citations are ideal copilots for a human who clicks approve.</p>
+    <h3>Context failures</h3>
+    <ul>
+    <li><strong>Lost in the middle</strong> — LLMs may pay less attention to useful info in the middle of a long context.</li>
+    <li><strong>Context overload</strong> — Too many chunks make it hard to focus on what matters.</li>
+    <li><strong>Irrelevant context</strong> — Noisy chunks distract even when a good chunk is present.</li>
+    </ul>
+    <h3>Generation failures</h3>
+    <ul>
+    <li><strong>Hallucination despite retrieval</strong> — The model still invents facts not in the retrieved text.</li>
+    <li><strong>Knowledge conflict</strong> — Retrieved text says one thing; model memory pushes another.</li>
+    <li><strong>Attribution errors</strong> — Wrong source cited, or context ignored.</li>
+    </ul>
+    <p>Fix retrieval (chunking, hybrid search, query rewriting) before blaming the LLM.</p>
+    <h2 id="types-of-rag">Types of RAG</h2>
+    <table>
+      <thead><tr>
+        <th>Variant</th>
+        <th>Plain-English idea</th>
+        <th>Best for</th>
+        <th>Uses memory?</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Standard RAG</strong></td>
+          <td>One query, one retrieval, one answer</td>
+          <td>Straightforward lookup</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>RAG with memory</strong></td>
+          <td>Past turns plus retrieval</td>
+          <td>Follow-up questions (&quot;What about its population?&quot;)</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td><strong>Agentic RAG</strong></td>
+          <td>Model plans tools and searches again</td>
+          <td>Multi-step tasks</td>
+          <td>Often</td>
+        </tr>
+        <tr>
+          <td><strong>CoRAG (chain-of-RAG)</strong></td>
+          <td>Chain of sub-questions and sub-answers</td>
+          <td>Deep research, complex reasoning</td>
+          <td>Can use chains</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2 id="evaluation-snapshot-ragas">Evaluation snapshot (RAGAS)</h2>
+    <p><strong>RAGAS</strong> (Retrieval-Augmented Generation Assessment Suite) is an open-source framework for scoring RAG quality.</p>
+    <table>
+      <thead><tr>
+        <th>Metric</th>
+        <th>Plain-English question</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Context precision</strong></td>
+          <td>Was the retrieved context actually relevant?</td>
+        </tr>
+        <tr>
+          <td><strong>Context recall</strong></td>
+          <td>Did we fetch enough of the needed evidence?</td>
+        </tr>
+        <tr>
+          <td><strong>Answer relevancy</strong></td>
+          <td>Does the answer address the question?</td>
+        </tr>
+        <tr>
+          <td><strong>Faithfulness</strong></td>
+          <td>Is every claim supported by the retrieved context?</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Example: retrieved text says Shakespeare wrote <em>Romeo and Juliet</em>. An answer adding &quot;in 1597&quot; fails faithfulness if that date is not in the context.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>RAG retrieves relevant private or fresh documents at query time and conditions the LLM on those chunks so answers stay grounded and updatable without retraining.</p>
+    <p>RAG retrieves relevant documents at query time and conditions the LLM on those chunks so answers stay grounded and updatable without retraining.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>RAG:</strong> retrieval-augmented generation — retrieve then generate.</li>
+    <li><strong>RAG (retrieval-augmented generation):</strong> retrieve evidence, then generate an answer from it.</li>
     <li><strong>Retriever:</strong> component that selects candidate chunks for a query.</li>
-    <li><strong>Generator:</strong> LLM that produces the final answer from question + context.</li>
-    <li><strong>Context packing:</strong> formatting chunks and instructions into the prompt.</li>
+    <li><strong>Generator:</strong> the LLM that produces the final answer.</li>
     <li><strong>Grounding:</strong> tying claims to retrieved evidence.</li>
-    <li><strong>Ingest pipeline:</strong> offline clean -&gt; chunk -&gt; embed -&gt; index process.</li>
+    <li><strong>Ingest pipeline:</strong> offline clean → chunk → embed → index.</li>
+    <li><strong>Faithfulness:</strong> whether the answer stays inside the retrieved text.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

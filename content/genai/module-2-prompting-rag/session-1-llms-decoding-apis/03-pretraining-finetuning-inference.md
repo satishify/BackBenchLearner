@@ -1,17 +1,23 @@
 ---
 title: "Pretraining, Fine-Tuning, and Inference"
-description: "The three-stage model lifecycle—pretraining, fine-tuning, and inference—with cost trade-offs and when to prompt versus fine-tune."
+description: "The three-stage model lifecycle — pretraining, fine-tuning, and inference — with cost trade-offs and when to prompt versus fine-tune."
 ---
 
-Every production language (or vision) model you call sits somewhere in a three-stage lifecycle: **pretraining**, optional **fine-tuning**, and **inference**. Mixing those stages up causes the classic mistake of “we’ll just retrain GPT on our PDFs this sprint” — or the opposite mistake of fine-tuning when a better prompt and retrieval would have been enough.
+Every language model you call sits somewhere in a three-stage lifecycle: **pretraining**, optional **fine-tuning**, and **inference**. Mixing those stages up causes the classic mistake of "we'll just retrain GPT on our PDFs this sprint" — or the opposite mistake of fine-tuning when a better prompt and retrieval would have been enough.
 
 ## Intuition
 
-- **Pretraining** teaches general competence from huge, broad data (next-token prediction, masked modeling, contrastive image-text pairs, etc.). Expensive, rare for most teams to run from scratch.
-- **Fine-tuning** adapts an already pretrained model to a narrower distribution: your tone, schema, domain jargon, or task format. Medium cost; needs carefully curated examples.
-- **Inference** is using a fixed set of weights to produce outputs for live inputs. This is what APIs bill you for on every request.
+**What are the three stages?**
 
-Prompting sits *at inference time*: you change the input, not the weights. Fine-tuning changes the weights (or adapters). Retrieval changes the *context* you feed at inference.
+| Stage | Plain-English idea | Who usually runs it |
+| --- | --- | --- |
+| **Pretraining** | Teach general language skill from huge, broad data | Labs / cloud providers |
+| **Fine-tuning** | Adapt an existing model to your tone, schema, or domain | Product teams / specialists |
+| **Inference** | Use the fixed model to answer live user requests | Everyone shipping a product |
+
+**Why does the order matter?** Pretraining is expensive and rare for most teams. Fine-tuning needs curated examples. Inference is what you pay for on every API call.
+
+Prompting sits *at inference time*: you change the input, not the weights. Fine-tuning changes the weights (or adapters). Retrieval (RAG — retrieval-augmented generation) changes the *context* you feed at inference.
 
 :::key
 Pretrain once (usually someone else), fine-tune occasionally, infer constantly. Cost and data scale follow that order.
@@ -34,19 +40,19 @@ flowchart LR
 
 ### Cost and data at a glance
 
-| Stage | Data scale | Compute | Who usually runs it | Changes weights? |
-| --- | --- | --- | --- | --- |
-| **Pretraining** | Billions–trillions of tokens / huge media corpora | Enormous (clusters, weeks–months) | Labs / cloud providers | Yes (from random or prior init) |
-| **Fine-tuning** | Hundreds–millions of examples | GPU-hours to days | Product teams / specialists | Yes (full or adapters) |
-| **Inference** | Live user inputs | Per-request GPU/CPU | Everyone shipping a product | No |
+| Stage | Data scale | Compute | Changes weights? |
+| --- | --- | --- | --- |
+| **Pretraining** | Billions–trillions of tokens | Enormous (clusters, weeks–months) | Yes (from random init) |
+| **Fine-tuning** | Hundreds–millions of examples | GPU-hours to days | Yes (full or adapters) |
+| **Inference** | Live user inputs | Per-request GPU/CPU | No |
 
 ### What each stage optimizes for
 
-- **Pretraining objective** — Predict or reconstruct broad data so the model learns syntax, world regularities, and transferable features. Success metric is usually a training loss on held-out general data, not your KPI.
-- **Fine-tuning objective** — Make the model behave well on *your* distribution: correct JSON, preferred tone, domain abbreviations, refusal style. Success is task metrics on a curated eval set.
-- **Inference objective** — Latency, cost per request, reliability, and safety filters under live load. No gradient updates — only serving and optional caching.
+- **Pretraining objective** — Predict or reconstruct broad data so the model learns syntax, world regularities, and transferable features.
+- **Fine-tuning objective** — Make the model behave well on *your* distribution: correct JSON, preferred tone, domain abbreviations, refusal style.
+- **Inference objective** — Latency, cost per request, reliability, and safety filters under live load. No gradient updates — only serving.
 
-Those three scoreboards disagree. A model with great pretraining loss can still fail your support rubric; a fine-tune that nails the rubric can still be too slow or too verbose in production.
+Those three scoreboards disagree. A model with great pretraining loss can still fail your support rubric; a fine-tune that nails the rubric can still be too slow in production.
 
 ### Prompt vs fine-tune (preview)
 
@@ -62,19 +68,17 @@ Consider **fine-tuning** when:
 - You need a stable output format or style at high volume.
 - Prompting is long, fragile, or costly per call.
 - Domain language is rare in the base model and few-shot examples are not enough.
-- You have (or can create) a clean labeled dataset and an offline eval harness.
+- You have a clean labeled dataset and an offline eval harness.
 
 A practical sequence most teams should follow: (1) strong base model + prompt, (2) add retrieval/tools, (3) measure, (4) fine-tune only if the remaining errors are systematic and data-backed.
 
-Later modules go deeper on SFT, preference tuning, and evaluation. For now: treat fine-tuning as a product investment, not a default.
-
 :::tip
-If the failure is “doesn’t know yesterday’s price list,” fix retrieval or data access — fine-tuning will only bake in yesterday’s list.
+If the failure is "doesn't know yesterday's price list," fix retrieval or data access — fine-tuning will only bake in yesterday's list.
 :::
 
 ## In code
 
-A toy metaphor: a “pretrained” scoring table encodes general word preferences. Fine-tuning **overrides** a few weights for a domain. Inference reads the final table — prompts only change which keys you look up, not the table itself.
+A toy metaphor: a "pretrained" scoring table encodes general word preferences. Fine-tuning **overrides** a few weights for a domain. Inference reads the final table — prompts only change which keys you look up, not the table itself.
 
 ```python
 # "Pretrained" general preferences (higher = more likely)
@@ -133,29 +137,13 @@ Notice three different levers:
 
 Real systems replace this dict with billions of neural parameters, but the lifecycle roles stay the same.
 
-One more check: compare scores explicitly so “override” is visible as arithmetic, not magic.
-
-```python
-def score(prev: str, nxt: str, weights: dict) -> float:
-    return weights.get((prev, nxt), 0.0)
-
-
-print("pretrained error->please", score("error", "please", pretrained))
-print("adapted error->please", score("error", "please", adapted))
-print("delta applied", score("error", "please", adapted) - score("error", "please", pretrained))
-# 0.2 -> 2.7 after +2.5 fine-tune delta
-```
-
-That `+2.5` is a stand-in for gradient updates on real weights. Prompt bias never appears in `adapted`; it only exists for the duration of one `infer` call.
-
 ## What goes wrong
 
-- **Fine-tuning to store facts** — Facts rot; weights are a bad CMS. Use RAG or databases for living knowledge.
-- **Catastrophic specialization** — Heavy fine-tuning can hurt general skills (the model becomes great at your JSON and worse at everything else). Prefer adapters / LoRA-style updates when possible.
+- **Fine-tuning to store facts** — Facts rot; weights are a bad content management system. Use RAG or databases for living knowledge.
+- **Catastrophic specialization** — Heavy fine-tuning can hurt general skills. Prefer adapters / LoRA (Low-Rank Adaptation) when possible.
 - **Data leakage** — Putting secrets into fine-tune sets can make models regurgitate them later.
-- **Evaluating only at training time** — A fine-tune that looks good on the training JSONL may fail on messy live tickets; hold out real traffic samples.
-- **Ignoring inference economics** — A slightly better fine-tune that doubles tokens per answer can cost more than it saves.
-- **Skipping the base model check** — Teams fine-tune before trying a stronger base model or clearer prompt — expensive premature optimization.
+- **Evaluating only at training time** — A fine-tune that looks good on training JSONL may fail on messy live tickets.
+- **Skipping the base model check** — Teams fine-tune before trying a stronger base model or clearer prompt.
 
 :::warn
 Pretraining from scratch is almost never your first move. Borrow a strong base model, measure with prompts, then fine-tune only with a clear failure mode and dataset.

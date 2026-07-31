@@ -3,24 +3,28 @@ title: "LoRA and QLoRA"
 description: "Low-Rank Adaptation and QLoRA: low-rank weight updates, ranks, targets, 4-bit backbone loading, and practical training notes."
 ---
 
-LoRA (Low-Rank Adaptation) is the PEFT method most product teams meet first. Instead of updating a full weight matrix `W`, you learn a thin update `BA` and add it at runtime. QLoRA pairs that idea with a quantized frozen backbone so large models fit on smaller GPUs.
+**LoRA (Low-Rank Adaptation)** is the PEFT method most teams meet first. Instead of updating a full weight matrix, you learn a small low-rank update and add it at runtime. **QLoRA (Quantized LoRA)** pairs that idea with a quantized frozen backbone so large models fit on smaller GPUs.
 
 ## Intuition
 
-A dense update `delta W` for a `d x d` matrix has `d^2` parameters. LoRA assumes task updates are approximately **low rank**:
+A dense weight update for a large matrix has millions of parameters. LoRA assumes the task-specific change is **approximately low rank**—it can be captured by two thin matrices multiplied together:
 
 ```text
-W' = W + delta W
-delta W ~= B @ A    where A is r x d, B is d x r, r << d
+new weight = frozen weight + weight update
+weight update ~= B times A (low rank)
+
+A shape: r rows by d columns
+B shape: d rows by r columns
+r is much smaller than d
 ```
 
-You train `A` and `B` (plus maybe biases/heads); `W` stays frozen. After training you can keep them separate or **merge** `W + BA` into a single matrix for serving.
+You train A and B; the original weight stays frozen. After training you can keep them separate or **merge** the update into the weight for simpler serving.
 
 :::key
 LoRA stores the task as a skinny detour around each chosen weight—not a second full model.
 :::
 
-**QLoRA**: load the backbone in 4-bit (or similar) quantized form to save memory, keep it frozen, and still train LoRA adapters in higher precision. You get LoRA-quality adaptation with far less GPU RAM.
+**QLoRA** loads the backbone in 4-bit (or similar) quantized form to save memory, keeps it frozen, and still trains LoRA adapters in higher precision. You get LoRA-quality adaptation with far less GPU RAM.
 
 ## How it works
 
@@ -31,41 +35,43 @@ Common targets in transformers:
 - Attention projections: `q_proj`, `k_proj`, `v_proj`, `o_proj`
 - Sometimes MLP: `gate_proj`, `up_proj`, `down_proj`
 
-More targets -> more capacity and memory. Start with attention; expand if underfit.
+More targets mean more capacity and memory. Start with attention; expand if the model underfits.
 
-### Rank `r` and scaling
+### Rank and scaling
 
-- **`r` (rank)** — Capacity knob. Typical starting points: 8, 16, 32.
-- **`alpha` / scaling** — Many implementations scale the update by `alpha / r` so changing `r` does not wildly change effective step size.
+- **`r` (rank)** — Capacity knob. Typical starting points: 8, 16, 32. Higher rank means more room to learn, but also more overfitting risk on small data.
+- **`alpha` / scaling** — Many implementations scale the update by `alpha / r` so changing rank does not wildly change effective step size.
 - **Dropout on LoRA layers** — Light regularization; optional.
 
 ```mermaid
 flowchart LR
     X[x] --> W[Frozen W]
-    X --> A[A r x d trainable]
-    A --> B[B d x r trainable]
+    X --> A[A r by d trainable]
+    A --> B[B d by r trainable]
     W --> S[sum]
     B --> S
-    S --> Y[y = xW + scale * xAB]
+    S --> Y[y = xW + scale times xAB]
 ```
-
-### QLoRA specifics (conceptual)
-
-1. Quantize backbone weights to 4-bit storage.
-2. Dequantize on the fly for matmuls (implementation detail).
-3. Train LoRA in 16-bit (e.g. bf16/fp16) adapters.
-4. Optionally use paged optimizers / checkpointing for long contexts.
-
-You still evaluate in a setup that matches production numerics as closely as you can.
 
 ### Merge vs keep separate
 
-- **Merged** — Bake `BA` into `W` for a normal checkpoint (simpler serving, loses easy unload).
-- **Unmerged** — Load base + adapter (hot-swap skills; slight runtime overhead).
+| Plain-English idea | When to use it |
+| --- | --- |
+| **Merged weights** | Bake the LoRA update into the base weight for a normal checkpoint. Simpler serving; harder to swap skills. |
+| **Unmerged adapters** | Load base plus adapter at runtime. Hot-swap skills; slight runtime overhead. |
 
 :::tip
 For experiments, keep adapters separate. Merge when a skill is stable and you want the simplest deployment artifact.
 :::
+
+### QLoRA specifics (conceptual)
+
+1. Quantize backbone weights to 4-bit storage.
+2. Dequantize on the fly for matrix multiplies (implementation detail).
+3. Train LoRA in 16-bit (e.g. bf16/fp16) adapters.
+4. Optionally use paged optimizers or checkpointing for long contexts.
+
+You still evaluate in a setup that matches production numerics as closely as you can.
 
 ## In code
 
@@ -106,7 +112,7 @@ print("out_dim", len(y), "trainable", d * r + r * d)
 
 
 def merge_W(W, A, B, scale_factor):
-    # delta W_ij = scale * sum_k B_ik * A_kj
+    # weight update[i,j] = scale * sum_k B[i,k] * A[k,j]
     d = len(W)
     r = len(A)
     merged = [row[:] for row in W]
@@ -148,7 +154,7 @@ QLoRA is a memory technique around LoRA—not a free accuracy upgrade. Always va
 
 ## One-line summary
 
-**LoRA** learns low-rank updates `BA` on frozen weights; **QLoRA** does the same while storing the backbone in 4-bit to cut GPU memory.
+**LoRA** learns low-rank updates (B times A) on frozen weights; **QLoRA** does the same while storing the backbone in 4-bit to cut GPU memory.
 
 ## Key terms
 
@@ -157,5 +163,5 @@ QLoRA is a memory technique around LoRA—not a free accuracy upgrade. Always va
 - **lora_alpha** — Scaling hyperparameter paired with rank.
 - **Target modules** — Which linear layers receive LoRA.
 - **QLoRA** — LoRA training on a quantized frozen backbone.
-- **Merge** — Folding `BA` into `W` for a standalone weight set.
+- **Merge** — Folding the LoRA update into the base weight for a standalone checkpoint.
 - **Adapter hotspot** — Serving many LoRA adapters on one base model.

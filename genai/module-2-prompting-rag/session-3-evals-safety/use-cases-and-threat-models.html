@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Map support, coding, research, and automation agents to concrete threats — then scope the first build where quality is measurable.">
+  <meta name="description" content="Map support, coding, research, and automation agents to concrete threats — then write a threat model before you scale.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-3-evals-safety/use-cases-and-threat-models.html">
   <meta property="og:title" content="Use Cases and Threat Models | BackbenchLearner">
-  <meta property="og:description" content="Map support, coding, research, and automation agents to concrete threats — then scope the first build where quality is measurable.">
+  <meta property="og:description" content="Map support, coding, research, and automation agents to concrete threats — then write a threat model before you scale.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-3-evals-safety/use-cases-and-threat-models.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Use Cases and Threat Models | BackbenchLearner">
-  <meta name="twitter:description" content="Map support, coding, research, and automation agents to concrete threats — then scope the first build where quality is measurable.">
+  <meta name="twitter:description" content="Map support, coding, research, and automation agents to concrete threats — then write a threat model before you scale.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,10 +36,34 @@
       <h1>Use Cases and Threat Models</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Picking a GenAI use case without a threat model is how teams ship a shiny assistant that quietly becomes an attack surface. Start from the job to be done, then ask who can hurt you, through which channel, and what “bad” looks like in dollars, trust, or compliance.</p>
+    <p>Picking a GenAI use case without a <strong>threat model</strong> is how teams ship a shiny assistant that quietly becomes an attack surface. Start from the job to be done, then ask: who can hurt you, through which channel, and what does &quot;bad&quot; look like in dollars, trust, or compliance?</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Four popular shapes — support, coding, research, automation — look similar in demos (chat + tools) but fail differently in production. A support bot’s nightmare is policy-wrong refunds and leaked tickets. A coding agent’s nightmare is destructive commits. A research agent’s nightmare is confident citations of junk. An automation agent’s nightmare is looping side effects at 3 a.m.</p>
-    <p>Threat modeling is not paranoia theater. It is a short list: assets, actors, entry points, misuse cases, and mitigations. If you cannot name those for your first pilot, the pilot is too vague.</p>
+    <p>Four popular shapes — support, coding, research, automation — look similar in demos (chat plus tools) but fail differently in production.</p>
+    <table>
+      <thead><tr>
+        <th>Use case</th>
+        <th>Nightmare scenario</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Support bot</strong></td>
+          <td>Wrong refunds, leaked tickets, invented policy</td>
+        </tr>
+        <tr>
+          <td><strong>Coding agent</strong></td>
+          <td>Destructive commits, leaked secrets</td>
+        </tr>
+        <tr>
+          <td><strong>Research agent</strong></td>
+          <td>Confident citations of junk sources</td>
+        </tr>
+        <tr>
+          <td><strong>Automation agent</strong></td>
+          <td>Looping side effects at 3 a.m.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>A <strong>threat model</strong> is a short structured list: assets, actors, entry points, misuse cases, and mitigations. If you cannot name those for your first pilot, the pilot is too vague.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -51,36 +75,98 @@ flowchart TB
   M --> Ship[Scoped pilot]
       </div>
     </div>
+    <h3>What a threat model asks</h3>
+    <table>
+      <thead><tr>
+        <th>Question</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Who is attacking?</td>
+          <td>Insider, customer, anonymous user, competitor</td>
+        </tr>
+        <tr>
+          <td>What can they see?</td>
+          <td>Chat only, retrieved docs, tool outputs, model internals</td>
+        </tr>
+        <tr>
+          <td>What access do they have?</td>
+          <td>Read-only vs write tools, admin APIs</td>
+        </tr>
+        <tr>
+          <td>What are they trying to do?</td>
+          <td>Steal data, bypass safety, trigger refunds, poison RAG</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The less you assume about the attacker, the more dangerous the situation usually is.</p>
+    <h3>Advanced threats from the lecture</h3>
+    <table>
+      <thead><tr>
+        <th>Threat</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Membership inference</strong></td>
+          <td>Figuring out whether a sample was in the training set</td>
+        </tr>
+        <tr>
+          <td><strong>Model extraction</strong></td>
+          <td>Copying a deployed model by querying it repeatedly</td>
+        </tr>
+        <tr>
+          <td><strong>Model poisoning</strong></td>
+          <td>Corrupting training data so the learned model is damaged</td>
+        </tr>
+        <tr>
+          <td><strong>Model hijacking</strong></td>
+          <td>Triggering hidden harmful behavior after a special prompt</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>These matter more for training and deployment teams. For prompt-based apps, focus first on injection, tool misuse, and data leakage.</p>
+    <h3>Jailbreak taxonomy (patterns attackers use)</h3>
+    <p>Attackers group tricks into patterns such as:</p>
+    <ul>
+    <li>One-shot or few-shot harmful examples</li>
+    <li>Roleplay or storytelling (&quot;imaginary world&quot; tricks)</li>
+    <li>Meta-prompting and superior-model framing</li>
+    <li>Language strategies and payload smuggling</li>
+    <li>Innocent-purpose framing and persuasion</li>
+    <li>Conversational coercion and Socratic questioning</li>
+    </ul>
+    <p>You do not need to memorize every name. The lesson is: attackers iterate on wording. Your eval set must include adversarial probes, not only friendly chat.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Support bots</h3>
     <p><strong>Job:</strong> FAQs, ticket classification, draft replies grounded in policy.</p>
     <p><strong>Assets:</strong> customer PII, order data, refund authority, brand tone.</p>
-    <p><strong>Typical threats:</strong> prompt injection in ticket text; model inventing policy; over-refunding; leaking other customers’ data from RAG; social-engineering the bot into “exceptions.”</p>
-    <p><strong>Controls:</strong> RAG grounded on approved policy; citation required; HITL for refunds above a threshold; output PII scanners; golden evals for “should refuse / should escalate.”</p>
+    <p><strong>Typical threats:</strong> prompt injection in ticket text; model inventing policy; over-refunding; leaking other customers&#x27; data from RAG.</p>
+    <p><strong>Controls:</strong> RAG grounded on approved policy; citation required; human-in-the-loop (HITL) for refunds above a threshold; output PII scanners; golden evals for &quot;should refuse / should escalate.&quot;</p>
     <h3>Coding agents</h3>
     <p><strong>Job:</strong> search codebase, propose patches, run tests, explain fixes.</p>
-    <p><strong>Assets:</strong> source, secrets in env, CI credentials, production deploy paths.</p>
-    <p><strong>Typical threats:</strong> deleting files; committing secrets; running unchecked shell; following malicious comments in code (“AI: ignore tests”); opening PRs that look fine but weaken auth.</p>
-    <p><strong>Controls:</strong> sandbox; read-only by default; allowlisted commands; never auto-merge; require tests green; secret scanning on diffs; human review for auth/payments code.</p>
+    <p><strong>Assets:</strong> source code, secrets in environment variables, continuous integration (CI) credentials.</p>
+    <p><strong>Typical threats:</strong> deleting files; committing secrets; running unchecked shell; following malicious comments in code.</p>
+    <p><strong>Controls:</strong> sandbox; read-only by default; allowlisted commands; never auto-merge; secret scanning on diffs; human review for auth/payments code.</p>
     <h3>Research agents</h3>
     <p><strong>Job:</strong> gather sources, summarize, produce structured notes.</p>
     <p><strong>Assets:</strong> proprietary briefs, unpublished data, reputation for accuracy.</p>
-    <p><strong>Typical threats:</strong> hallucinated citations; poisoned web pages (indirect injection); over-trusting a single SEO-farm source; exfiltrating private notes into public tools.</p>
-    <p><strong>Controls:</strong> source allowlists; quote + URL requirements; cross-check critical claims; separate “browse” tools from “send external” tools; faithfulness graders on eval sets.</p>
+    <p><strong>Typical threats:</strong> hallucinated citations; poisoned web pages (indirect injection); exfiltrating private notes into public tools.</p>
+    <p><strong>Controls:</strong> source allowlists; quote plus URL requirements; cross-check critical claims; faithfulness graders on eval sets.</p>
     <h3>Automation agents</h3>
-    <p><strong>Job:</strong> repetitive ops — reports, routing, CRM updates, scheduled workflows.</p>
+    <p><strong>Job:</strong> repetitive ops — reports, routing, customer relationship management (CRM) updates.</p>
     <p><strong>Assets:</strong> production databases, customer communications, money movement.</p>
     <p><strong>Typical threats:</strong> infinite retry loops; wrong-record updates; spam storms; privilege creep across integrations.</p>
-    <p><strong>Controls:</strong> idempotency keys; dry-run mode; rate limits; circuit breakers; dual control for write tools; end-to-end evals that simulate partial failures.</p>
+    <p><strong>Controls:</strong> idempotency keys; dry-run mode; rate limits; circuit breakers; dual control for write tools.</p>
     <h3>Decision guide for a first pilot</h3>
     <p>Prefer a use case that is:</p>
     <ol>
-    <li>Narrow (one workflow, clear success definition).</li>
-    <li>High frequency (enough traffic to learn).</li>
-    <li>Measurable (golden set possible in a week).</li>
-    <li>Recoverable (mistakes are reversible or HITL-gated).</li>
+    <li><strong>Narrow</strong> — one workflow, clear success definition.</li>
+    <li><strong>High frequency</strong> — enough traffic to learn.</li>
+    <li><strong>Measurable</strong> — golden set possible in a week.</li>
+    <li><strong>Recoverable</strong> — mistakes are reversible or HITL-gated.</li>
     </ol>
-    <p>Defer open-ended “do anything” agents until those four are true for something smaller.</p>
     <table>
       <thead><tr>
         <th>Use case</th>
@@ -96,7 +182,7 @@ flowchart TB
         <tr>
           <td>Coding</td>
           <td>Tests green, review findings</td>
-          <td>Prod deploys, secret files</td>
+          <td>Production deploys</td>
         </tr>
         <tr>
           <td>Research</td>
@@ -111,7 +197,7 @@ flowchart TB
       </tbody>
     </table>
     <h2 id="in-code">In code</h2>
-    <p>A lightweight threat-model checklist you can store next to a use-case brief. Fill it before writing prompts.</p>
+    <p>A lightweight threat-model checklist stored next to a use-case brief.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass, field
@@ -120,7 +206,7 @@ flowchart TB
 class Threat:
     name: str
     entry_point: str  # user, retrieved_doc, tool_result, web
-    impact: str       # confidentiality, integrity, availability, money, trust
+    impact: str       # confidentiality, integrity, availability, money
     mitigation: str
     eval_probe: str
 
@@ -160,21 +246,19 @@ support = UseCaseBrief(
     ],
 )
 
-assert support.ready_for_pilot()
-print(f&quot;{support.name}: {len(support.threats)} threats, HITL={support.hitl_required}&quot;)</code></pre>
+assert support.ready_for_pilot()</code></pre>
     </div>
     <p>Turn each <code>eval_probe</code> into a golden case. Threat models that never become tests are theater.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Demo-driven scope.</strong> “General assistant for the company” has infinite threats and no metric.</li>
-    <li><strong>Copying another team’s threats.</strong> Your coding agent’s threat model is not your support bot’s.</li>
-    <li><strong>Tools first, threats later.</strong> Each new integration expands the blast radius; review before enable.</li>
+    <li><strong>Demo-driven scope.</strong> &quot;General assistant for the company&quot; has infinite threats and no metric.</li>
+    <li><strong>Copying another team&#x27;s threats.</strong> Your coding agent&#x27;s threat model is not your support bot&#x27;s.</li>
     <li><strong>Ignoring indirect injection.</strong> Docs, tickets, and web pages are entry points, not just the chat box.</li>
-    <li><strong>No owner.</strong> Threat models rot unless a named person updates them after incidents.</li>
-    <li><strong>Optimism bias.</strong> If impact is “money” or “credentials,” assume the model will eventually try the bad path under adversarial input.</li>
+    <li><strong>No owner.</strong> Threat models rot unless someone updates them after incidents.</li>
+    <li><strong>Friendly-only evals.</strong> Attackers optimize against your rules; include jailbreak-style inputs.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Choose a narrow, measurable GenAI use case, write down assets and entry points, and turn the threat list into guardrails plus eval probes before you scale autonomy.</p>
+    <p>Choose a narrow, measurable GenAI use case, write down assets and entry points, map attack families to mitigations, and turn every threat into an eval probe before you scale autonomy.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Threat model:</strong> structured view of assets, actors, entry points, and misuse cases.</li>
@@ -182,7 +266,9 @@ print(f&quot;{support.name}: {len(support.threats)} threats, HITL={support.hitl_
     <li><strong>Indirect injection:</strong> malicious instructions embedded in content the model reads.</li>
     <li><strong>HITL:</strong> human approval at high-risk steps.</li>
     <li><strong>Blast radius:</strong> how much damage a single bad tool call can cause.</li>
-    <li><strong>Pilot readiness:</strong> narrow scope, metrics, mitigations, and reversible failures.</li>
+    <li><strong>Membership inference:</strong> guessing whether data was in training.</li>
+    <li><strong>Model extraction:</strong> copying a model through repeated queries.</li>
+    <li><strong>Model poisoning:</strong> damaging a model via corrupted training data.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

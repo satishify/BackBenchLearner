@@ -3,11 +3,25 @@ title: "Single-Agent vs Multi-Agent Systems"
 description: "Start with one agent end to end; split into specialized agents only when handoffs and scale clearly pay for the orchestration cost."
 ---
 
-A **single-agent** system puts one loop in charge of the whole job. A **multi-agent** system splits work across specialized agents that collaborate. Multi-agent is not automatically smarter — it is an organizational choice with real coordination costs.
+**What is this for?** To explain when one agent should own the whole job vs when to split work across a **multi-agent** team.
+
+**Why does it exist?** One giant agent with dozens of tools gets overloaded. Its context fills up, tool selection gets noisy, and **tool hallucination** (inventing or misusing tool calls) becomes more likely. Specialists are easier to trust than one overworked generalist.
 
 ## Intuition
 
-One skilled generalist can close a ticket: research policy, draft a reply, file the note. That is single-agent. A newsroom-style pipeline — researcher, writer, fact-checker — is multi-agent. The second can be higher quality at scale, but you now own handoffs, shared memory, and “who is stuck?” debugging.
+One skilled generalist can close a ticket: research policy, draft a reply, file the note. That is **single-agent**.
+
+A newsroom-style pipeline—researcher, writer, fact-checker—is **multi-agent**. The second can be higher quality at scale, but you now own handoffs, shared memory, and "who is stuck?" debugging.
+
+| Plain-English idea | Single-agent | Multi-agent |
+| --- | --- | --- |
+| **Who does the work?** | One loop, all tools | Several specialists, each with narrow tools |
+| **Tracing** | One timeline | Must track which agent produced what |
+| **Default?** | Yes—start here | Only when specialization clearly wins |
+
+:::key
+Multi-agent is not automatically smarter—it is an organizational choice with real coordination costs.
+:::
 
 ```mermaid
 flowchart LR
@@ -29,24 +43,32 @@ flowchart LR
 
 - One policy prompt, one tool set (possibly gated), one memory.
 - Easier tracing: one timeline of thoughts and calls.
-- Best for moderate workflows: “triage + draft,” “report fetch + summarize.”
+- Best for moderate workflows: "triage + draft," "report fetch + summarize."
 - Risk: prompt and tool catalog grow into a swamp; the model juggles too many roles.
 
-### Multi-agent
+### Multi-agent — enterprise specialist roles
 
-- Specialized roles with narrower prompts and tools.
-- Useful pipelines: planner -> researcher -> implementer -> reviewer.
-- Needs **orchestration**: who speaks when, what is passed, how disagreements resolve.
-- Needs **contracts**: typed artifacts between agents (brief, sources, draft, verdict).
+| Agent role | Plain-English idea | Typical tools |
+| --- | --- | --- |
+| **Triage agent** | Front door that routes the task to the right specialist | Classifier, router |
+| **Infrastructure agent** | Reads live telemetry, logs, cluster signals | Splunk, metrics APIs |
+| **Codebase agent** | Checks commit diffs, pull requests, source code | GitHub, git |
+| **Policy & HR agent** | Looks up runbooks, policy, knowledge base entries | RAG over docs |
+
+Each specialist gets a **small, relevant toolset**—not every API in the company.
 
 ### Collaboration patterns
 
-| Pattern | Idea | Watch-out |
+| Pattern | Plain-English idea | Watch-out |
 | --- | --- | --- |
 | Pipeline | Fixed stage order | Brittle if a stage fails silently |
-| Supervisor | Boss agent delegates | Boss becomes a bottleneck / single point of failure |
+| Supervisor | Boss agent delegates | Boss becomes a bottleneck |
 | Peer debate | Two agents critique | Cost explodes; needs a judge and stop rule |
-| Router | Classifier picks one specialist | Mis-routing causes confident wrong specialist |
+| Router / triage | Classifier picks one specialist | Mis-routing causes confident wrong answers |
+
+### Hierarchical ReAct (plain English)
+
+At enterprise scale, the **triage agent** becomes a meta-planner. Specialist agents become its "tools." The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.
 
 ### Decision guide
 
@@ -67,7 +89,7 @@ Measure before splitting: if a single agent plus a deterministic reviewer script
 
 ## In code
 
-A supervisor that delegates to two specialists with a shared artifact — still simple enough to debug.
+A supervisor that delegates to two specialists with a shared artifact—still simple enough to debug.
 
 ```python
 from dataclasses import dataclass
@@ -93,7 +115,6 @@ def reviewer(art: Artifact) -> Artifact:
 
 def single_agent(brief: str) -> Artifact:
     art = Artifact(brief=brief)
-    # one brain does all roles sequentially
     return reviewer(writer(researcher(art)))
 
 def multi_pipeline(brief: str) -> Artifact:
@@ -112,22 +133,22 @@ Frameworks differ in APIs; the invariant is explicit artifacts and stop conditio
 
 ## What goes wrong
 
-- **Multi-agent as fashion.** Extra agents without eval gains — only latency and bill.
+- **Multi-agent as fashion.** Extra agents without eval gains—only latency and bill.
 - **Fuzzy handoffs.** Free-text dumps between agents lose requirements.
-- **Permission soup.** Every agent gets every tool “for flexibility.”
+- **Permission soup.** Every agent gets every tool "for flexibility."
 - **Infinite debates.** Agents critique forever without a round limit.
 - **Opaque orchestration.** No trace of which agent caused a bad tool call.
 - **Split too early.** You never finished a working single-agent path.
 
 ## Putting it into practice
 
-Run an honest A/B on your golden set: single-agent baseline vs a two-role pipeline (implementer + reviewer). Compare pass rate, p95 latency, and cost per success. Promote multi-agent only if the quality lift beats the cost/latency hit by a margin you would defend to finance. Many “reviewer agents” can be replaced by schema validators and unit tests at a fraction of the price.
+Run an honest A/B on your golden set: single-agent baseline vs a two-role pipeline (implementer + reviewer). Compare pass rate, p95 latency, and cost per success. Promote multi-agent only if the quality lift beats the cost/latency hit.
 
-If you do split, publish a one-page orchestration diagram: roles, tools per role, artifact schema, and max turns. On-call engineers should debug from that page at 2 a.m. Without it, multi-agent systems become blame pinatas where nobody knows which role invented the bad refund call.
+If you do split, publish a one-page orchestration diagram: roles, tools per role, artifact schema, and max turns. On-call engineers should debug from that page at 2 a.m.
 
 ## Cost and latency math
 
-Rough planning math helps. If each agent turn costs about C dollars and takes T seconds, a supervisor plus three specialists that each speak twice costs roughly 8CT in the worst chatter pattern. A single agent that makes four tool calls costs about 4CT plus tool time. Unless eval quality rises enough to justify the multiplier — or parallelism cuts wall-clock — the multi-agent bill is vanity. Write the inequality down before the rewrite.
+Rough planning math helps. If each agent turn costs about C dollars and takes T seconds, a supervisor plus three specialists that each speak twice costs roughly 8CT in the worst chatter pattern. A single agent that makes four tool calls costs about 4CT plus tool time. Unless eval quality rises enough to justify the multiplier, the multi-agent bill is vanity. Write the inequality down before the rewrite.
 
 ## One-line summary
 
@@ -137,7 +158,9 @@ Use one agent until specialization clearly improves measured quality or safety; 
 
 - **Single-agent:** one loop owns the goal end to end.
 - **Multi-agent:** collaborating specialized loops.
+- **Triage agent:** router that decides which specialist handles the task.
+- **Specialist agent:** narrow agent focused on one domain (logs, code, policy).
 - **Orchestration:** control of turn-taking, routing, and retries.
 - **Handoff contract:** structured artifact passed between agents.
-- **Supervisor pattern:** a coordinator delegates to workers.
-- **Orchestration tax:** extra cost/latency/complexity of coordination.
+- **Tool hallucination:** when the model invents or misuses a tool call.
+- **Orchestration tax:** extra cost, latency, and complexity of coordination.

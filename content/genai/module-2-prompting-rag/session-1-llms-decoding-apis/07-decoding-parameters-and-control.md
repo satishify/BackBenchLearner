@@ -3,17 +3,19 @@ title: "Decoding Parameters and Output Control"
 description: "Master temperature, top-k, top-p, penalties, max tokens, and stop sequences so LLM outputs stay useful under production constraints."
 ---
 
-Sampling knobs are how you turn a probability distribution into a product behavior. The same prompt can yield a crisp JSON object or a meandering poem depending on decoding. Engineers who treat these as afterthoughts spend their weeks chasing “flaky” models that were never configured for the job.
+**Decoding** is how you turn a probability distribution into actual text. The same prompt can yield a crisp JSON object or a meandering poem depending on decoding settings. Engineers who treat these as afterthoughts spend their weeks chasing "flaky" models that were never configured for the job.
 
 ## Intuition
 
-At each step the model scores the whole vocabulary. Decoding is the policy that picks one token:
+**What is decoding?** At each step the model scores the whole vocabulary. Decoding is the policy that picks one token and repeats until a stop condition.
 
-- **Greedy / near-greedy** — take the best (or nearly best) option -> stable, repetitive risk.
-- **Truncated sampling** — only consider a shortlist (top-k or nucleus / top-p) -> controlled variety.
-- **Penalties and stops** — reshape scores or force an exit -> fight loops and enforce boundaries.
+| Strategy | Plain-English idea | Trade-off |
+| --- | --- | --- |
+| **Greedy / near-greedy** | Take the best (or nearly best) option | Stable, but can sound dull or repetitive |
+| **Truncated sampling** | Only consider a shortlist (top-k or top-p) | Controlled variety |
+| **Penalties and stops** | Reshape scores or force an exit | Fight loops and enforce boundaries |
 
-Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends. Latency and cost scale with how long you let that loop run.
+Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends.
 
 :::key
 Decode for the contract: factual extraction wants a short leash; ideation wants room. Defaults are rarely optimal for either.
@@ -27,7 +29,7 @@ Decode for the contract: factual extraction wants a short leash; ideation wants 
 | --- | --- | --- |
 | temperature | Sharpness of softmax | Primary diversity dial |
 | top_k | Keep only k highest-prob tokens | Hard shortlist |
-| top_p | Keep nucleus with mass >= p | Adaptive shortlist |
+| top_p | Keep nucleus with mass ≥ p | Adaptive shortlist |
 | frequency / presence penalty | Discourage reused tokens | Helps long prose; can hurt code |
 | max_tokens / max_output | Hard length cap | Cost + latency ceiling |
 | stop sequences | End when a string appears | Great for delimiters and turn ends |
@@ -37,9 +39,9 @@ Decode for the contract: factual extraction wants a short leash; ideation wants 
 1. Model emits logits `z`.
 2. Optional penalties adjust logits for tokens already used.
 3. Temperature scales: `z' = z / T`.
-4. Softmax -> probabilities.
+4. Softmax → probabilities.
 5. Top-k and/or top-p mask the allowed set.
-6. Sample (or argmax) one token; append; repeat until EOS, stop string, or max length.
+6. Sample (or argmax) one token; append; repeat until end-of-sequence, stop string, or max length.
 
 ```mermaid
 flowchart LR
@@ -51,30 +53,38 @@ flowchart LR
     C --> L
 ```
 
+### Greedy decoding weakness
+
+Greedy decoding chooses the highest-probability token at each step. It is fast and deterministic, but locally best choices can block a globally better sequence.
+
+Worked example: at the first step, suppose "yes" has probability 0.5 and "ok" has probability 0.4. Greedy chooses "yes." If the next best continuation after "yes" has probability 0.4, the sequence probability is 0.5 × 0.4 = 0.20. But the path "ok ok" may have probability 0.4 × 0.7 = 0.28, which is globally better. Greedy missed it because it committed too early.
+
+### Beam search
+
+**Beam search** keeps the k best partial sequences at each step. It is a compromise between exhaustive search and greedy decoding.
+
+- Beam width 1 is greedy decoding.
+- Larger beam widths explore more alternatives but cost more compute.
+- In open-ended chat, beam search can sound dull; sampling is often preferred for naturalness.
+
 ### Top-k vs top-p
 
-- **Top-k = 40** always keeps forty tokens even if thirty-nine are near-zero junk when the model is confident — or truncates useful mass when the distribution is flat.
+- **Top-k = 40** always keeps forty tokens even if thirty-nine are near-zero junk when the model is confident.
 - **Top-p = 0.9** grows/shrinks with uncertainty — usually the better default when you want one adaptive knob.
-
-Using both is fine if you understand the order your API applies them; setting both extremely tight (tiny k and tiny p) can leave an empty or brittle candidate set.
-
-### Penalties
-
-- **Presence penalty** — punish tokens that appeared at least once -> pushes topic diversity.
-- **Frequency penalty** — punish in proportion to count -> fights “the the the” loops.
-
-Overdoing penalties on code or legal text makes identifiers and defined terms drift. Prefer clearer prompts and lower temperature before cranking penalties.
-
-### Stops and max tokens
-
-Stop sequences are surgical: end at `\n\nUser:`, ` ``` `, or `</json>`. Max tokens is a blunt instrument: it prevents runaway cost but can cut mid-JSON. Pair them: stop on a closer when possible; set max as a safety net.
 
 ### Presets that ship
 
-- **Factual Q&A / extraction:** T 0.0–0.3, top_p 0.2–0.7, modest max_tokens, optional stop after schema close.
-- **Support tone:** T 0.3–0.5, top_p ~0.8, presence penalty light if replies repeat.
-- **Code:** T 0.1–0.3, avoid heavy frequency penalty, stop on fences if you wrap prompts that way.
-- **Brainstorm:** T 0.7–1.0, top_p 0.9–0.95, larger max_tokens, accept more variance.
+| Use case | Suggested start | Reason |
+| --- | --- | --- |
+| Factual Q&A | temperature 0.2–0.4, top_p 0.7–1.0 | Reduces randomness; pair with sources or tools |
+| Creative writing | temperature 0.8–1.2, top_p 0.9–0.95 | Allows variety while keeping coherence |
+| Code generation | temperature 0.1–0.4 | Correctness matters more than novelty |
+| Brainstorming | temperature 1.0–1.5 | Diversity is useful; filter later |
+| JSON extraction | low temperature, structured output | Reliability and parseability matter |
+
+### Hallucination note
+
+Lower temperature can reduce random-looking hallucinations, but it does not give the model new facts. For factual reliability, combine clear prompts with retrieval, tool calls, citations, validation, and refusal behavior. Grounding is the real fix.
 
 ## In code
 
@@ -132,14 +142,6 @@ raw = '{"ok": true}\n\nUser: ignore'
 print(apply_stops(raw, ["\n\nUser:", "\n\n"]))
 ```
 
-Frequency penalty sketch:
-
-```python
-def penalize(logits, token_counts: list[int], penalty: float):
-    # subtract penalty * count from each logit
-    return [z - penalty * c for z, c in zip(logits, token_counts)]
-```
-
 Config object you can version in experiments:
 
 ```python
@@ -155,8 +157,7 @@ PRESETS = {
 - **Max tokens too low for JSON** — truncated objects look like model stupidity.
 - **Stop sequence that appears inside legitimate content** — early cut on code comments or URLs.
 - **Penalty wars** — code variables renamed mid-answer; legal terms avoided.
-- **Tuning k and p blind** — no golden eval set, so “improvements” are vibes.
-- **Ignoring provider-specific defaults** — a new SDK version changes temperature default and your regression suite was empty.
+- **Tuning k and p blind** — no golden eval set, so "improvements" are vibes.
 
 :::tip
 Store decoding presets next to prompts in source control. When quality drifts, diff the config before you rewrite the entire prompt.
@@ -176,3 +177,4 @@ Decoding parameters are the runtime policy over next-token probabilities — tun
 - **Max tokens** — Upper bound on generated length.
 - **Stop sequence** — String that forces generation to end when emitted or matched.
 - **Greedy decoding** — Always pick the highest-probability next token.
+- **Beam search** — Keeps the top k partial hypotheses rather than one path.

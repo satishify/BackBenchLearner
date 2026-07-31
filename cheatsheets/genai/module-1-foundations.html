@@ -42,30 +42,30 @@
     <h1>Module 1 - Foundations revision</h1>
     <p class="cheat-banner">Revision guide · ~30 min · dense bullets, not full lessons</p>
 
-    <p>Dense bullets for chapters <strong>1.1–1.3</strong>. Open full lessons when a bullet feels fuzzy.</p>
+    <p>Plain-English bullets for chapters <strong>1.1–1.3</strong>. Open full lessons when a bullet feels fuzzy.</p>
     <h2 id="11-ai-deep-learning-essentials">1.1 AI &amp; Deep Learning Essentials</h2>
     <h3>Stack of ideas</h3>
     <ul>
-    <li><strong>AI</strong> — goal-directed behavior under uncertainty (rational agent: observe -&gt; act -&gt; succeed).</li>
-    <li><strong>ML</strong> — learn parameters from data instead of hand-coding every rule.</li>
-    <li><strong>Deep learning</strong> — ML with multi-layer neural nets that learn hierarchical features.</li>
-    <li><strong>GenAI</strong> — models that <em>sample</em> new content (text, images, code) from a learned distribution.</li>
+    <li><strong>AI (Artificial Intelligence)</strong> — building machines that act smart enough for a task (observe -&gt; decide -&gt; succeed).</li>
+    <li><strong>ML (Machine Learning)</strong> — learn patterns from data instead of hand-coding every rule.</li>
+    <li><strong>Deep learning</strong> — ML with multi-layer neural nets that learn hierarchical features from raw inputs.</li>
+    <li><strong>GenAI (Generative AI)</strong> — models that <em>create</em> new content (text, images, code) by sampling from a learned distribution.</li>
     </ul>
     <h3>Classical vs learned</h3>
     <ul>
-    <li>Rules / search / expert systems scale poorly in noisy high-dimensional worlds (vision, speech, open language).</li>
-    <li>Supervised learning: labeled <code>(x, y)</code>. Unsupervised: structure in <code>x</code>. RL: actions + reward.</li>
+    <li>Rules, search, and expert systems scale poorly in noisy high-dimensional worlds (vision, speech, open language).</li>
+    <li>Supervised learning: labeled inputs plus answers. Unsupervised: find structure in unlabeled data. RL (Reinforcement Learning): learn from actions plus rewards.</li>
     </ul>
     <h3>Representation</h3>
     <ul>
-    <li><strong>One-hot</strong> — sparse, no similarity. <strong>Embeddings</strong> — dense vectors; nearby = similar meaning/use.</li>
-    <li>Word2Vec / GloVe intuition: “you shall know a word by the company it keeps.”</li>
+    <li><strong>One-hot</strong> — sparse, no similarity between words. <strong>Embeddings</strong> — dense vectors; nearby = similar meaning.</li>
+    <li>Word2Vec / GloVe intuition: &quot;you shall know a word by the company it keeps.&quot;</li>
     </ul>
     <h3>Neuron to MLP</h3>
     <ul>
     <li>Linear: <code>z = w*x + b</code>. Nonlinearity (ReLU, sigmoid, tanh) makes depth useful.</li>
-    <li><strong>MLP</strong> = stacked linear + activation. Universal approximator in theory; practice needs data, regularization, right capacity.</li>
-    <li><strong>Backprop</strong> = chain rule through the graph. <strong>Gradient descent</strong>: update weights by subtracting <code>learning_rate * gradient_of_loss</code>.</li>
+    <li><strong>MLP (Multilayer Perceptron)</strong> = stacked linear + activation. Universal approximator in theory; practice needs data, regularization, right capacity.</li>
+    <li><strong>Backpropagation</strong> = chain rule through the graph. <strong>Gradient descent</strong>: update weights by subtracting <code>learning_rate * gradient_of_loss</code>.</li>
     <li>Overfit vs underfit; bias-variance tradeoff. Fix overfit: more data, dropout, weight decay, early stop. Fix underfit: capacity / train longer / better features.</li>
     </ul>
     <h3>Quick self-check</h3>
@@ -80,12 +80,12 @@
     <li><strong>Learning rate</strong> too high -&gt; diverge; too low -&gt; crawl. Schedules and warmups matter for big models.</li>
     <li>Train / val / test split. Never tune on test.</li>
     </ul>
-    <h3>CNN (vision intuition)</h3>
+    <h3>CNN (Convolutional Neural Network, vision intuition)</h3>
     <ul>
     <li>Convolution shares filters spatially; translation equivariance; local receptive fields.</li>
     <li>Pooling / strides reduce spatial size. Depth stacks simple edges -&gt; parts -&gt; objects.</li>
     </ul>
-    <h3>RNN / LSTM (sequence intuition)</h3>
+    <h3>RNN / LSTM (Recurrent Neural Network / Long Short-Term Memory, sequence intuition)</h3>
     <ul>
     <li>Hidden state carries past tokens. Vanilla RNNs struggle with long dependencies (vanishing/exploding gradients).</li>
     <li><strong>LSTM/GRU</strong> gates control what to keep/forget — still sequential -&gt; hard to parallelize -&gt; transformers win for most NLP.</li>
@@ -98,7 +98,7 @@
     </ul>
     <h3>Self-attention (Q, K, V)</h3>
     <ul>
-    <li>For each position: query asks “what do I need?”, keys answer “what do I contain?”, values carry content.</li>
+    <li>For each position: query asks &quot;what do I need?&quot;, keys answer &quot;what do I contain?&quot;, values carry content.</li>
     <li>Scores: <code>softmax(Q * K^T / sqrt(d_k)) * V</code>. Divide by <code>sqrt(d_k)</code> so softmax stays well-behaved as dimension grows.</li>
     <li><strong>Multi-head</strong>: several subspaces in parallel (syntax vs semantics, etc.).</li>
     </ul>

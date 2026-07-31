@@ -1,22 +1,22 @@
 title: "1.1 AI & Deep Learning Essentials"
 questions:
-  - q: "A product team wants a model that invents new product descriptions in the brand voice. Which layer of the AI stack is the primary capability they are buying?"
+  - q: "A team wants a model that writes new product descriptions in the brand voice. Which capability are they mainly looking for?"
     options:
       - "Classical rule engines that look up canned templates"
       - "Supervised classifiers that only assign category labels"
-      - "Generative models that produce new content conditioned on prompts or context"
+      - "Generative models that produce new content from prompts or context"
       - "Hand-tuned regex extractors for SKUs"
     answer: 2
-    why: "Generative AI creates new artifacts (text, images, etc.), whereas classical ML often predicts labels or numbers without synthesizing open-ended content."
+    why: "Generative AI creates new content (text, images, etc.). Classical ML usually predicts labels or numbers without writing open-ended text."
 
-  - q: "You have historical click logs and want to predict whether a user will buy. Which framing fits Machine Learning best?"
+  - q: "You have click history and want to predict whether a user will buy. Which approach fits machine learning best?"
     options:
       - "Write an if-else tree from intuition alone and never use data"
       - "Learn a mapping from features to purchase probability from labeled examples"
       - "Ask an LLM to invent purchases without any training signal"
       - "Store every click as a one-hot over the entire internet"
     answer: 1
-    why: "ML learns patterns from data (here, supervised prediction from features to a target) rather than hard-coding every rule."
+    why: "Machine learning learns patterns from data — here, supervised prediction from features to a target — instead of hand-coding every rule."
 
   - q: "Why did dense embeddings largely replace one-hot word vectors for semantic tasks?"
     options:
@@ -25,9 +25,9 @@ questions:
       - "Embeddings are always smaller than a single float"
       - "One-hot vectors require GPUs while embeddings never do"
     answer: 1
-    why: "One-hots are sparse and orthogonal across vocabulary; learned embeddings capture similarity so 'king' and 'queen' can share geometry."
+    why: "One-hots are sparse and treat every word as unrelated. Learned embeddings capture similarity so 'king' and 'queen' can share geometry."
 
-  - q: "A vocab of 50,000 tokens is represented with 300-dim embeddings. How many parameters does the embedding table hold?"
+  - q: "A vocabulary of 50,000 tokens uses 300-dimensional embeddings. How many parameters does the embedding table hold?"
     options:
       - "50,300"
       - "300"
@@ -39,20 +39,20 @@ questions:
   - q: "In a perceptron / artificial neuron, what role does the nonlinear activation play?"
     options:
       - "It only shuffles the order of weights"
-      - "It lets stacked layers represent nonlinear decision boundaries beyond a single hyperplane"
+      - "It lets stacked layers represent nonlinear decision boundaries beyond a single straight line"
       - "It deletes the bias term so training is faster"
       - "It guarantees zero training loss on any dataset"
     answer: 1
-    why: "Without nonlinearities, stacked linear layers collapse to one linear map; activations enable rich function classes (MLPs)."
+    why: "Without nonlinearities, stacked linear layers collapse to one linear map. Activations enable rich function classes like MLPs."
 
   - q: "Your validation loss rises while training loss keeps falling. What is the most likely diagnosis?"
     options:
       - "Healthy generalization with more capacity still unused"
       - "Underfitting because the model is too small"
-      - "Overfitting: memorizing train quirks that do not transfer"
+      - "Overfitting: memorizing training quirks that do not transfer"
       - "The learning rate must be exactly zero"
     answer: 2
-    why: "A growing train/val gap usually means the model is fitting noise or idiosyncrasies in the training set."
+    why: "A growing train/val gap usually means the model is fitting noise or quirks in the training set that do not generalize."
 
   - q: "Which regularization move most directly reduces co-adaptation of hidden units during training?"
     options:
@@ -61,22 +61,22 @@ questions:
       - "Removing the validation set"
       - "Switching MSE to the same MSE with a different name"
     answer: 1
-    why: "Dropout forces redundancy by randomly masking units, a classic regularizer against brittle co-adaptation."
+    why: "Dropout forces redundancy by randomly masking units — a classic regularizer against brittle co-adaptation."
 
-  - q: "Deep Learning is best described relative to classical ML feature engineering as..."
+  - q: "Deep learning is best described relative to classical ML feature engineering as..."
     options:
       - "Always requiring fewer data and less compute"
       - "Learning hierarchical representations from raw or lightly processed inputs via multi-layer nets"
       - "Identical to symbolic AI search"
       - "A synonym for any Excel pivot table"
     answer: 1
-    why: "DL stacks parameterized layers that discover features; classical pipelines often hand-craft features into a shallow model."
+    why: "Deep learning stacks parameterized layers that discover features. Classical pipelines often hand-craft features into a shallow model."
 
-  - q: "Bias–variance tradeoff in a deployment setting: a tiny linear model on a complex ranking problem mostly fails how?"
+  - q: "Bias-variance tradeoff in a deployment setting: a tiny linear model on a complex ranking problem mostly fails how?"
     options:
       - "High variance: wild swings between nearly identical users"
       - "High bias: systematic underfitting of nonlinear structure"
       - "Zero bias and zero variance simultaneously"
       - "Only failing when regularization is perfect"
     answer: 1
-    why: "An overly simple hypothesis class cannot express the true pattern, so errors stay high even with infinite data of that form."
+    why: "An overly simple model cannot express the true pattern, so errors stay high even with more data."

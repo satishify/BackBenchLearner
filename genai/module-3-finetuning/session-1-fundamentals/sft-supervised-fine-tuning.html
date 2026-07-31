@@ -36,17 +36,17 @@
       <h1>SFT: Supervised Fine-Tuning</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Supervised fine-tuning is the workhorse of applied LLM adaptation. You show the model many (prompt, ideal response) pairs and nudge next-token probabilities toward those responses. No reward model yet—just imitation of good demonstrations.</p>
+    <p>Supervised fine-tuning (SFT) is the most common way teams adapt a language model to their product. You show the model many (prompt, ideal response) pairs and nudge it to copy those responses.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Pretraining taught general language. SFT says: &quot;In our product, answers look like this.&quot; It is apprenticeship by example.</p>
     <ul>
-    <li>The model still predicts the next token.</li>
-    <li>You bias that prediction toward your curated assistant text.</li>
+    <li>The model still predicts the next token, one step at a time.</li>
+    <li>You push those predictions toward your curated assistant text.</li>
     <li>After SFT, the model is more likely to follow your format, tone, and task patterns—even with shorter prompts.</li>
     </ul>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>SFT teaches imitation. It does not automatically teach &quot;pick the better of two answers&quot;—that is preference alignment (RLHF/DPO).</p>
+    <p>SFT teaches imitation. It does not automatically teach &quot;pick the better of two answers&quot;—that is preference alignment (RLHF / DPO).</p>
     </aside>
     <p>If your gold demos are excellent and cover the task, SFT alone often ships. If demos are &quot;okay&quot; but humans can rank better vs worse, preference methods refine further.</p>
     <h2 id="how-it-works">How it works</h2>
@@ -56,19 +56,19 @@
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">L_SFT = - sum_{t in assistant_tokens} log p_theta(x_t | x_&lt;t)</code></pre>
     </div>
-    <p>User/system tokens are usually present as context but excluded from the sum (masked).</p>
+    <p>User and system tokens are usually present as context but excluded from the sum (masked).</p>
     <h3>Typical pipeline</h3>
     <ol>
     <li>Start from a <strong>base</strong> or already-instructed checkpoint.</li>
     <li>Tokenize with the model&#x27;s chat template.</li>
-    <li>Train for a small number of epochs (often 1–3) with modest learning rates.</li>
+    <li>Train for a small number of epochs (often 1–3) with a modest learning rate (LR).</li>
     <li>Checkpoint often; evaluate on a held-out rubric.</li>
     <li>Export full weights or adapters for serving.</li>
     </ol>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-    B[Base / instruct checkpoint] --> T[Tokenize chat rows]
+    B[Base or instruct checkpoint] --> T[Tokenize chat rows]
     D[SFT JSONL] --> T
     T --> TR[Train: minimize NLL on assistant tokens]
     TR --> C[Checkpoints]
@@ -77,10 +77,25 @@ flowchart LR
       </div>
     </div>
     <h3>Full vs efficient</h3>
-    <ul>
-    <li><strong>Full SFT</strong> — Update all (or most) parameters. Maximum flexibility; expensive; higher forgetting risk.</li>
-    <li><strong>PEFT / LoRA SFT</strong> — Update small adapters. Default for most product teams (next chapter).</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Strategy</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Full SFT</strong></td>
+          <td>Update all or almost all weights.</td>
+          <td>Strong domain shift, enough labeled data, and you need deep behavioral change.</td>
+        </tr>
+        <tr>
+          <td><strong>PEFT / LoRA SFT</strong></td>
+          <td>Update small adapter matrices only.</td>
+          <td>Most product teams; cheaper, easier to store, lower forgetting risk.</td>
+        </tr>
+      </tbody>
+    </table>
     <p>Conceptually both are &quot;SFT&quot;; they differ in which parameters receive gradients.</p>
     <h3>What SFT is good at</h3>
     <ul>
@@ -93,12 +108,24 @@ flowchart LR
     <ul>
     <li>Choosing among subtle preference trade-offs (brief vs thorough, refuse vs answer).</li>
     <li>Staying calibrated when demos disagree.</li>
-    <li>Encoding frequently changing facts (use RAG).</li>
+    <li>Encoding frequently changing facts (use RAG instead).</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
     <p>Run a &quot;prompt-only&quot; baseline on the same eval set before celebrating an SFT win. Credit only the lift over that baseline.</p>
     </aside>
+    <h3>Curriculum learning</h3>
+    <p>Curriculum learning means you do not show the model everything in random order. You start with easy examples, then move to harder ones—like teaching a person step by step.</p>
+    <ul>
+    <li><strong>Good for:</strong> tasks with a natural difficulty order.</li>
+    <li><strong>Example:</strong> train sentiment classification first on obvious positive and negative reviews, then add sarcasm, mixed sentiment, and short texts.</li>
+    </ul>
+    <h3>Multi-task fine-tuning</h3>
+    <p>Multi-task fine-tuning trains one model on several related tasks at the same time. The shared backbone learns reusable features, and related tasks can regularize each other.</p>
+    <ul>
+    <li><strong>Good for:</strong> related tasks with shared language patterns.</li>
+    <li><strong>Example:</strong> train intent classification, slot filling, and FAQ matching together for a support assistant.</li>
+    </ul>
     <h2 id="in-code">In code</h2>
     <p>A minimal loop that shows the idea: maximize log-prob of target tokens (toy bigram model).</p>
     <div class="code-block" data-lang="python">
@@ -180,15 +207,17 @@ for prev, target in pairs:
     <h3>SFT data mixture tricks</h3>
     <p>When the task is narrow, mix 10–30% general instruction rows (public or internal &quot;replay&quot;) so the model remembers how to follow ordinary requests. This is a cheap hedge against forgetting without jumping to full RLHF.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p><strong>SFT</strong> adapts a pretrained LM by minimizing next-token loss on curated assistant responses so the model imitates your task format and style.</p>
+    <p><strong>SFT</strong> adapts a pretrained language model by minimizing next-token loss on curated assistant responses so the model imitates your task format and style.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Supervised fine-tuning (SFT)</strong> — Training on labeled prompt-&gt;response demonstrations.</li>
-    <li><strong>Negative log-likelihood (NLL)</strong> — Standard token-level loss for causal LMs.</li>
+    <li><strong>Supervised fine-tuning (SFT)</strong> — Training on labeled prompt -&gt; response demonstrations.</li>
+    <li><strong>Negative log-likelihood (NLL)</strong> — Standard token-level loss for causal language models.</li>
     <li><strong>Instruct model</strong> — Checkpoint already tuned to follow instructions; often the SFT starting point.</li>
     <li><strong>Checkpoint</strong> — Saved weights during or after training.</li>
     <li><strong>Epoch</strong> — One pass over the training set.</li>
     <li><strong>Demonstration / demo</strong> — A single curated example of desired behavior.</li>
+    <li><strong>Curriculum learning</strong> — Training from easy examples to harder ones in a planned sequence.</li>
+    <li><strong>Multi-task learning</strong> — Training one model on several related tasks so they share useful features.</li>
     <li><strong>Preference tuning</strong> — Methods (RLHF, DPO) that learn from ranked comparisons, not only imitation.</li>
     </ul>
 

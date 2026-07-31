@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Force machine-readable outputs with schemas, validators, and repair loops so prompts plug into real software.">
+  <meta name="description" content="Force machine-readable outputs, chain multi-step calls, and use ReAct and Tree of Thoughts for complex tasks.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-4-advanced-prompting/structured-prompting-and-output-contracts.html">
-  <meta property="og:title" content="Structured Prompting and Output Contracts | BackbenchLearner">
-  <meta property="og:description" content="Force machine-readable outputs with schemas, validators, and repair loops so prompts plug into real software.">
+  <meta property="og:title" content="Structured Prompting and Advanced Patterns | BackbenchLearner">
+  <meta property="og:description" content="Force machine-readable outputs, chain multi-step calls, and use ReAct and Tree of Thoughts for complex tasks.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-4-advanced-prompting/structured-prompting-and-output-contracts.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -16,12 +16,12 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Structured Prompting and Output Contracts | BackbenchLearner">
-  <meta name="twitter:description" content="Force machine-readable outputs with schemas, validators, and repair loops so prompts plug into real software.">
+  <meta name="twitter:title" content="Structured Prompting and Advanced Patterns | BackbenchLearner">
+  <meta name="twitter:description" content="Force machine-readable outputs, chain multi-step calls, and use ReAct and Tree of Thoughts for complex tasks.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
-  <title>Structured Prompting and Output Contracts | BackbenchLearner</title>
+  <title>Structured Prompting and Advanced Patterns | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -33,12 +33,33 @@
   <div class="lesson-layout">
     <div class="wrapper">
       <nav><a href="../../../index.html">&larr; Home</a></nav>
-      <h1>Structured Prompting and Output Contracts</h1>
+      <h1>Structured Prompting and Advanced Patterns</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Chatty prose is fine for tutoring. Software needs <strong>contracts</strong>: JSON with known keys, enums with closed sets, tables with fixed columns. Structured prompting is how you make the model a function — inputs in, typed outputs out — instead of a conversationalist you have to re-parse by hand every time.</p>
+    <p>Chatty prose is fine for tutoring. Software needs <strong>contracts</strong>: JSON with known keys, enums with closed sets, tables with fixed columns. This lesson also covers <strong>ReAct</strong>, <strong>prompt chaining</strong>, and <strong>Tree of Thoughts</strong> — patterns for tasks that need tools, multiple steps, or exploring several reasoning paths.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>An output contract is like a function signature. <code>def classify(text) -&gt; Literal[&quot;bug&quot;,&quot;billing&quot;,&quot;feature&quot;]</code> fails loudly if someone returns a novel. LLMs do not fail loudly unless you wrap them. You specify the shape in the prompt (or via API schema modes), parse the response, and <strong>reject or repair</strong> on mismatch. Without that loop, one creative field name breaks your pipeline at 2 a.m.</p>
+    <p>An <strong>output contract</strong> is like a function signature. <code>def classify(text) -&gt; Literal[&quot;bug&quot;,&quot;billing&quot;,&quot;feature&quot;]</code> fails loudly if someone returns a novel label. LLMs do not fail loudly unless you wrap them. You specify the shape in the prompt, parse the response, and <strong>reject or repair</strong> on mismatch.</p>
+    <p>For complex tasks, one giant prompt often fails. Instead:</p>
+    <table>
+      <thead><tr>
+        <th>Pattern</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Prompt chaining</strong></td>
+          <td>Break one big task into smaller LLM calls; each output feeds the next</td>
+        </tr>
+        <tr>
+          <td><strong>ReAct</strong></td>
+          <td>The model thinks, takes an action (search, tool call), observes, then thinks again</td>
+        </tr>
+        <tr>
+          <td><strong>Tree of Thoughts (ToT)</strong></td>
+          <td>Try several reasoning branches, evaluate them, keep the best path</td>
+        </tr>
+      </tbody>
+    </table>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -50,23 +71,52 @@ flowchart LR
   F --> M
       </div>
     </div>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Do one small step at a time and pass the result forward. Complex tasks are easier to control when split into verified steps.</p>
+    </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Specify the contract in three places.</strong></p>
+    <h3>Structured outputs (output contracts)</h3>
+    <p><strong>Specify the contract in three places:</strong></p>
     <ol>
     <li><strong>Prompt:</strong> show the exact JSON shape and a tiny valid example.</li>
     <li><strong>Schema:</strong> JSON Schema or Pydantic model for programmatic checks.</li>
-    <li><strong>Decoder controls:</strong> when available, use JSON mode or constrained decoding so invalid tokens are less likely.</li>
+    <li><strong>Decoder controls:</strong> when available, use JSON mode or constrained decoding.</li>
     </ol>
-    <p><strong>Enums beat free text.</strong> Prefer <code>&quot;severity&quot;: &quot;low|medium|high&quot;</code> over open strings. Prefer ISO dates over “next Tuesday.”</p>
-    <p><strong>Repair loops.</strong> On validation failure, send the error back: “Your JSON failed: missing key <code>severity</code>. Resend valid JSON only.” Cap retries (usually 1–2). Log failure rates; rising repairs mean the prompt or schema drifted.</p>
-    <p><strong>Separation of concerns.</strong> Ask the model for structured data first; render pretty UI yourself. Do not ask for “JSON and a friendly paragraph” in one blob if you can avoid it — mixed modes are fragile.</p>
-    <p><strong>Tool / function calling</strong> is structured prompting with a vendor schema: the model fills arguments that your code executes. Same idea — contract first, prose second.</p>
+    <p><strong>Enums beat free text.</strong> Prefer <code>&quot;severity&quot;: &quot;low|medium|high&quot;</code> over open strings.</p>
+    <p><strong>Repair loops:</strong> on validation failure, send the error back: &quot;Your JSON failed: missing key <code>severity</code>. Resend valid JSON only.&quot; Cap retries (usually 1–2).</p>
+    <p><strong>Tool / function calling</strong> is structured prompting with a vendor schema: the model fills arguments that your code executes.</p>
+    <h3>Prompt chaining</h3>
+    <p>Break one big task into a sequence of smaller calls.</p>
+    <p>Example pipeline:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Step 1: summarize this article
+Step 2: extract key facts from the summary
+Step 3: turn facts into study notes</code></pre>
+    </div>
+    <p>Each step is easier to verify than one mega-prompt.</p>
+    <h3>ReAct (Reason + Act)</h3>
+    <p>ReAct combines <strong>reasoning</strong> and <strong>acting</strong> in a loop:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Thought -&gt; Action (search / tool) -&gt; Observation -&gt; Thought -&gt; ...</code></pre>
+    </div>
+    <p><strong>Why it exists:</strong> some tasks need outside information, not only internal memory.</p>
+    <p><strong>Example:</strong> the model searches for a fact, reads the result, then refines its answer — like checking references as you go instead of guessing from memory alone.</p>
+    <h3>Tree of Thoughts</h3>
+    <p>For problems with several possible routes, the model:</p>
+    <ol>
+    <li>Explores multiple branches of reasoning.</li>
+    <li>Evaluates each branch.</li>
+    <li>Keeps the best path.</li>
+    </ol>
+    <p>Useful for planning problems, tricky word puzzles, or anything with multiple valid moves — like drawing a decision tree while solving a puzzle.</p>
     <h2 id="in-code">In code</h2>
-    <p>A Pydantic-style contract with a pure-Python validator and a single repair hint. Swap in your LLM client where the stub sits.</p>
+    <p>A contract with validation and a simple two-step chain sketch.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import json
-from typing import Literal
 
 ALLOWED = {&quot;billing&quot;, &quot;bug&quot;, &quot;feature&quot;}
 
@@ -74,10 +124,6 @@ SCHEMA_HINT = &quot;&quot;&quot;
 Return ONLY JSON:
 {&quot;label&quot;: &quot;billing&quot;|&quot;bug&quot;|&quot;feature&quot;, &quot;confidence&quot;: 0.0-1.0, &quot;reason&quot;: &quot;&lt;=20 words&quot;}
 &quot;&quot;&quot;
-
-def stub_model(prompt: str) -&gt; str:
-    # Pretend the model returned almost-valid JSON
-    return &#x27;{&quot;label&quot;: &quot;Bug&quot;, &quot;confidence&quot;: 0.81, &quot;reason&quot;: &quot;crash on login&quot;}&#x27;
 
 def validate(payload: dict) -&gt; list[str]:
     errors = []
@@ -87,56 +133,41 @@ def validate(payload: dict) -&gt; list[str]:
     conf = payload.get(&quot;confidence&quot;)
     if not isinstance(conf, (int, float)) or not (0.0 &lt;= float(conf) &lt;= 1.0):
         errors.append(&quot;confidence must be in [0, 1]&quot;)
-    reason = payload.get(&quot;reason&quot;)
-    if not isinstance(reason, str) or len(reason.split()) &gt; 20:
-        errors.append(&quot;reason must be a short string&quot;)
     return errors
 
-def run_with_contract(ticket: str, max_repairs: int = 2) -&gt; dict:
-    prompt = SCHEMA_HINT + f&quot;\nTicket: {ticket}\n&quot;
-    for attempt in range(max_repairs + 1):
-        raw = stub_model(prompt)
-        try:
-            data = json.loads(raw)
-        except json.JSONDecodeError as e:
-            prompt += f&quot;\nPrevious output was invalid JSON ({e}). Resend JSON only.&quot;
-            continue
-        # normalize enum casing
-        if isinstance(data.get(&quot;label&quot;), str):
-            data[&quot;label&quot;] = data[&quot;label&quot;].lower()
-        errs = validate(data)
-        if not errs:
-            return data
-        prompt += &quot;\nValidation errors: &quot; + &quot;; &quot;.join(errs) + &quot;. Resend JSON only.&quot;
-    raise ValueError(&quot;contract failed after repairs&quot;)
+def chain_summarize_then_extract(article: str) -&gt; dict:
+    # Step 1 — summarize (stub)
+    summary = &quot;Three-day outage; root cause DNS misconfig.&quot;
+    # Step 2 — extract structured facts (stub)
+    facts = {&quot;duration_days&quot;: 3, &quot;cause&quot;: &quot;DNS misconfig&quot;}
+    return {&quot;summary&quot;: summary, &quot;facts&quot;: facts}
 
-print(run_with_contract(&quot;App crashes on login&quot;))</code></pre>
+raw = &#x27;{&quot;label&quot;: &quot;bug&quot;, &quot;confidence&quot;: 0.81, &quot;reason&quot;: &quot;crash on login&quot;}&#x27;
+data = json.loads(raw)
+assert not validate(data), &quot;expected valid payload&quot;
+print(chain_summarize_then_extract(&quot;long article text...&quot;))</code></pre>
     </div>
     <p>Treat <code>validate</code> as the source of truth. Prompts describe the contract; code enforces it.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Schema only in prose.</strong> The model drifts; without parsers you never notice until a dashboard blanks out.</li>
     <li><strong>Over-nested JSON.</strong> Deep trees raise error rates. Flatten when you can.</li>
-    <li><strong>Trailing commentary.</strong> “Here is your JSON: {...} hope that helps!” breaks <code>json.loads</code>. Instruct “JSON only” and strip fences in code.</li>
-    <li><strong>Open enums.</strong> New labels appear weekly (<code>bugs</code>, <code>defect</code>). Close the set and map synonyms in code if needed.</li>
-    <li><strong>Retry storms.</strong> Infinite repair loops amplify cost. Cap attempts and fall back to a human or a safer default.</li>
-    <li><strong>Trusting JSON mode alone.</strong> Schema mode reduces syntax errors; it does not guarantee business rules (confidence in range, mutually exclusive fields).</li>
+    <li><strong>Trailing commentary.</strong> &quot;Here is your JSON: {...}&quot; breaks <code>json.loads</code>. Instruct &quot;JSON only&quot; and strip fences in code.</li>
+    <li><strong>Chaining without checks.</strong> Passing bad output to the next step amplifies errors. Validate each hop.</li>
+    <li><strong>ReAct without tool gates.</strong> The model can propose dangerous tool calls; your runtime must allowlist and validate.</li>
+    <li><strong>Retry storms.</strong> Infinite repair loops amplify cost. Cap attempts and fall back to a human.</li>
     </ul>
-    <h2 id="contracts-in-larger-systems">Contracts in larger systems</h2>
-    <p>Once outputs are validated, treat them like any other DTO: map into domain objects, never pass raw model text deep into business logic. A <code>TicketLabel</code> enum in your language should be the only type downstream services see. That isolation lets you swap models without rewriting billing workflows.</p>
-    <p><strong>Partial success.</strong> Sometimes JSON is valid but <code>confidence</code> is 0.2. That is not a parse failure; it is a <strong>business signal</strong>. Route low-confidence labels to humans or to a second-stage prompt with more context. Your contract can include optional fields (<code>needs_human: bool</code>) the model sets under explicit rules.</p>
-    <p><strong>Streaming and structure.</strong> Token streaming is friendly for chat and hostile for JSON. Prefer non-streaming for contracted calls, or buffer until a complete object parses. If you must stream, stream a user-visible summary from a second call after the structured call succeeds.</p>
-    <p><strong>Schema evolution.</strong> Adding a field is easy; renaming one is a migration. Version schemas (<code>schema_version: 2</code>) and accept older shapes during rollout. Prompt text, validator, and publisher must move together — another reason prompts belong in the same PR as code.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Structured prompting pairs a clear output schema with validation and bounded repair so LLM responses become typed inputs for software.</p>
+    <p>Structured prompting pairs schemas with validation and repair; prompt chaining, ReAct, and Tree of Thoughts split complex work into controllable, verifiable steps.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Output contract:</strong> agreed shape and constraints for model responses.</li>
-    <li><strong>JSON Schema / Pydantic:</strong> declarative validation of structure and types.</li>
-    <li><strong>Constrained decoding / JSON mode:</strong> decoder-level bias toward valid structure.</li>
     <li><strong>Repair loop:</strong> feeding validation errors back for a corrected attempt.</li>
+    <li><strong>Prompt chaining:</strong> multiple LLM calls where each output feeds the next input.</li>
+    <li><strong>ReAct:</strong> reasoning plus acting in a loop (thought, action, observation).</li>
+    <li><strong>Tree of Thoughts (ToT):</strong> exploring multiple reasoning branches before choosing one.</li>
+    <li><strong>Function / tool calling:</strong> vendor-supported structured argument filling for tools.</li>
     <li><strong>Enum / closed set:</strong> fixed allowed values instead of free text.</li>
-    <li><strong>Function / tool calling:</strong> vendor-supported structured argument filling.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

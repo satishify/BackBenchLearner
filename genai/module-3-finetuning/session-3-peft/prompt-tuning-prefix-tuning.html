@@ -36,34 +36,34 @@
       <h1>Prompt Tuning and Prefix Tuning</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Not all PEFT methods patch weight matrices. Prompt tuning and prefix tuning learn <strong>continuous prompts</strong>—vectors in embedding or hidden space—while the transformer stays frozen. They are lighter than LoRA in parameter count and shine when you want many task specialists on one backbone.</p>
+    <p>Not all PEFT methods change weight matrices. <strong>Prompt tuning</strong> and <strong>prefix tuning</strong> learn <strong>soft prompts</strong>—continuous vectors in embedding or hidden space—while the transformer stays frozen. They use even fewer trainable parameters than LoRA and shine when you want many task specialists on one backbone.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Hard prompts are text you type. Soft prompts are vectors you optimize. The model &quot;sees&quot; extra tokens that never map to real words but still attend like tokens.</p>
+    <p>A <strong>hard prompt</strong> is text you type. A <strong>soft prompt</strong> is a set of learnable vectors the model treats like extra tokens—even though they are not real words.</p>
     <ul>
-    <li><strong>Prompt tuning</strong> — Train a small set of virtual token embeddings prepended to the input embeddings.</li>
-    <li><strong>Prefix tuning</strong> — Train prefix vectors injected into every layer&#x27;s key/value (or hidden) streams—more expressive, more parameters than pure prompt tuning.</li>
+    <li><strong>Prompt tuning</strong> — Train a small set of virtual token embeddings prepended to the input.</li>
+    <li><strong>Prefix tuning</strong> — Train prefix vectors injected into every layer&#x27;s key/value streams—more expressive, more parameters than prompt tuning alone.</li>
     </ul>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Soft prompts steer a frozen model by learning continuous &quot;instructions&quot; in activation space instead of rewriting <code>W</code>.</p>
+    <p>Soft prompts steer a frozen model by learning continuous &quot;instructions&quot; in activation space instead of rewriting weights.</p>
     </aside>
-    <p>If LoRA is a custom gearbox, soft prompts are a custom key fob: tiny, swappable, limited mechanical force—but enough for many classification and formatting tasks.</p>
+    <p>If LoRA is a custom gearbox bolted onto the engine, soft prompts are a custom key fob: tiny, swappable, limited force—but enough for many classification and formatting tasks.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Prompt tuning</h3>
-    <p>Let <code>E</code> be the frozen embedding matrix. For input token ids you still embed with <code>E</code>. Additionally, learn <code>P</code> of shape <code>(n_virtual, d_model)</code> and concatenate:</p>
+    <p>The model&#x27;s embedding matrix stays frozen. You learn a small matrix P of virtual prompt vectors and prepend them to the input embeddings:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">h_0 = [P; Embed(token_ids)]</code></pre>
+      <pre><code class="language-text">input to transformer = concat(learnable prompt P, embedded token ids)</code></pre>
     </div>
-    <p>Only <code>P</code> trains. Typical <code>n_virtual</code> might be 8–100 depending on task difficulty.</p>
+    <p>Only P trains. Typical prompt length might be 8–100 virtual tokens depending on task difficulty.</p>
     <h3>Prefix tuning</h3>
-    <p>At each layer (or selected layers), learn prefixes for attention keys/values:</p>
+    <p>At each layer (or selected layers), learn prefixes for attention keys and values:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">K&#x27; = [K_prefix; K]
-V&#x27; = [V_prefix; V]</code></pre>
+      <pre><code class="language-text">K with prefix = concat(K_prefix, K)
+V with prefix = concat(V_prefix, V)</code></pre>
     </div>
-    <p>So every block gets a task-specific &quot;context&quot; that attention can read. Capacity is higher than embedding-only prompt tuning.</p>
+    <p>Every block gets task-specific context that attention can read. Capacity is higher than embedding-only prompt tuning.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TD
@@ -75,44 +75,52 @@ flowchart TD
     L --> O[Logits]
       </div>
     </div>
-    <h3>Compared to LoRA</h3>
+    <h3>Smarter soft-prompt variants</h3>
+    <p>Plain soft prompts work, but one fixed prompt for every input and every layer can be too blunt. These variants add selectivity:</p>
     <table>
       <thead><tr>
-        <th>Aspect</th>
-        <th>Prompt / prefix tuning</th>
-        <th>LoRA</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>What trains</td>
-          <td>Virtual tokens / prefixes</td>
-          <td>Low-rank matrix updates</td>
+          <td><strong>SMoP (Sparse Mixture of Prompts)</strong></td>
+          <td>Pick from several prompt candidates instead of forcing one prompt to do all the work. Good when prompt budget is limited.</td>
         </tr>
         <tr>
-          <td>Typical size</td>
-          <td>Very small to small</td>
-          <td>Small to medium</td>
+          <td><strong>APT (Adaptive Prefix Tuning)</strong></td>
+          <td>Use different prefix lengths per layer—lower layers often need more capacity for phrase-level features; higher layers for semantics.</td>
         </tr>
         <tr>
-          <td>Strength</td>
-          <td>Extreme multi-task swapping</td>
-          <td>Stronger capacity for generation style</td>
+          <td><strong>IDPG (Instance-Dependent Prompt Generation)</strong></td>
+          <td>Generate the prompt from the input itself, not just from a task label. Useful when one task has many subcases.</td>
         </tr>
         <tr>
-          <td>Weakness</td>
-          <td>May underfit hard generative shifts</td>
-          <td>Larger artifacts than soft prompts</td>
+          <td><strong>SPT (Selective Prompt Tuning)</strong></td>
+          <td>Insert soft prompts only in layers where they actually help—not everywhere by default.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Compared to LoRA</h3>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Soft prompts</strong></td>
+          <td>Smallest trainable footprint; extreme multi-task swapping; classification or light rewriting.</td>
         </tr>
         <tr>
-          <td>Serving</td>
-          <td>Pass task prompt vectors</td>
-          <td>Load adapter or merge</td>
+          <td><strong>LoRA</strong></td>
+          <td>Stronger capacity for generation style and hard output contracts; slightly larger artifacts.</td>
         </tr>
       </tbody>
     </table>
     <h3>When to reach for soft prompts</h3>
     <ul>
-    <li>Many tasks / tenants, one frozen 7B–70B server.</li>
+    <li>Many tasks or tenants, one frozen 7B–70B server.</li>
     <li>Classification, routing, or light rewriting.</li>
     <li>Extremely tight storage budgets per skill.</li>
     <li>Research on multi-task composition of soft prompts.</li>
@@ -196,7 +204,7 @@ print(&quot;seq_len_with_prompt&quot;, len(concat_prompt(P, token_emb)))</code><
     <p>Soft prompts are invisible in the text logs. Persist and version them like any other model artifact, and log which prompt id served each request.</p>
     </aside>
     <h3>Composition and routing</h3>
-    <p>Soft prompts compose naturally with routing layers: embed <code>task_id -&gt; prompt vectors</code>, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default &quot;neutral&quot; prompt for unknown tasks that falls back to base behavior.</p>
+    <p>Soft prompts compose naturally with routing layers: map <code>task_id -&gt; prompt vectors</code>, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default &quot;neutral&quot; prompt for unknown tasks that falls back to base behavior.</p>
     <h3>Initialization and length</h3>
     <p>Random virtual tokens work but train slower. Initializing from the embeddings of a short hard prompt often helps. Lengthen virtual prompts when the task needs more steering; watch the context budget—every virtual token is one less token for user content and RAG passages.</p>
     <h3>Failure case study</h3>

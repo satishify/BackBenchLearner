@@ -36,25 +36,55 @@
       <h1>Regularization Techniques</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A model that nails every training example can still fail in production. That gap—great train score, poor real-world score—is overfitting. Regularization is the family of techniques that deliberately hold the model back during training so it learns patterns that transfer, not quirks that only appear in the training set. Once you understand why unconstrained capacity hurts, each method becomes a concrete lever rather than a checklist item.</p>
+    <p><strong>Regularization</strong> is the family of techniques that deliberately hold a model back during training so it learns patterns that transfer, not quirks that only appear in the training set. It exists because unconstrained capacity lets models memorize noise.</p>
+    <ul>
+    <li><strong>L1 regularization</strong> can push some weights to exactly zero, helping remove unhelpful features.</li>
+    <li><strong>L2 regularization</strong> shrinks weights smoothly toward zero, making the model calmer and less extreme.</li>
+    <li><strong>Dropout</strong> randomly zeros neurons during training so no single pathway dominates.</li>
+    <li><strong>Early stopping</strong> and <strong>data augmentation</strong> also fight overfitting without changing the architecture.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of fitting a curve through a scatter of points. With enough parameters you can snake through every point, including noise. On new points the snake misses badly. Regularization says: prefer simpler snakes. “Simpler” can mean smaller weights (L2), sparser connections (dropout), fewer effective training steps (early stopping), or more diverse examples so noise is harder to memorize (data augmentation).</p>
+    <p>Think of fitting a curve through a scatter of points. With enough parameters you can snake through every point, including noise. On new points the snake misses badly. Regularization says: prefer simpler snakes. &quot;Simpler&quot; can mean smaller weights (L2), sparser connections (L1, dropout), fewer effective training steps (early stopping), or more diverse examples so noise is harder to memorize (data augmentation).</p>
     <p>Overfitting thrives when the model has more degrees of freedom than the signal in the data. Regularization does not make the architecture smaller on paper; it changes the <em>effective</em> capacity the optimizer is allowed to use. You still have a deep network, but training is biased toward solutions that generalize.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>L2 (weight decay).</strong> Add a penalty proportional to the sum of squared weights to the loss:</p>
+    <p><strong>L1 and L2 regularization:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>L1</strong> — can make some weights exactly zero, so it helps remove unhelpful features</td>
+          <td>Feature selection, sparse models</td>
+        </tr>
+        <tr>
+          <td><strong>L2 (weight decay)</strong> — shrinks weights smoothly toward zero, making the model calmer</td>
+          <td>Default weight penalty in most deep learning</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Readable formulas:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">total_loss = data_loss + lambda * (w1^2 + w2^2 + ... + wn^2)</code></pre>
+      <pre><code class="language-text">L1:  Loss_total = Loss_original + lambda * sum(abs(Wi))
+L2:  Loss_total = Loss_original + lambda * sum(Wi^2)</code></pre>
     </div>
     <p>Gradient descent then pulls every weight slightly toward zero each step. Large weights that chase individual training quirks become expensive. The hyperparameter <code>lambda</code> controls strength: too small and you barely regularize; too large and the model underfits.</p>
     <p><strong>Dropout.</strong> During training, randomly set a fraction of neuron activations to zero (e.g. 50%). Each minibatch trains a slightly different sub-network. At inference, use all neurons and scale activations (or use inverted dropout during training so inference needs no scaling). The network cannot rely on a single co-adapted pathway; features must be useful in many random contexts.</p>
-    <p><strong>Early stopping.</strong> Track validation loss while training. When validation stops improving for a patience window, stop and keep the best checkpoint. Late epochs often keep driving training loss down while validation rises—early stopping cuts that second phase short without changing the loss formula.</p>
+    <p><strong>Early stopping.</strong> Track validation loss while training. When validation stops improving for a patience window, stop and keep the best checkpoint. Late epochs often keep driving training loss down while validation rises — early stopping cuts that second phase short without changing the loss formula.</p>
     <p><strong>Data augmentation.</strong> For images: random crops, flips, color jitter. For text: synonym swaps or back-translation (used carefully). You enlarge the effective dataset with label-preserving transforms so memorizing exact pixels or token sequences is harder. Augmentation is regularization through data, not through the loss.</p>
+    <p><strong>K-fold cross-validation (CV).</strong> Splits data into k parts, tests on each part once, and averages the scores:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">avg_score = (score_1 + score_2 + ... + score_k) / k</code></pre>
+    </div>
+    <p>This gives a stabler estimate of generalization than one train-test split.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TD
     A[High-capacity model] --> B{Regularization?}
-    B -->|L2| C[Prefer small weights]
+    B -->|L1 / L2| C[Prefer small weights]
     B -->|Dropout| D[Train random subnets]
     B -->|Early stop| E[Halt before val rises]
     B -->|Augment| F[Harder to memorize]
@@ -65,7 +95,7 @@ flowchart TD
       </div>
     </div>
     <p>These methods stack. Vision models often use augmentation + weight decay + dropout in later layers + early stopping on a validation split.</p>
-    <p><strong>Why this fights overfitting.</strong> Overfitting is high variance: the hypothesis wiggles to fit noise. Shrinking weights (L2) and randomizing pathways (dropout) bias learning toward smoother functions. Early stopping limits how long the optimizer can chase residual noise. Augmentation makes “the same label” appear under many surface forms, so memorizing one surface form stops paying off. None of these change the architecture’s theoretical maximum capacity; they change which solutions gradient descent prefers.</p>
+    <p><strong>Why this fights overfitting.</strong> Overfitting is high variance: the hypothesis wiggles to fit noise. Shrinking weights (L1/L2) and randomizing pathways (dropout) bias learning toward smoother functions. Early stopping limits how long the optimizer can chase residual noise. Augmentation makes &quot;the same label&quot; appear under many surface forms, so memorizing one surface form stops paying off.</p>
     <h2 id="in-code">In code</h2>
     <p><strong>L2 penalty on weights.</strong> Pure NumPy sketch of the penalty term and its gradient contribution:</p>
     <div class="code-block" data-lang="python">
@@ -91,7 +121,7 @@ print(&quot;L2 term:&quot;, l2_penalty(params, lam=1e-2))
 print(&quot;Total loss:&quot;, total)
 print(&quot;Extra grad on W:&quot;, l2_grad(params, lam=1e-2)[0])</code></pre>
     </div>
-    <p>In frameworks, <code>weight_decay</code> in AdamW/SGD applies this idea during the update; the math matches “shrink weights each step.”</p>
+    <p>In frameworks, <code>weight_decay</code> in AdamW/SGD applies this idea during the update; the math matches &quot;shrink weights each step.&quot;</p>
     <p><strong>Dropout mask demo.</strong> Apply a random binary mask, then invert-scale so expected activation stays similar:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -115,18 +145,20 @@ h_infer = h</code></pre>
     <p><strong>Too little.</strong> Train loss collapses; validation diverges. Increase regularization or add augmentation before growing the model further.</p>
     <p><strong>Dropout at inference.</strong> Leaving dropout on at test time injects randomness. Always switch to eval mode.</p>
     <p><strong>Augmenting away the label.</strong> Aggressive crops that remove the object, or text edits that change meaning, teach the wrong mapping. Augmentations must preserve the target.</p>
-    <p><strong>Early stopping on the wrong split.</strong> If you tune patience and checkpoint using the same data you later report as “test,” you leak information. Keep a true holdout or nested validation.</p>
+    <p><strong>Early stopping on the wrong split.</strong> If you tune patience and checkpoint using the same data you later report as &quot;test,&quot; you leak information. Keep a true holdout or nested validation.</p>
     <p><strong>L2 on the wrong scale.</strong> Features with huge magnitudes need huge weights; naive L2 fights that. Prefer normalized inputs (and often normalized layers) so weight penalties are meaningful.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Regularization fights overfitting by making complex, memorizing solutions expensive—via smaller weights, random dropout, earlier stopping, or richer training data—so the model keeps what generalizes.</p>
+    <p>Regularization fights overfitting by making complex, memorizing solutions expensive — via smaller weights, random dropout, earlier stopping, or richer training data — so the model keeps what generalizes.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Regularization</strong> — Any constraint or procedure that reduces overfitting and improves generalization.</li>
+    <li><strong>L1 regularization</strong> — Penalty on absolute weights that can push some weights to exactly zero.</li>
     <li><strong>L2 / weight decay</strong> — Penalty on squared weights that shrinks parameters toward zero.</li>
-    <li><strong><code>lambda</code> (lambda)</strong> — Strength of the L2 (or L1) penalty.</li>
+    <li><strong><code>lambda</code></strong> — Strength of the L1 or L2 penalty.</li>
     <li><strong>Dropout</strong> — Randomly zeroing activations during training to prevent co-adaptation.</li>
     <li><strong>Early stopping</strong> — Halting training when validation performance stops improving.</li>
     <li><strong>Data augmentation</strong> — Label-preserving transforms that expand effective training diversity.</li>
+    <li><strong>K-fold cross-validation (CV)</strong> — Splitting data into k parts, testing on each once, and averaging scores.</li>
     <li><strong>Effective capacity</strong> — How complex a function the model can actually learn under training constraints.</li>
     </ul>
 

@@ -36,75 +36,37 @@
       <h1>Retrieval Gateway: Caching and Routing</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A vector index is a powerful hammer. Hitting it on every raw chat message is how you leak tenants, burn embed+ANN budget on duplicate questions, and retrieve from the wrong corpus. A <strong>retrieval gateway</strong> is the thin control plane in front of search: authenticate, authorize, shape the query, maybe answer from cache, then route to the right index with the right filters.</p>
+    <p>A vector index is powerful. Hitting it on every raw chat message is how you leak tenants, burn embed+search budget on duplicate questions, and retrieve from the wrong corpus. A <strong>retrieval gateway</strong> is the control plane in front of search: authenticate, authorize, shape the query, maybe answer from cache, then route to the right index.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Treat retrieval like a privileged API, not a library call sprinkled through prompt templates. The gateway’s job is four verbs: <strong>who</strong>, <strong>what</strong>, <strong>whether</strong>, <strong>where</strong>.</p>
-    <ol>
-    <li><strong>Who</strong> — identity and tenant before any embedding is computed.</li>
-    <li><strong>What</strong> — normalize and classify the query (FAQ vs doc search vs “no retrieval”).</li>
-    <li><strong>Whether</strong> — semantic cache: have we already answered a near-duplicate?</li>
-    <li><strong>Where</strong> — which collection, hybrid stack, or tool path; which metadata ACL.</li>
-    </ol>
-    <aside class="callout callout-key">
-      <p class="callout-title">Key idea</p>
-    <p>A false cache hit is worse than a cache miss. Serving yesterday’s answer for a different intent looks “fast” in metrics and wrong in the product. Prefer miss + retrieve over a confident wrong hit.</p>
-    </aside>
-    <h2 id="how-it-works">How it works</h2>
-    <h3>Auth before retrieval</h3>
-    <p>Order matters:</p>
-    <div class="code-block" data-lang="text">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">authenticate -&gt; authorize (tenant, roles, doc ACL) -&gt; embed / cache / search -&gt; generate</code></pre>
-    </div>
-    <p>Never embed first and “filter later” in the prompt. Metadata filters in the vector DB are necessary; they are not a substitute for rejecting unauthenticated calls. Log <code>subject_id</code>, <code>tenant_id</code>, and <code>policy_version</code> on every retrieval span so incidents are reconstructible.</p>
-    <p>Multi-tenant rule of thumb: <strong>tenant_id is a mandatory filter</strong>, enforced in gateway code that builds the search request — not an optional argument the model can omit.</p>
-    <h3>Semantic cache threshold tradeoff</h3>
-    <p>Cache keys are often the query embedding (or a normalized string + embedding). On a new query, if <code>cosine(q, cached_q) &gt;= threshold</code> (and same tenant, locale, product surface), return the cached answer or cached chunks.</p>
-    <ul>
-    <li><strong>Threshold too low</strong> -&gt; false hits: “reset password” matches “reset API key”; user gets the wrong runbook.</li>
-    <li><strong>Threshold too high</strong> -&gt; mostly misses; cache barely helps.</li>
-    </ul>
-    <p>Tune on a labeled pair set: same-intent vs different-intent. Optimize for <strong>low false-hit rate</strong> first; accept a lower hit rate. Invalidate on corpus or policy change (TTL alone is not enough when docs update). For regulated answers, cache <strong>chunk ids + generation inputs</strong>, not only final prose, so you can rebuild with the new model.</p>
-    <h3>Query shaping</h3>
-    <p>Before search:</p>
-    <ul>
-    <li>Strip boilerplate (“hi”, “please”, email signatures).</li>
-    <li>Expand acronyms known for that tenant.</li>
-    <li>Rewrite follow-ups with conversation context (“what about the SLA?” -&gt; “What is the SLA for plan Pro?”).</li>
-    <li>Detect <strong>no-retrieval</strong> intents (chitchat, pure math) and skip the index.</li>
-    </ul>
-    <p>Shaping is a small model or rules + templates. Cap rewrite length; log both raw and shaped queries for eval.</p>
-    <h3>Routing</h3>
-    <p>Not every query should hit the same top-k dense search:</p>
+    <p>Treat retrieval like a privileged API, not a library call sprinkled through prompts. The gateway&#x27;s job is four questions:</p>
     <table>
       <thead><tr>
-        <th>Signal</th>
-        <th>Route</th>
+        <th>Question</th>
+        <th>Plain-English idea</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Exact FAQ / policy id</td>
-          <td>Keyword or id lookup</td>
+          <td><strong>Who?</strong></td>
+          <td>Identity and tenant before any embedding</td>
         </tr>
         <tr>
-          <td>Navigational “section 4.2”</td>
-          <td>Structured doc store</td>
+          <td><strong>What?</strong></td>
+          <td>Normalize and classify the query</td>
         </tr>
         <tr>
-          <td>Open semantic question</td>
-          <td>Dense / hybrid ANN</td>
+          <td><strong>Whether?</strong></td>
+          <td>Semantic cache—near-duplicate already answered?</td>
         </tr>
         <tr>
-          <td>Multi-entity comparison</td>
-          <td>Multi-hop planner</td>
-        </tr>
-        <tr>
-          <td>Toolable (“order status 123”)</td>
-          <td>API tool, not RAG</td>
+          <td><strong>Where?</strong></td>
+          <td>Which collection, hybrid stack, or tool path</td>
         </tr>
       </tbody>
     </table>
-    <p>A lightweight classifier or rules router sits in the gateway. Wrong route is a quality bug: dense search over a tracking-number question invents prose instead of calling the order API.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>A false cache hit is worse than a cache miss. Prefer miss + retrieve over a confident wrong hit.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -120,97 +82,170 @@ flowchart TB
   V --> G[Generate + cite]
       </div>
     </div>
+    <h2 id="how-it-works">How it works</h2>
+    <h3>Auth before retrieval</h3>
+    <p>Order matters:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">authenticate → authorize (tenant, roles, doc ACL) → embed / cache / search → generate</code></pre>
+    </div>
+    <p><strong>Authorization (AuthZ)</strong> must happen <strong>before</strong> retrieval—not only after generation. Metadata filters in the vector DB are necessary; they are not a substitute for rejecting unauthenticated calls.</p>
+    <h3>Semantic cache</h3>
+    <p>Embed the query; if <code>cosine(q, cached_q) &gt;= threshold</code> (same tenant, locale, surface), reuse the cached answer or chunks.</p>
+    <table>
+      <thead><tr>
+        <th>Threshold</th>
+        <th>Effect</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Too low</strong></td>
+          <td>False hits—&quot;reset password&quot; matches &quot;reset API key&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Too high</strong></td>
+          <td>Mostly misses; cache barely helps</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Tune for <strong>low false-hit rate</strong> first. Invalidate on corpus or policy change—not TTL alone.</p>
+    <h3>Query shaping (request shaping)</h3>
+    <p>Before search:</p>
+    <table>
+      <thead><tr>
+        <th>Transformation</th>
+        <th>Plain-English idea</th>
+        <th>Example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Rewriting</strong></td>
+          <td>Expand vague prompts</td>
+          <td>&quot;OOMKilled&quot; → Kubernetes OOM exit code question</td>
+        </tr>
+        <tr>
+          <td><strong>Follow-up question</strong></td>
+          <td>Resolve pronouns</td>
+          <td>&quot;Does it apply to contractors?&quot; → standalone policy question</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-query</strong></td>
+          <td>Several related queries</td>
+          <td>Split comparison into one query per entity</td>
+        </tr>
+        <tr>
+          <td><strong>Step-back</strong></td>
+          <td>Broader question first</td>
+          <td>Specific case → foundational rule</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Cap rewrite length; log both raw and shaped queries.</p>
+    <h3>Query routing</h3>
+    <p>Not every query should hit the same dense search.</p>
+    <table>
+      <thead><tr>
+        <th>Signal</th>
+        <th>Route to</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Exact FAQ / policy id</td>
+          <td>Keyword or id lookup</td>
+        </tr>
+        <tr>
+          <td>Navigational &quot;section 4.2&quot;</td>
+          <td>Structured doc store</td>
+        </tr>
+        <tr>
+          <td>Open semantic question</td>
+          <td>Dense / hybrid ANN</td>
+        </tr>
+        <tr>
+          <td>Multi-entity comparison</td>
+          <td>Multi-hop planner</td>
+        </tr>
+        <tr>
+          <td>Toolable (&quot;order status 123&quot;)</td>
+          <td>API tool, not RAG</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Hybrid routing waterfall:</strong> try cheap methods first, escalate only when uncertain.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">if rule_match(query):        route = rule_route(query)
+elif embed_confidence OK:    route = embedding_route(query)
+else:                        route = llm_route(query)</code></pre>
+    </div>
+    <h3>Gateway responsibilities</h3>
+    <table>
+      <thead><tr>
+        <th>Responsibility</th>
+        <th>What it does</th>
+        <th>Why it helps</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>AuthZ</strong></td>
+          <td>Blocks unauthorized retrieval</td>
+          <td>Prevents data leakage</td>
+        </tr>
+        <tr>
+          <td><strong>Caching</strong></td>
+          <td>Serves repeated semantic queries</td>
+          <td>Saves latency and cost</td>
+        </tr>
+        <tr>
+          <td><strong>Budgeting</strong></td>
+          <td>Tracks usage; throttles heavy loops</td>
+          <td>Prevents runaway spend</td>
+        </tr>
+        <tr>
+          <td><strong>Logging</strong></td>
+          <td>Traces query, chunks, latency</td>
+          <td>Makes debugging possible</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="in-code">In code</h2>
-    <p>A sketch of gateway decisions: ACL gate, cache with a conservative threshold, and a tiny router.</p>
+    <p>Gateway sketch: ACL gate, conservative cache, tiny router.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">from dataclasses import dataclass
-import numpy as np
+      <pre><code class="language-python">THRESHOLD = 0.92  # tune up if false hits appear
 
-@dataclass
-class Principal:
-    user_id: str
-    tenant_id: str
-    roles: set[str]
-
-@dataclass
-class CacheEntry:
-    query_vec: np.ndarray
-    tenant_id: str
-    answer: str
-
-CACHE: list[CacheEntry] = []
-THRESHOLD = 0.92  # tune up if false hits appear
-
-def cosine(a, b):
-    return float(np.dot(a, b) / ((np.linalg.norm(a) * np.linalg.norm(b)) + 1e-9))
-
-def authorize(p: Principal, resource_tenant: str) -&gt; bool:
-    return p.tenant_id == resource_tenant and &quot;reader&quot; in p.roles
-
-def shape(raw: str) -&gt; str:
-    q = raw.strip().lower()
-    for noise in (&quot;please &quot;, &quot;hey &quot;, &quot;can you &quot;):
-        if q.startswith(noise):
-            q = q[len(noise):]
-    return q
-
-def cache_lookup(tenant_id: str, qvec: np.ndarray) -&gt; str | None:
-    best, best_s = None, -1.0
-    for e in CACHE:
-        if e.tenant_id != tenant_id:
-            continue
-        s = cosine(qvec, e.query_vec)
-        if s &gt; best_s:
-            best, best_s = e, s
-    if best is not None and best_s &gt;= THRESHOLD:
-        return best.answer
-    return None  # miss — safer than a weak hit
-
-def route(shaped: str) -&gt; str:
-    if shaped.startswith(&quot;order status&quot;) or shaped[:3].isdigit():
-        return &quot;orders_api&quot;
-    if &quot;section&quot; in shaped and any(c.isdigit() for c in shaped):
-        return &quot;structured_docs&quot;
-    return &quot;hybrid_rag&quot;
-
-def gateway(p: Principal, raw_query: str, embed_fn, search_fn, generate_fn):
+def gateway(p, raw_query, embed_fn, search_fn, generate_fn):
     if not authorize(p, p.tenant_id):
         raise PermissionError(&quot;forbidden&quot;)
     shaped = shape(raw_query)
     qvec = embed_fn(shaped)
-    hit = cache_lookup(p.tenant_id, qvec)
+    hit = cache_lookup(p.tenant_id, qvec, THRESHOLD)
     if hit is not None:
         return {&quot;source&quot;: &quot;cache&quot;, &quot;answer&quot;: hit}
     path = route(shaped)
     if path != &quot;hybrid_rag&quot;:
-        return {&quot;source&quot;: path, &quot;answer&quot;: f&quot;delegate:{path}:{shaped}&quot;}
+        return {&quot;source&quot;: path, &quot;answer&quot;: f&quot;delegate:{path}&quot;}
     chunks = search_fn(qvec, tenant_id=p.tenant_id)  # filter mandatory
-    answer = generate_fn(shaped, chunks)
-    CACHE.append(CacheEntry(qvec, p.tenant_id, answer))
-    return {&quot;source&quot;: &quot;rag&quot;, &quot;answer&quot;: answer}</code></pre>
+    return {&quot;source&quot;: &quot;rag&quot;, &quot;answer&quot;: generate_fn(shaped, chunks)}</code></pre>
     </div>
-    <p>Wire real embed/search clients; keep authorize and tenant filters in this layer, not in the prompt.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Retrieve then auth.</strong> Embeddings and chunk text from another tenant briefly exist in logs and prompts. Gate first.</li>
-    <li><strong>Global semantic cache.</strong> Cross-tenant hits are a data breach, not a performance win. Cache key must include tenant (and often surface + locale).</li>
-    <li><strong>Aggressive thresholds.</strong> Hit rate looks great; support tickets rise. Track false-hit labels from thumbs-down.</li>
-    <li><strong>Cache without invalidation.</strong> Policy updated at 10:00; cache serves 09:00 answer until TTL. Tie purge to publish events.</li>
-    <li><strong>Router always “RAG”.</strong> Toolable intents become hallucinations with citations from unrelated docs.</li>
-    <li><strong>Shaping that invents constraints.</strong> Rewriters that add filters the user never stated (“only 2024”) silently drop evidence.</li>
+    <li><strong>Retrieve then auth</strong> — Another tenant&#x27;s chunks briefly exist in logs and prompts.</li>
+    <li><strong>Global semantic cache</strong> — Cross-tenant hits are a data breach.</li>
+    <li><strong>Aggressive thresholds</strong> — Hit rate looks great; support tickets rise.</li>
+    <li><strong>Cache without invalidation</strong> — Policy updated; cache serves old answer until TTL.</li>
+    <li><strong>Router always &quot;RAG&quot;</strong> — Toolable intents become hallucinations with unrelated citations.</li>
     </ul>
-    <p>Track auth denies, cache hit rate, sampled <strong>false-hit rate</strong>, route mix, and empty-result rate. Start with tenant filter + FAQ string cache; add semantic cache and multi-route when traces show duplicate traffic and intent diversity.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>A retrieval gateway authenticates first, uses a conservative semantic cache (false hits hurt more than misses), shapes queries, and routes to the right index or tool with tenant filters enforced in code.</p>
+    <p>A retrieval gateway authenticates first, uses a conservative semantic cache, shapes queries, and routes to the right index or tool with tenant filters enforced in code.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Retrieval gateway:</strong> control plane in front of search (auth, cache, shape, route).</li>
-    <li><strong>Semantic cache:</strong> reuse answers/chunks when query embeddings are near-duplicates.</li>
-    <li><strong>False hit:</strong> cache returns an answer for a different user intent.</li>
-    <li><strong>Query shaping:</strong> normalize/rewrite before embedding and search.</li>
-    <li><strong>Routing:</strong> choose RAG vs keyword vs tools vs no-retrieval.</li>
-    <li><strong>Tenant filter:</strong> mandatory metadata constraint so ANN cannot cross customers.</li>
+    <li><strong>AuthN (authentication):</strong> confirming who the user is.</li>
+    <li><strong>AuthZ (authorization):</strong> deciding what the user may access.</li>
+    <li><strong>Semantic cache:</strong> reuse answers when query embeddings are near-duplicates.</li>
+    <li><strong>Query shaping / request shaping:</strong> normalize or rewrite before search.</li>
+    <li><strong>Hybrid routing:</strong> waterfall from cheap rules to expensive LLM routing.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -36,15 +36,21 @@
       <h1>Overfitting, Underfitting, and Bias-Variance Tradeoff</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A model that aces the training set but fails on new users, new tickets, or next week’s traffic is not “smart” — it <strong>memorized</strong>. The whole point of learning is <strong>generalization</strong>: good predictions on data the model has never seen. <strong>Underfitting</strong> and <strong>overfitting</strong> are the two classic failure modes, and the <strong>bias–variance tradeoff</strong> is the language we use to reason about the capacity sweet spot between them. Every GenAI practitioner hits this when a fine-tune looks perfect on the demo set and collapses in production.</p>
+    <p>A model that aces the training set but fails on new data is not &quot;smart&quot; — it <strong>memorized</strong>. The whole point of learning is <strong>generalization</strong>: good predictions on data the model has never seen. This topic exists because a model can look great on training data and still fail on unseen data.</p>
+    <ul>
+    <li><strong>Underfitting</strong> — the model is too simple and misses the pattern in both training and test data.</li>
+    <li><strong>Overfitting</strong> — the model learns the training data too closely and does worse on new data.</li>
+    <li><strong>Bias</strong> is error from wrong assumptions (too simple a model).</li>
+    <li><strong>Variance</strong> is error from sensitivity to the particular training sample (too wiggly a model).</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine studying for an exam. <strong>Underfitting</strong> is only reading the chapter titles: you miss detail, so you score poorly on practice <em>and</em> on the real test. <strong>Overfitting</strong> is memorizing the answer key for last year’s quiz: practice scores soar, but a reworded question on exam day wrecks you.</p>
+    <p>Imagine studying for an exam. <strong>Underfitting</strong> is only reading the chapter titles: you miss detail, so you score poorly on practice <em>and</em> on the real test. <strong>Overfitting</strong> is memorizing the answer key for last year&#x27;s quiz: practice scores soar, but a reworded question on exam day wrecks you.</p>
     <p>In ML terms:</p>
     <ul>
     <li><strong>Underfit (high bias):</strong> the hypothesis class is too weak — a straight line through a curved phenomenon. Training error stays high; validation error stays high.</li>
     <li><strong>Overfit (high variance):</strong> the hypothesis class is too flexible — a wild polynomial that threads every noisy training point. Training error plummets; validation error rises.</li>
     </ul>
-    <p><strong>Bias</strong> is error from wrong assumptions (too simple a model). <strong>Variance</strong> is error from sensitivity to the particular training sample (too wiggly a model). Irreducible <strong>noise</strong> remains even with a perfect learner. Roughly:</p>
+    <p>Roughly:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">Expected error ~= Bias^2 + Variance + Noise</code></pre>
@@ -54,29 +60,21 @@
     <p><strong>Detect with curves, not vibes.</strong> Plot training loss/metric and validation loss/metric over epochs (or model complexity).</p>
     <table>
       <thead><tr>
-        <th>Pattern</th>
-        <th>Train error</th>
-        <th>Val error</th>
-        <th>Diagnosis</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Both high, gap small</td>
-          <td>High</td>
-          <td>High</td>
-          <td>Underfitting</td>
+          <td>Both train and val error high, gap small</td>
+          <td><strong>Underfitting</strong> — model too simple</td>
         </tr>
         <tr>
-          <td>Train low, val high, gap growing</td>
-          <td>Low</td>
-          <td>High</td>
-          <td>Overfitting</td>
+          <td>Train error low, val error high, gap growing</td>
+          <td><strong>Overfitting</strong> — model memorizing training quirks</td>
         </tr>
         <tr>
-          <td>Both low, gap modest</td>
-          <td>Low</td>
-          <td>Low</td>
-          <td>Healthy fit</td>
+          <td>Both train and val error low, gap modest</td>
+          <td><strong>Healthy fit</strong> — model generalizing well</td>
         </tr>
       </tbody>
     </table>
@@ -88,8 +86,12 @@
     <li><strong>Regularization</strong> — weight decay, dropout, data augmentation (see the next lesson).</li>
     <li><strong>Early stopping</strong> — halt when validation stops improving.</li>
     <li><strong>Simpler models / fewer epochs</strong> — when data is scarce.</li>
-    <li><strong>Cross-validation</strong> — stabler estimate of generalization than one split.</li>
+    <li><strong>K-fold cross-validation (CV)</strong> — splits data into k parts, tests on each part once, and averages the scores:</li>
     </ul>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">avg_score = (score_1 + score_2 + ... + score_k) / k</code></pre>
+    </div>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -106,7 +108,7 @@ flowchart TB
   end
       </div>
     </div>
-    <p><strong>Bias–variance is a lens, not a single number you compute daily.</strong> In deep learning the picture is richer: <strong>double descent</strong> can show test error rising then falling again as models grow past the interpolation threshold, and large models sometimes fit train data near-perfectly yet still generalize (<strong>benign overfitting</strong>). Those phenomena refine the classical U-shaped curve; they do not retire the practical checklist. Still compare train vs held-out metrics, still react when the gap balloons on <em>your</em> task and data regime, and still prefer a locked evaluation set when you claim a win.</p>
+    <p><strong>Bias-variance is a lens, not a single number you compute daily.</strong> In deep learning the picture is richer: <strong>double descent</strong> can show test error rising then falling again as models grow past the interpolation threshold, and large models sometimes fit train data near-perfectly yet still generalize (<strong>benign overfitting</strong>). Those phenomena refine the classical U-shaped curve; they do not retire the practical checklist. Still compare train vs held-out metrics, still react when the gap balloons on <em>your</em> task and data regime.</p>
     <h2 id="in-code">In code</h2>
     <p>Fit polynomials of increasing degree to a noisy sine wave. Low degree underfits; high degree overfits the noise.</p>
     <div class="code-block" data-lang="python">
@@ -141,22 +143,23 @@ for degree in [1, 3, 9, 15]:
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Tuning on the test set.</strong> If you peek at final test metrics to choose architecture or early-stop epoch, you overfit the test set itself. Keep a true holdout or use a locked evaluation set.</li>
-    <li><strong>Tiny validation sets.</strong> Noisy val curves cause false “overfit” alarms or missed ones. Prefer enough val data or cross-validation.</li>
+    <li><strong>Tiny validation sets.</strong> Noisy val curves cause false &quot;overfit&quot; alarms or missed ones. Prefer enough val data or cross-validation.</li>
     <li><strong>Assuming bigger always better.</strong> Extra capacity without data or regularization often memorizes annotation quirks and leakage.</li>
-    <li><strong>Ignoring distribution shift.</strong> Low val error on yesterday’s traffic can still fail tomorrow if the world moved — that is not classical variance, but it looks like “bad generalization” in production.</li>
+    <li><strong>Ignoring distribution shift.</strong> Low val error on yesterday&#x27;s traffic can still fail tomorrow if the world moved — that is not classical variance, but it looks like &quot;bad generalization&quot; in production.</li>
     <li><strong>Misreading LLM demos.</strong> A chatbot that regurgitates fine-tune examples may be overfitting prompts, not learning a robust skill. Probe with paraphrases and out-of-sample tasks.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Underfitting is a model too simple for the pattern (high bias); overfitting is a model that memorizes training quirks (high variance) — watch the train/validation gap and aim for the capacity sweet spot.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Generalization:</strong> performance on unseen data, not just the training set.</li>
-    <li><strong>Underfitting:</strong> high train and validation error; model too simple (high bias).</li>
-    <li><strong>Overfitting:</strong> low train error, high validation error; model too flexible (high variance).</li>
-    <li><strong>Bias:</strong> error from inaccurate assumptions / limited hypothesis class.</li>
-    <li><strong>Variance:</strong> sensitivity of the fitted model to the particular training sample.</li>
-    <li><strong>Bias–variance tradeoff:</strong> tension between simplicity and flexibility in expected error.</li>
-    <li><strong>Validation set / early stopping:</strong> held-out data and halt rule used to detect and limit overfitting during training.</li>
+    <li><strong>Generalization</strong> — performance on unseen data, not just the training set.</li>
+    <li><strong>Underfitting</strong> — high train and validation error; model too simple (high bias).</li>
+    <li><strong>Overfitting</strong> — low train error, high validation error; model too flexible (high variance).</li>
+    <li><strong>Bias</strong> — error from inaccurate assumptions / limited hypothesis class.</li>
+    <li><strong>Variance</strong> — sensitivity of the fitted model to the particular training sample.</li>
+    <li><strong>Bias-variance tradeoff</strong> — tension between simplicity and flexibility in expected error.</li>
+    <li><strong>Validation set / early stopping</strong> — held-out data and halt rule used to detect and limit overfitting during training.</li>
+    <li><strong>K-fold cross-validation (CV)</strong> — splitting data into k parts, testing on each part once, and averaging scores.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

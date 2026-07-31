@@ -384,7 +384,7 @@ window.BBL.CURRICULUM = {
         "title": "1.1 AI & Deep Learning Essentials",
         "quizId": "genai/module-1-foundations/session-1-ai-dl-essentials",
         "hasQuiz": true,
-        "minutes": 60,
+        "minutes": 61,
         "lessons": [
           {
             "slug": "what-is-ai",
@@ -426,7 +426,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-1-foundations/session-1-ai-dl-essentials/word-representations-one-hot-and-embeddings",
             "path": "module-1-foundations/session-1-ai-dl-essentials/word-representations-one-hot-and-embeddings.html",
             "label": "Word Representations — One-Hot and Embeddings",
-            "minutes": 4
+            "minutes": 5
           },
           {
             "slug": "artificial-neuron-and-perceptron",
@@ -464,7 +464,7 @@ window.BBL.CURRICULUM = {
         "title": "1.2 Deep Learning Essentials",
         "quizId": "genai/module-1-foundations/session-2-dl-essentials",
         "hasQuiz": true,
-        "minutes": 37,
+        "minutes": 38,
         "lessons": [
           {
             "slug": "loss-functions",
@@ -478,7 +478,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-1-foundations/session-2-dl-essentials/softmax-and-probabilities",
             "path": "module-1-foundations/session-2-dl-essentials/softmax-and-probabilities.html",
             "label": "Softmax and Probabilities",
-            "minutes": 7
+            "minutes": 6
           },
           {
             "slug": "backpropagation-and-gradient-descent",
@@ -506,7 +506,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-1-foundations/session-2-dl-essentials/rnns-and-lstms",
             "path": "module-1-foundations/session-2-dl-essentials/rnns-and-lstms.html",
             "label": "RNNs and LSTMs",
-            "minutes": 6
+            "minutes": 8
           }
         ]
       },
@@ -516,49 +516,49 @@ window.BBL.CURRICULUM = {
         "title": "1.3 The Transformer Architecture",
         "quizId": "genai/module-1-foundations/transformers",
         "hasQuiz": true,
-        "minutes": 30,
+        "minutes": 36,
         "lessons": [
           {
             "slug": "seq2seq-bottleneck-and-bahdanau",
             "hash": "module-1-foundations/transformers/seq2seq-bottleneck-and-bahdanau",
             "path": "module-1-foundations/transformers/seq2seq-bottleneck-and-bahdanau.html",
             "label": "Seq2Seq Bottleneck and Bahdanau Attention",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "why-transformers",
             "hash": "module-1-foundations/transformers/why-transformers",
             "path": "module-1-foundations/transformers/why-transformers.html",
             "label": "Why Transformers Replaced RNNs",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "self-attention-qkv",
             "hash": "module-1-foundations/transformers/self-attention-qkv",
             "path": "module-1-foundations/transformers/self-attention-qkv.html",
             "label": "Self-Attention: Queries, Keys, and Values",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "positional-encoding-and-mha",
             "hash": "module-1-foundations/transformers/positional-encoding-and-mha",
             "path": "module-1-foundations/transformers/positional-encoding-and-mha.html",
             "label": "Positional Encoding and Multi-Head Attention",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "decoder-masking-cross-attention",
             "hash": "module-1-foundations/transformers/decoder-masking-cross-attention",
             "path": "module-1-foundations/transformers/decoder-masking-cross-attention.html",
             "label": "Causal Masking and Cross-Attention",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "autoregressive-decoding",
             "hash": "module-1-foundations/transformers/autoregressive-decoding",
             "path": "module-1-foundations/transformers/autoregressive-decoding.html",
             "label": "Autoregressive Decoding and Sampling",
-            "minutes": 5
+            "minutes": 6
           }
         ]
       },
@@ -589,7 +589,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-1-llms-decoding-apis/pretraining-finetuning-inference",
             "path": "module-2-prompting-rag/session-1-llms-decoding-apis/pretraining-finetuning-inference.html",
             "label": "Pretraining, Fine-Tuning, and Inference",
-            "minutes": 7
+            "minutes": 6
           },
           {
             "slug": "llm-evolution-and-model-families",
@@ -603,7 +603,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-1-llms-decoding-apis/tokens-context-window-temperature-top-p",
             "path": "module-2-prompting-rag/session-1-llms-decoding-apis/tokens-context-window-temperature-top-p.html",
             "label": "Tokens, Context Window, Temperature, Top-p",
-            "minutes": 7
+            "minutes": 6
           },
           {
             "slug": "prompting-fundamentals-and-roles",
@@ -617,14 +617,14 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-1-llms-decoding-apis/decoding-parameters-and-control",
             "path": "module-2-prompting-rag/session-1-llms-decoding-apis/decoding-parameters-and-control.html",
             "label": "Decoding Parameters and Output Control",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "apis-and-tool-calling",
             "hash": "module-2-prompting-rag/session-1-llms-decoding-apis/apis-and-tool-calling",
             "path": "module-2-prompting-rag/session-1-llms-decoding-apis/apis-and-tool-calling.html",
             "label": "LLM APIs and Tool Calling",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "hallucinations-and-limitations",
@@ -641,7 +641,7 @@ window.BBL.CURRICULUM = {
         "title": "2.2 Structured Outputs & LLM Evaluations",
         "quizId": "genai/module-2-prompting-rag/session-2-structured-evals",
         "hasQuiz": true,
-        "minutes": 18,
+        "minutes": 20,
         "lessons": [
           {
             "slug": "structured-outputs-and-validation",
@@ -655,14 +655,14 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-2-structured-evals/local-and-hosted-model-serving",
             "path": "module-2-prompting-rag/session-2-structured-evals/local-and-hosted-model-serving.html",
             "label": "Local and Hosted Model Serving",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "task-prompting-summarize-qa-classify",
             "hash": "module-2-prompting-rag/session-2-structured-evals/task-prompting-summarize-qa-classify",
             "path": "module-2-prompting-rag/session-2-structured-evals/task-prompting-summarize-qa-classify.html",
             "label": "Task Prompting: Summarize, QA, Classify",
-            "minutes": 6
+            "minutes": 7
           }
         ]
       },
@@ -672,28 +672,28 @@ window.BBL.CURRICULUM = {
         "title": "2.3 Evaluations & AI Safety",
         "quizId": "genai/module-2-prompting-rag/session-3-evals-safety",
         "hasQuiz": true,
-        "minutes": 18,
+        "minutes": 21,
         "lessons": [
           {
             "slug": "evaluation-metrics",
             "hash": "module-2-prompting-rag/session-3-evals-safety/evaluation-metrics",
             "path": "module-2-prompting-rag/session-3-evals-safety/evaluation-metrics.html",
-            "label": "Evaluation: Accuracy, Latency, Cost, Safety",
-            "minutes": 6
+            "label": "Evaluation Metrics: How to Score LLM Outputs",
+            "minutes": 7
           },
           {
             "slug": "guardrails-and-security",
             "hash": "module-2-prompting-rag/session-3-evals-safety/guardrails-and-security",
             "path": "module-2-prompting-rag/session-3-evals-safety/guardrails-and-security.html",
-            "label": "Guardrails and Security",
-            "minutes": 6
+            "label": "Guardrails and AI Security Basics",
+            "minutes": 7
           },
           {
             "slug": "use-cases-and-threat-models",
             "hash": "module-2-prompting-rag/session-3-evals-safety/use-cases-and-threat-models",
             "path": "module-2-prompting-rag/session-3-evals-safety/use-cases-and-threat-models.html",
             "label": "Use Cases and Threat Models",
-            "minutes": 6
+            "minutes": 7
           }
         ]
       },
@@ -703,13 +703,13 @@ window.BBL.CURRICULUM = {
         "title": "2.4 Advanced Prompting",
         "quizId": "genai/module-2-prompting-rag/session-4-advanced-prompting",
         "hasQuiz": true,
-        "minutes": 27,
+        "minutes": 28,
         "lessons": [
           {
             "slug": "prompt-engineering",
             "hash": "module-2-prompting-rag/session-4-advanced-prompting/prompt-engineering",
             "path": "module-2-prompting-rag/session-4-advanced-prompting/prompt-engineering.html",
-            "label": "Prompt Engineering",
+            "label": "Prompt Engineering Foundations",
             "minutes": 6
           },
           {
@@ -730,15 +730,15 @@ window.BBL.CURRICULUM = {
             "slug": "structured-prompting-and-output-contracts",
             "hash": "module-2-prompting-rag/session-4-advanced-prompting/structured-prompting-and-output-contracts",
             "path": "module-2-prompting-rag/session-4-advanced-prompting/structured-prompting-and-output-contracts.html",
-            "label": "Structured Prompting and Output Contracts",
+            "label": "Structured Prompting and Advanced Patterns",
             "minutes": 5
           },
           {
             "slug": "prompt-evaluation-and-regression-testing",
             "hash": "module-2-prompting-rag/session-4-advanced-prompting/prompt-evaluation-and-regression-testing",
             "path": "module-2-prompting-rag/session-4-advanced-prompting/prompt-evaluation-and-regression-testing.html",
-            "label": "Prompt Evaluation and Regression Testing",
-            "minutes": 5
+            "label": "Hallucination, Guardrails, and Prompt Evaluation",
+            "minutes": 6
           }
         ]
       },
@@ -748,28 +748,28 @@ window.BBL.CURRICULUM = {
         "title": "2.5 Prompt Optimization & Security",
         "quizId": "genai/module-2-prompting-rag/session-5-prompt-security",
         "hasQuiz": true,
-        "minutes": 16,
+        "minutes": 20,
         "lessons": [
           {
             "slug": "prompt-injection-and-tool-misuse",
             "hash": "module-2-prompting-rag/session-5-prompt-security/prompt-injection-and-tool-misuse",
             "path": "module-2-prompting-rag/session-5-prompt-security/prompt-injection-and-tool-misuse.html",
             "label": "Prompt Injection and Tool Misuse Risks",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "prompt-optimization-and-regression",
             "hash": "module-2-prompting-rag/session-5-prompt-security/prompt-optimization-and-regression",
             "path": "module-2-prompting-rag/session-5-prompt-security/prompt-optimization-and-regression.html",
-            "label": "Prompt Evaluation and Regression Testing",
-            "minutes": 5
+            "label": "Prompt Optimization and Regression Testing",
+            "minutes": 7
           },
           {
             "slug": "automatic-prompt-engineering-ape",
             "hash": "module-2-prompting-rag/session-5-prompt-security/automatic-prompt-engineering-ape",
             "path": "module-2-prompting-rag/session-5-prompt-security/automatic-prompt-engineering-ape.html",
             "label": "Automatic Prompt Engineering (APE)",
-            "minutes": 6
+            "minutes": 7
           }
         ]
       },
@@ -779,21 +779,21 @@ window.BBL.CURRICULUM = {
         "title": "2.6 RAG Fundamentals",
         "quizId": "genai/module-2-prompting-rag/session-6-rag-fundamentals",
         "hasQuiz": true,
-        "minutes": 15,
+        "minutes": 16,
         "lessons": [
           {
             "slug": "embeddings-semantic-search",
             "hash": "module-2-prompting-rag/session-6-rag-fundamentals/embeddings-semantic-search",
             "path": "module-2-prompting-rag/session-6-rag-fundamentals/embeddings-semantic-search.html",
             "label": "Embeddings and Semantic Search",
-            "minutes": 5
+            "minutes": 4
           },
           {
             "slug": "rag-retrieval-augmented-generation",
             "hash": "module-2-prompting-rag/session-6-rag-fundamentals/rag-retrieval-augmented-generation",
             "path": "module-2-prompting-rag/session-6-rag-fundamentals/rag-retrieval-augmented-generation.html",
             "label": "RAG (Retrieval-Augmented Generation)",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "vector-databases",
@@ -810,21 +810,21 @@ window.BBL.CURRICULUM = {
         "title": "2.7 RAG Retrieval Engineering",
         "quizId": "genai/module-2-prompting-rag/session-7-retrieval-engineering",
         "hasQuiz": true,
-        "minutes": 21,
+        "minutes": 22,
         "lessons": [
           {
             "slug": "dense-embeddings-and-bi-encoders",
             "hash": "module-2-prompting-rag/session-7-retrieval-engineering/dense-embeddings-and-bi-encoders",
             "path": "module-2-prompting-rag/session-7-retrieval-engineering/dense-embeddings-and-bi-encoders.html",
-            "label": "Embeddings and Semantic Search",
-            "minutes": 5
+            "label": "Dense Embeddings and Bi-Encoders",
+            "minutes": 7
           },
           {
             "slug": "chunking-and-document-preprocessing",
             "hash": "module-2-prompting-rag/session-7-retrieval-engineering/chunking-and-document-preprocessing",
             "path": "module-2-prompting-rag/session-7-retrieval-engineering/chunking-and-document-preprocessing.html",
             "label": "Chunking and Document Preprocessing",
-            "minutes": 6
+            "minutes": 5
           },
           {
             "slug": "hybrid-search-bm25-and-dense",
@@ -848,13 +848,13 @@ window.BBL.CURRICULUM = {
         "title": "2.8 Production RAG",
         "quizId": "genai/module-2-prompting-rag/session-8-production-rag",
         "hasQuiz": true,
-        "minutes": 40,
+        "minutes": 35,
         "lessons": [
           {
             "slug": "vector-databases-overview",
             "hash": "module-2-prompting-rag/session-8-production-rag/vector-databases-overview",
             "path": "module-2-prompting-rag/session-8-production-rag/vector-databases-overview.html",
-            "label": "Vector Databases",
+            "label": "Vector Databases for Production RAG",
             "minutes": 5
           },
           {
@@ -862,14 +862,14 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-8-production-rag/ivf-and-product-quantization",
             "path": "module-2-prompting-rag/session-8-production-rag/ivf-and-product-quantization.html",
             "label": "IVF and Product Quantization",
-            "minutes": 7
+            "minutes": 5
           },
           {
             "slug": "hnsw-graph-indexes",
             "hash": "module-2-prompting-rag/session-8-production-rag/hnsw-graph-indexes",
             "path": "module-2-prompting-rag/session-8-production-rag/hnsw-graph-indexes.html",
             "label": "HNSW Graph Indexes",
-            "minutes": 6
+            "minutes": 5
           },
           {
             "slug": "retrieval-gateway-caching-and-routing",
@@ -890,14 +890,14 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-8-production-rag/rag-evaluation-and-failure-modes",
             "path": "module-2-prompting-rag/session-8-production-rag/rag-evaluation-and-failure-modes.html",
             "label": "RAG Evaluation and Failure Modes",
-            "minutes": 6
+            "minutes": 5
           },
           {
             "slug": "citations-grounding-and-hallucination-control",
             "hash": "module-2-prompting-rag/session-8-production-rag/citations-grounding-and-hallucination-control",
             "path": "module-2-prompting-rag/session-8-production-rag/citations-grounding-and-hallucination-control.html",
             "label": "Citations, Grounding, and Hallucination Control",
-            "minutes": 5
+            "minutes": 4
           }
         ]
       },
@@ -907,7 +907,7 @@ window.BBL.CURRICULUM = {
         "title": "2.9 Agentic AI & Multi-Agent Orchestration",
         "quizId": "genai/module-2-prompting-rag/session-12-agentic",
         "hasQuiz": true,
-        "minutes": 57,
+        "minutes": 67,
         "lessons": [
           {
             "slug": "what-makes-an-agent",
@@ -921,7 +921,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-12-agentic/reasoning-planning-tools-memory",
             "path": "module-2-prompting-rag/session-12-agentic/reasoning-planning-tools-memory.html",
             "label": "Reasoning + Planning + Tool Use + Memory",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "chatbot-vs-agent",
@@ -935,28 +935,28 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-12-agentic/single-vs-multi-agent",
             "path": "module-2-prompting-rag/session-12-agentic/single-vs-multi-agent.html",
             "label": "Single-Agent vs Multi-Agent Systems",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "human-in-the-loop-workflows",
             "hash": "module-2-prompting-rag/session-12-agentic/human-in-the-loop-workflows",
             "path": "module-2-prompting-rag/session-12-agentic/human-in-the-loop-workflows.html",
             "label": "Human-in-the-Loop Workflows",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "task-decomposition",
             "hash": "module-2-prompting-rag/session-12-agentic/task-decomposition",
             "path": "module-2-prompting-rag/session-12-agentic/task-decomposition.html",
             "label": "Task Decomposition",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "tool-calling-function-calling",
             "hash": "module-2-prompting-rag/session-12-agentic/tool-calling-function-calling",
             "path": "module-2-prompting-rag/session-12-agentic/tool-calling-function-calling.html",
             "label": "Tool Calling / Function Calling",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "short-term-vs-long-term-memory",
@@ -970,21 +970,21 @@ window.BBL.CURRICULUM = {
             "hash": "module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops",
             "path": "module-2-prompting-rag/session-12-agentic/reflection-self-correction-loops.html",
             "label": "Reflection / Self-Correction Loops",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "orchestration-workflow-control",
             "hash": "module-2-prompting-rag/session-12-agentic/orchestration-workflow-control",
             "path": "module-2-prompting-rag/session-12-agentic/orchestration-workflow-control.html",
             "label": "Orchestration and Workflow Control",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "langchain-llamaindex-autogen-crewai",
             "hash": "module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai",
             "path": "module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html",
             "label": "LangChain, LlamaIndex, AutoGen, CrewAI",
-            "minutes": 5
+            "minutes": 6
           }
         ]
       },
@@ -994,28 +994,28 @@ window.BBL.CURRICULUM = {
         "title": "3.1 Fine-Tuning Fundamentals",
         "quizId": "genai/module-3-finetuning/session-1-fundamentals",
         "hasQuiz": true,
-        "minutes": 22,
+        "minutes": 28,
         "lessons": [
           {
             "slug": "when-to-finetune-vs-prompt-vs-rag",
             "hash": "module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag",
             "path": "module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html",
             "label": "When to Fine-Tune vs Prompt vs RAG",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "sft-supervised-fine-tuning",
             "hash": "module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning",
             "path": "module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html",
             "label": "SFT: Supervised Fine-Tuning",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "full-finetune-vs-freeze-strategies",
             "hash": "module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies",
             "path": "module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html",
             "label": "Full Fine-Tune vs Freeze Strategies",
-            "minutes": 5
+            "minutes": 8
           },
           {
             "slug": "alignment-overview-rlhf-dpo",
@@ -1032,49 +1032,49 @@ window.BBL.CURRICULUM = {
         "title": "3.2 Data Prep & Training Mechanisms",
         "quizId": "genai/module-3-finetuning/session-2-data-training",
         "hasQuiz": true,
-        "minutes": 32,
+        "minutes": 44,
         "lessons": [
           {
             "slug": "datasets-labels-and-instruction-format",
             "hash": "module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format",
             "path": "module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html",
             "label": "Datasets, Labels, and Instruction Format",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "eval-catastrophic-forgetting-and-overfit",
             "hash": "module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit",
             "path": "module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html",
             "label": "Eval, Catastrophic Forgetting, and Overfit",
-            "minutes": 6
+            "minutes": 8
           },
           {
             "slug": "lab-prep-and-baseline",
             "hash": "module-3-finetuning/session-2-data-training/lab-prep-and-baseline",
             "path": "module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html",
             "label": "Lab Prep and Baseline",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "lab-sft-or-lora-sprint",
             "hash": "module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint",
             "path": "module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html",
             "label": "Lab: SFT or LoRA Sprint",
-            "minutes": 6
+            "minutes": 11
           },
           {
             "slug": "lab-eval-and-writeup",
             "hash": "module-3-finetuning/session-2-data-training/lab-eval-and-writeup",
             "path": "module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html",
             "label": "Lab: Eval and Writeup",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "module-3-review-checklist",
             "hash": "module-3-finetuning/session-2-data-training/module-3-review-checklist",
             "path": "module-3-finetuning/session-2-data-training/module-3-review-checklist.html",
             "label": "Module 3 Review Checklist",
-            "minutes": 5
+            "minutes": 6
           }
         ]
       },
@@ -1084,14 +1084,14 @@ window.BBL.CURRICULUM = {
         "title": "3.3 PEFT, Adapters & Soft Prompting",
         "quizId": "genai/module-3-finetuning/session-3-peft",
         "hasQuiz": true,
-        "minutes": 28,
+        "minutes": 31,
         "lessons": [
           {
             "slug": "why-peft-adapters-intuition",
             "hash": "module-3-finetuning/session-3-peft/why-peft-adapters-intuition",
             "path": "module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html",
             "label": "Why PEFT: Adapters Intuition",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "lora-and-qlora",
@@ -1105,7 +1105,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning",
             "path": "module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning.html",
             "label": "Prompt Tuning and Prefix Tuning",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "training-recipes-lr-rank-quantization",
@@ -1119,7 +1119,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights",
             "path": "module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html",
             "label": "Serving Merged vs Adapter Weights",
-            "minutes": 5
+            "minutes": 6
           }
         ]
       },

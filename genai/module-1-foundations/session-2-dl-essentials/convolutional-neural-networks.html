@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Local filters, shared weights, and feature maps — how CNNs exploit spatial structure in images, with a NumPy convolution you can run by hand.">
+  <meta name="description" content="Local filters, shared weights, and feature maps — how convolutional neural networks exploit spatial structure in images, with a NumPy convolution you can run by hand.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-1-foundations/session-2-dl-essentials/convolutional-neural-networks.html">
   <meta property="og:title" content="Convolutional Neural Networks | BackbenchLearner">
-  <meta property="og:description" content="Local filters, shared weights, and feature maps — how CNNs exploit spatial structure in images, with a NumPy convolution you can run by hand.">
+  <meta property="og:description" content="Local filters, shared weights, and feature maps — how convolutional neural networks exploit spatial structure in images, with a NumPy convolution you can run by hand.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-1-foundations/session-2-dl-essentials/convolutional-neural-networks.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Convolutional Neural Networks | BackbenchLearner">
-  <meta name="twitter:description" content="Local filters, shared weights, and feature maps — how CNNs exploit spatial structure in images, with a NumPy convolution you can run by hand.">
+  <meta name="twitter:description" content="Local filters, shared weights, and feature maps — how convolutional neural networks exploit spatial structure in images, with a NumPy convolution you can run by hand.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,27 +36,59 @@
       <h1>Convolutional Neural Networks</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A fully connected net on a 224x224 RGB image would wire every pixel to every hidden unit and drown in parameters. <strong>Convolutional neural networks (CNNs)</strong> refuse that waste: they slide small filters across the input, reuse the same weights everywhere, and build a hierarchy from edges to parts to objects. Vision systems, many speech front-ends, and even some text models historically leaned on this inductive bias. Even if your day job is transformers, CNN thinking—locality, weight sharing, translation equivariance—still shows up in patches, depthwise convs, and “look at nearby structure first.”</p>
+    <p><strong>What is a convolutional neural network (CNN)?</strong> It is a neural network designed for images and other grid-shaped data. Instead of wiring every pixel to every neuron (which would explode in parameters), a CNN slides small learnable filters across the input and reuses the same weights everywhere.</p>
+    <p><strong>Why do CNNs matter?</strong> They mimic how the human visual cortex works — processing local patches of an image to detect edges, shapes, and objects. Vision systems, speech front-ends, and even some text models historically relied on this design. Even in the transformer era, CNN thinking — locality, weight sharing, translation equivariance — still shows up in patches, depthwise convolutions, and &quot;look at nearby structure first.&quot;</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>CNNs learn small shared filters that slide over space, turning local patterns into hierarchical feature maps without a fully connected explosion of weights.</p>
+    </aside>
     <h2 id="intuition">Intuition</h2>
-    <p>Stand in front of a photo with a tiny cardboard stencil that has a 3x3 hole. At each placement you compute a weighted mix of the nine visible pixels—maybe “bright on the left, dark on the right” to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a <strong>convolution</strong> (in deep learning, usually a cross-correlation with a learnable kernel). One stencil produces one <strong>feature map</strong>. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.</p>
-    <p>Because the same stencil is reused at every location, a filter that learns “cat ear texture” in the top-left can fire for an ear in the bottom-right without new weights. That is <strong>weight sharing</strong>. Because each output depends only on a local <strong>receptive field</strong>, early layers stay cheap and spatially grounded. Deeper layers compose local detections into larger patterns—the receptive field grows as you stack convs and pool.</p>
-    <p>Pooling (or strided convolution) downsamples the map: keep the strongest response in each neighborhood. You trade precise pixel location for coarser, more invariant features. Classification heads usually flatten or global-pool the final maps into a vector, then apply a small MLP or linear layer.</p>
+    <p>Stand in front of a photo with a tiny 3×3 cardboard stencil. At each placement you compute a weighted mix of the nine visible pixels — maybe &quot;bright on the left, dark on the right&quot; to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a <strong>convolution</strong>. One stencil produces one <strong>feature map</strong>. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.</p>
+    <p>Because the same stencil is reused at every location, a filter that learns &quot;cat ear texture&quot; in the top-left can fire for an ear in the bottom-right without new weights. That is <strong>weight sharing</strong>.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>2D convolution (single channel, stride 1, no padding).</strong> Input <code>X</code> is <code>H x W</code>. Kernel <code>K</code> is <code>kH x kW</code>. Output at position <code>(i, j)</code>:</p>
+    <p><strong>Core components of a CNN:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Component</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Kernel / filter</strong></td>
+          <td>A tiny learnable matrix (e.g. 3×3) that slides over pixel grids to scan for shapes or edges, producing a feature map</td>
+        </tr>
+        <tr>
+          <td><strong>Stride</strong></td>
+          <td>How many pixels the filter jumps each step — larger stride = smaller output</td>
+        </tr>
+        <tr>
+          <td><strong>Padding</strong></td>
+          <td>Adding a border of zeros around image edges so edge pixels get scanned as thoroughly as center pixels</td>
+        </tr>
+        <tr>
+          <td><strong>Max pooling</strong></td>
+          <td>Keeps only the brightest value in each small window (e.g. 2×2), reducing memory while keeping core visual features</td>
+        </tr>
+        <tr>
+          <td><strong>Fully connected layer</strong></td>
+          <td>Flattens the final spatial grid into a 1D vector to generate classification scores</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>2D convolution (single channel, stride 1, no padding).</strong> Input <code>X</code> is <code>H × W</code>. Kernel <code>K</code> is <code>kH × kW</code>. Output at position <code>(i, j)</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">Y[i, j] = sum over u,v of  K[u, v] * X[i + u, j + v]</code></pre>
     </div>
-    <p>Output spatial size (valid convolution, no pad):</p>
+    <p>Output spatial size (valid convolution, no padding):</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">out_H = H - kH + 1
 out_W = W - kW + 1</code></pre>
     </div>
-    <p><strong>Padding</strong> adds a border (often zeros) so output can match input size (“same” padding). <strong>Stride</strong> <code>s</code> skips positions: step the filter by <code>s</code> pixels; sizes shrink roughly by <code>s</code>.</p>
-    <p><strong>Multiple channels.</strong> An RGB input has <code>C_in = 3</code>. Each output channel has a kernel stack of shape <code>(C_in, kH, kW)</code>; you sum across input channels as well. A layer with <code>C_out</code> filters learns <code>C_out</code> such stacks, plus optional biases.</p>
-    <p><strong>Parameter count (conv vs dense).</strong> One 3x3 filter on 64 input channels to 128 output channels has about <code>128 * 64 * 3 * 3</code> weights—independent of <code>H</code> and <code>W</code>. A dense layer from <code>H*W*64</code> to <code>H*W*128</code> scales with image size and explodes.</p>
-    <p><strong>Typical block.</strong> Conv -&gt; activation (ReLU) -&gt; optional BatchNorm -&gt; optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.</p>
+    <p><strong>Multiple channels.</strong> An RGB input has 3 input channels. Each output channel has a kernel stack; you sum across input channels. A layer with 128 filters learns 128 such stacks, plus optional biases.</p>
+    <p><strong>Parameter count (conv vs dense).</strong> One 3×3 filter on 64 input channels to 128 output channels has about <code>128 * 64 * 3 * 3</code> weights — independent of image height and width. A dense layer from all pixels to all hidden units scales with image size and explodes.</p>
+    <p><strong>Typical block.</strong> Conv → activation (ReLU) → optional BatchNorm → optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -67,8 +99,29 @@ flowchart LR
   E --> F[Classifier head]
       </div>
     </div>
+    <p><strong>Major engineering bottlenecks:</strong></p>
+    <table>
+      <thead><tr>
+        <th>Bottleneck</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Picasso problem</strong></td>
+          <td>Max pooling discards precise positioning. A CNN can detect eyes and a mouth but not know the mouth is above the eyes — it checks for feature presence, not spatial layout. Real facial recognition uses landmark detectors and 3D depth maps.</td>
+        </tr>
+        <tr>
+          <td><strong>Memory wall</strong></td>
+          <td>Deep image processing forces massive data transfers between RAM and GPU, leaving the fast GPU idle while waiting for slow pixel delivery.</td>
+        </tr>
+        <tr>
+          <td><strong>Fixed input size</strong></td>
+          <td>The final linear layer demands a fixed input vector length, forcing networks to crop, stretch, or distort images into squares.</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="in-code">In code</h2>
-    <p>A tiny NumPy “valid” convolution on a 5x5 patch with a 3x3 edge-ish kernel:</p>
+    <p>A tiny NumPy &quot;valid&quot; convolution on a 5×5 patch with a 3×3 edge-detection kernel:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -81,7 +134,6 @@ X = np.array([
     [0, 0, 0, 0, 0],
 ], dtype=float)
 
-# Emphasize left-vs-right contrast
 K = np.array([
     [-1, 0, 1],
     [-1, 0, 1],
@@ -101,7 +153,6 @@ def conv2d_valid(x, k):
 Y = conv2d_valid(X, K)
 print(Y)
 
-# Max-pool 2x2 on a feature map
 def max_pool2x2(f):
     h, w = f.shape
     out = np.zeros((h // 2, w // 2))
@@ -110,13 +161,15 @@ def max_pool2x2(f):
             out[i, j] = np.max(f[2*i:2*i+2, 2*j:2*j+2])
     return out</code></pre>
     </div>
-    <p>In PyTorch this is <code>nn.Conv2d</code> / <code>F.conv2d</code>; you almost never write the nested loops—but doing it once makes the shapes unforgettable.</p>
+    <p>In PyTorch this is <code>nn.Conv2d</code> / <code>F.conv2d</code> — you almost never write the nested loops, but doing it once makes the shapes unforgettable.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
-    <p><strong>Wrong spatial sizes.</strong> Forget padding or miscount stride and the next layer’s expected <code>H x W</code> will not match—shape errors or silent cropping.</p>
-    <p><strong>Too little receptive field.</strong> Tiny stacks of 3x3 without depth or dilation never “see” the whole object; the classifier guesses from local texture.</p>
-    <p><strong>Treating conv like a bag of dense layers.</strong> Global FC layers early destroy the spatial bias and revive the parameter explosion CNNs were meant to avoid.</p>
-    <p><strong>Data without locality.</strong> Pure tabular features with no neighborhood structure gain little from 2D conv; use models that match the data geometry.</p>
-    <p><strong>Overclaiming translation magic.</strong> Weight sharing gives <strong>equivariance</strong> of feature maps under shifts (features move when the object moves); after global pooling you get more invariance. Neither is free robustness to rotation, scale, or occlusion—those need data, augmentation, or extra design.</p>
+    <ul>
+    <li><strong>Wrong spatial sizes</strong> — Forget padding or miscount stride and the next layer&#x27;s expected height × width will not match.</li>
+    <li><strong>Too little receptive field</strong> — Tiny stacks of 3×3 without depth never &quot;see&quot; the whole object; the classifier guesses from local texture.</li>
+    <li><strong>Treating conv like dense layers</strong> — Global fully connected layers early destroy the spatial bias and revive the parameter explosion CNNs were meant to avoid.</li>
+    <li><strong>Data without locality</strong> — Pure tabular features with no neighborhood structure gain little from 2D conv; use models that match the data geometry.</li>
+    <li><strong>Overclaiming translation magic</strong> — Weight sharing gives equivariance under shifts, not free robustness to rotation, scale, or occlusion.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>CNNs learn small shared filters that slide over space, turning local patterns into hierarchical feature maps without a fully connected explosion of weights.</p>
     <h2 id="key-terms">Key terms</h2>

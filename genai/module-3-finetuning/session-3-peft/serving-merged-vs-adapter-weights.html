@@ -46,12 +46,12 @@
       <p class="callout-title">Key idea</p>
     <p>Merge for simplicity and peak serving speed of one skill. Keep adapters separate when you need many skills, fast rollback, or per-tenant behavior on one GPU fleet.</p>
     </aside>
-    <p>Neither choice fixes a bad eval. Both require versioning: which base SHA + which adapter SHA produced an answer.</p>
+    <p>Neither choice fixes a bad eval. Both require versioning: which base revision plus which adapter revision produced an answer.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Merged serving</h3>
     <ol>
-    <li>Start from base <code>W</code>.</li>
-    <li>Compute <code>W_merged = W + scale * B A</code> for each LoRA layer.</li>
+    <li>Start from the frozen base weight.</li>
+    <li>Compute merged weight = base weight + scale times (B times A) for each LoRA layer.</li>
     <li>Export a standard HuggingFace / GGUF / vLLM-compatible checkpoint.</li>
     <li>Serve like any fine-tuned model.</li>
     </ol>
@@ -61,7 +61,7 @@
     <li>Load base once.</li>
     <li>Register adapters (<code>support_v3</code>, <code>sql_v2</code>, ...).</li>
     <li>Router picks adapter id from tenant, path, or header.</li>
-    <li>Forward with base + active adapter (or merge in memory temporarily).</li>
+    <li>Forward with base plus active adapter (or merge in memory temporarily).</li>
     </ol>
     <p>Pros: small artifacts, hot-swap, A/B skills, shared memory for the backbone. Cons: routing complexity, possible slight overhead, must prevent &quot;wrong adapter&quot; incidents.</p>
     <div class="diagram-wrap">
@@ -84,35 +84,29 @@ flowchart TB
     <h3>Operational checklist</h3>
     <table>
       <thead><tr>
-        <th>Concern</th>
-        <th>Merged</th>
-        <th>Adapters</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Disk per skill</td>
-          <td>Full model</td>
-          <td>Megabytes</td>
+          <td><strong>Merged: full model per skill</strong></td>
+          <td>One static behavior, max kernel simplicity, dedicated replica per skill.</td>
         </tr>
         <tr>
-          <td>Rollback</td>
-          <td>Redeploy previous full ckpt</td>
-          <td>Unload / pin previous adapter id</td>
+          <td><strong>Adapters: megabytes per skill</strong></td>
+          <td>Many tenants or tasks sharing one base; hot-swap and cheap rollback.</td>
         </tr>
         <tr>
-          <td>Multi-tenant</td>
-          <td>Separate replicas or models</td>
-          <td>Router + isolation tests</td>
+          <td><strong>Merged rollback</strong></td>
+          <td>Redeploy a previous full checkpoint.</td>
         </tr>
         <tr>
-          <td>Latency</td>
-          <td>Usually simplest path</td>
-          <td>Watch framework overhead</td>
+          <td><strong>Adapter rollback</strong></td>
+          <td>Unload or pin a previous adapter id—no full model reload.</td>
         </tr>
         <tr>
-          <td>Quantized serve</td>
-          <td>Re-quantize after merge</td>
-          <td>Framework must support LoRA+quant</td>
+          <td><strong>Multi-tenant isolation</strong></td>
+          <td>Adapters plus router tests; merged needs separate replicas or models.</td>
         </tr>
       </tbody>
     </table>
@@ -193,7 +187,7 @@ print(serve(&quot;unknown&quot;, &quot;adapter&quot;))</code></pre>
     <ul>
     <li><strong>Silent wrong adapter</strong> — Tenant A gets Tenant B&#x27;s tone/policy; treat as a sev-level bug.</li>
     <li><strong>Double application</strong> — Merged checkpoint plus loading the same LoRA again.</li>
-    <li><strong>Base drift</strong> — Adapter trained on base SHA X served on base SHA Y.</li>
+    <li><strong>Base drift</strong> — Adapter trained on base revision X served on base revision Y.</li>
     <li><strong>Unbounded adapter registry</strong> — Orphan adapters without owners or evals.</li>
     <li><strong>Merge then forget recipe</strong> — Cannot reproduce the training run that created prod.</li>
     </ul>

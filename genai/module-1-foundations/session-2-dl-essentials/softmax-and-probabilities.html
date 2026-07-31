@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Turn logits into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
+  <meta name="description" content="Turn raw scores into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-1-foundations/session-2-dl-essentials/softmax-and-probabilities.html">
   <meta property="og:title" content="Softmax and Probabilities | BackbenchLearner">
-  <meta property="og:description" content="Turn logits into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
+  <meta property="og:description" content="Turn raw scores into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-1-foundations/session-2-dl-essentials/softmax-and-probabilities.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Softmax and Probabilities | BackbenchLearner">
-  <meta name="twitter:description" content="Turn logits into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
+  <meta name="twitter:description" content="Turn raw scores into a sum-to-one distribution with softmax, understand temperature, and implement a numerically stable version in Python.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,43 +36,78 @@
       <h1>Softmax and Probabilities</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Neural nets for multi-class problems usually emit raw scores called logits—not probabilities. Softmax is the bridge: it turns an arbitrary vector of real numbers into a distribution that is non-negative and sums to one, so you can talk about “70% class A” and plug the result into cross-entropy. Language models, image classifiers, and many ranking heads all rely on this same transform. Get the numerics wrong (overflow from <code>exp</code>) and training dies; get the intuition wrong (treating logits as probabilities) and you misread the model.</p>
+    <p><strong>What is softmax?</strong> It is the &quot;percentage maker.&quot; Neural networks for multi-class problems output raw scores called <strong>logits</strong> — not probabilities. Softmax converts those messy numbers into clean percentages that add up to exactly 100% (or 1.0).</p>
+    <p><strong>Why do we need it?</strong> You cannot plug raw scores into cross-entropy loss. You need real probabilities first. Language models, image classifiers, and intent detectors all use this same two-step pipeline: linear layer → softmax → cross-entropy.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Softmax does two things: (1) raise e to each score so negatives disappear and the winner stands out, then (2) divide each result by the total so everything sums to 1.</p>
+    </aside>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine three contest judges holding up scores: 2.0, 1.0, 0.1. Softmax does not pick a winner only; it converts the gap pattern into shares of a probability pie. Larger scores get larger slices; the total pie is always 100%. If one judge’s score jumps far ahead, that class can absorb almost the entire pie—even though a tiny probability remains on the others.</p>
-    <p>Because of the exponential, <em>differences</em> matter more than absolute values. Adding 5 to every logit leaves probabilities unchanged (the extras cancel in the normalization). Relative ordering and gaps drive the distribution. That is why two models can look different in logit space yet agree after softmax, and why you should compare models on probabilities or calibrated scores when the decision threshold matters.</p>
-    <p><strong>Temperature (brief).</strong> Divide logits by a temperature <code>T</code> before softmax. <code>T &lt; 1</code> sharpens (winner-take-most); <code>T &gt; 1</code> flattens (more uniform). Sampling in generative models often uses temperature to trade certainty for diversity. As <code>T</code> goes toward 0 you approach argmax; at large <code>T</code> you approach uniform. Think of temperature as a volume knob on how “decisive” the distribution is—not as a change to which class the model likes most when logits are clearly ordered.</p>
+    <p>Imagine three judges holding up scores: 2.0, 1.0, 0.1. Softmax does not just pick a winner — it converts the score gaps into shares of a probability pie. Bigger scores get bigger slices; the total pie is always 100%.</p>
+    <p>Because of the exponential step, <em>differences</em> matter more than absolute values. Adding 5 to every logit leaves probabilities unchanged (the extras cancel in the normalization). Relative ordering and gaps drive the distribution.</p>
+    <p><strong>Temperature</strong> — divide logits by a temperature <code>T</code> before softmax:</p>
+    <ul>
+    <li><code>T &lt; 1</code> → sharper distribution (winner takes most).</li>
+    <li><code>T &gt; 1</code> → flatter distribution (more uniform, more diverse sampling).</li>
+    <li>Think of temperature as a volume knob on how &quot;decisive&quot; the distribution is.</li>
+    </ul>
     <h2 id="how-it-works">How it works</h2>
-    <p>For a vector of logits <code>z = [z1, z2, ..., zK]</code>, softmax makes a probability for each class:</p>
+    <p>For logits <code>z = [z1, z2, ..., zK]</code>, softmax produces a probability for each class:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">p_i = e^(z_i) / (e^(z1) + e^(z2) + ... + e^(zK))</code></pre>
+      <pre><code class="language-text">Step 1 (exponential):  exp_z_i = e^(z_i)     for each class i
+Step 2 (normalize):    p_i = exp_z_i / (exp_z_1 + exp_z_2 + ... + exp_z_K)</code></pre>
     </div>
     <p>In plain English:</p>
     <ol>
-    <li>Raise <code>e</code> to each logit (<code>e^(z_i)</code>).</li>
-    <li>Add those values up (the denominator).</li>
-    <li>Divide each <code>e^(z_i)</code> by that total.</li>
+    <li>Raise Euler&#x27;s number <code>e</code> (~= 2.718) to each logit. This removes negative numbers and amplifies the highest score.</li>
+    <li>Add all those exponential values together (the denominator).</li>
+    <li>Divide each exponential value by that total to get its percentage share.</li>
     </ol>
-    <p>Properties you should memorize:</p>
+    <p>Properties to remember:</p>
     <ol>
     <li>Every <code>p_i</code> is greater than 0.</li>
     <li>All <code>p_i</code> values add up to 1.</li>
-    <li>Softmax is <strong>invariant to adding a constant</strong> to all logits (add 5 to every score -&gt; same probabilities).</li>
-    <li>Softmax is <strong>not</strong> invariant to scaling: multiplying logits by 2 sharpens the distribution (like lowering temperature).</li>
+    <li>Softmax is <strong>invariant to adding a constant</strong> to all logits (same probabilities).</li>
+    <li>Softmax is <strong>not</strong> invariant to scaling — multiplying logits by 2 sharpens the distribution (like lowering temperature).</li>
     </ol>
-    <p><strong>Multi-class use.</strong> The model’s last linear layer outputs <code>K</code> logits. Softmax turns them into class probabilities. Training usually combines softmax and cross-entropy in one stable op; at inference you may take <code>argmax(p)</code> for a hard label or keep <code>p</code> for calibration and thresholding. In language models the vocabulary is the class set: each next-token distribution is a giant softmax over tens of thousands of logits.</p>
-    <p><strong>Worked numbers.</strong> Take logits <code>[2.0, 1.0, 0.1]</code>.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What happens</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Raw scores (logits)</td>
+          <td>Unbounded real numbers from the last linear layer</td>
+        </tr>
+        <tr>
+          <td>Exponential step</td>
+          <td>Turns scores positive; big scores grow much faster</td>
+        </tr>
+        <tr>
+          <td>Normalization step</td>
+          <td>Divides each value by the total → percentages sum to 100%</td>
+        </tr>
+        <tr>
+          <td>Cross-entropy</td>
+          <td>Uses <code>-log(p_true_class)</code> on the softmax output</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Worked numbers.</strong> Logits <code>[2.0, 1.0, 0.1]</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">e^2.0 ~= 7.39
 e^1.0 ~= 2.72
 e^0.1 ~= 1.11
-sum  ~= 11.22
+sum   ~= 11.22
 
 p ~= [7.39/11.22, 2.72/11.22, 1.11/11.22]
   ~= [0.66, 0.24, 0.10]</code></pre>
     </div>
-    <p>The top class is not certain—about one-third of the mass still sits on the others. Raise the first logit to <code>5.0</code> and the top probability jumps near <code>0.96</code>. Same three classes; very different confidence.</p>
+    <p>The top class is not certain — about one-third of the mass still sits on the others. Raise the first logit to <code>5.0</code> and the top probability jumps near 0.96.</p>
+    <p><strong>Contrast with sigmoid.</strong> Sigmoid maps one logit to a probability in (0, 1) for binary (or independent multi-label) tasks. Softmax couples classes: raising one logit lowers others because they share the denominator. Use sigmoid when labels are independent; softmax when exactly one class is true.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -83,9 +118,8 @@ flowchart LR
     P --> C[Cross-entropy vs label]
       </div>
     </div>
-    <p><strong>Contrast with sigmoid.</strong> Sigmoid maps one logit to a probability in <code>(0,1)</code> for binary (or independent multi-label) tasks. Softmax couples classes: raising one logit lowers others’ probabilities because they share the denominator. Use sigmoid when labels are independent; softmax when exactly one class is true. A common mistake in multi-label tagging is to softmax “all tags” and then wonder why the model cannot assign high probability to two tags at once—the math forbids it.</p>
     <h2 id="in-code">In code</h2>
-    <p>Naive softmax overflows when logits are large (<code>exp(1000)</code>). The standard fix: subtract the max logit before exponentiating. Mathematically equivalent; numerically safe.</p>
+    <p>Naive softmax overflows when logits are large (<code>exp(1000)</code> → infinity). The standard fix: subtract the max logit before exponentiating. Mathematically identical; numerically safe.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -93,68 +127,54 @@ flowchart LR
 def softmax(logits, temperature=1.0):
     &quot;&quot;&quot;Stable softmax along the last axis.&quot;&quot;&quot;
     z = np.asarray(logits, dtype=float) / temperature
-    # Stability: subtract max so the largest exp is exp(0) = 1
     z = z - np.max(z, axis=-1, keepdims=True)
     exp_z = np.exp(z)
     return exp_z / np.sum(exp_z, axis=-1, keepdims=True)
 
-# Single example, 4 classes
 logits = np.array([2.0, 1.0, 0.1, -1.0])
 p = softmax(logits)
 print(&quot;probs:&quot;, p)
 print(&quot;sum:&quot;, p.sum())           # ~ 1.0
 print(&quot;argmax:&quot;, p.argmax())     # class 0
 
-# Batch of 2
-batch = np.array([
-    [2.0, 1.0, 0.1],
-    [0.0, 0.0, 5.0],
-])
+batch = np.array([[2.0, 1.0, 0.1], [0.0, 0.0, 5.0]])
 print(&quot;batch probs:\n&quot;, softmax(batch))
 
-# Temperature: sharper vs flatter
 print(&quot;T=0.5 (sharp):&quot;, softmax(logits, temperature=0.5))
 print(&quot;T=2.0 (flat): &quot;, softmax(logits, temperature=2.0))
 
-# Invariance to shift
 shifted = logits + 100.0
 print(&quot;same after +100?&quot;, np.allclose(softmax(logits), softmax(shifted)))
 
-# Why subtract max matters
 big = np.array([1000.0, 1001.0, 999.0])
-print(&quot;stable:&quot;, softmax(big))
-# np.exp(big) without subtract would overflow to inf</code></pre>
+print(&quot;stable:&quot;, softmax(big))</code></pre>
     </div>
-    <p><strong>From probabilities back to training.</strong> Cross-entropy only needs <code>log p_true</code>. Frameworks compute <code>log_softmax</code> directly:</p>
+    <p><strong>From probabilities back to training.</strong> Cross-entropy only needs <code>log(p_true)</code>. Frameworks compute <code>log_softmax</code> directly:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">log(p_i) = z_i - log( e^(z1) + e^(z2) + ... + e^(zK) )</code></pre>
     </div>
-    <p>again with the max subtraction inside <code>logsumexp</code>. Prefer that path over <code>log(softmax(z))</code>, which can hit <code>log(0)</code>.</p>
-    <p><strong>Why subtract max is exact.</strong> Let <code>m</code> be the largest logit. Then shifting every logit by <code>-m</code> does not change the probabilities:</p>
-    <div class="code-block" data-lang="text">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">same p_i whether you use z or (z - m)</code></pre>
-    </div>
-    <p>You have not changed the math—only kept exponents near a safe range so float32 does not overflow.</p>
+    <p>Prefer that path over <code>log(softmax(z))</code>, which can hit <code>log(0)</code>.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
-    <p><strong>Overflow / NaNs.</strong> Exponentiating large logits without subtracting max yields <code>inf</code> and <code>nan</code> gradients. Always use a stable implementation.</p>
-    <p><strong>Treating logits as probabilities.</strong> A logit of 0.7 is not “70%.” After softmax, <code>[0.7, 0.2, 0.1]</code> as logits is a mild preference, not a calibrated distribution until transformed.</p>
-    <p><strong>Softmax on independent labels.</strong> Multi-label tags (“cat” and “indoor” both true) need per-label sigmoids, not a single softmax that forces competition.</p>
-    <p><strong>Temperature misuse at train time.</strong> Changing temperature without adjusting the loss changes gradient scale. Temperature is usually an inference/sampling knob unless the paper says otherwise.</p>
-    <p><strong>Overconfidence.</strong> Softmax can assign 0.999 to the wrong class. Calibration (temperature scaling on a validation set) and label smoothing are separate fixes; softmax alone does not guarantee calibrated probabilities.</p>
-    <p><strong>Tiny numerical zeros.</strong> In float32, extremely peaked distributions can underflow some <code>p_i</code> to 0. Loss-from-logits avoids taking <code>log</code> of those zeros.</p>
+    <ul>
+    <li><strong>Overflow / NaNs</strong> — Exponentiating large logits without subtracting max yields <code>inf</code> and <code>nan</code> gradients. Always use a stable implementation.</li>
+    <li><strong>Treating logits as probabilities</strong> — A logit of 0.7 is not &quot;70%.&quot; After softmax, <code>[0.7, 0.2, 0.1]</code> as logits is a mild preference, not a calibrated distribution.</li>
+    <li><strong>Softmax on independent labels</strong> — Multi-label tags (&quot;cat&quot; and &quot;indoor&quot; both true) need per-label sigmoids, not a single softmax that forces competition.</li>
+    <li><strong>Temperature misuse at train time</strong> — Changing temperature without adjusting the loss changes gradient scale. Temperature is usually an inference/sampling knob.</li>
+    <li><strong>Overconfidence</strong> — Softmax can assign 0.999 to the wrong class. Calibration (temperature scaling on a validation set) and label smoothing are separate fixes.</li>
+    <li><strong>Tiny numerical zeros</strong> — In float32, extremely peaked distributions can underflow some <code>p_i</code> to 0. Loss-from-logits avoids taking <code>log</code> of those zeros.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Softmax converts logits into a positive, sum-to-one distribution—use a max-subtraction stable implementation, and remember temperature only reshapes how sharp that distribution is.</p>
+    <p>Softmax converts logits into positive percentages that sum to 1 — use max-subtraction for stability, and remember temperature only reshapes how sharp that distribution is.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Logits</strong> — Raw real-valued class scores before normalization.</li>
-    <li><strong>Softmax</strong> — turns logits into probabilities: <code>p_i = e^(z_i) / (sum of all e^(z_j))</code>.</li>
+    <li><strong>Softmax</strong> — Activation that turns logits into probabilities: <code>p_i = e^(z_i) / sum of all e^(z_j)</code>.</li>
     <li><strong>Probability distribution</strong> — Non-negative values that sum to one.</li>
-    <li><strong>Temperature</strong> — Divisor on logits that sharpens (<code>T&lt;1</code>) or flattens (<code>T&gt;1</code>) softmax.</li>
+    <li><strong>Temperature</strong> — Divisor on logits that sharpens (T &lt; 1) or flattens (T &gt; 1) softmax.</li>
     <li><strong>Numerical stability</strong> — Subtract max logit (or use log-sum-exp) to avoid <code>exp</code> overflow.</li>
     <li><strong>Argmax</strong> — Index of the largest logit or probability; hard class prediction.</li>
-    <li><strong>Log-softmax</strong> — Stable <code>log p_i</code> used inside cross-entropy.</li>
+    <li><strong>Log-softmax</strong> — Stable <code>log(p_i)</code> used inside cross-entropy.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Clean documents and split them into embeddable chunks with size, overlap, and structure that retrieval can actually use.">
+  <meta name="description" content="Clean documents and split them into embeddable chunks with the right size, overlap, and structure.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-7-retrieval-engineering/chunking-and-document-preprocessing.html">
   <meta property="og:title" content="Chunking and Document Preprocessing | BackbenchLearner">
-  <meta property="og:description" content="Clean documents and split them into embeddable chunks with size, overlap, and structure that retrieval can actually use.">
+  <meta property="og:description" content="Clean documents and split them into embeddable chunks with the right size, overlap, and structure.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-7-retrieval-engineering/chunking-and-document-preprocessing.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Chunking and Document Preprocessing | BackbenchLearner">
-  <meta name="twitter:description" content="Clean documents and split them into embeddable chunks with size, overlap, and structure that retrieval can actually use.">
+  <meta name="twitter:description" content="Clean documents and split them into embeddable chunks with the right size, overlap, and structure.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,10 +36,14 @@
       <h1>Chunking and Document Preprocessing</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Retrieval quality is decided before the first query. <strong>Preprocessing</strong> turns messy PDFs and HTML into clean text. <strong>Chunking</strong> cuts that text into units you embed and fetch. Bad chunks — too huge, too tiny, or split mid-table — make even a perfect vector database look broken.</p>
+    <p>Retrieval quality is decided <strong>before</strong> the first query. <strong>Preprocessing</strong> turns messy PDFs and HTML into clean text. <strong>Chunking</strong> cuts that text into units you embed and fetch. Bad chunks—too huge, too tiny, or split mid-table—make even a perfect vector database look broken.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>An embedding is a single point summarizing a chunk. If the chunk is a whole 40-page handbook, that point is oatmeal: every topic blended. If the chunk is three words, the point lacks context. You want chunks that are <strong>semantically coherent</strong>, large enough to answer something, small enough to stay focused, and labeled with metadata so filters and citations work.</p>
-    <p>Overlap exists because answers often straddle boundaries. A sentence at the end of chunk 4 may need the first lines of chunk 5; a little duplication is cheaper than a permanent miss.</p>
+    <p>An embedding is one point summarizing a chunk. A 40-page handbook in one chunk becomes oatmeal: every topic blended. Three words alone lack context. You want chunks that are <strong>one coherent idea</strong>, large enough to answer something, small enough to stay focused.</p>
+    <p><strong>Overlap</strong> exists because answers often straddle boundaries. A sentence at the end of chunk 4 may need the first lines of chunk 5.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Garbage in, garbage out. Many RAG failures are actually parsing failures—the retriever never gets a fair chance.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -50,25 +54,104 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Preprocessing checklist.</strong></p>
+    <h3>Preprocessing checklist</h3>
     <ul>
     <li>Extract text carefully (PDF layout, headers/footers, two-column junk).</li>
     <li>Strip navigation chrome from HTML; keep headings.</li>
-    <li>Normalize Unicode, collapse whitespace, preserve code fences when relevant.</li>
-    <li>Attach metadata: <code>source_id</code>, <code>title</code>, <code>url</code>, <code>updated_at</code>, <code>section_path</code>, ACL tags.</li>
-    <li>Drop boilerplate repeated on every page (confidentiality banners) or it will retrieve everywhere.</li>
+    <li>Normalize Unicode and whitespace; preserve code fences when relevant.</li>
+    <li>Attach metadata: <code>source_id</code>, <code>title</code>, <code>url</code>, <code>updated_at</code>, <code>section_path</code>, access tags.</li>
+    <li>Drop boilerplate repeated on every page (confidentiality banners).</li>
     </ul>
-    <p><strong>Chunking strategies.</strong></p>
-    <ul>
-    <li><strong>Fixed tokens:</strong> e.g. 400–800 tokens with 10–20% overlap. Simple baseline.</li>
-    <li><strong>Sentence / paragraph packing:</strong> grow a chunk until a size budget; avoid mid-sentence cuts.</li>
-    <li><strong>Structure-aware:</strong> split on Markdown/HTML headings; keep a section together when small; recursively split when large.</li>
-    <li><strong>Special structures:</strong> tables as CSV-like rows with captions; Q&amp;A pairs as atomic units; code by function/class.</li>
-    </ul>
-    <p><strong>Parent–child / small-to-big.</strong> Index small chunks for precise matching, but return a larger parent window to the LLM for context. That pattern often beats “one size embeds and prompts.”</p>
-    <p><strong>Sizing heuristics.</strong> FAQ bots like smaller chunks; narrative policies like medium sections. Measure with retrieval eval (hit rate on gold questions), not aesthetics.</p>
+    <h3>Document types and tools</h3>
+    <table>
+      <thead><tr>
+        <th>Document type</th>
+        <th>Suggested approach</th>
+        <th>Why</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>PDF plain prose</strong></td>
+          <td>pypdf</td>
+          <td>Fast when the file is mostly text</td>
+        </tr>
+        <tr>
+          <td><strong>PDF with tables</strong></td>
+          <td>pdfplumber or Camelot</td>
+          <td>Preserves row/column structure</td>
+        </tr>
+        <tr>
+          <td><strong>Scanned / image PDF</strong></td>
+          <td>OCR (optical character recognition)</td>
+          <td>No text layer to extract otherwise</td>
+        </tr>
+        <tr>
+          <td><strong>Complex layout</strong></td>
+          <td>layout-aware parser (unstructured, docling)</td>
+          <td>Reading order matters</td>
+        </tr>
+        <tr>
+          <td><strong>HTML pages</strong></td>
+          <td>BeautifulSoup, trafilatura</td>
+          <td>Strip boilerplate; keep useful content</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>OCR</strong> turns scanned images of text into machine-readable text. If a PDF is just an image, a plain extractor may return empty strings—nothing to embed.</p>
+    <p>Quick probe before parsing:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">from pypdf import PdfReader
+
+def pdf_has_text_layer(path, sample=3):
+    reader = PdfReader(path)
+    return any((p.extract_text() or &quot;&quot;).strip() for p in reader.pages[:sample])</code></pre>
+    </div>
+    <h3>Chunking strategies</h3>
+    <table>
+      <thead><tr>
+        <th>Strategy</th>
+        <th>How it works</th>
+        <th>Best when</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Fixed-size</strong></td>
+          <td>Split by token count with overlap</td>
+          <td>Baseline or uniform prose</td>
+        </tr>
+        <tr>
+          <td><strong>Sliding window</strong></td>
+          <td>Move a window with 10–20% overlap</td>
+          <td>Answers cross boundaries</td>
+        </tr>
+        <tr>
+          <td><strong>Structure-aware</strong></td>
+          <td>Split on headings, clauses, sections</td>
+          <td>Markdown, legal text, code, API docs</td>
+        </tr>
+        <tr>
+          <td><strong>Semantic chunking</strong></td>
+          <td>Split when topic similarity drops</td>
+          <td>Topic-shifting docs; quality over cost</td>
+        </tr>
+        <tr>
+          <td><strong>Recursive splitting</strong></td>
+          <td>Try structure first, then smaller pieces</td>
+          <td>General-purpose practical choice</td>
+        </tr>
+        <tr>
+          <td><strong>Parent–child</strong></td>
+          <td>Index small child chunks; return larger parent for context</td>
+          <td>Balance precision and completeness</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Common starting point:</strong> about 512 tokens with 10–20% overlap. Match chunk size to the kind of answer you expect—small for FAQ facts, larger for narrative or code.</p>
+    <h3>When RAG may not be needed</h3>
+    <p>If the knowledge base is tiny and already fits in the model&#x27;s context window, you may get a simpler result by putting the text directly in the prompt instead of building a retrieval system.</p>
     <h2 id="in-code">In code</h2>
-    <p>A structure-aware splitter over Markdown-ish headings with a token budget approximated by words, plus overlap.</p>
+    <p>Structure-aware splitting over Markdown headings with word-based overlap.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import re
@@ -92,9 +175,8 @@ def split_markdown(text: str, source: str, max_words: int = 80, overlap: int = 1
                 sections.append((current_title, &quot; &quot;.join(buf).strip()))
                 buf = []
             current_title = part.lstrip(&quot;#&quot;).strip()
-        else:
-            if part and part.strip():
-                buf.append(part.strip())
+        elif part and part.strip():
+            buf.append(part.strip())
     if buf:
         sections.append((current_title, &quot; &quot;.join(buf).strip()))
 
@@ -113,44 +195,27 @@ def split_markdown(text: str, source: str, max_words: int = 80, overlap: int = 1
             if end == len(words):
                 break
             start = max(0, end - overlap)
-    return chunks
-
-doc = &quot;&quot;&quot;# Leave policy
-Employees receive 12 casual leaves per year.
-## Carry over
-Up to 5 unused casual leaves may carry to the next year.
-&quot;&quot;&quot;
-for c in split_markdown(doc, source=&quot;hr&quot;):
-    print(c.id, c.section, &quot;-&gt;&quot;, c.text[:60])</code></pre>
+    return chunks</code></pre>
     </div>
-    <p>Tune <code>max_words</code> against your embedder’s sweet spot; production code often counts real tokenizer tokens.</p>
+    <p>Production code usually counts real tokenizer tokens, not words.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Header/footer pollution.</strong> Page numbers and “Company Confidential” become top hits for every query.</li>
-    <li><strong>Splitting tables.</strong> A row severed from its header is unreadable; keep tables atomic or serialize with column names.</li>
-    <li><strong>No overlap.</strong> Boundary answers disappear permanently from retrieval.</li>
-    <li><strong>Metadata amnesia.</strong> Chunks without <code>source</code> or ACL cannot be cited or filtered safely.</li>
-    <li><strong>One global size.</strong> Legal contracts and Slack threads need different budgets; route by doc type.</li>
-    <li><strong>Cleaning that deletes meaning.</strong> Stripping all punctuation can break code and identifiers.</li>
+    <li><strong>Header/footer pollution</strong> — Page numbers and &quot;Company Confidential&quot; become top hits for every query.</li>
+    <li><strong>Splitting tables</strong> — A row severed from its header is unreadable; keep tables atomic or serialize with column names.</li>
+    <li><strong>No overlap</strong> — Boundary answers disappear from retrieval.</li>
+    <li><strong>Metadata amnesia</strong> — Chunks without <code>source</code> or access tags cannot be cited or filtered safely.</li>
+    <li><strong>Too much overlap</strong> — Near-duplicate chunks flood top-k and waste storage.</li>
     </ul>
-    <h2 id="document-type-playbooks">Document-type playbooks</h2>
-    <p><strong>PDFs.</strong> Watch for ligatures, broken hyphenation across lines, and repeated headers. Table extraction may need a specialized parser; a bad extract that jumbles columns will embed garbage no reranker can fix. Store page numbers in metadata for citations that jump to the right page.</p>
-    <p><strong>HTML / Notion / Confluence.</strong> Prefer export paths that preserve heading hierarchy. Strip “Related articles” sidebars or they retrieve as false friends. Keep anchors in metadata so the UI can deep-link.</p>
-    <p><strong>Code and config.</strong> Chunk by symbol when possible; include the file path in every chunk’s text prefix (<code>path: src/auth/token.py</code>) so lexical search and citations stay meaningful. Do not mix license banners into every function chunk.</p>
-    <p><strong>Evaluation for chunking.</strong> When you change splitters, re-run retrieval recall@k on the same gold questions <em>before</em> you look at generation quality. Chunking regressions show up as retrieval misses first.</p>
-    <h2 id="overlap-ids-and-re-chunking">Overlap, IDs, and re-chunking</h2>
-    <p>Choose overlap as a fraction of chunk size (often 10–15%), not a fixed magic number copied from a blog. Too much overlap wastes index space and can flood the top-k with near-duplicates — add near-duplicate suppression at retrieval if needed. Stable <strong>chunk IDs</strong> should survive harmless whitespace edits when possible (hash of source + section + ordinal) so citations and analytics do not thrash on every ingest.</p>
-    <p>When re-chunking after a strategy change, rebuild the collection rather than mixing old and new granularities in one index. Mixed chunk regimes make A/B comparisons dishonest and confuse rerankers trained or tuned on prior lengths.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Preprocess to clean, structured text, then chunk with coherent boundaries, sensible size, overlap, and metadata — because embeddings can only retrieve what you gave them.</p>
+    <p>Preprocess to clean, structured text, then chunk with coherent boundaries, sensible size, overlap, and metadata—because embeddings can only retrieve what you gave them.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Preprocessing:</strong> cleaning and extracting text before indexing.</li>
     <li><strong>Chunk:</strong> indexed unit of text for embedding and retrieval.</li>
-    <li><strong>Overlap:</strong> repeated tokens across adjacent chunks to protect boundary content.</li>
-    <li><strong>Structure-aware splitting:</strong> using headings/sections instead of only character counts.</li>
+    <li><strong>Overlap:</strong> shared text between neighboring chunks to protect boundary content.</li>
+    <li><strong>OCR (optical character recognition):</strong> turns scanned images into text.</li>
+    <li><strong>Structure-aware splitting:</strong> uses headings/sections instead of only character counts.</li>
     <li><strong>Parent–child indexing:</strong> retrieve small units, expand to larger context for the LLM.</li>
-    <li><strong>Metadata:</strong> fields stored with chunks for filters, citations, and freshness.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

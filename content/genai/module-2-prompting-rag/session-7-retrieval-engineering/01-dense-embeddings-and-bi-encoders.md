@@ -1,120 +1,140 @@
 ---
-title: "Embeddings and Semantic Search"
-description: "Turn text into vectors, compare meaning with cosine similarity, and build a tiny semantic search loop in numpy."
+title: "Dense Embeddings and Bi-Encoders"
+description: "Why keyword search misses meaning, how sentence embeddings are trained, and how bi-encoders make fast retrieval possible."
 ---
 
-**Embeddings** map text to dense vectors so “reduce infra cost” can match “cloud spend optimization” even when the words differ. Semantic search ranks documents by vector similarity instead of exact keywords. Together they are the retrieval engine underneath most RAG systems.
+**Dense retrieval** turns queries and documents into embeddings and compares their meaning—not just their exact words. A **bi-encoder** embeds the query and each document separately so document vectors can be precomputed and indexed. That is the standard setup for fast semantic search in RAG.
 
 ## Intuition
 
-Imagine every sentence as a point in a high-dimensional space where nearby points share meaning. The embedding model learned that geometry from huge text corpora: synonyms cluster, unrelated jargon sits far apart. A query becomes a point too; the nearest document points are your search results.
+Keyword search is a checklist: "Did these words appear?" Dense search is a meaning map: "Are these ideas close?"
 
-Keyword search asks “were these tokens present?” Semantic search asks “is the meaning close?” You often want both (hybrid search appears in the advanced chapter). For now, focus on the geometry: good embeddings + a similarity metric ~= meaning-aware retrieval.
+Example: the query "How much vacation do I get?" may fail to find "Employees accrue 18 days of paid leave annually" with keyword search—the words do not match. Dense retrieval can still connect them.
+
+| Aspect | Sparse (keyword) retrieval | Dense retrieval |
+| --- | --- | --- |
+| **Core idea** | Match exact words | Match semantic meaning |
+| **Good for** | Names, codes, IDs, rare terms | Synonyms, paraphrases, related ideas |
+| **Weakness** | Misses meaning when wording changes | Needs a good embedding model |
 
 ```mermaid
 flowchart LR
-  Q[Query text] --> QE[Query embedding]
-  D[Document chunks] --> DE[Chunk embeddings]
-  QE --> S[Similarity ranking]
-  DE --> S
-  S --> T[Top-k matches]
+  Q[Query] --> QE[Query encoder]
+  D[Documents offline] --> DE[Doc encoder]
+  DE --> I[(Vector index)]
+  QE --> S[Cosine / dot product]
+  I --> S
+  S --> T[Top-k chunks]
 ```
 
 ## How it works
 
-**From one-hot to dense vectors.** Classic one-hot encoding gives each vocabulary word a sparse vector of length `|V|` with a single 1. Distinct words are always orthogonal — “cat” is as far from “dog” as from “refrigerator.” Distributed embeddings (Word2Vec-era and today’s sentence transformers) use dense vectors of a few hundred dimensions where similarity reflects usage in context.
+### Why one-hot vectors fail
 
-**Document vs query embeddings.** Modern systems embed whole chunks (sentences or paragraphs), not only single words. Use the same model family for queries and documents unless the vendor documents an asymmetric pair (e.g. separate query/document towers).
+In a **one-hot vector**, every word is its own dimension. "Cat" and "kitten" are unrelated dimensions, so their dot product is zero even though the meaning is close.
 
-**Cosine similarity.** For vectors `A` and `B`:
+**Dense vectors** spread meaning across dimensions. Similar sentences land near each other in vector space.
+
+### Sentence embeddings
+
+Modern systems embed whole sentences or paragraphs—not just single words.
+
+**BERT-style idea:** the **[CLS]** token (a special token at the start) often acts as a summary of the whole input.
+
+**Cosine similarity** compares the angle between two vectors:
 
 ```
-cos(A, B) = (A * B) / (||A|| ||B||)
+cosine(a, b) = (a · b) / (||a|| × ||b||)
 ```
 
-Cosine cares about angle, not magnitude, which helps when some texts produce longer vectors. If all vectors are L2-normalized, cosine equals the dot product — a handy optimization in indexes.
+Closer to 1 means more similar meaning. Near 0 means unrelated.
 
-**Euclidean distance** `||A - B||` is related but sensitive to length. Many vector DBs support both; cosine / inner product dominate text search.
+### Why plain BERT is not enough for retrieval
 
-**Top-k retrieval.** Embed the query, score all (or approximately all) stored vectors, return the `k` highest. Approximate nearest neighbor (ANN) indexes trade a little recall for huge speed — covered with vector databases next.
+BERT is trained to understand text—not to rank documents for search. Better approach: train the encoder so **relevant query–document pairs are close** and **irrelevant pairs are far apart**.
 
-**Chunking matters.** Embeddings summarize a chunk into one point. A chunk that mixes three unrelated topics blurs that point. Prefer coherent chunks with modest overlap so boundary sentences are not lost.
+| Training pair | Plain-English idea |
+| --- | --- |
+| **Positive pair** | A query and a document that should match |
+| **Negative pair** | A query and a document that should not match |
+| **In-batch negatives** | Other docs in the same training batch act as easy negatives |
+| **Hard negatives** | Docs that look relevant but are wrong—teach a stronger lesson |
+
+### Bi-encoder vs cross-encoder
+
+| Model type | How it works | Speed | Accuracy |
+| --- | --- | --- | --- |
+| **Bi-encoder** | Encode query and document separately; compare embeddings | Fast | Good for first-stage retrieval |
+| **Cross-encoder** | Encode query and document together; score relevance directly | Slow | Usually more accurate |
+
+Use bi-encoders for wide first-stage search. Use cross-encoders later to rerank a small candidate set (covered in session 7 lesson 4).
+
+### Choosing an embedding model
+
+**Key lesson:** measure candidates on **your own data**, not only a public leaderboard.
+
+| Model (examples) | Plain-English note |
+| --- | --- |
+| `all-MiniLM-L6-v2` | Small, fast baseline for prototypes |
+| `bge-base-en-v1.5` | Strong open English retrieval |
+| `e5-base-v2` | Good asymmetric setup (different query vs passage format) |
+| `text-embedding-3-small` | Hosted API; easy start, no GPU |
+
+**Matryoshka representation learning (MRL):** some models train embeddings so the **first part of the vector** already carries useful meaning. You can truncate dimensions to save storage—**only** when the model was trained for this.
+
+| Situation | Lean toward |
+| --- | --- |
+| General English, zero infrastructure | Hosted APIs |
+| Sensitive or on-prem data | Open-weight models (BGE, multilingual-e5) |
+| Multilingual text | Multilingual embedders |
+| Code, logs, exact IDs | Code embedders or hybrid search with BM25 |
+| Tiny corpus that fits in context | Maybe skip RAG entirely |
+
+:::key
+Some asymmetric models expect different prefixes for queries and passages (e.g. `query: ...` and `passage: ...`). Forgetting the prefix can silently kill recall—always read the model card.
+:::
 
 ## In code
 
-A numpy toy: random but fixed “embeddings,” cosine ranking, and a reminder that real models replace `embed()`.
+Cosine similarity and the bi-encoder mental model.
 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(0)
+def cosine_sim(a, b):
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-9))
 
-# Fake embedding table for a tiny corpus (dim=8)
-docs = [
-    "cloud spend optimization tips",
-    "reduce infrastructure cost this quarter",
-    "chocolate cake recipe with frosting",
-    "kubernetes horizontal pod autoscaling",
-]
-# Pretend an embedder: bag-of-words hash into R^8
-vocab = {}
+# Toy: query and two doc vectors (pretend from a bi-encoder)
+query_vec = np.array([0.9, 0.1, 0.0])
+doc_a = np.array([0.85, 0.15, 0.0])   # relevant
+doc_b = np.array([0.0, 0.1, 0.95])    # unrelated
 
-def tokenize(text: str) -> list[str]:
-    return text.lower().split()
-
-def embed(text: str, dim: int = 8) -> np.ndarray:
-    v = np.zeros(dim)
-    for tok in tokenize(text):
-        if tok not in vocab:
-            vocab[tok] = rng.normal(size=dim)
-        v += vocab[tok]
-    n = np.linalg.norm(v)
-    return v / n if n > 0 else v
-
-doc_vecs = np.stack([embed(d) for d in docs])
-
-def cosine(a: np.ndarray, b: np.ndarray) -> float:
-    return float(np.dot(a, b))  # already normalized
-
-def search(query: str, k: int = 2) -> list[tuple[str, float]]:
-    q = embed(query)
-    scores = [cosine(q, dv) for dv in doc_vecs]
-    order = np.argsort(scores)[::-1][:k]
-    return [(docs[i], scores[i]) for i in order]
-
-for text, score in search("how do I cut infra costs?"):
-    print(f"{score:.3f}  {text}")
+print("doc_a", cosine_sim(query_vec, doc_a))
+print("doc_b", cosine_sim(query_vec, doc_b))
 ```
 
-You should see the two cost-related lines outrank the cake recipe. Replace `embed` with a real sentence-transformer API for production quality.
+In production, document vectors are computed offline and stored in the index; only the query is embedded at search time.
 
 ## What goes wrong
 
-- **Wrong metric.** Mixing unnormalized Euclidean search with cosine-trained embeddings scrambles ranking.
-- **Model mismatch.** Embedding the corpus with model A and queries with model B puts points in incompatible spaces.
-- **Mega-chunks.** 4,000-token blobs embed as mush; tiny fragments lose context. Tune chunk size to the task.
-- **Vocabulary shift.** Domain jargon (internal codenames) may sit in a weak region of a general embedder — fine-tune or hybridize with keywords.
-- **Assuming semantic always wins.** Part numbers, error codes, and exact IDs often need lexical match, not “nearby meaning.”
-
-## Practical embedding choices
-
-**Dimensionality and storage.** 384-d embeddings are lighter and often enough for FAQ search; 768–3072-d models may capture finer nuance at higher cost. Pick based on measured recall@k and budget, not brochure peak scores on unrelated benchmarks.
-
-**Domain shift.** Internal codenames (“Project Falcon”) will not sit near “latency budget workstream” unless your corpus or fine-tuning teaches that. Hybrid search and synonym glossaries patch many gaps without a custom embedder. When gaps remain, consider fine-tuning a sentence model on query–doc pairs from search logs.
-
-**Batch vs real-time embedding.** Ingest is bulk and retryable; query embedding is on the latency path. Cache query embeddings for identical strings in short TTLs if traffic repeats. Monitor embedder errors separately from vector DB errors so on-calls know which pager to wake.
-
-**Evaluation tip.** Build a mini set of query -> expected doc titles and compute recall@10 whenever you change models or chunking. Embedding upgrades that look nicer in a notebook sometimes hurt your actual corpus — numbers beat vibes.
+- **Missing query/passage prefixes** — Recall drops; looks like a bad model when it is misconfiguration.
+- **Wrong model for the domain** — Internal jargon sits in weak regions of a general embedder.
+- **Using cross-encoder for full corpus search** — Too slow; encode every doc per query.
+- **Benchmark chasing** — Leaderboard winner hurts your actual corpus; measure recall@k on your data.
+- **Truncating vectors without MRL training** — Damages embedding quality.
 
 ## One-line summary
 
-Embeddings place text in a vector space so semantic search can rank meaning-neighbors with cosine similarity instead of exact keywords alone.
+Bi-encoders embed queries and documents separately so meaning-based search can run fast at scale, after training (or choosing a model) so relevant pairs land close in vector space.
 
 ## Key terms
 
-- **Embedding:** dense vector representation of text (or other modalities).
-- **Semantic search:** retrieval by meaning similarity in embedding space.
-- **Cosine similarity:** angle-based likeness ` (A*B) / (||A||||B||) `.
-- **Top-k:** returning the k highest-scoring items.
-- **Chunk:** contiguous text unit embedded and indexed for retrieval.
-- **ANN:** approximate nearest neighbor search for large vector collections.
+- **Dense embedding:** a compact vector that encodes meaning.
+- **Sentence embedding:** one vector representing a whole sentence or passage.
+- **Bi-encoder:** encodes query and document separately for fast retrieval.
+- **Cross-encoder:** scores query and document together—accurate but slow.
+- **Cosine similarity:** angle-based score between two vectors.
+- **Positive / negative pair:** correct vs incorrect query–document matches for training.
+- **Hard negative:** a wrong doc that looks relevant—used to sharpen training.

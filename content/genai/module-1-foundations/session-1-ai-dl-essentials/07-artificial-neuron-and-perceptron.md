@@ -3,17 +3,22 @@ title: "Artificial Neuron and Perceptron"
 description: "Weighted sum, bias, and activation; the perceptron as a linear classifier; half-plane geometry and the XOR limit — with a Python step on 2D points."
 ---
 
-Every modern neural network — including the transformers behind large language models — is built from units that do three things: weight their inputs, add a bias, and push the result through an activation. The **perceptron** is the simplest version of that story: a single neuron that draws one straight decision boundary. Understanding it gives you geometric intuition for everything that comes later, and explains why depth and nonlinearity became necessary.
+A **perceptron** is the simplest neural unit: it combines weighted inputs, adds a bias, and makes a yes/no decision. It exists because we want a machine to score multiple signals and pick a side — like spam or not spam.
+
+- Each input gets a **weight** (how much it matters) and a **bias** (how strict the default is).
+- The unit computes a **weighted sum** and checks whether it crosses a **threshold**.
+- On a 2D plane, the decision boundary is a **straight line** — one side is yes, the other is no.
+- A single perceptron can solve **linearly separable** problems (AND, OR) but not **XOR**.
 
 ## Intuition
 
-Think of a gatekeeper who scores a visitor with a checklist. Each trait `x_i` gets a weight `w_i` (how much that trait matters). The gatekeeper adds a bias `b` (how strict the default is), then decides “allow” or “deny” based on whether the total score clears a threshold.
+Think of a gatekeeper who scores a visitor with a checklist. Each trait `x_i` gets a weight `w_i` (how much that trait matters). The gatekeeper adds a bias `b` (how strict the default is), then decides "allow" or "deny" based on whether the total score clears a threshold.
 
 That score is a **weighted sum**. On a 2D plane, the set of points where the score equals zero is a straight line. Everywhere on one side of the line, the neuron fires; on the other side, it stays silent. So a single perceptron is a **linear classifier**: it partitions space into two half-planes.
 
 Bias matters geometrically. Without bias, the decision line must pass through the origin. With bias, you can slide the line anywhere. Weights set the *tilt*; bias sets the *offset*.
 
-You can also read `z` as a signed distance (up to scaling by `|w|`) from the boundary: large positive `z` means confidently on the positive side; near zero means near the fence. Soft activations in modern nets keep that score continuous so gradients can flow; the classical perceptron simply hard-thresholds it.
+You can also read `z` as a signed distance (up to scaling by `|w|`) from the boundary: large positive `z` means confidently on the positive side; near zero means near the fence.
 
 ## How it works
 
@@ -43,7 +48,7 @@ w = w + learning_rate * (y - prediction) * x
 b = b + learning_rate * (y - prediction)
 ```
 
-If the prediction was too low (`y = 1`, `prediction = 0`), weights move toward `x`. If too high, they move away. The learning rate controls step size. If the data is **linearly separable**, this procedure is guaranteed to find a separating hyperplane in finite steps (the classic perceptron convergence theorem).
+If the prediction was too low (`y = 1`, `prediction = 0`), weights move toward `x`. If too high, they move away. The learning rate controls step size. If the data is **linearly separable**, this procedure is guaranteed to find a separating hyperplane in finite steps.
 
 ```mermaid
 flowchart LR
@@ -55,9 +60,11 @@ flowchart LR
   A -->|no| Y0[y_hat = 0]
 ```
 
+**Example: spam detection.** The model can score features like suspicious words, links, and sender patterns. If the score is high enough, it predicts spam; otherwise not spam.
+
 **AND and OR work; XOR does not.** Plot the four Boolean corners `(0,0), (0,1), (1,0), (1,1)`. For AND, only `(1,1)` is positive — one line separates it. For OR, only `(0,0)` is negative — again one line works. For **XOR**, positives sit on opposite corners `(0,1)` and `(1,0)`. No single straight line can put both positives on one side and both negatives on the other. That is the famous **XOR limitation**: one perceptron cannot learn XOR. Multilayer networks with nonlinear activations can.
 
-Historically, that limitation (highlighted by Minsky and Papert) cooled enthusiasm for single-layer perceptrons and pushed research toward multilayer networks. The fix was not “more of the same linear unit,” but **composition**: hidden layers remapping features so a final linear readout can finish the job. When you hear that deep nets “learn representations,” this is the geometric ancestor of that idea — first bend or lift the data, then classify.
+Historically, that limitation (highlighted by Minsky and Papert) cooled enthusiasm for single-layer perceptrons and pushed research toward multilayer networks. The fix was not "more of the same linear unit," but **composition**: hidden layers remapping features so a final linear readout can finish the job.
 
 ## In code
 
@@ -110,10 +117,10 @@ A perceptron is a weighted sum plus bias passed through a threshold — geometri
 
 ## Key terms
 
-- **Weighted sum (`z`):** linear combination of inputs with weights, before activation.
-- **Bias (`b`):** offset that shifts the decision boundary away from the origin.
-- **Activation / step function:** maps `z` to an output; the classic perceptron uses a hard 0/1 threshold.
-- **Linear classifier / half-plane:** decision regions separated by a hyperplane (a line in 2D).
-- **Linear separability:** whether some hyperplane can perfectly separate the classes.
-- **XOR limitation:** XOR (and similar patterns) cannot be solved by a single perceptron; needs multilayer nonlinear nets.
-- **Perceptron learning rule:** additive weight update proportional to `(y - y_hat)x`.
+- **Weighted sum (`z`)** — linear combination of inputs with weights, before activation.
+- **Bias (`b`)** — offset that shifts the decision boundary away from the origin.
+- **Activation / step function** — maps `z` to an output; the classic perceptron uses a hard 0/1 threshold.
+- **Linear classifier / half-plane** — decision regions separated by a hyperplane (a line in 2D).
+- **Linear separability** — whether some hyperplane can perfectly separate the classes.
+- **XOR limitation** — XOR (and similar patterns) cannot be solved by a single perceptron; needs multilayer nonlinear nets.
+- **Perceptron learning rule** — additive weight update proportional to `(y - y_hat) * x`.

@@ -1,91 +1,91 @@
 title: "3.3 PEFT, Adapters & Soft Prompting"
 questions:
-  - q: "What is the core idea of PEFT?"
+  - q: "What is the main idea behind parameter-efficient fine-tuning (PEFT)?"
     options:
       - "Retrain the tokenizer only"
-      - "Freeze most of the backbone and train a small set of task parameters"
-      - "Always delete the base model after training"
-      - "Replace attention with rules"
+      - "Keep most of the pretrained model frozen and train only a small task-specific part"
+      - "Delete the base model after every training run"
+      - "Replace attention layers with hand-written rules"
     answer: 1
-    why: "PEFT keeps the pretrained backbone and learns small adapters or soft prompts for the task."
+    why: "PEFT keeps the pretrained backbone and learns small adapters or soft prompts—far cheaper than updating every weight."
 
-  - q: "For a d x d weight, full delta W has d^2 parameters. LoRA with rank r uses about how many (A is r x d, B is d x r)?"
+  - q: "For a large d-by-d weight matrix, LoRA with rank r trains about how many parameters (A is r-by-d, B is d-by-r)?"
     options:
-      - "d^2 still"
-      - "2*d*r (plus optional scaling), much less when r << d"
-      - "r^2 only, independent of d"
-      - "d/r"
+      - "Still d squared"
+      - "About 2 times d times r — much less when r is small"
+      - "Only r squared, no matter how big d is"
+      - "d divided by r"
     answer: 1
-    why: "LoRA stores A and B with r*d + d*r = 2dr trainable params—e.g., d=4096, r=16 -> ~131k vs ~16.8M."
+    why: "LoRA stores A and B: r times d plus d times r equals 2dr. Example: d=4096, r=16 gives about 131k params vs about 16.8M for a full update."
 
-  - q: "QLoRA primarily buys you..."
+  - q: "What does QLoRA (Quantized LoRA) mainly help with?"
     options:
       - "Guaranteed higher accuracy than bf16 LoRA"
-      - "Lower GPU memory by quantizing the frozen backbone while training LoRA adapters"
-      - "A replacement for preference datasets"
-      - "Automatic deletion of eval sets"
+      - "Lower GPU memory by storing the frozen base in 4-bit while training LoRA adapters"
+      - "Replacing the need for training data"
+      - "Automatically deleting eval sets"
     answer: 1
-    why: "QLoRA keeps the base in 4-bit (typically) so large models fit; quality still needs measurement."
+    why: "QLoRA keeps the base in 4-bit so large models fit on smaller GPUs. Quality still needs your own measurement."
 
-  - q: "Prompt tuning vs LoRA — key difference?"
+  - q: "What is the key difference between prompt tuning and LoRA?"
     options:
-      - "They are identical mathematically"
-      - "Prompt/prefix tuning learn continuous prompts; LoRA learns low-rank weight updates"
+      - "They are the same method with different names"
+      - "Prompt tuning learns continuous virtual prompts; LoRA learns low-rank weight updates"
       - "LoRA only trains the tokenizer"
-      - "Prompt tuning always updates all attention matrices densely"
+      - "Prompt tuning updates every weight in the model"
     answer: 1
-    why: "Soft-prompt methods live in embedding/hidden prefix space; LoRA patches selected weight matrices."
+    why: "Soft-prompt methods work in embedding or prefix space. LoRA patches selected weight matrices with a small low-rank update."
 
-  - q: "Raising LoRA rank from 8 to 64 most directly..."
+  - q: "If you raise LoRA rank from 8 to 64, what happens most directly?"
     options:
-      - "Guarantees better holdout scores always"
-      - "Increases adapter capacity and trainable parameter count (and overfitting risk on tiny data)"
-      - "Halves GPU memory automatically"
-      - "Removes the need for learning rate"
+      - "Holdout scores always improve"
+      - "Adapter capacity and trainable parameter count go up — overfitting risk rises on small data"
+      - "GPU memory automatically halves"
+      - "You no longer need a learning rate"
     answer: 1
-    why: "Rank is a capacity knob; bigger is not free—watch eval and anchors."
+    why: "Rank is a capacity knob. Bigger is not free—watch holdout and anchor metrics."
 
-  - q: "Serving merged weights vs keeping adapters separate — when prefer separate adapters?"
+  - q: "When is keeping adapters separate better than merging them into the base?"
     options:
-      - "You need one static behavior forever with max kernel simplicity"
-      - "Many tasks/tenants share one base and you want hot-swap/rollback of small adapter artifacts"
-      - "You want to double VRAM for no reason"
-      - "Merging is impossible in principle"
+      - "You need one fixed behavior forever and want the simplest possible serving path"
+      - "Many tasks or tenants share one base and you want hot-swap or cheap rollback with small files"
+      - "You want to use twice as much VRAM for no reason"
+      - "Merging is impossible in any framework"
     answer: 1
-    why: "Modular adapters enable multi-skill routing and cheap rollback; merging simplifies single-skill serving."
+    why: "Separate adapters enable multi-skill routing and fast rollback. Merging is simpler when you have one stable skill."
 
-  - q: "A common PEFT recipe mistake is..."
+  - q: "Which is a common PEFT training mistake?"
     options:
-      - "Using a modest rank with a LoRA-scale LR and few clean epochs"
-      - "Copying a full-FT learning rate unchanged onto LoRA and over-training noisy data"
-      - "Logging trainable% and anchor metrics"
-      - "Validating 4-bit quality against the same task metrics"
+      - "Using a modest rank with a LoRA-scale learning rate and one clean epoch"
+      - "Copying a full fine-tuning learning rate onto LoRA and training too many epochs on noisy data"
+      - "Logging trainable percentage and anchor metrics"
+      - "Checking 4-bit quality against the same task metrics you serve"
     answer: 1
-    why: "PEFT needs its own LR/epoch regime; full-FT defaults plus dirty data are a frequent failure mode."
+    why: "PEFT needs its own learning rate and epoch regime. Full-FT defaults plus messy data are a frequent failure mode."
 
-  - q: "Prefix tuning injects trainable parameters mainly into..."
+  - q: "Where does prefix tuning mainly add trainable parameters?"
     options:
       - "Disk formatting tables"
-      - "Per-layer attention key/value (or similar) prefixes while freezing the backbone"
-      - "The optimizer’s random seed only"
+      - "Per-layer attention key/value prefixes while the backbone stays frozen"
+      - "The optimizer random seed only"
       - "The vector database schema"
     answer: 1
-    why: "Prefixes condition attention states across layers without updating the full weight matrices."
+    why: "Prefixes give each layer extra context that attention can read—without updating full weight matrices."
 
-  - q: "d=4096, r=8 LoRA on one matrix: trainable params ~= 2*4096*8 = 65,536. What % of a full d^2 update is that?"
+  - q: "d=4096, r=8 LoRA on one matrix: trainable params are about 2 times 4096 times 8 = 65,536. What fraction of a full d-squared update is that?"
     options:
       - "About 50%"
-      - "About 0.39% (65536 / 4096^2)"
+      - "About 0.39% (65536 divided by 4096 squared)"
       - "100%"
       - "About 8%"
     answer: 1
-    why: "4096^2=16,777,216; 65,536/16,777,216 ~= 0.0039 -> roughly 0.39% of a dense delta W."
+    why: "4096 squared is 16,777,216. 65,536 divided by that is about 0.0039, or roughly 0.39% of a dense update."
 
-  - q: "When PEFT is the wrong tool despite good adapters..."
+  - q: "When is PEFT the wrong tool even with good adapters?"
     options:
       - "You need a stable tone on small clean data"
-      - "You are asking adapters to memorize a huge changing fact database—use RAG instead"
-      - "You want cheaper experiment artifacts than full FT"
-      - "You need multi-adapter routing"
+      - "You want the model to memorize a huge changing fact database — use RAG instead"
+      - "You want smaller experiment files than full fine-tuning"
+      - "You need multi-adapter routing on one base"
     answer: 1
-    why: "Limited adapter capacity is for behavior, not a substitute for retrieval of large factual stores."
+    why: "Adapter capacity is for behavior and format—not a substitute for retrieving large, changing fact stores."

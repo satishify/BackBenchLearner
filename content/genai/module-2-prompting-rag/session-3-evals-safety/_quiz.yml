@@ -1,82 +1,91 @@
 title: "2.3 Evaluations & AI Safety"
 questions:
-  - q: "A chatbot is 2% more accurate on a tiny academic set but p95 latency doubled and cost 5x. Ship it?"
+  - q: "What does ROUGE mostly measure?"
     options:
-      - "Yes—accuracy is the only axis that matters"
-      - "No without a multi-objective review: quality, latency, cost, and safety together"
-      - "Only if temperature is 2.0"
-      - "Only if you delete guardrails"
-    answer: 1
-    why: "Production eval is a portfolio: small quality gains can be dominated by latency, cost, or risk regressions."
+      - "How much the model output overlaps with a reference text"
+      - "How fast the model runs on a graphics processing unit (GPU)"
+      - "How many tokens the model generates"
+      - "How creative the answer sounds"
+    answer: 0
+    why: "ROUGE checks overlap with reference text — mainly used for summarization coverage."
 
-  - q: "What is a threat model doing for an LLM feature?"
+  - q: "Why is BLEU called precision-based?"
     options:
-      - "Listing movie recommendations"
-      - "Naming assets, attackers, misuse paths, and harms you must mitigate"
-      - "Replacing unit tests with vibes"
-      - "Maximizing prompt length"
-    answer: 1
-    why: "Threat models focus engineering on realistic abuse and failure modes before launch."
+      - "It checks whether the output contains many reference n-grams"
+      - "It only measures grammar"
+      - "It rewards short answers more than long answers"
+      - "It compares embeddings instead of words"
+    answer: 0
+    why: "BLEU rewards outputs whose word chunks match the reference — precision-focused."
+
+  - q: "What is the main problem with human evaluation?"
+    options:
+      - "It can be subjective and inconsistent across raters"
+      - "It cannot read text"
+      - "It only works for images"
+      - "It never uses criteria"
+    answer: 0
+    why: "Two good raters may still disagree on open-ended tasks; agreement scores help measure that."
+
+  - q: "What is LLM-as-a-Judge?"
+    options:
+      - "Using one large language model to score or compare another model's output"
+      - "Using a human to train a model"
+      - "Using ROUGE to judge code"
+      - "Using a tokenizer to score images"
+    answer: 0
+    why: "A judge model follows a rubric to score answers when human review is too slow."
+
+  - q: "What does the CIA triad stand for?"
+    options:
+      - "Confidentiality, Integrity, Availability"
+      - "Creativity, Information, Accuracy"
+      - "Control, Input, Alignment"
+      - "Classification, Inference, Attention"
+    answer: 0
+    why: "CIA is a classic security frame: who sees data, whether it is tampered with, and whether the system works."
+
+  - q: "What is a threat model?"
+    options:
+      - "A description of attacker access, goals, and observations"
+      - "A model that predicts weather"
+      - "A list of loss functions"
+      - "A training schedule"
+    answer: 0
+    why: "Threat models name who attacks, what they can see, and what harm they seek — before you launch."
+
+  - q: "What is the difference between white-box and black-box attacks?"
+    options:
+      - "White-box sees internals; black-box only gets outputs from queries"
+      - "White-box is only for images; black-box is only for text"
+      - "White-box is safe; black-box is unsafe"
+      - "There is no difference"
+    answer: 0
+    why: "White-box attackers use gradients or weights; black-box attackers poke and observe outputs only."
+
+  - q: "What does prompt injection mean?"
+    options:
+      - "Hidden instructions inside external content that affect the model"
+      - "A faster tokenizer"
+      - "A translation metric"
+      - "A better evaluation score"
+    answer: 0
+    why: "Injection hides hostile instructions in user text or documents so the model follows the wrong rules."
 
   - q: "Guardrails should sit where in a tool-using agent?"
     options:
-      - "Only after irreversible side effects complete"
       - "Before dangerous tools execute (and often again on outputs), with allowlists and auth checks"
+      - "Only after irreversible side effects complete"
       - "Inside the embedding table"
       - "Nowhere if the model says it is safe"
-    answer: 1
-    why: "Models are persuadable; policy and auth must gate tools in code, not trust chain-of-thought."
+    answer: 0
+    why: "Models are persuadable; policy and authorization must gate tools in code, not in chain-of-thought alone."
 
-  - q: "Safety evals that only use friendly prompts are insufficient because..."
+  - q: "What is the red-team role in AI safety?"
     options:
-      - "Friendly prompts are illegal"
-      - "Adversarial and jailbreak-style inputs reveal different failure modes"
-      - "Safety never needs metrics"
-      - "Latency tests replace red teams"
-    answer: 1
-    why: "Attackers optimize against your rules; eval sets must include adversarial cases, not only happy-path chat."
-
-  - q: "Cost metric for an LLM endpoint is best computed as..."
-    options:
-      - "Number of engineers on the team"
-      - "Token usage (and tool calls) per successful task, not only per raw request"
-      - "GPU sticker price alone with no traffic"
-      - "Count of emojis in responses"
-    answer: 1
-    why: "Retries, long contexts, and tools inflate real cost; normalize by successful outcomes."
-
-  - q: "A medical advice bot refuses diagnosis but still gives dosing for unprescribed drugs. Which failure?"
-    options:
-      - "Perfect safety because it refused the first sentence"
-      - "Partial/inconsistent policy enforcement—harmful content leaked through a side path"
-      - "A pure latency bug"
-      - "Proof structured outputs are unnecessary"
-    answer: 1
-    why: "Safety requires end-to-end policy coverage, not a single canned refusal while other answers remain risky."
-
-  - q: "Offline accuracy is high but online user thumbs-down spikes after a prompt change. What should you trust?"
-    options:
-      - "Only the offline number forever"
-      - "Investigate distribution shift, prompt regression, and online feedback—treat offline as incomplete"
-      - "Delete monitoring"
-      - "Raise temperature until thumbs-up returns"
-    answer: 1
-    why: "Offline sets miss real traffic; combine regression suites with live quality signals."
-
-  - q: "Which use case usually needs the strictest human escalation path?"
-    options:
-      - "Rewriting a marketing subject line"
-      - "Irreversible actions with legal/financial harm (wire transfers, account deletion)"
-      - "Suggesting playlist order"
-      - "Capitalizing titles"
-    answer: 1
-    why: "High-blast-radius actions demand human-in-the-loop and strong auth, not autonomous tool fire."
-
-  - q: "Latency SLOs for chat should measure..."
-    options:
-      - "Only average token count in training data"
-      - "User-perceived time-to-first-token and time-to-final, including tool/RAG hops"
-      - " solely model parameter count"
-      - "How long the threat model document is"
-    answer: 1
-    why: "Users feel streaming start and total completion time; retrieval and tools count toward the experience."
+      - "Finding weaknesses by attacking the system like an adversary"
+      - "Writing reference summaries"
+      - "Cleaning training data"
+      - "Choosing the tokenizer"
+    answer: 0
+    why: "Red teams probe for jailbreaks and tool misuse so blue teams can patch before real attackers do."

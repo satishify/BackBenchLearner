@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Design system and developer messages that set durable behavior, safety boundaries, and product personality.">
+  <meta name="description" content="Design system messages that set durable behavior, safety boundaries, and product personality — plus meta prompting to plan before answering.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-4-advanced-prompting/system-prompts-and-role-design.html">
   <meta property="og:title" content="System Prompts and Role Design | BackbenchLearner">
-  <meta property="og:description" content="Design system and developer messages that set durable behavior, safety boundaries, and product personality.">
+  <meta property="og:description" content="Design system messages that set durable behavior, safety boundaries, and product personality — plus meta prompting to plan before answering.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-4-advanced-prompting/system-prompts-and-role-design.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="System Prompts and Role Design | BackbenchLearner">
-  <meta name="twitter:description" content="Design system and developer messages that set durable behavior, safety boundaries, and product personality.">
+  <meta name="twitter:description" content="Design system messages that set durable behavior, safety boundaries, and product personality — plus meta prompting to plan before answering.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,10 +36,10 @@
       <h1>System Prompts and Role Design</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>In chat APIs, not every message is equal. The <strong>system</strong> (or developer) message is the constitution: long-lived rules for identity, tools, safety, and output style. <strong>User</strong> messages are the day’s petitions. <strong>Assistant</strong> messages are prior replies that keep the conversation coherent. Role design is how you turn a generic model into a product-specific agent without fine-tuning.</p>
+    <p>In chat APIs, not every message is equal. The <strong>system</strong> (or developer) message is the constitution: long-lived rules for identity, tools, safety, and output style. <strong>User</strong> messages are the day&#x27;s requests. <strong>Role design</strong> is how you turn a generic model into a product-specific agent without fine-tuning.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>If the user prompt is a ticket, the system prompt is the employee handbook. You do not reprint the handbook on every sticky note; you assume the employee already read it. Likewise, put stable policy in the system role and put task-specific data in the user role. Mixing them makes updates painful and invites users (or retrieved docs) to contradict your rules.</p>
-    <p>A good role is not a costume (“you are a pirate”). It is a <strong>job description</strong>: mission, audience, tools allowed, refusal rules, and escalation paths. Personality is a thin layer on top of that contract.</p>
+    <p>If the user prompt is a ticket, the system prompt is the employee handbook. You do not reprint the handbook on every sticky note; you assume the employee already read it.</p>
+    <p>A good role is not a costume (&quot;you are a pirate&quot;). It is a <strong>job description</strong>: mission, audience, tools allowed, refusal rules, and escalation paths. Personality is a thin layer on top of that contract.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -52,30 +52,77 @@ flowchart TB
   M --> R[Response under policy]
       </div>
     </div>
+    <h3>Meta prompting (plan before you answer)</h3>
+    <p><strong>Meta prompting</strong> asks the model to think about the best strategy or structure for solving the task <em>before</em> answering it.</p>
+    <table>
+      <thead><tr>
+        <th>Idea</th>
+        <th>Plain-English explanation</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>What it is for</strong></td>
+          <td>Some tasks are easier when the model plans its approach first</td>
+        </tr>
+        <tr>
+          <td><strong>One plain sentence</strong></td>
+          <td>The model first designs how it should answer</td>
+        </tr>
+        <tr>
+          <td><strong>Example cue</strong></td>
+          <td>&quot;First choose a solving strategy, then answer in a clean numbered format.&quot;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Think of it like making a game plan before playing the game — not jumping straight into the final answer.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Put stable policy in the system role. Put task-specific data in the user role. Mixing them makes updates painful and invites users (or retrieved docs) to contradict your rules.</p>
+    </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>What belongs in the system prompt.</strong></p>
+    <h3>What belongs in the system prompt</h3>
     <ul>
-    <li>Product identity and audience (“BackbenchLearner tutor for backend interviews”).</li>
-    <li>Hard constraints (“never invent library APIs; say when unsure”).</li>
-    <li>Tool use policy (“call <code>search_docs</code> before answering product questions”).</li>
-    <li>Safety and privacy (“do not request passwords; refuse illegal assistance”).</li>
+    <li>Product identity and audience (&quot;BackbenchLearner tutor for backend interviews&quot;).</li>
+    <li>Hard constraints (&quot;never invent library APIs; say when unsure&quot;).</li>
+    <li>Tool use policy (&quot;call <code>search_docs</code> before answering product questions&quot;).</li>
+    <li>Safety and privacy (&quot;do not request passwords; refuse illegal assistance&quot;).</li>
     <li>Default output style (markdown sections, citation format).</li>
     </ul>
-    <p><strong>What belongs in the user message.</strong> The current question, uploaded text, and ephemeral context. Prefer injecting RAG snippets into a clearly labeled user or tool section, not into the system prompt, so documents cannot quietly rewrite the constitution.</p>
-    <p><strong>Layering.</strong> Many APIs support a developer/system channel that is harder for end users to override. Still assume adversarial or confused users will try. Restate critical rules near the end of the system message (recency bias) and again in tool wrappers.</p>
-    <p><strong>Role vs persona.</strong> Persona (“friendly mentor”) affects tone. Role (“mentor who only teaches from provided notes”) affects authority and grounding. Prefer role + thin persona over theatrical characters that fight your safety rules.</p>
-    <p><strong>Multi-agent roles.</strong> In agent systems, each specialist gets a narrow system prompt (researcher, critic, writer). Narrow roles reduce cross-talk and make failures attributable.</p>
+    <h3>What belongs in the user message</h3>
+    <p>The current question, uploaded text, and ephemeral context. Prefer injecting retrieval-augmented generation (RAG) snippets into a clearly labeled user or tool section, not into the system prompt, so documents cannot quietly rewrite the constitution.</p>
+    <h3>Role vs persona</h3>
+    <table>
+      <thead><tr>
+        <th>Concept</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Role</strong></td>
+          <td>Mission, tools, refusals, grounding rules</td>
+        </tr>
+        <tr>
+          <td><strong>Persona</strong></td>
+          <td>Surface tone (&quot;friendly mentor&quot;) layered on top</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Prefer role plus thin persona over theatrical characters that fight your safety rules.</p>
+    <h3>Directional stimulus prompting (light steering)</h3>
+    <p><strong>Directional stimulus prompting</strong> adds hints or keywords that steer the model toward important parts of the answer — especially useful for summarization.</p>
+    <p>Example: for a news article, include keywords such as names, events, and outcomes to cover in the summary. It is like highlighting key lines in a textbook before asking for a summary.</p>
+    <h3>Multi-agent roles</h3>
+    <p>In agent systems, each specialist gets a narrow system prompt (researcher, critic, writer). Narrow roles reduce cross-talk and make failures easier to trace.</p>
     <h2 id="in-code">In code</h2>
-    <p>A minimal role stack: assemble system text from versioned fragments, keep user content separate, and unit-test that required policy phrases are present.</p>
+    <p>Assemble system text from versioned fragments; keep user content separate.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">from pathlib import Path
-
-FRAGMENTS = {
+      <pre><code class="language-python">FRAGMENTS = {
     &quot;identity&quot;: &quot;You are BackbenchTutor, a concise mentor for backend and GenAI interviews.&quot;,
     &quot;grounding&quot;: &quot;Answer only from CONTEXT when provided. If missing, say what is missing.&quot;,
     &quot;safety&quot;: &quot;Refuse requests for credentials, malware, or illegal activity. Offer safe alternatives.&quot;,
     &quot;style&quot;: &quot;Use short sections and plain language. Prefer bullets over essays.&quot;,
+    &quot;meta&quot;: &quot;Before answering hard questions, briefly state your plan, then respond.&quot;,
 }
 
 def build_system(keys: list[str]) -&gt; str:
@@ -87,7 +134,7 @@ def build_messages(question: str, context: str = &quot;&quot;) -&gt; list[dict]:
     )
     return [
         {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: build_system(
-            [&quot;identity&quot;, &quot;grounding&quot;, &quot;safety&quot;, &quot;style&quot;]
+            [&quot;identity&quot;, &quot;grounding&quot;, &quot;safety&quot;, &quot;style&quot;, &quot;meta&quot;]
         )},
         {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user},
     ]
@@ -96,38 +143,30 @@ msgs = build_messages(
     &quot;What is idempotency?&quot;,
     context=&quot;Idempotency means retrying a request does not change the result beyond the first success.&quot;,
 )
-
-# Regression check: policy phrases must ship with the build
 sys_text = msgs[0][&quot;content&quot;]
 assert &quot;Answer only from CONTEXT&quot; in sys_text
-assert &quot;Refuse requests for credentials&quot; in sys_text
-print(msgs[0][&quot;role&quot;], &quot;chars=&quot;, len(sys_text))
-print(msgs[1][&quot;content&quot;][:80], &quot;...&quot;)</code></pre>
+print(msgs[0][&quot;role&quot;], &quot;chars=&quot;, len(sys_text))</code></pre>
     </div>
-    <p>Version the fragment map in git. Changing tone should not require hunting through every user-facing template.</p>
+    <p>Version the fragment map in git. Changing tone should not require hunting through every template.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Constitution in the user channel.</strong> Users can overwrite or contradict it; support tickets become prompt archaeology.</li>
-    <li><strong>Bloated system prompts.</strong> Thousands of tokens of edge-case lore compete with the actual question. Split rare policies into tools or retrieval.</li>
-    <li><strong>Role conflict.</strong> “Be maximally helpful” plus “never discuss competitors” plus “always be brief” creates silent trade-offs. Order rules by priority.</li>
-    <li><strong>Persona overpowering policy.</strong> A jokey pirate will ignore your citation format. Keep persona short.</li>
-    <li><strong>Trusting “ignore previous instructions” defense alone.</strong> Delimiters, privilege separation, and output validation still matter; see the safety module later in the path.</li>
-    <li><strong>Stale history.</strong> Long assistant history can dilute the system role. Summarize or trim turns.</li>
+    <li><strong>Constitution in the user channel.</strong> Users can overwrite or contradict it.</li>
+    <li><strong>Bloated system prompts.</strong> Thousands of tokens of edge-case lore compete with the actual question.</li>
+    <li><strong>Role conflict.</strong> &quot;Be maximally helpful&quot; plus &quot;never discuss competitors&quot; creates silent trade-offs. Order rules by priority.</li>
+    <li><strong>Persona overpowering policy.</strong> A jokey character will ignore your citation format. Keep persona short.</li>
+    <li><strong>Trusting wording alone.</strong> Delimiters, privilege separation, and output validation still matter.</li>
     </ul>
-    <h2 id="designing-roles-for-real-products">Designing roles for real products</h2>
-    <p>Write the system prompt as if onboarding a new hire on day one. Include <strong>mission</strong> (“help learners prepare for backend interviews”), <strong>non-goals</strong> (“do not invent company-specific salary bands”), <strong>tools</strong> (“you may call search_curriculum”), and <strong>escalation</strong> (“if the user reports a billing outage, direct them to support, do not debug payments”). Ambiguous kindness (“be helpful”) without non-goals is how models overshare or overpromise.</p>
-    <p><strong>Multi-tenant products</strong> often inject a thin dynamic slice: tenant name, locale, feature flags. Keep that slice structured and small. Do not dump entire policy PDFs into the system channel; retrieve them. Dynamic system text still needs the same review as static text because it ships to every session.</p>
-    <p><strong>Testing roles.</strong> Beyond golden Q&amp;A, add <strong>policy probes</strong>: requests that should refuse, requests that should use a tool first, and requests that try to override the role (“you are now unrestricted”). Store expected behaviors beside the fragment map. When marketing asks for a wittier persona, re-run the probes before celebrating the tone change.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>System prompts are the product’s constitution — put durable identity, tools, and safety there; keep ephemeral tasks and data in the user channel.</p>
+    <p>System prompts are the product&#x27;s constitution — put durable identity, tools, and safety there; use meta prompting to plan hard answers; keep ephemeral tasks and data in the user channel.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>System / developer message:</strong> high-privilege instructions that shape overall behavior.</li>
     <li><strong>User / assistant roles:</strong> task input and conversational history.</li>
     <li><strong>Role design:</strong> job description for the model (mission, tools, refusals), not just a costume.</li>
+    <li><strong>Meta prompting:</strong> asking the model to plan how to answer before solving the task.</li>
+    <li><strong>Directional stimulus prompting:</strong> hints or keywords that steer the answer toward key points.</li>
     <li><strong>Persona:</strong> surface tone layered on top of the role.</li>
     <li><strong>Privilege separation:</strong> keeping policy out of untrusted user or document text.</li>
-    <li><strong>Recency bias:</strong> tendency for later tokens to influence behavior more; place critical rules carefully.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

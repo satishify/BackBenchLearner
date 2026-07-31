@@ -2,18 +2,18 @@ title: "2.1 LLMs, Decoding, Prompting & APIs"
 questions:
   - q: "An LLM generating the next token is best described as..."
     options:
-      - "A database lookup that always returns a stored sentence verbatim"
-      - "Sampling (or argmax) from a conditional distribution over the vocabulary given context"
+      - "A database lookup that always returns a stored sentence word-for-word"
+      - "Picking (or always choosing) the next piece of text from a probability distribution based on what came before"
       - "A guaranteed theorem prover with zero uncertainty"
-      - "A compression algorithm that never uses neural nets"
+      - "A compression algorithm that never uses neural networks"
     answer: 1
-    why: "Autoregressive LMs score tokens given prior context; decoding turns those scores into a chosen token sequence."
+    why: "Autoregressive language models score possible next tokens given prior context; decoding turns those scores into a chosen token sequence."
 
-  - q: "Pretraining vs fine-tuning vs inference — which statement matches production practice?"
+  - q: "Pretraining vs fine-tuning vs inference — which statement matches how teams actually work?"
     options:
       - "Inference updates all model weights on every user query"
-      - "Pretraining learns general language from huge corpora; fine-tuning adapts; inference runs the frozen (or adapted) model"
-      - "Fine-tuning always happens inside the user’s browser with no server"
+      - "Pretraining learns general language from huge text; fine-tuning adapts the model; inference runs the frozen (or adapted) model without changing weights"
+      - "Fine-tuning always happens inside the user's browser with no server"
       - "Pretraining only teaches JSON schema validation"
     answer: 1
     why: "Those three stages separate expensive general learning, task adaptation, and serving predictions."
@@ -25,7 +25,7 @@ questions:
       - "$0.50 exactly"
       - "Free because tokens are not billed"
     answer: 0
-    why: "Cost ~= 2000/1e6x0.50 + 500/1e6x1.50 = 0.001 + 0.00075 = $0.00175. Output tokens are often pricier."
+    why: "Cost ~= 2000/1e6×0.50 + 500/1e6×1.50 = 0.001 + 0.00075 = $0.00175. Output tokens are often pricier."
 
   - q: "You need stable JSON field names for a parser. Which decoding setup is most appropriate?"
     options:
@@ -34,13 +34,13 @@ questions:
       - "Maximum temperature with no schema"
       - "Disable the system prompt and hope"
     answer: 1
-    why: "Structured outputs want low entropy sampling (and preferably schema constraints), not creative diversity."
+    why: "Structured outputs want low randomness sampling (and preferably schema constraints), not creative diversity."
 
   - q: "Top-p (nucleus) sampling keeps..."
     options:
       - "A fixed count of 5 tokens always"
-      - "The smallest set of top tokens whose cumulative probability >= p"
-      - "Only tokens below a random UUID"
+      - "The smallest set of top tokens whose combined probability reaches at least p"
+      - "Only tokens below a random identifier"
       - "Every token in the vocabulary equally"
     answer: 1
     why: "Nucleus sampling truncates the long tail dynamically based on probability mass, then samples inside that set."
@@ -50,7 +50,7 @@ questions:
       - "Only in the latest user message so attackers can edit it"
       - "In the system/developer message as high-privilege instructions"
       - "Inside temperature alone"
-      - "Only in the assistant’s previous joke"
+      - "Only in the assistant's previous joke"
     answer: 1
     why: "System/developer channels are the constitution; user content is untrusted task input."
 
@@ -61,16 +61,16 @@ questions:
       - "Removes the need for any authentication"
       - "Guarantees the model never hallucinates again"
     answer: 1
-    why: "The model proposes a call; your backend runs the tool and returns facts—grounding actions outside pure text."
+    why: "The model proposes a call; your backend runs the tool and returns facts — grounding actions outside pure text."
 
   - q: "A support bot cites a refund policy that does not exist in your docs. This is primarily..."
     options:
       - "A tokenizer bug that always inserts the word 'refund'"
-      - "Hallucination / unsupported generation—fluency without grounded evidence"
+      - "Hallucination — fluent text without grounded evidence"
       - "Proof that temperature was zero so errors are impossible"
       - "Evidence the context window was infinite"
     answer: 1
-    why: "LMs can produce plausible falsehoods; products need retrieval, tools, or refusal patterns to constrain claims."
+    why: "Language models can produce plausible falsehoods; products need retrieval, tools, or refusal patterns to constrain claims."
 
   - q: "Context window is best treated as..."
     options:

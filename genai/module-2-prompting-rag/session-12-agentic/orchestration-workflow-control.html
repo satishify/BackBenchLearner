@@ -36,23 +36,43 @@
       <h1>Orchestration and Workflow Control</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Orchestration</strong> is the control plane for agent work: what runs in what order, what happens on failure, when to stop, and when a human must intervene. Without it, you have a clever model in a room with no fire exits.</p>
+    <p><strong>What is this for?</strong> To explain <strong>orchestration</strong>—the control layer that coordinates agents, tools, loops, and human approval.</p>
+    <p><strong>Why does it exist?</strong> Complex workflows need loops, branches, checkpoints, and safe stopping points. Without orchestration, you have a clever model in a room with no fire exits.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of an airport ground crew, not a free-jazz solo. Flights (steps) have sequence, gates (dependencies), go-arounds (retries), diversions (fallbacks), and weather holds (approvals). Production agents need the same discipline — especially when tools flake and models waffle.</p>
-    <h2 id="how-it-works">How it works</h2>
-    <h3>Core controls</h3>
-    <ul>
-    <li><strong>Sequencing &amp; dependencies:</strong> step B waits for artifact A.</li>
-    <li><strong>Retry policy:</strong> how many times, with exponential backoff, on which errors.</li>
-    <li><strong>Timeouts:</strong> per step and per whole run.</li>
-    <li><strong>Circuit breaking:</strong> stop calling a sick dependency; fail fast.</li>
-    <li><strong>Fallback:</strong> backup model, backup index, degraded answer.</li>
-    <li><strong>Human approval checkpoints:</strong> HITL on risky transitions.</li>
-    <li><strong>Idempotency:</strong> retries must not double-charge or double-email.</li>
-    <li><strong>Budgets:</strong> max steps, tokens, and dollars.</li>
-    </ul>
-    <h3>Example</h3>
-    <p>Primary search API fails twice -&gt; wait with backoff -&gt; failover to backup index -&gt; continue summarization -&gt; if backup also fails, return “degraded: cached summary” instead of hanging.</p>
+    <p>Think of an airport ground crew, not a free-jazz solo. Flights (steps) have sequence, gates (dependencies), go-arounds (retries), diversions (fallbacks), and weather holds (approvals).</p>
+    <p><strong>State machines</strong> put a reliable outer structure around noisy LLM output. The workflow can still be paused, resumed, routed, and checked—even when the model wobbles.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Orchestration</strong></td>
+          <td>Control layer that coordinates many agents and steps</td>
+        </tr>
+        <tr>
+          <td><strong>State machine</strong></td>
+          <td>System that moves between defined states using rules</td>
+        </tr>
+        <tr>
+          <td><strong>Node</strong></td>
+          <td>One function or agent step in a graph</td>
+        </tr>
+        <tr>
+          <td><strong>Edge</strong></td>
+          <td>Route that decides what node runs next</td>
+        </tr>
+        <tr>
+          <td><strong>Conditional edge</strong></td>
+          <td>Route chosen by inspecting current state (like a router)</td>
+        </tr>
+      </tbody>
+    </table>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>LLMs are noisy. A state machine forces a fixed pathway over a non-deterministic model—which makes workflows easier to control, pause, and audit.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TD
@@ -68,39 +88,65 @@ flowchart TD
   H --> D
       </div>
     </div>
-    <h3>Why it matters in production</h3>
+    <h2 id="how-it-works">How it works</h2>
+    <h3>Core controls</h3>
     <ul>
-    <li>Predictable behavior under partial outages.</li>
-    <li>Prevents infinite tool loops and runaway spend.</li>
-    <li>Improves observability: every transition is a named state.</li>
-    <li>Supports governance: approvals and audit hooks have a place to live.</li>
+    <li><strong>Sequencing &amp; dependencies:</strong> step B waits for artifact A.</li>
+    <li><strong>Retry policy:</strong> how many times, with exponential backoff, on which errors.</li>
+    <li><strong>Timeouts:</strong> per step and per whole run.</li>
+    <li><strong>Circuit breaking:</strong> stop calling a sick dependency; fail fast.</li>
+    <li><strong>Fallback:</strong> backup model, backup index, degraded answer.</li>
+    <li><strong>Human approval checkpoints (HITL):</strong> pause before risky transitions.</li>
+    <li><strong>Recursion limit:</strong> hard cap that stops infinite agent loops.</li>
+    <li><strong>Summarize node:</strong> compress old messages when state bloats.</li>
+    <li><strong>Idempotency:</strong> retries must not double-charge or double-email.</li>
+    <li><strong>Budgets:</strong> max steps, tokens, and dollars.</li>
     </ul>
+    <h3>Provenance tracking</h3>
+    <p>In multi-agent systems, track <strong>provenance</strong>—which specialist agent produced which observation. That makes auditing and debugging much easier: you can trace a claim back to the exact tool call or agent that produced it.</p>
+    <h3>Example failure path</h3>
+    <p>Primary search API fails twice → wait with backoff → failover to backup index → continue summarization → if backup also fails, return &quot;degraded: cached summary&quot; instead of hanging.</p>
     <h3>Orchestration styles</h3>
     <table>
       <thead><tr>
         <th>Style</th>
+        <th>Plain-English idea</th>
         <th>Pros</th>
         <th>Cons</th>
       </tr></thead>
       <tbody>
         <tr>
           <td>Fixed DAG / state machine</td>
+          <td>Explicit flowchart</td>
           <td>Debuggable, testable</td>
           <td>Less flexible</td>
         </tr>
         <tr>
           <td>LLM chooses next step</td>
+          <td>Model picks the route</td>
           <td>Flexible</td>
-          <td>Needs hard caps &amp; validators</td>
+          <td>Needs hard caps</td>
         </tr>
         <tr>
           <td>Mixed</td>
           <td>Playbook + LLM fillers</td>
           <td>Best default for many teams</td>
+          <td>More design up front</td>
         </tr>
       </tbody>
     </table>
     <p>Prefer fixed skeletons for money and compliance paths; allow freer planning only inside sandboxes.</p>
+    <h3>LangGraph-style graph (ASCII sketch)</h3>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">graph = StateGraph(AgentState)
+graph.add_node(&#x27;triage_agent&#x27;, triage_node)
+graph.add_node(&#x27;infra_agent&#x27;, infra_node)
+graph.add_conditional_edges(&#x27;triage_agent&#x27;, router_function)
+graph.add_edge(&#x27;infra_agent&#x27;, &#x27;triage_agent&#x27;)
+app = graph.compile()   # turns definition into a runnable, checkpointable app</code></pre>
+    </div>
+    <p>The <strong><code>compile()</code></strong> step turns the declarative graph into a runnable application with persistence, streaming, and state management.</p>
     <h2 id="in-code">In code</h2>
     <p>A minimal orchestrator with retries, timeout budget, and fallback.</p>
     <div class="code-block" data-lang="python">
@@ -131,47 +177,51 @@ def with_retries(fn, retries=2, backoff=0.01) -&gt; StepResult:
         time.sleep(backoff * (2 ** i))
     return last
 
-def run_workflow(deadline: float) -&gt; str:
+def run_workflow(deadline: float, max_steps: int = 20) -&gt; str:
+    steps = 0
     if time.time() &gt; deadline:
         return &quot;aborted:timeout&quot;
     search = with_retries(flaky_search)
+    steps += 1
+    if steps &gt; max_steps:
+        return &quot;aborted:recursion_limit&quot;
     if not search.ok:
         search = backup_search()
     if not search.ok:
         return &quot;degraded:no_index&quot;
-    # summarize would go here
     return f&quot;ok:{search.value}&quot;
 
 print(run_workflow(deadline=time.time() + 5))</code></pre>
     </div>
-    <p>Real systems use durable workflows (queues, step functions) so a process crash mid-run can resume safely.</p>
+    <p>Real systems use durable workflows (queues, step functions) so a process crash mid-run can resume safely—<strong>checkpointing</strong> saves state so a graph can pause and resume later.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Happy-path only.</strong> No retries/timeouts; first 503 kills the UX.</li>
+    <li><strong>Happy-path only.</strong> No retries or timeouts; first 503 kills the UX.</li>
     <li><strong>Retrying non-idempotent writes.</strong> Duplicate side effects.</li>
-    <li><strong>Unbounded agent loops.</strong> “Just one more tool call” forever.</li>
+    <li><strong>Unbounded agent loops.</strong> &quot;Just one more tool call&quot; forever.</li>
+    <li><strong>State bloat.</strong> Message history grows until latency and cost explode.</li>
     <li><strong>Silent fallbacks.</strong> Users think they got fresh primary data.</li>
-    <li><strong>God orchestrator.</strong> One prompt secretly encodes all control flow — untestable.</li>
-    <li><strong>Missing metrics.</strong> No counts of retries, fallbacks, HITL rate, or aborted runs.</li>
+    <li><strong>Missing provenance.</strong> Cannot tell which agent or tool produced a bad claim.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Write an error budget for the workflow: max retries, max fallback rate, max HITL rate, max dollars per run. Alert when any budget burns faster than expected. Chaos-test one dependency a week in staging (force 503s) and confirm users see a controlled degraded answer, not a hang.</p>
-    <p>Prefer durable state machines for anything that touches money or accounts. In-memory loops die with the process and leave half-applied side effects. Export a timeline view in your admin tool: step, attempt, latency, outcome — the same view on-call will need during an incident.</p>
+    <p>Write an error budget for the workflow: max retries, max fallback rate, max HITL rate, max dollars per run. Alert when any budget burns faster than expected.</p>
+    <p>Chaos-test one dependency a week in staging (force 503s) and confirm users see a controlled degraded answer, not a hang.</p>
+    <p>Prefer durable state machines for anything that touches money or accounts. Export a timeline view: step, attempt, latency, outcome—the same view on-call will need during an incident.</p>
     <h2 id="observability-hooks">Observability hooks</h2>
-    <p>Emit one structured event per state transition: <code>{run_id, step, attempt, outcome, latency_ms, cost_usd}</code>. From those events you can build retry heatmaps and find steps that always fall back. Orchestration without observability is superstition — you will tweak prompts for outages that were really timeout misconfigs. Give on-call a single run-id search that reconstructs the whole path.</p>
+    <p>Emit one structured event per state transition: <code>{run_id, step, attempt, outcome, latency_ms, cost_usd}</code>. Orchestration without observability is superstition.</p>
     <h2 id="compensating-actions">Compensating actions</h2>
-    <p>When a mid-pipeline write succeeds and a later step fails, you may need a compensating action (cancel reservation, delete draft ticket) rather than a naive retry from zero. Encode compensations next to the step definition. Orchestration that only knows “retry” will leave orphaned side effects that support teams clean up by hand — expensive and error-prone.</p>
-    <h2 id="slos-for-agent-runs">SLOs for agent runs</h2>
-    <p>Pick service-level objectives the way you would for an API: success rate, p95 run duration, fallback rate, and dollars per successful run. Page on burn rate, not on single failures. Orchestration tuning then becomes ordinary reliability work — increase timeout here, cut a redundant step there — instead of prompt folklore. Publish the SLOs next to the workflow diagram so product and on-call share one definition of “healthy.”</p>
+    <p>When a mid-pipeline write succeeds and a later step fails, you may need a compensating action (cancel reservation, delete draft ticket) rather than a naive retry from zero.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Orchestrate agent workflows with explicit sequences, budgets, retries, fallbacks, and approval hooks so failures become controlled degradations instead of runaway chaos.</p>
+    <p>Orchestrate agent workflows with explicit sequences, state machines, budgets, retries, fallbacks, and approval hooks so failures become controlled degradations instead of runaway chaos.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Orchestration:</strong> control of order, failure handling, and stop conditions.</li>
-    <li><strong>Backoff:</strong> increasing delay between retries.</li>
-    <li><strong>Circuit breaker:</strong> temporary halt of calls to a failing dependency.</li>
-    <li><strong>Fallback:</strong> alternate path when the primary fails.</li>
-    <li><strong>Durable workflow:</strong> execution state persisted across crashes.</li>
+    <li><strong>State machine:</strong> system that moves between defined states using rules.</li>
+    <li><strong>Node:</strong> one function or agent step in a graph.</li>
+    <li><strong>Conditional edge:</strong> route chosen by inspecting current state.</li>
+    <li><strong>Checkpointing:</strong> saving state so a graph can pause and resume later.</li>
+    <li><strong>Recursion limit:</strong> hard cap that stops infinite loops.</li>
+    <li><strong>Provenance:</strong> origin of a claim or observation (which agent/tool produced it).</li>
     <li><strong>Degraded mode:</strong> reduced functionality that still returns a safe result.</li>
     </ul>
 

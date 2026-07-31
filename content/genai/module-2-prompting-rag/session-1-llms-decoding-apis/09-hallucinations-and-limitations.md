@@ -3,11 +3,13 @@ title: "Hallucinations and Model Limitations"
 description: "Why LLMs invent fluent falsehoods, what else they cannot guarantee, and practical mitigations for GenAI engineers."
 ---
 
-The most dangerous LLM failure is not a crash — it is a **confident wrong answer**. Hallucinations look like expertise: citations, APIs, medical details, legal clauses. Until you treat fluency as orthogonal to truth, every feature you ship will eventually embarrass you in front of a customer or an auditor.
+The most dangerous LLM failure is not a crash — it is a **confident wrong answer**. **Hallucinations** look like expertise: citations, APIs, medical details, legal clauses. Until you treat fluency as separate from truth, every feature you ship will eventually embarrass you in front of a customer or an auditor.
 
 ## Intuition
 
-An LLM samples plausible continuations. Training rewarded looking like the training distribution, not checking a ledger. When the prompt asks for a fact the weights never reliably stored — or that changed last week — the model still has to emit tokens. Plausible tokens win. That is hallucination: unsupported or false content presented as if it were known.
+**What is a hallucination?** An LLM samples plausible continuations. Training rewarded looking like the training distribution, not checking a ledger. When the prompt asks for a fact the weights never reliably stored — or that changed last week — the model still has to emit tokens. Plausible tokens win.
+
+**Why does fluency mislead us?** Smooth prose raises perceived confidence; it does not raise truth probability.
 
 Sibling limitations share the same root: sensitivity to wording, shallow multi-step reasoning without scaffolding, bias from data, and non-determinism under sampling. Mitigations are engineering: retrieval, tools, validation, evals, and humans on the high-impact path.
 
@@ -19,12 +21,14 @@ Fluency is not evidence. Design for verification, not for trust in tone.
 
 ### Why hallucinations happen
 
-- **Objective mismatch** — next-token likelihood != factual correctness.
-- **Missing or stale knowledge** — cutoffs, private data, rare entities.
-- **Prompt pressure** — “list three papers” pushes invention if none are known.
-- **Context gaps** — evidence never entered the window, or was truncated.
-- **Decoding noise** — high temperature amplifies low-probability fabrications.
-- **Role-play leakage** — model continues a confident persona instead of abstaining.
+| Cause | Plain-English idea |
+| --- | --- |
+| **Objective mismatch** | Next-token likelihood ≠ factual correctness |
+| **Missing or stale knowledge** | Cutoffs, private data, rare entities |
+| **Prompt pressure** | "List three papers" pushes invention if none are known |
+| **Context gaps** | Evidence never entered the window, or was truncated |
+| **Decoding noise** | High temperature amplifies low-probability fabrications |
+| **Role-play leakage** | Model continues a confident persona instead of abstaining |
 
 ### Taxonomy useful in products
 
@@ -49,38 +53,27 @@ flowchart TB
 
 - **Prompt brittleness** — paraphrase flips the answer; golden tests must cover paraphrases.
 - **Long-horizon tasks** — multi-step plans drift without decomposition and checks.
-- **Bias and safety** — training data skews show up as stereotyped or unsafe completions; filters help but do not finish the job.
+- **Bias and safety** — training data skews show up as stereotyped or unsafe completions.
 - **Non-determinism** — sampling and infra variance complicate debugging; pin seeds where supported and log params.
 - **Context dilution** — policies in a giant prompt lose to the nearest noisy user text.
-- **No true persistent memory** — unless you build storage; “remembering” across sessions is your database, not magic.
+- **No true persistent memory** — unless you build storage; "remembering" across sessions is your database, not magic.
 
 ### Mitigation playbook
 
 1. **Ground** — RAG, tools, SQL, calculators for anything that must be true.
-2. **Abstain** — teach and test “I don’t know” / UNKNOWN paths.
+2. **Abstain** — teach and test "I don't know" / UNKNOWN paths.
 3. **Constrain** — structured outputs, low temperature for facts.
 4. **Verify** — validators, citation link checks, unit tests on extracts.
 5. **Evaluate** — offline suites for hallucination and faithfulness; sample production traces.
 6. **Human-in-the-loop** — mandatory for medical, legal, financial, and irreversible actions.
 
-### Measuring the problem
+### Why low temperature is not enough
 
-You cannot fix what you do not score. Lightweight eval ideas:
-
-- **Known-answer set** — questions with gold facts; mark wrong or unsupported spans.
-- **Closed-book vs open-book** — same question with and without docs; open-book should cite evidence, closed-book should abstain more often.
-- **Adversarial prompts** — “make up three papers if needed” style pressure; the correct behavior is refusal.
-- **Production sampling** — weekly review of traces where users edited or rejected the answer.
-
-Track hallucination rate next to latency and cost. A model that is 200ms faster but invents policy clauses is not a win for a compliance bot.
-
-### Product framing for stakeholders
-
-Say clearly: the system drafts; tools and humans certify. UX that shows evidence snippets, confidence labels, and easy “report wrong answer” affordances reduces blind trust. Hide the confidence theater (fake percentage meters) unless they map to a real calibrated signal — users treat “94% sure” as science even when it is not.
+Lower temperature reduces randomness but does not add missing facts or verify truth. Factual reliability needs grounding through retrieval, tools, citations, validation, and uncertainty handling.
 
 ## In code
 
-Detect empty grounding before you let the model “be helpful”:
+Detect empty grounding before you let the model "be helpful":
 
 ```python
 def should_abstain(docs: list[str], min_chars: int = 40) -> bool:
@@ -95,7 +88,7 @@ else:
 print(answer)
 ```
 
-Faithfulness check sketch — every claim sentence must overlap the source (crude but teachable):
+Faithfulness check sketch — every claim sentence must overlap the source:
 
 ```python
 def unsupported_sentences(answer: str, source: str) -> list[str]:
@@ -134,24 +127,12 @@ def validate_grounded(raw: str) -> dict:
     return data
 ```
 
-Logging for postmortems:
-
-```python
-def log_call(prompt_version: str, temperature: float, grounded: bool, text: str):
-    return {
-        "prompt_version": prompt_version,
-        "temperature": temperature,
-        "grounded": grounded,
-        "preview": text[:160],
-    }
-```
-
 ## What goes wrong
 
 - **Shipping demo prompts to prod** — demos reward confident answers; prod needs abstention.
 - **Citations without fetch** — model invents links; nobody clicks until a lawyer does.
-- **RAG theater** — retrieve docs but never instruct “use only these sources.”
-- **Over-trusting “reasoning” modes** — longer chain-of-thought can still be wrong; verify outcomes.
+- **RAG theater** — retrieve docs but never instruct "use only these sources."
+- **Over-trusting "reasoning" modes** — longer chain-of-thought can still be wrong; verify outcomes.
 - **No eval for hallucinations** — you only discover them via screenshots on social media.
 - **One-size temperature** — creative preset left on a compliance bot.
 
@@ -169,6 +150,6 @@ Hallucinations are fluent, unsupported claims from a next-token predictor — co
 - **Faithfulness** — Staying true to provided source text without adding claims.
 - **Grounding** — Conditioning answers on retrieved or tool-returned evidence.
 - **Abstention** — Declining to answer when evidence is insufficient.
-- **Knowledge cutoff** — Date beyond which the model’s weights are not reliably updated.
+- **Knowledge cutoff** — Date beyond which the model's weights are not reliably updated.
 - **Prompt brittleness** — Large output changes from small wording changes.
 - **Human-in-the-loop** — Requiring human approval for high-impact actions or answers.

@@ -3,11 +3,31 @@ title: "Reasoning + Planning + Tool Use + Memory"
 description: "Four capabilities that make agents useful: interpret goals, sequence work, call tools, and retain the right context."
 ---
 
-Useful agents combine four capabilities: **reasoning** (what does success mean?), **planning** (in what order?), **tool use** (how do we affect the world?), and **memory** (what must we remember?). Missing any one turns a demo into a fragile script or a chatty dead end.
+**What is this for?** To show the four building blocks that turn a demo into a useful agent: **reasoning**, **planning**, **tool use**, and **memory**.
+
+**Why does it exist?** Missing any one piece turns a system into a fragile script or a chatty dead end. Together they let an agent finish real multi-step jobs.
 
 ## Intuition
 
-Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch -> clean -> summarize -> visualize -> deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.
+Imagine a weekly sales report request:
+
+- **Reasoning** clarifies what success means ("last 7 days, US dollars, exclude test accounts").
+- **Planning** orders the work (fetch → clean → summarize → deliver).
+- **Tools** talk to your business intelligence (BI) system and docs.
+- **Memory** recalls that this stakeholder wants three bullet points, not a novel.
+
+Alone, each piece is ordinary. Together they complete jobs.
+
+| Capability | Plain-English idea | What it does |
+| --- | --- | --- |
+| **Reasoning** | "What does done look like?" | Turns a vague ask into constraints and success checks |
+| **Planning** | "In what order?" | Breaks the goal into named, retryable steps |
+| **Tool use** | "How do we touch the world?" | Calls APIs, search, databases, automations |
+| **Memory** | "What must we remember?" | Keeps session state and durable facts |
+
+:::key
+Reasoning sets the target. Planning sets the route. Tools do the work. Memory keeps context from vanishing between steps.
+:::
 
 ```mermaid
 flowchart TB
@@ -21,23 +41,49 @@ flowchart TB
 
 ### Reasoning
 
-Interpret intent, constraints, and success conditions. Distinguish must-haves from nice-to-haves. Detect underspecified goals (“optimize the funnel”) and ask or assume explicitly. Reasoning here is not mystical chain-of-thought theater — it is producing a machine-checkable brief: inputs, outputs, limits, risk level.
+Interpret intent, constraints, and success conditions. Distinguish must-haves from nice-to-haves. Detect underspecified goals ("optimize the funnel") and ask or assume explicitly.
+
+Reasoning here is not mystical chain-of-thought theater—it is producing a machine-checkable brief: inputs, outputs, limits, risk level.
 
 ### Planning
 
-Split the goal into ordered subtasks with dependencies. Good plans are short, named, and retryable. Prefer checkpoints (“data fetched”) over vague phases (“analyze”). Replan when observations invalidate assumptions (API empty, schema changed). For many production workflows, a fixed playbook beats open-ended free planning — use the LLM to fill slots inside a known DAG.
+Split the goal into ordered subtasks with dependencies. Good plans are short, named, and retryable. Prefer checkpoints ("data fetched") over vague phases ("analyze").
+
+**Planner vs executor (plain English):**
+
+| Role | Plain-English idea | Focus |
+| --- | --- | --- |
+| **Planner** | Decides *what* should happen | Outputs a step list |
+| **Executor** | Does *one* step safely | Outputs tool calls and reads results |
+
+Why split them?
+
+- Less mental load per model call.
+- Cheaper runs—not every step needs the biggest model.
+- Better fault tolerance—a failed step can be re-planned without throwing away everything.
+
+Example plan for a payment outage:
+
+```
+Planner:   Check code diff  ->  Check logs  ->  Compare  ->  Synthesize
+Executor:  Run github.get_commit_diff(...)
+Executor:  Run splunk.query_logs(...)
+```
+
+Replan when observations invalidate assumptions (empty API response, schema changed). For many production workflows, a fixed playbook beats open-ended free planning.
 
 ### Tool use
 
-Call APIs, search, run scripts, query databases, trigger automations. The model proposes; the host validates and executes. Design tools as narrow verbs with typed args (`get_orders(start, end)`), not a single `do_anything(command)`. Return structured, truncated results so the context window stays usable.
+Call APIs, search, run scripts, query databases, trigger automations. The model proposes; the **host** (your application code) validates and executes.
+
+Design tools as narrow verbs with typed arguments (`get_orders(start, end)`), not a single `do_anything(command)`. Return structured, truncated results so the context window stays usable.
 
 ### Memory
 
 Retain what future steps need:
 
-- **Working memory:** current plan, recent tool results (session).
-- **Episodic notes:** what happened last Tuesday’s run.
-- **Preferences / profiles:** durable user or org settings.
+- **Working memory (episodic):** current plan, recent tool results—like RAM for this session.
+- **Semantic memory:** durable facts and lessons across sessions—like a hard drive or knowledge base.
 
 Write memory deliberately. Dumping full transcripts forever creates cost, privacy risk, and confusion.
 
@@ -45,9 +91,9 @@ Write memory deliberately. Dumping full transcripts forever creates cost, privac
 
 1. User asks for weekly sales report.
 2. Agent reasons: date range, currency, audience.
-3. Plans: fetch -> clean -> summarize -> chart -> post.
+3. Plans: fetch → clean → summarize → chart → post.
 4. Calls BI and spreadsheet tools.
-5. Reads memory for preferred format; stores “posted URL” for next week.
+5. Reads memory for preferred format; stores "posted URL" for next week.
 
 ### How the four fail together
 
@@ -125,13 +171,15 @@ In production, `reason` / `plan` / tool choice may be LLM-driven, but keep memor
 - **Memory bloat.** Entire histories stuffed into every prompt; cost and distraction rise.
 - **Stale memory.** Old preferences override new instructions.
 - **Over-planning.** Twenty-step plans for a two-step task; fragility multiplies.
-- **Skipping success checks.** Declaring victory because the model said “done.”
+- **Skipping success checks.** Declaring victory because the model said "done."
 
 ## Putting it into practice
 
-On a whiteboard, draw four boxes — Reason, Plan, Tools, Memory — and assign owners: which parts are LLM-generated vs deterministic code. Most teams should keep tool execution and memory writes in code; let the model propose plans and arguments. Add one eval case per box: wrong-goal detection, bad step order, invalid tool args, and stale preference override. If a box has no test, it will rot.
+On a whiteboard, draw four boxes—Reason, Plan, Tools, Memory—and assign owners: which parts are LLM-generated vs deterministic code. Most teams should keep tool execution and memory writes in code; let the model propose plans and arguments.
 
-For the sales-report example, freeze the playbook steps in YAML and only ask the model to fill parameters (date range, channel). Free-form planning can wait until the playbook’s pass rate plateaus. That ordering — scripted skeleton first, freer reasoning later — is how you get reliability without giving up future flexibility.
+Add one eval case per box: wrong-goal detection, bad step order, invalid tool args, and stale preference override. If a box has no test, it will rot.
+
+For the sales-report example, freeze the playbook steps in YAML and only ask the model to fill parameters (date range, channel). Free-form planning can wait until the playbook's pass rate plateaus.
 
 ## One-line summary
 
@@ -141,7 +189,9 @@ Wire reasoning, planning, tool use, and memory as separate, testable pieces so t
 
 - **Reasoning:** turning a request into constraints and success criteria.
 - **Planning:** ordered, dependent subtasks toward the goal.
+- **Planner:** part that breaks a complex task into steps.
+- **Executor:** part that performs one planned step safely.
 - **Tool use:** host-executed actions proposed by the model.
-- **Working memory:** short-lived state for the current run.
-- **Long-term memory:** durable preferences or facts across sessions.
-- **Playbook / DAG:** fixed workflow skeleton the model fills rather than invents.
+- **Episodic memory:** short-term thread state for the current interaction.
+- **Semantic memory:** long-term stored facts across sessions.
+- **Playbook / DAG (directed acyclic graph):** fixed workflow skeleton the model fills rather than invents.

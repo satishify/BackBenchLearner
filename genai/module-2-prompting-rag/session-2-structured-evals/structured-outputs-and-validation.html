@@ -36,14 +36,16 @@
       <h1>Structured Outputs, Validation, and Reliability</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Free-form prose is for humans. Downstream code wants <strong>objects</strong>: enums, IDs, date ranges, confidence scores. Structured outputs turn the model from a storyteller into a component you can wire into queues, UI forms, and agents — but only if you validate every response like it came from an untrusted client.</p>
+    <p>Free-form prose is for humans. Downstream code wants <strong>objects</strong>: enums, IDs, date ranges, confidence scores. <strong>Structured outputs</strong> turn the model from a storyteller into a component you can wire into queues, UI forms, and agents — but only if you validate every response like it came from an untrusted client.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Ask for “JSON” in a prompt and you will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:</p>
+    <p><strong>What is a structured output?</strong> A model response constrained to a machine-readable shape (often JSON) that your code can parse and use.</p>
+    <p><strong>Why is asking for &quot;JSON&quot; in a prompt not enough?</strong> You will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load.</p>
+    <p>Reliability is a stack:</p>
     <ol>
     <li>Tell the model the schema.</li>
     <li>Prefer API features that constrain decoding to valid JSON / schema when available.</li>
     <li>Validate in your process with a typed model.</li>
-    <li>Repair or fail closed — never “best-effort parse” into a money path.</li>
+    <li>Repair or fail closed — never &quot;best-effort parse&quot; into a money path.</li>
     </ol>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
@@ -63,20 +65,45 @@ flowchart TB
       </div>
     </div>
     <h3>Model-side options</h3>
-    <ul>
-    <li><strong>Prompt-only JSON</strong> — cheapest to try; weakest guarantee.</li>
-    <li><strong>JSON mode / response_format</strong> — forces JSON syntax; may not enforce your fields.</li>
-    <li><strong>Strict structured outputs / grammar constraints</strong> — when offered, binds generation to a schema — strongest.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Technique</th>
+        <th>Plain-English idea</th>
+        <th>Typical failure it prevents</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Plain JSON prompt</strong></td>
+          <td>Ask for JSON in text</td>
+          <td>Markdown fences, prose, or malformed JSON</td>
+        </tr>
+        <tr>
+          <td><strong>JSON mode / response_format</strong></td>
+          <td>Forces JSON syntax</td>
+          <td>May not enforce your specific fields</td>
+        </tr>
+        <tr>
+          <td><strong>Strict structured outputs</strong></td>
+          <td>Binds generation to a schema</td>
+          <td>Wrong types and silent downstream bugs</td>
+        </tr>
+        <tr>
+          <td><strong>Tool calling</strong></td>
+          <td>Structured function arguments from the model</td>
+          <td>Free-form text where code expects a schema</td>
+        </tr>
+      </tbody>
+    </table>
     <p>Always assume vendor features differ. Your app-side validator is the portable guarantee.</p>
     <h3>App-side validation</h3>
-    <p>Libraries in the Pydantic family (or dataclasses + hand checks) give you:</p>
+    <p>Libraries in the <strong>Pydantic</strong> family (or dataclasses + hand checks) give you:</p>
     <ul>
     <li>Required fields and types</li>
     <li>Enums and ranges</li>
     <li>Nested objects and lists</li>
     <li>Clear error messages you can feed back on retry</li>
     </ul>
+    <p><strong>Why Pydantic helps:</strong> it validates and can coerce values before they spread through your pipeline. That is especially important when the model says <code>&quot;42&quot;</code> as a string but your code needs an integer.</p>
     <p>Example conceptual schema:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -86,23 +113,19 @@ flowchart TB
   domains_allow_list: list[string]</code></pre>
     </div>
     <h3>Retry with feedback</h3>
-    <p>On validation failure, do not only “try again colder.” Send the error:</p>
+    <p>On validation failure, do not only &quot;try again colder.&quot; Send the error:</p>
     <p><code>Your previous output failed validation: published_daterange.end is before start. Reply with corrected JSON only.</code></p>
     <p>Cap retries (e.g. 2). Log failure rates per prompt version — a spike means schema or model drift.</p>
-    <h3>Partial success and fallbacks</h3>
-    <p>For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object -&gt; no side effect.</p>
     <h3>Designing schemas models can hit</h3>
-    <p>Schemas fail in production when they are written for lawyers instead of generators:</p>
     <ul>
     <li>Prefer flat or shallow nesting; deep trees invite missing braces under token limits.</li>
     <li>Use enums for closed sets (<code>&quot;Positive&quot; | &quot;Neutral&quot; | &quot;Negative&quot;</code>) instead of free strings.</li>
     <li>Make rarely needed fields optional; required fields should be ones you always have evidence for.</li>
-    <li>Avoid dual meanings (“status” as both HTTP code and business state).</li>
     <li>Include a first-class abstain path: <code>status: &quot;ok&quot; | &quot;unknown&quot;</code> beats forcing a fake value.</li>
     </ul>
-    <p>When the model must emit dates, demand ISO-8601 in the schema description and reject everything else in the validator. When it must emit IDs, prefer copying from provided context over inventing new ones — and check membership against your database.</p>
-    <h3>Where structured output sits in an agent</h3>
-    <p>Agents often chain: plan JSON -&gt; tool calls -&gt; final answer JSON. Validate <strong>each</strong> stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.</p>
+    <h3>Constrained generation note</h3>
+    <p>Constraints work on <strong>tokens</strong>, not characters. A single token may include a leading space or several characters, so a regex or allowlist must account for the tokenizer, not just the spelling of the output.</p>
+    <p>Use token masking for simple surface constraints (digits-only, yes/no). Use structured decoding when you need grammar correctness, nested JSON, or something that must never become invalid mid-sequence.</p>
     <h2 id="in-code">In code</h2>
     <p>Stdlib validation without external deps:</p>
     <div class="code-block" data-lang="python">
@@ -149,6 +172,20 @@ good = &#x27;&#x27;&#x27;
 &#x27;&#x27;&#x27;
 print(parse_search_query(good))</code></pre>
     </div>
+    <p>Pydantic validation with automatic type coercion:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">from pydantic import BaseModel
+
+
+class Person(BaseModel):
+    name: str
+    age: int
+
+
+p = Person(name=&quot;Sam&quot;, age=&quot;10&quot;)
+print(p.age)  # 10, as an int</code></pre>
+    </div>
     <p>Strip accidental markdown fences before parse:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -156,7 +193,6 @@ print(parse_search_query(good))</code></pre>
     t = text.strip()
     if t.startswith(&quot;```&quot;):
         lines = t.splitlines()
-        # drop first and last fence lines
         if lines and lines[0].startswith(&quot;```&quot;):
             lines = lines[1:]
         if lines and lines[-1].startswith(&quot;```&quot;):
@@ -179,16 +215,7 @@ print(parse_search_query(good))</code></pre>
             feedback = f&quot;Validation error: {e}. Return corrected JSON only.&quot;
     raise RuntimeError(&quot;structured_output_failed&quot;)</code></pre>
     </div>
-    <p>Illustrative API flag (vendor-specific):</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">payload = {
-    &quot;model&quot;: &quot;chat-mid&quot;,
-    &quot;messages&quot;: [...],
-    &quot;response_format&quot;: {&quot;type&quot;: &quot;json_object&quot;},  # syntax, not full schema
-    &quot;temperature&quot;: 0.1,
-}</code></pre>
-    </div>
+    <p>With <code>model_json_schema()</code>, Pydantic can produce the schema for a tool definition automatically, which removes a lot of brittle manual JSON writing.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Parsing with regex hope</strong> — works in demos; breaks on nested quotes.</li>
@@ -196,7 +223,7 @@ print(parse_search_query(good))</code></pre>
     <li><strong>Silent defaults</strong> — wrong type coerced to empty string; bug ships.</li>
     <li><strong>Retry storms</strong> — no budget; one bad schema burns the rate limit.</li>
     <li><strong>Schema too clever</strong> — deep nesting and optional everything; model flails; simplify.</li>
-    <li><strong>Valid JSON, invalid business rule</strong> — types pass but <code>user_id</code> belongs to another tenant — validators must include authz invariants.</li>
+    <li><strong>Valid JSON, invalid business rule</strong> — types pass but <code>user_id</code> belongs to another tenant — validators must include authorization invariants.</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
@@ -213,6 +240,7 @@ print(parse_search_query(good))</code></pre>
     <li><strong>Repair / retry loop</strong> — Re-prompting with validator errors to fix output.</li>
     <li><strong>Fail closed</strong> — Refuse the action when validation fails.</li>
     <li><strong>Grammar / constrained decoding</strong> — Generation restricted to strings that match a schema or grammar.</li>
+    <li><strong>Pydantic</strong> — Python library for data validation and schema generation.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

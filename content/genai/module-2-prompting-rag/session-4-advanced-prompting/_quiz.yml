@@ -1,82 +1,91 @@
 title: "2.4 Advanced Prompting"
 questions:
-  - q: "In a production prompt, what is the main job of prompt engineering?"
+  - q: "What is prompt engineering in one sentence?"
     options:
-      - "Retrain weights for every new ticket type"
-      - "Close degrees of freedom with role, task, context, format, and quality bars"
-      - "Maximize prompt length until the context window overflows"
-      - "Replace retrieval so documents are never needed"
-    answer: 1
-    why: "Strong prompts constrain unspecified choices so outputs become predictable enough to ship and evaluate."
+      - "The practice of shaping instructions so an LLM gives the kind of answer you want"
+      - "Retraining model weights for every new ticket type"
+      - "Maximizing prompt length until the context window overflows"
+      - "Replacing retrieval so documents are never needed"
+    answer: 0
+    why: "Prompt engineering is about wording and structure at inference time — not weight updates."
 
-  - q: "When is chain-of-thought most helpful versus harmful?"
+  - q: "What does temperature control during generation?"
     options:
-      - "Always harmful because reasoning tokens are illegal"
-      - "Helpful for multi-step policy/math; often wasteful for strict JSON extraction under tight latency"
-      - "Required for every single-token classification"
-      - "Only useful when temperature is 2.0"
-    answer: 1
-    why: "Scratch-pad reasoning helps hard multi-step tasks; structured extraction often wants direct, short answers."
+      - "How random, creative, or deterministic the next token choice is"
+      - "The GPU clock speed"
+      - "The number of training epochs"
+      - "The size of the embedding table"
+    answer: 0
+    why: "Low temperature = safer and more repetitive; high temperature = more varied outputs."
 
-  - q: "Few-shot exemplars fail in production most often when..."
+  - q: "What is zero-shot prompting?"
     options:
-      - "They demonstrate the exact I/O contract and edge cases"
-      - "They are inconsistent with each other or with the written rules"
-      - "There are zero examples and a crystal-clear schema"
-      - "They are stored in the system channel intentionally"
-    answer: 1
-    why: "Models imitate conflicting demonstrations; inconsistent few-shots teach noise."
+      - "Asking the model to do the task without any examples"
+      - "Training the model on zero data"
+      - "Using zero tokens in the prompt"
+      - "Disabling the system message"
+    answer: 0
+    why: "Zero-shot means instruction only — no worked examples in the prompt."
+
+  - q: "Why does chain-of-thought prompting often help?"
+    options:
+      - "Because breaking the problem into steps helps the model reason more carefully"
+      - "Because reasoning tokens are always free"
+      - "Because it changes model weights permanently"
+      - "Because it removes the need for evaluation"
+    answer: 0
+    why: "Step-by-step reasoning gives room to check intermediate work before the final answer."
+
+  - q: "What does self-consistency do with multiple reasoning paths?"
+    options:
+      - "Samples several paths and chooses the answer that appears most consistently"
+      - "Deletes all but one model checkpoint"
+      - "Forces temperature to zero forever"
+      - "Removes few-shot examples"
+    answer: 0
+    why: "Majority voting across diverse reasoning traces can surface a more stable final answer."
+
+  - q: "What three things happen in a ReAct loop?"
+    options:
+      - "Thought, action, and observation — repeated"
+      - "Train, validate, and test"
+      - "Encode, attend, and decode"
+      - "Prompt, fine-tune, and deploy"
+    answer: 0
+    why: "ReAct alternates reasoning with tool actions and reads the results before continuing."
 
   - q: "Where should durable product policy and safety rules usually live?"
     options:
-      - "Only in the latest user message"
       - "In the system or developer message"
+      - "Only in the latest user message"
       - "Inside retrieved ads copy"
-      - "In the assistant’s previous joke"
-    answer: 1
+      - "In the assistant's previous joke"
+    answer: 0
     why: "System/developer messages are high-privilege instructions; ephemeral tasks belong in the user channel."
 
-  - q: "An output contract is incomplete if you only..."
+  - q: "What is prompt chaining useful for?"
     options:
-      - "Define schema, examples, validators, and repair/fail behavior"
-      - "Say 'respond in JSON' with no fields, types, or validation"
-      - "Pin field names and enums the parser expects"
-      - "Reject payloads that fail schema checks"
-    answer: 1
-    why: "Vague 'use JSON' does not specify shape; contracts need fields, types, and enforcement."
+      - "Breaking a complex task into smaller calls whose outputs feed the next step"
+      - "Linking multiple GPUs in parallel"
+      - "Chaining database transactions only"
+      - "Avoiding all validation"
+    answer: 0
+    why: "Multi-step pipelines are easier to verify than one mega-prompt."
 
-  - q: "You change a prompt and offline accuracy looks fine, but a week later a silent format drift breaks parsers. What was missing?"
+  - q: "What is hallucination in an LLM?"
     options:
-      - "More emojis in the system prompt"
-      - "Regression tests that assert schema validity and golden cases on every prompt change"
-      - "Deleting version control for prompts"
-      - "Raising temperature after each deploy"
-    answer: 1
-    why: "Prompt eval/regression suites catch format and behavior drift before production parsers fail."
-
-  - q: "Role design for a billing assistant should prioritize..."
-    options:
-      - "Unlimited tool use with no scope"
-      - "Clear authority boundaries: what it can decide, what it must escalate, what it must never invent"
-      - "Speaking only in iambic pentameter"
-      - "Hiding the company refund policy from itself"
-    answer: 1
-    why: "Roles encode permissions and refusal/escalation norms, not just a persona nickname."
-
-  - q: "A prompt lists 40 edge cases in bullet form and still fails new ones. Better strategy?"
-    options:
-      - "Add 40 more bullets forever"
-      - "State general principles + a few sharp exemplars, then retrieve policy docs for specifics"
-      - "Remove all instructions"
-      - "Fine-tune on a single example"
-    answer: 1
-    why: "Endless case lists do not scale; principles plus retrieval cover long-tail policy better."
+      - "A confident but false or invented answer"
+      - "A faster decoding algorithm"
+      - "A type of GPU memory error"
+      - "A synonym for chain-of-thought"
+    answer: 0
+    why: "Fluent text is not the same as true text — models can invent facts confidently."
 
   - q: "For regression testing prompts, a golden set should include..."
     options:
+      - "Happy paths, adversarial inputs, and schema-stress cases"
       - "Only the easiest happy-path query"
-      - "Happy paths, adversarial/jailbreak-ish inputs, and schema-stress cases"
       - "Random Unicode only"
-      - "Nothing—manual vibe checks suffice at scale"
-    answer: 1
-    why: "Coverage across failure modes is how prompt changes stay safe; one happy path hides regressions."
+      - "Nothing — manual vibe checks suffice at scale"
+    answer: 0
+    why: "Coverage across failure modes catches regressions that one easy case hides."

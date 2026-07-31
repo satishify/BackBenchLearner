@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Design prompts and output contracts for the three workhorse tasks—summarization, question answering, and classification—with checks that survive production.">
+  <meta name="description" content="Design prompts and output contracts for the three workhorse tasks — summarization, question answering, and classification — with checks that survive production.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-2-structured-evals/task-prompting-summarize-qa-classify.html">
   <meta property="og:title" content="Task Prompting: Summarize, QA, Classify | BackbenchLearner">
-  <meta property="og:description" content="Design prompts and output contracts for the three workhorse tasks—summarization, question answering, and classification—with checks that survive production.">
+  <meta property="og:description" content="Design prompts and output contracts for the three workhorse tasks — summarization, question answering, and classification — with checks that survive production.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-2-structured-evals/task-prompting-summarize-qa-classify.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Task Prompting: Summarize, QA, Classify | BackbenchLearner">
-  <meta name="twitter:description" content="Design prompts and output contracts for the three workhorse tasks—summarization, question answering, and classification—with checks that survive production.">
+  <meta name="twitter:description" content="Design prompts and output contracts for the three workhorse tasks — summarization, question answering, and classification — with checks that survive production.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,31 +36,55 @@
       <h1>Task Prompting: Summarize, QA, Classify</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Most business LLM traffic is not open-ended creativity. It is <strong>summarize this</strong>, <strong>answer from that</strong>, or <strong>label as one of these</strong>. Task prompting means picking the right shape of instructions, context, and output contract for each job so models stay useful and your validators stay boring.</p>
+    <p>Most business LLM traffic is not open-ended creativity. It is <strong>summarize this</strong>, <strong>answer from that</strong>, or <strong>label as one of these</strong>. <strong>Task prompting</strong> means picking the right shape of instructions, context, and output contract for each job so models stay useful and your validators stay boring.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think in verbs, not vibes.</p>
-    <ul>
-    <li><strong>Summarize</strong> compresses; the risk is invention and lost nuance.</li>
-    <li><strong>QA</strong> selects and states; the risk is answering beyond the evidence.</li>
-    <li><strong>Classify</strong> chooses from a closed set; the risk is fluent free-text labels you cannot count on.</li>
-    </ul>
-    <p>Each verb wants a different system prompt, a different temperature (usually low), and a different success test. Reusing one “helpful assistant” blob for all three is how summaries grow citations that were never in the source and classifiers emit poetry.</p>
+    <p><strong>Why think in verbs, not vibes?</strong></p>
+    <table>
+      <thead><tr>
+        <th>Task</th>
+        <th>Plain-English idea</th>
+        <th>Main risk</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Summarize</strong></td>
+          <td>Compress while keeping key facts</td>
+          <td>Invention and lost nuance</td>
+        </tr>
+        <tr>
+          <td><strong>QA (question answering)</strong></td>
+          <td>Select and state from evidence</td>
+          <td>Answering beyond the evidence</td>
+        </tr>
+        <tr>
+          <td><strong>Classify</strong></td>
+          <td>Choose from a closed set of labels</td>
+          <td>Fluent free-text labels you cannot count on</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Each verb wants a different system prompt, a different temperature (usually low), and a different success test. Reusing one &quot;helpful assistant&quot; blob for all three is how summaries grow citations that were never in the source and classifiers emit poetry.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Write the grader before the prompt. If you cannot say what “done” means, the model will invent a meaning.</p>
+    <p>Write the grader before the prompt. If you cannot say what &quot;done&quot; means, the model will invent a meaning.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Summarization</h3>
     <p><strong>Goal.</strong> Shorter artifact that preserves decisions, numbers, and owners the reader needs.</p>
+    <p><strong>What the prompt should specify beyond the source text:</strong></p>
+    <ul>
+    <li>The <strong>audience</strong> (executive, engineer, retail investor)</li>
+    <li>The <strong>length limit</strong> (one sentence, 5 bullets, 200 words)</li>
+    <li>What information to <strong>keep</strong> (revenue growth, risks) and <strong>omit</strong> (boilerplate)</li>
+    </ul>
     <p><strong>Prompt pattern.</strong></p>
     <ol>
-    <li>Role: “summarizer for busy operators.”</li>
-    <li>Constraints: length budget (sentences or tokens), audience, must-keep fields (dates, amounts, action items).</li>
+    <li>Role: &quot;summarizer for busy operators.&quot;</li>
+    <li>Constraints: length budget, must-keep fields (dates, amounts, action items).</li>
     <li>Ban: new facts not in the source; hedging filler.</li>
     <li>Structure: bullets or sections the UI already knows how to render.</li>
     </ol>
-    <p><strong>Eval signals.</strong> Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim -&gt; span in source). Prefer extractive anchors for numbers (“$4,200 as written in source”).</p>
-    <p><strong>Variants.</strong> Executive brief vs changelog vs “action items only.” Do not ask one prompt to be all three without an explicit mode flag.</p>
+    <p><strong>Eval signals.</strong> Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim → span in source).</p>
     <h3>Question answering</h3>
     <p><strong>Goal.</strong> Correct answer grounded in provided context (closed-book only when you truly want parametric knowledge).</p>
     <p><strong>Prompt pattern.</strong></p>
@@ -70,9 +94,10 @@
     <li>Ask for short answers plus optional citation markers (<code>[doc_id]</code>) when RAG-fed.</li>
     <li>Temperature near 0 for factual QA.</li>
     </ol>
-    <p><strong>Eval signals.</strong> Exact match / token F1 against gold for short answers; faithfulness rubrics for long ones; refusal correctness on unanswerable items. Include adversarial context that almost-but-not-quite answers the question.</p>
+    <p><strong>Why &quot;answer only from context&quot; is safer:</strong> it grounds the model in supplied evidence and reduces hallucination outside the context. Uncertainty is the correct behavior when the answer is not in the provided text.</p>
+    <p><strong>Eval signals.</strong> Exact match / token F1 against gold for short answers; faithfulness rubrics for long ones; refusal correctness on unanswerable items.</p>
     <h3>Classification</h3>
-    <p><strong>Goal.</strong> Map input -&gt; label from a fixed taxonomy (plus optional confidence / secondary tags).</p>
+    <p><strong>Goal.</strong> Map input → label from a fixed taxonomy (plus optional confidence / secondary tags).</p>
     <p><strong>Prompt pattern.</strong></p>
     <ol>
     <li>List labels with one-line definitions and boundary examples.</li>
@@ -81,6 +106,8 @@
     <li>Include an <code>other</code> / <code>needs_review</code> bucket so the model is not forced to lie.</li>
     </ol>
     <p><strong>Eval signals.</strong> Accuracy / macro-F1 on a labeled set; calibration of confidence; rate of invalid labels (should be ~0 with validation + repair).</p>
+    <h3>Reasoning and code (brief)</h3>
+    <p>Reasoning tasks benefit from explicit intermediate steps. Code tasks benefit from precise language, input/output examples, and a request for clean, runnable code. For production systems, pair the generation with tests, not just a nice-looking answer.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -93,6 +120,42 @@ flowchart TB
   C --> V
       </div>
     </div>
+    <h3>Evaluation mindset</h3>
+    <table>
+      <thead><tr>
+        <th>Evaluation style</th>
+        <th>Good for</th>
+        <th>Caution</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Statistical metrics (exact match, F1, ROUGE, BLEU)</td>
+          <td>Quick automated checks</td>
+          <td>May miss semantic correctness</td>
+        </tr>
+        <tr>
+          <td>Semantic metrics (BERTScore, similarity)</td>
+          <td>Paraphrase-friendly grading</td>
+          <td>Can reward answers that sound right but are wrong</td>
+        </tr>
+        <tr>
+          <td>Human evaluation</td>
+          <td>Subjective quality and utility</td>
+          <td>Slow and expensive</td>
+        </tr>
+        <tr>
+          <td>LLM-as-a-judge</td>
+          <td>Fast screening and comparisons</td>
+          <td>Can be biased and prompt-sensitive</td>
+        </tr>
+        <tr>
+          <td>Schema validation</td>
+          <td>Structured outputs</td>
+          <td>Either conforms or it does not</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>For summarization, use ROUGE plus human review when the stakes are real. For QA, exact match or F1 can help, but context-bound correctness matters more than string overlap. For structured outputs, schema validation is often the first real metric.</p>
     <h3>Shared discipline</h3>
     <ul>
     <li>One task per call when latency allows; chained pipelines beat mega-prompts.</li>
@@ -100,7 +163,7 @@ flowchart TB
     <li>Version prompts (<code>sum_v3</code>, <code>cls_billing_v2</code>) and run golden suites on change.</li>
     </ul>
     <h2 id="in-code">In code</h2>
-    <p>Three tiny prompt builders and a classifier validator — the skeleton you extend with real model calls.</p>
+    <p>Three tiny prompt builders and a classifier validator:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from dataclasses import dataclass
@@ -108,6 +171,7 @@ import json
 import re
 
 LABELS = {&quot;billing&quot;, &quot;shipping&quot;, &quot;product&quot;, &quot;other&quot;}
+
 
 def prompt_summarize(source: str, max_bullets: int = 5) -&gt; list[dict]:
     return [
@@ -119,6 +183,7 @@ def prompt_summarize(source: str, max_bullets: int = 5) -&gt; list[dict]:
         {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;SOURCE:\n{source}\n\nWrite the summary.&quot;},
     ]
 
+
 def prompt_qa(context: str, question: str) -&gt; list[dict]:
     return [
         {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: (
@@ -128,6 +193,7 @@ def prompt_qa(context: str, question: str) -&gt; list[dict]:
         )},
         {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;CONTEXT:\n{context}\n\nQUESTION:\n{question}&quot;},
     ]
+
 
 def prompt_classify(text: str) -&gt; list[dict]:
     defs = (
@@ -145,13 +211,14 @@ def prompt_classify(text: str) -&gt; list[dict]:
         {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: text},
     ]
 
+
 @dataclass
 class ClassResult:
     label: str
     confidence: float
 
+
 def parse_classify(raw: str) -&gt; ClassResult:
-    # strip optional fences
     cleaned = re.sub(r&quot;^```(?:json)?|```$&quot;, &quot;&quot;, raw.strip(), flags=re.I | re.M).strip()
     obj = json.loads(cleaned)
     label = str(obj[&quot;label&quot;]).lower().strip()
@@ -162,30 +229,31 @@ def parse_classify(raw: str) -&gt; ClassResult:
         raise ValueError(&quot;confidence out of range&quot;)
     return ClassResult(label, conf)
 
-# Demo without a model: validate a well-formed classifier output
+
 print(parse_classify(&#x27;{&quot;label&quot;: &quot;billing&quot;, &quot;confidence&quot;: 0.88}&#x27;))</code></pre>
     </div>
     <p>Wire <code>prompt_*</code> into your serving client; on <code>parse_classify</code> failure, retry once with the validator error text, then fall back to <code>other</code> / human review.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Summaries that “helpfully” complete the story.</strong> Missing root cause in the source becomes a guessed root cause in the bullet list. Ban speculation explicitly; grade with claim-span checks.</li>
-    <li><strong>QA without abstain.</strong> Models prefer a wrong answer to silence. Unanswerable cases must be in the golden set.</li>
-    <li><strong>Open-ended classify.</strong> “Label the sentiment” without an enum -&gt; <code>kinda negative-ish</code>. Schema + validator.</li>
-    <li><strong>One temperature for all.</strong> Creative 0.9 on classification invites drift; 0.0 on marketing rewrite sounds dead. Set per task.</li>
-    <li><strong>Context stuffing.</strong> Pasting entire PDFs for a yes/no question wastes tokens and buries the answer — chunk and retrieve first.</li>
-    <li><strong>Metric theater.</strong> ROUGE-high summaries that omit the only action item. Task metrics must match user harm.</li>
+    <li><strong>Summaries that &quot;helpfully&quot; complete the story</strong> — Missing root cause in the source becomes a guessed root cause in the bullet list.</li>
+    <li><strong>QA without abstain</strong> — Models prefer a wrong answer to silence. Unanswerable cases must be in the golden set.</li>
+    <li><strong>Open-ended classify</strong> — &quot;Label the sentiment&quot; without an enum → <code>kinda negative-ish</code>. Schema + validator.</li>
+    <li><strong>One temperature for all</strong> — Creative 0.9 on classification invites drift; 0.0 on marketing rewrite sounds dead.</li>
+    <li><strong>Context stuffing</strong> — Pasting entire PDFs for a yes/no question wastes tokens and buries the answer — chunk and retrieve first.</li>
+    <li><strong>Metric theater</strong> — ROUGE-high summaries that omit the only action item. Task metrics must match user harm.</li>
     </ul>
-    <p>Prefer bullets for summarize, shortest correct span for QA, and label-only (rationale offline) for classify. Combined tasks (“summarize then urgency”) should be two validated calls until each field is stable alone.</p>
+    <p>Prefer bullets for summarize, shortest correct span for QA, and label-only (rationale offline) for classify.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Task prompting means matching summarize / QA / classify to explicit contracts—compression with no new facts, grounded answers with abstention, and closed labels with validation—not one generic chat prompt.</p>
+    <p>Task prompting means matching summarize / QA / classify to explicit contracts — compression with no new facts, grounded answers with abstention, and closed labels with validation — not one generic chat prompt.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Task prompting:</strong> instructions and contracts specialized to a verb (summarize, QA, classify).</li>
-    <li><strong>Abstention:</strong> refusing to answer when evidence is missing.</li>
-    <li><strong>Closed taxonomy:</strong> fixed label set for classification.</li>
-    <li><strong>Faithfulness:</strong> claims in the output supported by provided source/context.</li>
-    <li><strong>Output contract:</strong> schema or format the caller validates.</li>
-    <li><strong>Golden set:</strong> fixed examples with expected properties used to regress prompts.</li>
+    <li><strong>Task prompting</strong> — Instructions and contracts specialized to a verb (summarize, QA, classify).</li>
+    <li><strong>Abstention</strong> — Refusing to answer when evidence is missing.</li>
+    <li><strong>Closed taxonomy</strong> — Fixed label set for classification.</li>
+    <li><strong>Faithfulness</strong> — Claims in the output supported by provided source/context.</li>
+    <li><strong>Output contract</strong> — Schema or format the caller validates.</li>
+    <li><strong>Golden set</strong> — Fixed examples with expected properties used to regress prompts.</li>
+    <li><strong>ROUGE</strong> — Recall-oriented metric often used for summarization evaluation.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

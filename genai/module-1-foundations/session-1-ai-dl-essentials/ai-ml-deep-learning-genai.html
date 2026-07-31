@@ -36,14 +36,20 @@
       <h1>AI vs ML vs Deep Learning vs Gen AI</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Job posts, product decks, and interview answers often mash <strong>AI</strong>, <strong>ML</strong>, <strong>deep learning</strong>, and <strong>Gen AI</strong> into one vague blob. Using the wrong label is not pedantry: it changes what data you need, how you evaluate success, and whether a rule engine, a classifier, or a generative model is even the right tool.</p>
+    <p>Job posts, product decks, and interview answers often mash <strong>AI</strong>, <strong>ML</strong>, <strong>deep learning</strong>, and <strong>GenAI</strong> into one vague blob. Using the wrong label is not pedantry — it changes what data you need, how you evaluate success, and whether a rule engine, a classifier, or a generative model is even the right tool.</p>
+    <ul>
+    <li><strong>AI</strong> is the broadest term: any system that behaves intelligently for a task, including hand-coded rules.</li>
+    <li><strong>ML</strong> sits inside AI: systems that improve from data instead of only hand-written rules.</li>
+    <li><strong>Deep learning (DL)</strong> sits inside ML: models built from stacked neural layers.</li>
+    <li><strong>GenAI</strong> is an application style — creating new content — not a fourth nested circle.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
     <p>Picture nested circles, then one overlapping blob on top:</p>
     <ul>
     <li><strong>AI</strong> is the outer circle: any system that behaves intelligently enough for a task — including hard-coded rules.</li>
     <li><strong>ML</strong> sits inside AI: systems that improve from data instead of only hand-written rules.</li>
     <li><strong>Deep learning (DL)</strong> sits inside ML: models built from stacked neural layers that learn representations from raw-ish inputs.</li>
-    <li><strong>Generative AI (Gen AI)</strong> is not a fourth nested circle. It is an <em>application style</em> — systems that create new content (text, images, code, audio). Most modern Gen AI is deep learning, but Gen AI can also use older generative tricks, and plenty of deep learning is <em>not</em> generative (e.g. image classifiers).</li>
+    <li><strong>Generative AI (GenAI)</strong> is not a fourth nested circle. It is an <em>application style</em> — systems that create new content (text, images, code, audio). Most modern GenAI is deep learning, but GenAI can also use older generative tricks, and plenty of deep learning is <em>not</em> generative (e.g. image classifiers).</li>
     </ul>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -62,40 +68,30 @@ flowchart TB
     </div>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Accurate nesting: <strong>AI includes ML includes DL</strong>. Gen AI <strong>overlaps</strong> those layers; it is not “the innermost ring.”</p>
+    <p>Accurate nesting: <strong>AI includes ML includes DL</strong>. GenAI <strong>overlaps</strong> those layers; it is not &quot;the innermost ring.&quot;</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Definitions that survive a whiteboard</h3>
     <table>
       <thead><tr>
-        <th>Term</th>
-        <th>Core idea</th>
-        <th>Typical output</th>
-        <th>Classic example</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td><strong>AI</strong></td>
-          <td>Goal-directed intelligent behavior by machine</td>
-          <td>Decisions, plans, answers</td>
-          <td>Chess engine with hand-tuned heuristics</td>
+          <td><strong>AI</strong> — goal-directed intelligent behavior by machine</td>
+          <td>Chess engine with hand-tuned heuristics; expert systems</td>
         </tr>
         <tr>
-          <td><strong>ML</strong></td>
-          <td>Learn patterns from examples</td>
-          <td>Labels, scores, rankings</td>
+          <td><strong>ML</strong> — learn patterns from examples</td>
           <td>Spam classifier trained on emails</td>
         </tr>
         <tr>
-          <td><strong>Deep learning</strong></td>
-          <td>Multi-layer neural nets learn features</td>
-          <td>Same as ML, often richer inputs</td>
-          <td>Face recognition from pixels</td>
+          <td><strong>Deep learning</strong> — multi-layer neural nets learn features from raw inputs</td>
+          <td>Face recognition from pixels; LLMs</td>
         </tr>
         <tr>
-          <td><strong>Gen AI</strong></td>
-          <td>Produce new samples that look like training data / prompts</td>
-          <td>Text, images, code, audio</td>
+          <td><strong>GenAI</strong> — produce new samples that look like training data or prompts</td>
           <td>Autocomplete a paragraph from a prompt</td>
         </tr>
       </tbody>
@@ -105,7 +101,7 @@ flowchart TB
     <li><strong>AI without ML</strong> — Expert systems, search, constraint solvers. Fast to explain, brittle outside the rule book.</li>
     <li><strong>ML without deep learning</strong> — Logistic regression, random forests, gradient boosting. Strong on tabular data; weaker when you must invent features for images or free text.</li>
     <li><strong>Deep learning</strong> — Learns features automatically when you have enough data and compute. Dominates vision, speech, and large language models.</li>
-    <li><strong>Gen AI</strong> — Shifts the product from “predict a class” to “produce an artifact.” Evaluation gets harder: there is rarely one correct paragraph.</li>
+    <li><strong>GenAI</strong> — Shifts the product from &quot;predict a class&quot; to &quot;produce an artifact.&quot; Evaluation gets harder: there is rarely one correct paragraph.</li>
     </ol>
     <h3>Decision guide: which term is accurate?</h3>
     <p>Ask these in order:</p>
@@ -113,14 +109,13 @@ flowchart TB
     <li><strong>Is any intelligence claim involved?</strong> If yes -&gt; at least <strong>AI</strong>.</li>
     <li><strong>Does it learn parameters from data?</strong> If yes -&gt; <strong>ML</strong> (and still AI). If no (pure rules) -&gt; say AI, not ML.</li>
     <li><strong>Is the learner a deep neural net?</strong> If yes -&gt; <strong>deep learning</strong>. If it is XGBoost on spreadsheet columns -&gt; ML, not DL.</li>
-    <li><strong>Does the product primarily create new content?</strong> If yes -&gt; <strong>Gen AI</strong> is fair. A fraud score of <code>0.87</code> is ML/DL, not Gen AI — even if the team branded the dashboard “AI.”</li>
+    <li><strong>Does the product primarily create new content?</strong> If yes -&gt; <strong>GenAI</strong> is fair. A fraud score of 0.87 is ML/DL, not GenAI — even if the team branded the dashboard &quot;AI.&quot;</li>
     </ol>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>In interviews, prefer the <em>most specific true</em> term. Calling a boosted tree “AI” is true but weak; calling a diffusion model “ML” is true but undersells what stakeholders care about.</p>
+    <p>In interviews, prefer the <em>most specific true</em> term. Calling a boosted tree &quot;AI&quot; is true but weak; calling a diffusion model &quot;ML&quot; is true but undersells what stakeholders care about.</p>
     </aside>
     <h3>How teams actually talk (and how to translate)</h3>
-    <p>Stakeholders often say one word and mean another. Translate before you design:</p>
     <table>
       <thead><tr>
         <th>They say</th>
@@ -129,30 +124,30 @@ flowchart TB
       </tr></thead>
       <tbody>
         <tr>
-          <td>“Add AI to search”</td>
-          <td>Ranking / embeddings / Gen AI answers</td>
+          <td>&quot;Add AI to search&quot;</td>
+          <td>Ranking / embeddings / GenAI answers</td>
           <td>Predict relevance, generate an answer, or both?</td>
         </tr>
         <tr>
-          <td>“ML model for support”</td>
+          <td>&quot;ML model for support&quot;</td>
           <td>Intent classifier <em>or</em> chatbot</td>
           <td>Label tickets or draft replies?</td>
         </tr>
         <tr>
-          <td>“Deep learning for fraud”</td>
+          <td>&quot;Deep learning for fraud&quot;</td>
           <td>Any ML, or specifically neural nets</td>
           <td>Tabular boosting vs sequence/graph nets?</td>
         </tr>
         <tr>
-          <td>“Gen AI for reports”</td>
+          <td>&quot;GenAI for reports&quot;</td>
           <td>Summaries, charts, or full narrative</td>
           <td>Who verifies numbers before publish?</td>
         </tr>
       </tbody>
     </table>
-    <p>If you cannot answer those clarifying questions, you do not yet know which circle on the Venn diagram you are building in.</p>
+    <p>If you cannot answer those clarifying questions, you do not yet know which circle on the diagram you are building in.</p>
     <h3>Discriminative vs generative (quick cut)</h3>
-    <p>Inside ML you will also hear <strong>discriminative</strong> vs <strong>generative</strong> modeling. A discriminative spam filter outputs <code>P(spam | email)</code>. A generative system produces a new email that <em>looks like</em> support replies. Gen AI products sit in the generative camp for <em>content</em>; many deep nets in production remain discriminative (detect, rank, classify). Confusing those two is how teams buy a chat API when they needed a calibrated score.</p>
+    <p>Inside ML you will also hear <strong>discriminative</strong> vs <strong>generative</strong> modeling. A discriminative spam filter outputs the probability of spam given an email. A generative system produces a new email that <em>looks like</em> support replies. GenAI products sit in the generative camp for <em>content</em>; many deep nets in production remain discriminative (detect, rank, classify). Confusing those two is how teams buy a chat API when they needed a calibrated score.</p>
     <h2 id="worked-example">Worked example</h2>
     <p>A payments team ships three features. Label them carefully:</p>
     <table>
@@ -170,12 +165,12 @@ flowchart TB
         <tr>
           <td>Flag likely fraud from historical transactions</td>
           <td>Gradient-boosted trees on features</td>
-          <td>ML (not DL, not Gen AI)</td>
+          <td>ML (not DL, not GenAI)</td>
         </tr>
         <tr>
           <td>Draft a dispute email from a case summary</td>
           <td>Large language model</td>
-          <td>Gen AI powered by deep learning (hence also ML and AI)</td>
+          <td>GenAI powered by deep learning (hence also ML and AI)</td>
         </tr>
       </tbody>
     </table>
@@ -204,7 +199,7 @@ print(label_system(True, True, False))
 print(label_system(True, True, True))
 # AI + ML + deep learning + Gen AI</code></pre>
     </div>
-    <p>The last print uses <code>+</code> on purpose: Gen AI is an overlapping capability, not a strict subset of deep learning forever — even though today’s popular Gen AI <em>is</em> deep learning.</p>
+    <p>The last print uses <code>+</code> on purpose: GenAI is an overlapping capability, not a strict subset of deep learning forever — even though today&#x27;s popular GenAI <em>is</em> deep learning.</p>
     <p>Add one more feature and force a precise sentence for the design doc:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -218,27 +213,27 @@ print(label_system(True, True, True))
 for name, learn, deep, gen in cases:
     print(f&quot;{name}: {label_system(learn, deep, gen)}&quot;)</code></pre>
     </div>
-    <p>Expected mental labels: rules = AI only; boosting = AI includes ML; KYC CNN = AI includes ML includes deep learning; dispute draft = all four tags with Gen AI called out as the product shape.</p>
+    <p>Expected mental labels: rules = AI only; boosting = AI includes ML; KYC CNN = AI includes ML includes deep learning; dispute draft = all four tags with GenAI called out as the product shape.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Vendor inflation</strong> — Every autocomplete is sold as “AI.” Buyers cannot compare cost, latency, or risk when labels are mush.</li>
-    <li><strong>Wrong architecture from wrong label</strong> — Treating a Gen AI chat as a SQL database (“the model knows our inventory”) fails; you need retrieval or tools.</li>
-    <li><strong>Wrong evaluation</strong> — Accuracy fits classifiers; Gen AI needs human review, rubrics, or task success rates.</li>
-    <li><strong>Wrong data story</strong> — Classic ML may need curated labels. Gen AI pretraining needs huge corpora; fine-tuning needs carefully scoped examples. Mixing those budgets wastes months.</li>
-    <li><strong>Hierarchy mistakes in diagrams</strong> — Drawing Gen AI <em>inside</em> deep learning as the only path forgets non-neural generators and non-generative deep nets.</li>
+    <li><strong>Vendor inflation</strong> — Every autocomplete is sold as &quot;AI.&quot; Buyers cannot compare cost, latency, or risk when labels are mush.</li>
+    <li><strong>Wrong architecture from wrong label</strong> — Treating a GenAI chat as a SQL database (&quot;the model knows our inventory&quot;) fails; you need retrieval or tools.</li>
+    <li><strong>Wrong evaluation</strong> — Accuracy fits classifiers; GenAI needs human review, rubrics, or task success rates.</li>
+    <li><strong>Wrong data story</strong> — Classic ML may need curated labels. GenAI pretraining needs huge corpora; fine-tuning needs carefully scoped examples. Mixing those budgets wastes months.</li>
+    <li><strong>Hierarchy mistakes in diagrams</strong> — Drawing GenAI <em>inside</em> deep learning as the only path forgets non-neural generators and non-generative deep nets.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
-    <p>Saying “we use AI” in a design doc is almost useless. Name the learning method, the modality, and whether the system predicts or generates.</p>
+    <p>Saying &quot;we use AI&quot; in a design doc is almost useless. Name the learning method, the modality, and whether the system predicts or generates.</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p><strong>AI</strong> is the broad field; <strong>ML</strong> learns from data; <strong>deep learning</strong> is neural ML; <strong>Gen AI</strong> is the content-creating application area that usually rides on deep learning but is not the innermost circle of the hierarchy.</p>
+    <p><strong>AI</strong> is the broad field; <strong>ML</strong> learns from data; <strong>deep learning</strong> is neural ML; <strong>GenAI</strong> is the content-creating application area that usually rides on deep learning but is not the innermost circle of the hierarchy.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Artificial Intelligence (AI)</strong> — Machines performing tasks associated with intelligent behavior.</li>
     <li><strong>Machine Learning (ML)</strong> — Systems that improve performance by learning from data.</li>
     <li><strong>Deep Learning (DL)</strong> — ML using multi-layer neural networks that learn hierarchical representations.</li>
-    <li><strong>Generative AI (Gen AI)</strong> — AI systems that synthesize new content rather than only classify or score.</li>
+    <li><strong>Generative AI (GenAI)</strong> — AI systems that synthesize new content rather than only classify or score.</li>
     <li><strong>Discriminative model</strong> — Predicts labels or boundaries (e.g. spam vs not spam), opposite flavor from generative content models.</li>
     <li><strong>Representation learning</strong> — Automatically discovering useful features from raw inputs, a hallmark of deep learning.</li>
     </ul>

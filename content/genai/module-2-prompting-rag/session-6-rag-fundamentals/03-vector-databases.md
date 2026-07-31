@@ -1,13 +1,20 @@
 ---
 title: "Vector Databases"
-description: "Store embeddings, run approximate nearest-neighbor search, filter with metadata, and operate indexes for RAG at scale."
+description: "Store embeddings, run fast similarity search, filter with metadata, and operate indexes for RAG at scale."
 ---
 
-A **vector database** (or vector index inside a general store) persists embeddings and serves nearest-neighbor queries fast enough for interactive RAG. At ten documents, a numpy scan is fine. At ten million chunks, you need indexing, filtering, replication, and operational discipline — that is the product category vector DBs occupy.
+A **vector database** (or vector index inside a general store) saves embeddings and answers "which stored vectors are closest to my query?" fast enough for interactive RAG. At ten documents, a simple loop in numpy is fine. At ten million chunks, you need indexing, filtering, and operational discipline.
 
 ## Intuition
 
-Think of a library that shelves books not by title alone but by “topic coordinates.” When a question arrives, the librarian walks to the right region of the shelves instead of reading every spine. Exact search would compare the query to every vector (`O(n)`). Approximate indexes (HNSW, IVF, product quantization) jump through a graph or coarse clusters to find *mostly* the best neighbors in sublinear time. You trade a little recall for orders-of-magnitude speed.
+Think of a library shelved by "topic coordinates." When a question arrives, the librarian walks to the right region instead of reading every spine.
+
+| Approach | Plain-English idea | Trade-off |
+| --- | --- | --- |
+| **Brute-force KNN (k-nearest neighbors)** | Compare query to every vector | Exact but slow at scale |
+| **ANN (approximate nearest neighbor)** | Skip most vectors using smart indexes | Much faster; may miss a true neighbor |
+
+Common **ANN** methods include **HNSW** (hierarchical navigable small world graph), **IVF** (inverted file index), and **PQ** (product quantization). You trade a little recall for huge speed and memory savings.
 
 ```mermaid
 flowchart TB
@@ -20,30 +27,36 @@ flowchart TB
 
 ## How it works
 
-**Core API.**
+### Core API
 
-- **Upsert:** store `id -> vector`, plus metadata (`source`, `tenant`, `updated_at`).
-- **Query:** vector + `top_k` + optional metadata filter (`tenant = acme AND lang = en`).
-- **Delete / tombstone:** remove outdated chunks when docs change.
+- **Upsert** — Store `id → vector` plus metadata (`source`, `tenant`, `updated_at`).
+- **Query** — Vector + `top_k` + optional metadata filter (`tenant = acme AND lang = en`).
+- **Delete** — Remove outdated chunks when documents change.
 
-**Indexes (conceptual).**
+### Index types (conceptual)
 
-- **Flat / brute force:** exact, great for small corpora and recall baselines.
-- **HNSW:** graph of near neighbors; strong recall/latency trade-off; memory hungry.
-- **IVF / clustering:** probe a few clusters; good at scale with tuning.
-- **PQ / compression:** store coarse codes to shrink RAM at some quality cost.
+| Index | Plain-English idea | Good when |
+| --- | --- | --- |
+| **Flat / brute force** | Compare to every vector | Small corpora, recall baselines |
+| **HNSW** | Layered graph of near neighbors | Strong recall/latency on CPU; RAM-heavy |
+| **IVF** | Cluster vectors; search only nearby buckets | Millions of vectors with tuning |
+| **PQ** | Compress vectors into short codes | Tight memory budgets |
 
-**Metadata filtering.** Essential for multi-tenant SaaS and ACL. Filter-then-search vs search-then-filter changes performance; engines differ. Always enforce authorization in your app layer too — the index filter is necessary but not sufficient if misconfigured.
+### Metadata filtering
 
-**Hybrid storage.** Many teams keep keywords in Elasticsearch/OpenSearch and vectors in a specialist (or use one engine that does both). Postgres + `pgvector` is a popular starting point when operational simplicity beats peak ANN performance.
+Essential for multi-tenant apps and access control. Always enforce authorization in your app layer too—the index filter is necessary but not sufficient if misconfigured.
 
-**Common systems.** Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension x cardinality.
+### Common systems
 
-**Operations.** Version embedding models: a model change requires **full re-embed**. Track index build time, recall@k vs a flat baseline, p95 query latency, and staleness of upserts. Back up ids and metadata; vectors can be regenerated if you keep source text.
+Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model, filter strength, hybrid search, and cost at your scale.
+
+### Operations
+
+A model change requires **full re-embed**. Track index build time, recall@k vs a flat baseline, p95 query latency, and how stale upserts are. Store canonical text elsewhere; the vector store is an index, not your CMS.
 
 ## In code
 
-Simulate a tiny in-memory vector store with cosine search and metadata filters — the mental model behind every hosted API.
+A tiny in-memory vector store with cosine search and metadata filters.
 
 ```python
 import numpy as np
@@ -88,22 +101,15 @@ Production APIs mirror `upsert` / `query`; the difference is ANN structures, dur
 
 ## What goes wrong
 
-- **Silent model skew.** Half the corpus embedded with `text-emb-3`, new docs with another model — scores become meaningless. Pin and migrate atomically.
-- **Filter bugs.** Forgetting `tenant` in the query leaks another customer’s chunks into the prompt.
-- **Over-sharding early.** Premature multi-index complexity; start simple, measure recall and latency, then specialize.
-- **Unbounded k.** Huge `top_k` into the LLM blows tokens; the DB is happy, your bill is not. Re-rank down.
-- **Treating the DB as source of truth for text.** Store canonical documents elsewhere; the vector store is an index, not your CMS.
-- **Ignoring delete/re-index.** Updated PDFs leave ghost chunks that contradict new policy.
+- **Silent model skew** — Half the corpus embedded with one model, new docs with another; scores become meaningless.
+- **Filter bugs** — Forgetting `tenant` in the query leaks another customer's chunks into the prompt.
+- **Unbounded k** — Huge `top_k` blows token cost; the DB is happy, your bill is not.
+- **DB as source of truth** — Store canonical documents elsewhere; vectors can be regenerated from text.
+- **Ignoring deletes** — Updated PDFs leave ghost chunks that contradict new policy.
 
-## Operating indexes without drama
-
-**Capacity planning.** Memory roughly scales with `num_vectors * dimensions * bytes_per_dim` plus graph overhead for HNSW. Quantization reduces RAM at a recall cost — measure before celebrating the savings. Disk-based indexes help huge corpora but add latency variance.
-
-**Blue/green re-embeds.** When switching embedding models, build a parallel collection, backfill, flip traffic on recall/latency gates, then delete the old collection. Half-migrated corpora are a classic outage class: queries and docs in different geometries.
-
-**SLOs worth having.** p95 query latency, upsert lag (time from doc publish to searchable), and recall@k versus a flat sample. Alert on upsert lag; stale policy is a correctness bug, not a cosmetic delay.
-
-**Local vs managed.** `pgvector` or a lightweight engine is perfect for learning and early products. Managed specialist stores buy ops time when you need multi-region, strong hybrid, or billion-scale ANN. Migrate when metrics — not Twitter threads — say you must.
+:::key
+When switching embedding models, build a parallel collection, backfill, flip traffic, then delete the old one. Half-migrated corpora are a classic outage.
+:::
 
 ## One-line summary
 
@@ -111,9 +117,10 @@ Vector databases index embeddings for fast approximate similarity search with me
 
 ## Key terms
 
-- **Vector database / index:** store optimized for nearest-neighbor lookup over embeddings.
-- **ANN (HNSW, IVF, PQ):** approximate indexes trading recall for speed/memory.
+- **Vector database:** store optimized for nearest-neighbor lookup over embeddings.
+- **KNN (k-nearest neighbors):** brute-force search comparing the query to every vector.
+- **ANN:** approximate nearest neighbor search—fast with possible missed neighbors.
 - **Upsert:** insert or update a vector and its metadata.
-- **Metadata filter:** constraining search by fields like tenant, date, or language.
+- **Metadata filter:** constrain search by tenant, date, language, etc.
 - **Recall@k:** fraction of true neighbors found in the top k under approximation.
 - **Re-embedding:** recomputing vectors after an embedding-model change.

@@ -36,13 +36,19 @@
       <h1>What is Deep Learning</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Deep learning is machine learning with <em>multi-layer</em> neural networks that learn their own features. Instead of hand-crafting “edges” or “bag-of-words” signals, the model transforms raw inputs through stacked layers until later layers hold task-ready representations. That shift unlocked modern vision, speech, and the large language models behind GenAI. If classical ML is “engineer features, then fit a model,” deep learning often collapses those steps into one trainable pipeline.</p>
+    <p>Deep learning is machine learning with <strong>multi-layer neural networks</strong> that learn their own features from raw inputs. It exists because many problems — images, speech, language — are too rich to hand-engineer every signal.</p>
+    <ul>
+    <li><strong>Depth</strong> means many stacked layers, each doing a linear transform plus a nonlinearity.</li>
+    <li>Early layers pick up <strong>simple patterns</strong>; deeper layers combine them into <strong>higher-level concepts</strong>.</li>
+    <li>Without nonlinearities, stacking layers collapses to one big linear map — depth would buy nothing.</li>
+    <li>Most GenAI building blocks (transformers, diffusion models) are deep networks.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>Classical ML often looks like: engineer features -&gt; train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them into concepts — from pixels to textures to objects, or from tokens to phrases to discourse.</p>
-    <p>“Depth” means many successive nonlinear transforms. Each layer is usually a linear map (weights + bias) followed by a nonlinearity (ReLU, GELU, etc.). Without nonlinearities, stacking layers collapses to one big linear map — depth would buy nothing. With nonlinearities, composition can carve intricate decision regions and rich embeddings.</p>
-    <p>Why care as a practitioner? Because many GenAI components <em>are</em> deep nets: transformers, convolutional backbones, diffusion U-Nets. Understanding depth and representation learning clarifies why these models need large data, why fine-tuning works, and why a shallow model on raw pixels usually fails.</p>
+    <p>Classical ML often looks like: engineer features -&gt; train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them — from pixels to textures to objects, or from tokens to phrases to meaning.</p>
+    <p>&quot;Depth&quot; means many successive nonlinear transforms. Each layer is usually a linear map (weights plus bias) followed by a nonlinearity (ReLU, GELU, etc.). With nonlinearities, composition can carve intricate decision regions and rich embeddings.</p>
+    <p>Why care as a practitioner? Because many GenAI components <strong>are</strong> deep nets: transformers, convolutional backbones, diffusion U-Nets. Understanding depth and representation learning clarifies why these models need large data, why fine-tuning works, and why a shallow model on raw pixels usually fails.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Neural networks.</strong> A network is a composition of layers. For a vector <code>x</code>:</p>
+    <p><strong>Neural networks.</strong> A network is a composition of layers. For a vector x:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">h1 = activation(W1 * x  + b1)
@@ -50,31 +56,27 @@ h2 = activation(W2 * h1 + b2)
 ...
 y_hat = WL * h(L-1) + bL</code></pre>
     </div>
-    <p>Training adjusts all <code>W, b</code> with gradient-based optimization (backpropagation + SGD/Adam) to reduce a loss on labeled (or self-supervised) data. Modern stacks add normalization, residual skip connections, attention, and careful initialization so gradients can travel through dozens or hundreds of layers.</p>
-    <p><strong>Why depth helps.</strong> A deep stack can approximate complex functions more <em>efficiently</em> than a single wide shallow layer for many structured problems: hierarchical composition matches how language and vision are organized. Empirically, with enough data and compute, deeper models keep improving where hand-built features plateau. Depth is not free — optimization gets harder, and overfitting risk rises — but for raw signals it is often the winning inductive bias.</p>
-    <p><strong>Relationship to neural networks.</strong> Deep learning is not a different species from “neural nets” — it is the practice of training <em>deep</em> ones (many layers), often with modern tricks: better activations, normalization, residual connections, attention, large-scale data, and GPUs/TPUs. A single perceptron is a neural network; a 96-layer transformer is deep learning. Same family, different scale and architecture.</p>
-    <p><strong>When DL wins vs classical ML.</strong></p>
+    <p>Training adjusts all weights and biases with gradient-based optimization (<strong>backpropagation</strong> plus stochastic gradient descent (SGD) or Adam) to reduce a loss on labeled (or self-supervised) data. Modern stacks add normalization, residual skip connections, attention, and careful initialization so gradients can travel through dozens or hundreds of layers.</p>
+    <p><strong>Why depth helps.</strong> A deep stack can approximate complex functions more <strong>efficiently</strong> than a single wide shallow layer for many structured problems: hierarchical composition matches how language and vision are organized. Empirically, with enough data and compute, deeper models keep improving where hand-built features plateau. Depth is not free — optimization gets harder, and overfitting risk rises — but for raw signals it is often the winning approach.</p>
+    <p><strong>Relationship to neural networks.</strong> Deep learning is not a different species from &quot;neural nets&quot; — it is the practice of training <strong>deep</strong> ones (many layers), often with modern tricks: better activations, normalization, residual connections, attention, large-scale data, and GPUs/TPUs. A single perceptron is a neural network; a 96-layer transformer is deep learning. Same family, different scale and architecture.</p>
+    <p><strong>When deep learning wins vs classical ML:</strong></p>
     <table>
       <thead><tr>
-        <th>Prefer classical ML when...</th>
-        <th>Prefer deep learning when...</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Tabular data is small/medium and well-featured</td>
-          <td>Inputs are raw and high-dimensional (images, audio, text)</td>
+          <td><strong>Classical ML</strong> — gradient boosting, random forests on well-engineered tabular features</td>
+          <td>Small or medium tabular data; you need strong interpretability and fast iteration</td>
         </tr>
         <tr>
-          <td>You need strong interpretability and fast iteration</td>
-          <td>End-to-end accuracy dominates and you have data/compute</td>
-        </tr>
-        <tr>
-          <td>Baselines (GBMs) already crush the metric</td>
-          <td>Hierarchies / sequences / pixels matter</td>
+          <td><strong>Deep learning</strong> — multi-layer nets on raw or lightly processed inputs</td>
+          <td>Raw high-dimensional inputs (images, audio, text); end-to-end accuracy matters and you have data and compute</td>
         </tr>
       </tbody>
     </table>
-    <p>Many strong systems are hybrids: classical models on engineered features <em>plus</em> deep embeddings from a neural net (for example, gradient boosting on tabular columns concatenated with a text embedding).</p>
+    <p>Many strong systems are hybrids: classical models on engineered features <strong>plus</strong> deep embeddings from a neural net (for example, gradient boosting on tabular columns concatenated with a text embedding).</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -113,15 +115,15 @@ probs = probs / probs.sum(axis=1, keepdims=True)
 print(&quot;hidden shape:&quot;, h.shape)
 print(&quot;probs:\n&quot;, np.round(probs, 3))</code></pre>
     </div>
-    <p>Training would add a loss (e.g. cross-entropy vs labels) and update <code>W1, b1, W2, b2</code> with gradients. The forward pass above is the core “what deep learning computes” before any optimizer enters the picture. Frameworks like PyTorch automate the backward pass; conceptually you are still chaining matrix multiplies and nonlinearities.</p>
+    <p>Training would add a loss (e.g. cross-entropy vs labels) and update W1, b1, W2, b2 with gradients. The forward pass above is the core &quot;what deep learning computes&quot; before any optimizer enters the picture. Frameworks like PyTorch automate the backward pass; conceptually you are still chaining matrix multiplies and nonlinearities.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Data hunger.</strong> Deep nets can underperform classical methods when labeled data is scarce and features are already good.</li>
     <li><strong>Overparameterization without discipline.</strong> Huge capacity memorizes; you need regularization, early stopping, data augmentation, or more data.</li>
     <li><strong>Compute and ops cost.</strong> Training and serving deep models need GPUs, careful batching, and monitoring — not free.</li>
     <li><strong>Opacity.</strong> Learned features are powerful but harder to audit than a short decision list.</li>
-    <li><strong>Wrong modality choice.</strong> Flattening images into classical features or ignoring sequence structure throws away the inductive bias that makes DL work.</li>
-    <li><strong>Unstable training.</strong> Bad learning rates, missing normalization, or vanishing/exploding gradients can make a “deep” model fail to learn at all.</li>
+    <li><strong>Wrong modality choice.</strong> Flattening images into classical features or ignoring sequence structure throws away the inductive bias that makes deep learning work.</li>
+    <li><strong>Unstable training.</strong> Bad learning rates, missing normalization, or vanishing/exploding gradients can make a &quot;deep&quot; model fail to learn at all.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Deep learning stacks nonlinear neural layers to learn hierarchical representations, excelling on raw high-dimensional data when classical feature engineering hits a wall.</p>
@@ -133,7 +135,7 @@ print(&quot;probs:\n&quot;, np.round(probs, 3))</code></pre>
     <li><strong>Representation learning</strong> — automatically discovering useful features from data</li>
     <li><strong>Activation / nonlinearity</strong> — function that enables deep stacks to model non-linear maps</li>
     <li><strong>Forward pass</strong> — computing outputs from inputs given current weights</li>
-    <li><strong>Backpropagation</strong> — algorithm for computing gradients of the loss w.r.t. weights</li>
+    <li><strong>Backpropagation</strong> — algorithm for computing gradients of the loss with respect to weights</li>
     <li><strong>Inductive bias</strong> — assumptions (hierarchy, locality, attention) that guide what a model learns easily</li>
     <li><strong>Embedding</strong> — vector representation learned for an input (token, image, user, etc.)</li>
     </ul>

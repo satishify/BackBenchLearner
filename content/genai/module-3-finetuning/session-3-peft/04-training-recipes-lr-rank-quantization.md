@@ -3,7 +3,7 @@ title: "Training Recipes: LR, Rank, and Quantization"
 description: "Practical LoRA/QLoRA hyperparameters—learning rates, rank, alpha, epochs, batching, and quantization choices that affect quality."
 ---
 
-PEFT fails more often from bad recipes than from bad theory. Learning rate, rank, epochs, and quantization interact. This lesson is a field guide for defaults that are sane for SFT-style LoRA—and how to tune when metrics stall.
+PEFT fails more often from bad recipes than from bad theory. Learning rate, rank, epochs, and quantization all interact. This lesson is a field guide for defaults that work for SFT-style LoRA—and how to tune when metrics stall.
 
 ## Intuition
 
@@ -17,26 +17,26 @@ Think in three knobs:
 Change one major knob at a time, and always re-check task lift vs anchor regressions.
 :::
 
-A common successful pattern: modest rank, slightly higher LR than full FT, one to two epochs on clean data, early stop on holdout.
+A common successful pattern: modest rank, slightly higher learning rate than full fine-tuning, one to two epochs on clean data, early stop on holdout.
 
 ## How it works
 
 ### Learning rate
 
-LoRA often tolerates **higher LRs** than full fine-tuning because few parameters move.
+LoRA often tolerates **higher learning rates** than full fine-tuning because only a few parameters move.
 
-| Setup | Typical starting LR (order of magnitude) |
+| Plain-English idea | When to use it |
 | --- | --- |
-| Full FT 7B | ~1e-5 to 2e-5 |
-| LoRA SFT 7B | ~1e-4 to 3e-4 |
-| Soft prompts | Often ~1e-3 to 5e-3 (very small param set) |
+| **Full FT ~1e-5 to 2e-5** | Updating every weight in a 7B model—small steps to avoid breaking the backbone. |
+| **LoRA SFT ~1e-4 to 3e-4** | Only adapter weights move—can push harder without destabilizing the base. |
+| **Soft prompts ~1e-3 to 5e-3** | Very tiny parameter set—often needs a higher learning rate to move at all. |
 
-Use cosine or linear decay with a short warmup. If loss spikes or anchors crash, cut LR by 2–5x.
+Use cosine or linear decay with a short warmup. If loss spikes or anchors crash, cut learning rate by 2–5x.
 
 ### Rank and alpha
 
 ```text
-effective_scale ~= alpha / r
+effective scale ~= alpha / r
 ```
 
 Recipes:
@@ -45,22 +45,22 @@ Recipes:
 - If underfit: `r=32` or add MLP targets before jumping to full FT.
 - If overfit: lower `r`, fewer epochs, more diverse data.
 
-Keep `alpha/r` stable when sweeping `r`, or you accidentally sweep LR too.
+Keep `alpha/r` stable when sweeping `r`, or you accidentally sweep learning rate too.
 
 ### Steps, epochs, batch
 
 - Prefer **more unique data** over a fifth epoch on 200 rows.
-- Effective batch via gradient accumulation if VRAM is tight.
+- Use gradient accumulation for effective batch size if VRAM is tight.
 - Sequence length dominates memory; truncate thoughtfully (do not silently chop labels).
 
 ### Quantization choices
 
-| Mode | Memory | Risk |
-| --- | --- | --- |
-| bf16/fp16 LoRA | Medium | Clean baseline |
-| 8-bit backbone + LoRA | Lower | Usually mild quality hit |
-| 4-bit QLoRA | Lowest | Check eval carefully; watch library maturity |
-| Serve merged bf16 after 4-bit train | Mixed | Validate; do not assume identity |
+| Plain-English idea | When to use it |
+| --- | --- |
+| **bf16/fp16 LoRA** | Clean baseline when you have enough GPU memory. |
+| **8-bit backbone + LoRA** | Lower memory; usually a mild quality hit. |
+| **4-bit QLoRA** | Smallest memory footprint; check eval carefully. |
+| **Serve merged bf16 after 4-bit train** | Common in practice; validate—do not assume identical quality. |
 
 Quantization is a systems trade. Measure schema accuracy and anchors; do not assume blog defaults match your domain.
 
@@ -76,7 +76,7 @@ flowchart TD
 ```
 
 :::tip
-Log: LR, rank, alpha, targets, precision, epoch, trainable%, task scores, anchor scores. Without that table, PEFT tuning becomes folklore.
+Log: learning rate, rank, alpha, targets, precision, epoch, trainable%, task scores, anchor scores. Without that table, PEFT tuning becomes folklore.
 :::
 
 ## In code
@@ -141,7 +141,7 @@ Illustrative trainer config (pseudocode):
 
 ## What goes wrong
 
-- **Copying full-FT LRs into LoRA** — Training crawls; people "fix" it by over-epoching into overfit.
+- **Copying full-FT learning rates into LoRA** — Training crawls; people "fix" it by over-epoching into overfit.
 - **Sweeping rank while changing alpha/r** — Confounded experiments.
 - **4-bit everything including eval blindness** — Ship decisions on numbers that do not match prod precision.
 - **One giant batch of unrelated tasks** — Need task balance or separate adapters.

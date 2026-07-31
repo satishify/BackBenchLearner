@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM UX.">
+  <meta name="description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM user experience.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/prompting-fundamentals-and-roles.html">
   <meta property="og:title" content="Prompting Fundamentals and Roles | BackbenchLearner">
-  <meta property="og:description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM UX.">
+  <meta property="og:description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM user experience.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/prompting-fundamentals-and-roles.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Prompting Fundamentals and Roles | BackbenchLearner">
-  <meta name="twitter:description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM UX.">
+  <meta name="twitter:description" content="Design reliable prompts with clear instructions, context, inputs, and chat roles — the foundation of production LLM user experience.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,9 +36,10 @@
       <h1>Prompting Fundamentals and Roles</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A model that “knows” your domain still fails if the prompt is mush. Prompting is not poetry; it is an interface contract: tell the model the job, the constraints, the data, and the shape of a successful answer — then keep that contract stable across versions.</p>
+    <p>A model that &quot;knows&quot; your domain still fails if the prompt is mush. <strong>Prompting</strong> is not poetry; it is an interface contract: tell the model the job, the constraints, the data, and the shape of a successful answer — then keep that contract stable across versions.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Chat APIs are not a single blob of text. They are a <strong>role-tagged transcript</strong>: system (or developer) messages set policy, user messages state the task, assistant messages carry prior replies. The model continues the transcript under those roles. Confusing “who said what” is how you get leaked instructions, ignored policies, and brittle few-shots.</p>
+    <p><strong>What is a prompt?</strong> The application-level interface between a human goal and the model&#x27;s next-token machinery. A good prompt reduces ambiguity.</p>
+    <p><strong>Why do roles matter?</strong> Chat APIs are not a single blob of text. They are a <strong>role-tagged transcript</strong>: system (or developer) messages set policy, user messages state the task, assistant messages carry prior replies. Confusing &quot;who said what&quot; is how you get leaked instructions, ignored policies, and brittle few-shots.</p>
     <p>Good prompts look boring on purpose: short instruction, explicit format, one example if needed, clear failure behavior when uncertain.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
@@ -46,12 +47,40 @@
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Four prompt components</h3>
-    <ol>
-    <li><strong>Instruction</strong> — the verb phrase: classify, extract, rewrite, refuse if...</li>
-    <li><strong>Context</strong> — facts, policies, retrieved snippets, product glossary</li>
-    <li><strong>Input data</strong> — the customer email, JSON row, or code under review</li>
-    <li><strong>Output indicator</strong> — schema, labels, bullet rules, “answer only with...”</li>
-    </ol>
+    <table>
+      <thead><tr>
+        <th>Component</th>
+        <th>Plain-English idea</th>
+        <th>Mini example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Instruction</strong></td>
+          <td>What to do</td>
+          <td>Classify the review as positive, neutral, or negative</td>
+        </tr>
+        <tr>
+          <td><strong>Context</strong></td>
+          <td>Background the model should use</td>
+          <td>You are analyzing restaurant reviews for a dashboard</td>
+        </tr>
+        <tr>
+          <td><strong>Input data</strong></td>
+          <td>The actual content</td>
+          <td>Review: &quot;The food was okay, but service was slow.&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Output indicator</strong></td>
+          <td>The desired shape</td>
+          <td>Return JSON: <code>{sentiment, reason}</code></td>
+        </tr>
+        <tr>
+          <td><strong>Constraints</strong></td>
+          <td>Rules and boundaries</td>
+          <td>Use one sentence for reason. Do not invent missing facts.</td>
+        </tr>
+      </tbody>
+    </table>
     <p>Minimal pattern:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -79,7 +108,7 @@ Output: Sentiment:</code></pre>
         </tr>
         <tr>
           <td>assistant</td>
-          <td>Prior model replies (and sometimes tool results, depending on API)</td>
+          <td>Prior model replies</td>
           <td>History</td>
         </tr>
       </tbody>
@@ -97,25 +126,45 @@ sequenceDiagram
     API-->>App: next assistant reply
       </div>
     </div>
-    <h3>Patterns that pull weight</h3>
+    <h3>Prompting patterns with examples</h3>
+    <p><strong>Zero-shot</strong> — instruction + input only. Fast to maintain; fails when the label set or style is unusual.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Classify the sentiment as positive, neutral, or negative.
+Text: I think the food was okay.
+Sentiment:</code></pre>
+    </div>
+    <p><strong>Few-shot</strong> — shows the mapping with labeled examples in the prompt.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Classify the sentiment.
+Text: The soup was cold and late.
+Sentiment: negative
+Text: The staff were polite and the meal was fine.
+Sentiment: neutral
+Text: The dessert was amazing.
+Sentiment:</code></pre>
+    </div>
+    <p><strong>Structured prompt</strong> — strict extraction with a schema.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">You are a strict extraction engine.
+Extract a customer support ticket into JSON with:
+- issue_type: billing | login | bug | other
+- urgency: low | medium | high
+- summary: &lt;= 20 words
+Ticket: I was charged twice this month and need this fixed today.</code></pre>
+    </div>
+    <h3>Common prompting mistakes</h3>
     <ul>
-    <li><strong>Output contract</strong> — JSON keys, enums, max bullets, banned phrases.</li>
-    <li><strong>Success criteria</strong> — “Must cite field X; must not invent IDs.”</li>
-    <li><strong>Few-shot</strong> — 1–3 labeled examples that match the real distribution, not toy sentences.</li>
-    <li><strong>Uncertainty clause</strong> — “If evidence is missing, say UNKNOWN; do not guess.”</li>
-    <li><strong>Delimiter discipline</strong> — fence user data (<code>&quot;&quot;&quot;</code> or XML-ish tags) so instructions and payloads do not blend.</li>
+    <li><strong>Vague task</strong> — Ask &quot;summarize this for a technical manager in 5 bullets&quot; instead of just &quot;summarize.&quot;</li>
+    <li><strong>Missing output contract</strong> — If downstream code expects JSON, ask for a schema or use structured outputs.</li>
+    <li><strong>Conflicting instructions</strong> — Do not say &quot;be detailed&quot; and &quot;answer in one word&quot; unless the precedence is clear.</li>
+    <li><strong>No grounding</strong> — For factual answers about private or changing data, provide context or use retrieval/tools.</li>
+    <li><strong>Over-prompting</strong> — Long prompts can hide the actual task. Prefer clear sections and remove dead text.</li>
     </ul>
-    <h3>System vs user: who wins?</h3>
-    <p>Providers differ on how strongly system messages outweigh user text. Defense in depth still matters: put non-negotiables in system <strong>and</strong> repeat critical format rules near the user task for long contexts. Never assume a buried system line survives a 50-turn thread packed with RAG.</p>
-    <h3>Zero-shot vs few-shot vs “just yell louder”</h3>
-    <ul>
-    <li><strong>Zero-shot</strong> — instruction + input. Fast to maintain; fails when the label set or style is unusual.</li>
-    <li><strong>Few-shot</strong> — shows the mapping. Best when edge cases are visual (weird enums, terse style). Keep examples short and representative.</li>
-    <li><strong>Chain-style hints</strong> — “think step by step” or scratchpads help some reasoning tasks, but they burn tokens and are not a substitute for tools on arithmetic or live facts.</li>
-    </ul>
-    <p>Prefer clarifying the contract over stacking adjectives (“be extremely careful and very precise...”). Models respond better to checkable rules than to emotional intensity.</p>
     <h3>Production prompt hygiene</h3>
-    <p>Version prompts like code (<code>support_v3</code>). Keep a golden set of inputs with expected properties (label, JSON keys, refusal). On model upgrades, run the suite before you celebrate the new default. For multi-tenant apps, never put another customer’s history in the few-shot block.</p>
+    <p>Version prompts like code (<code>support_v3</code>). Keep a golden set of inputs with expected properties (label, JSON keys, refusal). On model upgrades, run the suite before you celebrate the new default.</p>
     <h2 id="in-code">In code</h2>
     <p>Represent messages as structured objects — never concatenate roles into one ambiguous string in production:</p>
     <div class="code-block" data-lang="python">
@@ -176,25 +225,13 @@ print(build_sentiment_messages(&quot;I think the food was okay.&quot;)[1][&quot;
 }
 # requests.post(url, json=payload, headers={&quot;Authorization&quot;: &quot;Bearer ...&quot;})</code></pre>
     </div>
-    <p>Prompt lint for empty instruction or missing delimiters:</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">def lint_user_prompt(prompt: str) -&gt; list[str]:
-    issues = []
-    if &#x27;&quot;&quot;&quot;&#x27; not in prompt and &quot;&lt;&lt;&lt;&quot; not in prompt:
-        issues.append(&quot;Consider fencing untrusted input.&quot;)
-    if len(prompt) &lt; 20:
-        issues.append(&quot;Prompt looks underspecified.&quot;)
-    return issues</code></pre>
-    </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Instruction buried under data</strong> — the model summarizes the email instead of extracting fields.</li>
-    <li><strong>Role collapse</strong> — stuffing policy into the user message makes it easy for hostile input to override (“ignore previous...”).</li>
+    <li><strong>Role collapse</strong> — stuffing policy into the user message makes it easy for hostile input to override (&quot;ignore previous...&quot;).</li>
     <li><strong>Too many few-shots</strong> — examples consume context and can bias toward the demo domain.</li>
     <li><strong>Contradictory rules</strong> — system says brief; user says write an essay; history says use JSON.</li>
     <li><strong>Unfenced untrusted text</strong> — customer content that looks like instructions becomes prompt injection fuel.</li>
-    <li><strong>Unstable prompts across model upgrades</strong> — without golden tests, a “minor” model swap breaks tone and format.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
@@ -212,7 +249,6 @@ print(build_sentiment_messages(&quot;I think the food was okay.&quot;)[1][&quot;
     <li><strong>Output indicator</strong> — Cue that specifies format or starts the answer scaffold.</li>
     <li><strong>Delimiter</strong> — Markers that separate instructions from untrusted payload text.</li>
     </ul>
-    <p>`)</p>
 
       <div class="lesson-actions" id="lesson-actions"></div>
       <footer>

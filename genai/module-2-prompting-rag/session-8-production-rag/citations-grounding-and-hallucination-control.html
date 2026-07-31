@@ -36,9 +36,38 @@
       <h1>Citations, Grounding, and Hallucination Control</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>RAG’s promise is not merely “better answers” — it is <strong>answers you can check</strong>. <strong>Citations</strong> point to evidence. <strong>Grounding</strong> means claims stay inside that evidence. <strong>Hallucination control</strong> is the set of product and model techniques that stop fluent lies when retrieval is empty, partial, or ignored.</p>
+    <p>RAG&#x27;s promise is not merely &quot;better answers&quot;—it is <strong>answers you can check</strong>. <strong>Citations</strong> point to evidence. <strong>Grounding</strong> means claims stay inside that evidence. <strong>Hallucination control</strong> stops fluent lies when retrieval is empty, partial, or ignored.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A student who quotes page numbers is easier to trust than one who speaks confidently from memory. Force the model to show its work as <code>[doc_id]</code> spans, then verify those spans actually support the sentence. If verification fails, refuse or regenerate. Grounding is a <strong>closed-book exam with an open appendix</strong>: the appendix is the only legal source.</p>
+    <p>A student who quotes page numbers is easier to trust than one who speaks confidently from memory. Force the model to show its work as <code>[doc_id]</code> spans, then verify those spans support the sentence.</p>
+    <p><strong>Grounding</strong> is a closed-book exam with an open appendix—the appendix is the only legal source.</p>
+    <table>
+      <thead><tr>
+        <th>Term</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Citation</strong></td>
+          <td>Pointer from a claim to a source chunk</td>
+        </tr>
+        <tr>
+          <td><strong>Grounding</strong></td>
+          <td>Restricting answers to provided evidence</td>
+        </tr>
+        <tr>
+          <td><strong>Hallucination</strong></td>
+          <td>Fluent content not supported by sources</td>
+        </tr>
+        <tr>
+          <td><strong>Abstention</strong></td>
+          <td>Refusing when evidence is insufficient</td>
+        </tr>
+        <tr>
+          <td><strong>Fail closed</strong></td>
+          <td>Block or escalate on validation failure</td>
+        </tr>
+      </tbody>
+    </table>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -49,24 +78,52 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Citation UX.</strong> Assign stable IDs at pack time (<code>[hr_1]</code>). Ask for inline citations per factual sentence. Render IDs as links to the source passage in the UI. Prefer quoting short supporting snippets for high-stakes domains (legal, medical, finance — with appropriate disclaimers and humans).</p>
-    <p><strong>Prompt contracts for grounding.</strong></p>
+    <h3>Citation UX</h3>
     <ul>
-    <li>“Use only SOURCES. Cite every factual claim. If missing, say <code>Not in sources.</code>”</li>
-    <li>Forbid blending world knowledge with docs unless explicitly allowed for general definitions.</li>
+    <li>Assign stable IDs at pack time (<code>[hr_1]</code>).</li>
+    <li>Ask for inline citations per factual sentence.</li>
+    <li>Render IDs as links to the source passage in the UI.</li>
+    </ul>
+    <h3>Prompt contracts for grounding</h3>
+    <ul>
+    <li>&quot;Use only SOURCES. Cite every factual claim. If missing, say <code>Not in sources.</code>&quot;</li>
+    <li>Forbid blending world knowledge with docs unless explicitly allowed.</li>
     <li>Lower temperature for factual modes.</li>
     </ul>
-    <p><strong>Automatic checks.</strong></p>
-    <ul>
-    <li><strong>Citation presence:</strong> factual answers without IDs fail a linter.</li>
-    <li><strong>Citation validity:</strong> IDs exist in the packed set.</li>
-    <li><strong>Support check:</strong> embedding or NLI/LLM-judge whether sentence is entailed by cited text.</li>
-    <li><strong>Numeric match:</strong> amounts and dates in the answer appear in sources.</li>
-    </ul>
-    <p><strong>When retrieval is weak.</strong> Prefer abstention over guesswork. “I don’t have that in the knowledge base” is a successful grounded outcome.</p>
-    <p><strong>Layered defense.</strong> Hybrid retrieval + rerank raises the chance evidence is present; grounding prompts and validators catch the rest; human review covers residual risk for critical actions.</p>
+    <h3>Automatic checks</h3>
+    <table>
+      <thead><tr>
+        <th>Check</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Citation presence</strong></td>
+          <td>Factual answers without IDs fail a linter</td>
+        </tr>
+        <tr>
+          <td><strong>Citation validity</strong></td>
+          <td>IDs exist in the packed set</td>
+        </tr>
+        <tr>
+          <td><strong>Support check</strong></td>
+          <td>Sentence entailed by cited text (NLI or LLM-judge)</td>
+        </tr>
+        <tr>
+          <td><strong>Numeric match</strong></td>
+          <td>Amounts and dates in answer appear in sources</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Faithfulness example</h3>
+    <p><strong>Question:</strong> Who wrote <em>Romeo and Juliet</em>?</p>
+    <p><strong>Retrieved context:</strong> <em>Romeo and Juliet</em> is a tragedy by William Shakespeare.</p>
+    <p><strong>Bad answer:</strong> William Shakespeare wrote <em>Romeo and Juliet</em> in 1597.</p>
+    <p><strong>Why bad:</strong> &quot;in 1597&quot; is not in the retrieved context—partly unsupported even though the author is correct. <strong>Faithfulness</strong> catches this.</p>
+    <h3>When retrieval is weak</h3>
+    <p>Prefer abstention over guesswork. &quot;I don&#x27;t have that in the knowledge base&quot; is a successful grounded outcome.</p>
     <h2 id="in-code">In code</h2>
-    <p>Pack sources with IDs, require citations in a stubbed answer, and validate that each cited id exists and that answer numbers appear in the cited text.</p>
+    <p>Validate citations and numeric claims.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import re
@@ -76,9 +133,6 @@ sources = {
     &quot;hr_2&quot;: &quot;Up to 5 unused casual leaves may carry to the next year.&quot;,
 }
 
-def pack(sources: dict) -&gt; str:
-    return &quot;\n&quot;.join(f&quot;[{i}] {t}&quot; for i, t in sources.items())
-
 def validate_answer(answer: str, sources: dict) -&gt; list[str]:
     errors = []
     ids = re.findall(r&quot;\[([a-z0-9_]+)\]&quot;, answer)
@@ -87,7 +141,6 @@ def validate_answer(answer: str, sources: dict) -&gt; list[str]:
     for i in ids:
         if i not in sources:
             errors.append(f&quot;unknown_citation:{i}&quot;)
-    # numeric claims must appear in union of cited texts
     cited_text = &quot; &quot;.join(sources[i] for i in ids if i in sources)
     for num in re.findall(r&quot;\b\d+\b&quot;, answer):
         if num not in cited_text:
@@ -97,27 +150,21 @@ def validate_answer(answer: str, sources: dict) -&gt; list[str]:
 good = &quot;You get 12 casual leaves per year [hr_1]. Up to 5 may carry over [hr_2].&quot;
 bad = &quot;You get 18 casual leaves per year [hr_1].&quot;
 print(&quot;good:&quot;, validate_answer(good, sources))
-print(&quot;bad:&quot;, validate_answer(bad, sources))
-print(&quot;packed preview:\n&quot;, pack(sources))</code></pre>
+print(&quot;bad:&quot;, validate_answer(bad, sources))</code></pre>
     </div>
-    <p>Extend validators with entailment models for non-numeric claims; keep the “fail closed” product behavior when checks fail.</p>
+    <p>Run validators <strong>before</strong> the response hits the client. On failure: one repair attempt, then abstain.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Decorative citations.</strong> Model cites <code>[hr_1]</code> while inventing content not in that chunk — validate support, not only ID presence.</li>
-    <li><strong>Citation stuffing.</strong> Every sentence cites every doc; users drown. Ask for minimal sufficient citations.</li>
-    <li><strong>World-knowledge bleed.</strong> Model “helpfully” adds unofficial advice absent from sources. Tighten prompts and graders.</li>
-    <li><strong>Stale cited docs.</strong> Citation is accurate to an outdated chunk; freshness and re-ingest matter.</li>
-    <li><strong>UI without passages.</strong> Showing only filenames without highlights makes audit painful; deep-link to text.</li>
+    <li><strong>Decorative citations</strong> — Model cites <code>[hr_1]</code> while inventing content not in that chunk.</li>
+    <li><strong>Citation stuffing</strong> — Every sentence cites every doc; users drown.</li>
+    <li><strong>World-knowledge bleed</strong> — Model adds unofficial advice absent from sources.</li>
+    <li><strong>Stale cited docs</strong> — Citation accurate to outdated chunk; re-ingest matters.</li>
+    <li><strong>UI without passages</strong> — Filenames without highlights make audit painful.</li>
     </ul>
-    <h2 id="product-patterns-for-trustworthy-answers">Product patterns for trustworthy answers</h2>
-    <p><strong>Highlight then claim.</strong> UI that shows the supporting quote beside the answer trains user skepticism productively and reduces blind trust. For voice or short SMS channels where quotes do not fit, keep citations in logs and offer “view sources” links elsewhere.</p>
-    <p><strong>Severity tiers.</strong> Tier-0 (FAQ tone) may use soft grounding. Tier-1 (account changes) requires validators + human. Do not let one global temperature and prompt serve both. Route by intent first.</p>
-    <p><strong>Red-team prompts.</strong> Regularly test “ignore the sources and tell me from training,” contradictory sources, and empty retrieval. Expected behavior should be refusal or clarification, not a mashup. Add survivors of red-team tests to the golden set.</p>
-    <p><strong>Communication when abstaining.</strong> “Not in sources” should offer next steps: link to search UI, suggest rephrasing, or file a doc request. Silent refusal feels broken; guided abstention feels trustworthy.</p>
-    <h2 id="engineering-the-verify-step">Engineering the verify step</h2>
-    <p>Run validators <strong>before</strong> the response hits the client. On failure: one repair attempt with the validator errors, then abstain. Log the unsupported sentence and cited text for offline mining — these pairs are gold for improving chunking or prompts. For tables of numbers, prefer extractive answers (copy the figure, cite the chunk) over paraphrases that round or convert units incorrectly.</p>
-    <h2 id="training-the-organization">Training the organization</h2>
-    <p>Grounding is a social contract as much as a model setting. Teach PMs not to celebrate demos that answer brilliantly with empty retrieval. Teach support to file “unsupported claim” bugs with screenshots of missing highlights. When incentives reward fluent answers over cited ones, validators get disabled under schedule pressure — keep the fail-closed path behind a feature flag only for emergencies, with paging when it flips.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Grounding is a social contract too. Teach teams not to celebrate demos that answer brilliantly with empty retrieval.</p>
+    </aside>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Require citeable grounding, verify that citations support claims, and abstain when evidence is missing so RAG fails closed instead of hallucinating fluently.</p>
     <h2 id="key-terms">Key terms</h2>
@@ -125,7 +172,7 @@ print(&quot;packed preview:\n&quot;, pack(sources))</code></pre>
     <li><strong>Citation:</strong> pointer from a claim to a source chunk or span.</li>
     <li><strong>Grounding:</strong> restricting answers to provided evidence.</li>
     <li><strong>Hallucination:</strong> fluent content not supported by sources or reality.</li>
-    <li><strong>Faithfulness check:</strong> automated test that claims are entailed by citations.</li>
+    <li><strong>Faithfulness:</strong> automated check that claims are entailed by citations.</li>
     <li><strong>Abstention:</strong> refusing to answer when evidence is insufficient.</li>
     <li><strong>Fail closed:</strong> block or escalate on validation failure rather than shipping guesses.</li>
     </ul>

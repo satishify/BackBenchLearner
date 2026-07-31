@@ -3,65 +3,65 @@ questions:
   - q: "IVF with N=1,000,000 vectors, nlist=1000, nprobe=8. Approximately how many vectors are scanned (balanced lists)?"
     options:
       - "1,000,000 (always full scan)"
-      - "8,000 ~= (nprobe/nlist)xN"
+      - "8,000 ~= (nprobe/nlist) × N"
       - "1,000"
       - "8"
     answer: 1
-    why: "scanned ~= (8/1000)x1,000,000 = 8,000 candidates—about a 125x reduction versus comparing all N."
+    why: "(8/1000) × 1,000,000 = 8,000 candidates—about 125× fewer than scanning all N."
 
-  - q: "A 768-dim float32 vector uses 768x4=3072 bytes. An 8-byte PQ code yields what compression ratio?"
+  - q: "A 768-dim float32 vector uses 768×4=3072 bytes. An 8-byte PQ code yields what compression ratio?"
     options:
-      - "8x"
-      - "768x"
-      - "384x (3072/8)"
-      - "1x (no compression)"
+      - "8×"
+      - "768×"
+      - "384× (3072/8)"
+      - "1× (no compression)"
     answer: 2
-    why: "3072÷8 = 384, so the PQ code is about 384x smaller than the float32 coordinates (before codebook/list overhead)."
+    why: "3072 ÷ 8 = 384—the PQ code is about 384× smaller than float32 coordinates."
 
-  - q: "If nlist~=sqrt(N) is used as a starting heuristic for N=1e6, nlist is about..."
+  - q: "If nlist ~= sqrt(N) for N=1e6, nlist is about..."
     options:
       - "10"
       - "1000"
       - "1,000,000"
       - "8"
     answer: 1
-    why: "sqrt(1,000,000)=1,000 lists is a common IVF starting point taught in the lesson—always validate recall."
+    why: "sqrt(1,000,000) = 1,000 lists—a common IVF starting point; always validate recall."
 
   - q: "Raising nprobe while holding nlist fixed typically..."
     options:
       - "Lowers recall and lowers latency"
-      - "Raises recall and raises latency roughly with more lists scanned"
+      - "Raises recall and raises latency (more lists scanned)"
       - "Deletes the inverted lists"
       - "Changes embedding dimensionality"
     answer: 1
-    why: "More probes visit more candidates: better chance of true neighbors, more distance work."
+    why: "More probes visit more candidates—better chance of true neighbors, more distance work."
 
-  - q: "Why quantize residuals (x - centroid) in IVF+PQ rather than raw vectors?"
+  - q: "Why quantize residuals (x − centroid) in IVF+PQ rather than raw vectors?"
     options:
       - "Residuals are always zero"
-      - "The coarse centroid already explains much of the vector; PQ models the leftover better at the same code length"
+      - "The coarse centroid already explains much of the vector; PQ models the leftover better"
       - "ADC forbids residuals by definition"
       - "It doubles RAM versus storing floats"
     answer: 1
-    why: "Residual PQ usually improves distance estimates versus quantizing raw vectors at fixed code size."
+    why: "Residual PQ usually improves distance estimates at the same code size."
 
-  - q: "HNSW’s efSearch knob is most analogous to IVF’s..."
+  - q: "HNSW's efSearch knob is most analogous to IVF's..."
     options:
       - "Embedding dimension d"
       - "nprobe (spend more query compute for recall)"
       - "PQ code length only"
       - "Tokenizer vocabulary size"
     answer: 1
-    why: "efSearch widens graph exploration at query time, similar in spirit to probing more IVF lists."
+    why: "efSearch widens graph exploration at query time, similar to probing more IVF lists."
 
-  - q: "A retrieval gateway cache helps most when..."
+  - q: "A retrieval gateway semantic cache helps most when..."
     options:
       - "Every query is unique forever"
-      - "Popular normalized queries repeat and can reuse prior top-k results safely"
+      - "Popular similar queries repeat and can reuse prior results safely (same tenant, high threshold)"
       - "You want stale ACL-violating chunks for other tenants"
       - "ANN indexes become exact automatically"
     answer: 1
-    why: "Caching repeated retrievals cuts latency/cost; keys must include tenant/ACL and embedding-model version."
+    why: "Caching cuts latency/cost; keys must include tenant/ACL and embedding-model version."
 
   - q: "Multi-hop / agentic retrieval is warranted when..."
     options:
@@ -70,22 +70,22 @@ questions:
       - "You have no tools and no index"
       - "Citations are banned"
     answer: 1
-    why: "One-shot RAG packs fail when evidence is spread across dependent hops."
+    why: "One-shot RAG fails when evidence is spread across dependent hops."
 
-  - q: "Faithfulness/groundedness metrics primarily detect..."
+  - q: "Faithfulness metrics primarily detect..."
     options:
       - "Whether ANN recall@10 is 100%"
-      - "Whether the answer’s claims are supported by retrieved evidence"
+      - "Whether the answer's claims are supported by retrieved evidence"
       - "GPU utilization"
       - "Tokenizer speed"
     answer: 1
     why: "You can retrieve well and still hallucinate; faithfulness checks claim–evidence alignment."
 
-  - q: "Citations that point to chunk IDs the model never saw in context indicate..."
+  - q: "Citations pointing to chunk IDs the model never saw in context indicate..."
     options:
       - "Perfect grounding"
-      - "Fabricated citations—enforce cite-only-from-provided-sources or post-validate spans"
+      - "Fabricated citations—validate against the actual prompt evidence set"
       - "That IVF nprobe was too high"
-      - "That PQ compression was 384x too small"
+      - "That PQ compression was 384× too small"
     answer: 1
-    why: "Hallucinated references look authoritative; validate citations against the actual prompt evidence set."
+    why: "Hallucinated references look authoritative; validate citations against packed sources."

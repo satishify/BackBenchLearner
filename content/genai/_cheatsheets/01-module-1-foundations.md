@@ -6,28 +6,28 @@ minutes: 30
 description: "AI to DL to transformers in one sitting. Re-read before Module 1 mock."
 ---
 
-Dense bullets for chapters **1.1–1.3**. Open full lessons when a bullet feels fuzzy.
+Plain-English bullets for chapters **1.1–1.3**. Open full lessons when a bullet feels fuzzy.
 
 ## 1.1 AI & Deep Learning Essentials
 
 ### Stack of ideas
-- **AI** — goal-directed behavior under uncertainty (rational agent: observe -> act -> succeed).
-- **ML** — learn parameters from data instead of hand-coding every rule.
-- **Deep learning** — ML with multi-layer neural nets that learn hierarchical features.
-- **GenAI** — models that *sample* new content (text, images, code) from a learned distribution.
+- **AI (Artificial Intelligence)** — building machines that act smart enough for a task (observe -> decide -> succeed).
+- **ML (Machine Learning)** — learn patterns from data instead of hand-coding every rule.
+- **Deep learning** — ML with multi-layer neural nets that learn hierarchical features from raw inputs.
+- **GenAI (Generative AI)** — models that *create* new content (text, images, code) by sampling from a learned distribution.
 
 ### Classical vs learned
-- Rules / search / expert systems scale poorly in noisy high-dimensional worlds (vision, speech, open language).
-- Supervised learning: labeled `(x, y)`. Unsupervised: structure in `x`. RL: actions + reward.
+- Rules, search, and expert systems scale poorly in noisy high-dimensional worlds (vision, speech, open language).
+- Supervised learning: labeled inputs plus answers. Unsupervised: find structure in unlabeled data. RL (Reinforcement Learning): learn from actions plus rewards.
 
 ### Representation
-- **One-hot** — sparse, no similarity. **Embeddings** — dense vectors; nearby = similar meaning/use.
-- Word2Vec / GloVe intuition: “you shall know a word by the company it keeps.”
+- **One-hot** — sparse, no similarity between words. **Embeddings** — dense vectors; nearby = similar meaning.
+- Word2Vec / GloVe intuition: "you shall know a word by the company it keeps."
 
 ### Neuron to MLP
 - Linear: `z = w*x + b`. Nonlinearity (ReLU, sigmoid, tanh) makes depth useful.
-- **MLP** = stacked linear + activation. Universal approximator in theory; practice needs data, regularization, right capacity.
-- **Backprop** = chain rule through the graph. **Gradient descent**: update weights by subtracting `learning_rate * gradient_of_loss`.
+- **MLP (Multilayer Perceptron)** = stacked linear + activation. Universal approximator in theory; practice needs data, regularization, right capacity.
+- **Backpropagation** = chain rule through the graph. **Gradient descent**: update weights by subtracting `learning_rate * gradient_of_loss`.
 - Overfit vs underfit; bias-variance tradeoff. Fix overfit: more data, dropout, weight decay, early stop. Fix underfit: capacity / train longer / better features.
 
 ### Quick self-check
@@ -41,11 +41,11 @@ Dense bullets for chapters **1.1–1.3**. Open full lessons when a bullet feels 
 - **Learning rate** too high -> diverge; too low -> crawl. Schedules and warmups matter for big models.
 - Train / val / test split. Never tune on test.
 
-### CNN (vision intuition)
+### CNN (Convolutional Neural Network, vision intuition)
 - Convolution shares filters spatially; translation equivariance; local receptive fields.
 - Pooling / strides reduce spatial size. Depth stacks simple edges -> parts -> objects.
 
-### RNN / LSTM (sequence intuition)
+### RNN / LSTM (Recurrent Neural Network / Long Short-Term Memory, sequence intuition)
 - Hidden state carries past tokens. Vanilla RNNs struggle with long dependencies (vanishing/exploding gradients).
 - **LSTM/GRU** gates control what to keep/forget — still sequential -> hard to parallelize -> transformers win for most NLP.
 
@@ -56,7 +56,7 @@ Dense bullets for chapters **1.1–1.3**. Open full lessons when a bullet feels 
 - Scales with data + compute; foundation of modern LLMs.
 
 ### Self-attention (Q, K, V)
-- For each position: query asks “what do I need?”, keys answer “what do I contain?”, values carry content.
+- For each position: query asks "what do I need?", keys answer "what do I contain?", values carry content.
 - Scores: `softmax(Q * K^T / sqrt(d_k)) * V`. Divide by `sqrt(d_k)` so softmax stays well-behaved as dimension grows.
 - **Multi-head**: several subspaces in parallel (syntax vs semantics, etc.).
 

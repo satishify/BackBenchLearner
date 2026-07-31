@@ -36,9 +36,10 @@
       <h1>Hallucinations and Model Limitations</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>The most dangerous LLM failure is not a crash — it is a <strong>confident wrong answer</strong>. Hallucinations look like expertise: citations, APIs, medical details, legal clauses. Until you treat fluency as orthogonal to truth, every feature you ship will eventually embarrass you in front of a customer or an auditor.</p>
+    <p>The most dangerous LLM failure is not a crash — it is a <strong>confident wrong answer</strong>. <strong>Hallucinations</strong> look like expertise: citations, APIs, medical details, legal clauses. Until you treat fluency as separate from truth, every feature you ship will eventually embarrass you in front of a customer or an auditor.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>An LLM samples plausible continuations. Training rewarded looking like the training distribution, not checking a ledger. When the prompt asks for a fact the weights never reliably stored — or that changed last week — the model still has to emit tokens. Plausible tokens win. That is hallucination: unsupported or false content presented as if it were known.</p>
+    <p><strong>What is a hallucination?</strong> An LLM samples plausible continuations. Training rewarded looking like the training distribution, not checking a ledger. When the prompt asks for a fact the weights never reliably stored — or that changed last week — the model still has to emit tokens. Plausible tokens win.</p>
+    <p><strong>Why does fluency mislead us?</strong> Smooth prose raises perceived confidence; it does not raise truth probability.</p>
     <p>Sibling limitations share the same root: sensitivity to wording, shallow multi-step reasoning without scaffolding, bias from data, and non-determinism under sampling. Mitigations are engineering: retrieval, tools, validation, evals, and humans on the high-impact path.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
@@ -46,14 +47,38 @@
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Why hallucinations happen</h3>
-    <ul>
-    <li><strong>Objective mismatch</strong> — next-token likelihood != factual correctness.</li>
-    <li><strong>Missing or stale knowledge</strong> — cutoffs, private data, rare entities.</li>
-    <li><strong>Prompt pressure</strong> — “list three papers” pushes invention if none are known.</li>
-    <li><strong>Context gaps</strong> — evidence never entered the window, or was truncated.</li>
-    <li><strong>Decoding noise</strong> — high temperature amplifies low-probability fabrications.</li>
-    <li><strong>Role-play leakage</strong> — model continues a confident persona instead of abstaining.</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Cause</th>
+        <th>Plain-English idea</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Objective mismatch</strong></td>
+          <td>Next-token likelihood ≠ factual correctness</td>
+        </tr>
+        <tr>
+          <td><strong>Missing or stale knowledge</strong></td>
+          <td>Cutoffs, private data, rare entities</td>
+        </tr>
+        <tr>
+          <td><strong>Prompt pressure</strong></td>
+          <td>&quot;List three papers&quot; pushes invention if none are known</td>
+        </tr>
+        <tr>
+          <td><strong>Context gaps</strong></td>
+          <td>Evidence never entered the window, or was truncated</td>
+        </tr>
+        <tr>
+          <td><strong>Decoding noise</strong></td>
+          <td>High temperature amplifies low-probability fabrications</td>
+        </tr>
+        <tr>
+          <td><strong>Role-play leakage</strong></td>
+          <td>Model continues a confident persona instead of abstaining</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>Taxonomy useful in products</h3>
     <table>
       <thead><tr>
@@ -103,33 +128,24 @@ flowchart TB
     <ul>
     <li><strong>Prompt brittleness</strong> — paraphrase flips the answer; golden tests must cover paraphrases.</li>
     <li><strong>Long-horizon tasks</strong> — multi-step plans drift without decomposition and checks.</li>
-    <li><strong>Bias and safety</strong> — training data skews show up as stereotyped or unsafe completions; filters help but do not finish the job.</li>
+    <li><strong>Bias and safety</strong> — training data skews show up as stereotyped or unsafe completions.</li>
     <li><strong>Non-determinism</strong> — sampling and infra variance complicate debugging; pin seeds where supported and log params.</li>
     <li><strong>Context dilution</strong> — policies in a giant prompt lose to the nearest noisy user text.</li>
-    <li><strong>No true persistent memory</strong> — unless you build storage; “remembering” across sessions is your database, not magic.</li>
+    <li><strong>No true persistent memory</strong> — unless you build storage; &quot;remembering&quot; across sessions is your database, not magic.</li>
     </ul>
     <h3>Mitigation playbook</h3>
     <ol>
     <li><strong>Ground</strong> — RAG, tools, SQL, calculators for anything that must be true.</li>
-    <li><strong>Abstain</strong> — teach and test “I don’t know” / UNKNOWN paths.</li>
+    <li><strong>Abstain</strong> — teach and test &quot;I don&#x27;t know&quot; / UNKNOWN paths.</li>
     <li><strong>Constrain</strong> — structured outputs, low temperature for facts.</li>
     <li><strong>Verify</strong> — validators, citation link checks, unit tests on extracts.</li>
     <li><strong>Evaluate</strong> — offline suites for hallucination and faithfulness; sample production traces.</li>
     <li><strong>Human-in-the-loop</strong> — mandatory for medical, legal, financial, and irreversible actions.</li>
     </ol>
-    <h3>Measuring the problem</h3>
-    <p>You cannot fix what you do not score. Lightweight eval ideas:</p>
-    <ul>
-    <li><strong>Known-answer set</strong> — questions with gold facts; mark wrong or unsupported spans.</li>
-    <li><strong>Closed-book vs open-book</strong> — same question with and without docs; open-book should cite evidence, closed-book should abstain more often.</li>
-    <li><strong>Adversarial prompts</strong> — “make up three papers if needed” style pressure; the correct behavior is refusal.</li>
-    <li><strong>Production sampling</strong> — weekly review of traces where users edited or rejected the answer.</li>
-    </ul>
-    <p>Track hallucination rate next to latency and cost. A model that is 200ms faster but invents policy clauses is not a win for a compliance bot.</p>
-    <h3>Product framing for stakeholders</h3>
-    <p>Say clearly: the system drafts; tools and humans certify. UX that shows evidence snippets, confidence labels, and easy “report wrong answer” affordances reduces blind trust. Hide the confidence theater (fake percentage meters) unless they map to a real calibrated signal — users treat “94% sure” as science even when it is not.</p>
+    <h3>Why low temperature is not enough</h3>
+    <p>Lower temperature reduces randomness but does not add missing facts or verify truth. Factual reliability needs grounding through retrieval, tools, citations, validation, and uncertainty handling.</p>
     <h2 id="in-code">In code</h2>
-    <p>Detect empty grounding before you let the model “be helpful”:</p>
+    <p>Detect empty grounding before you let the model &quot;be helpful&quot;:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def should_abstain(docs: list[str], min_chars: int = 40) -&gt; bool:
@@ -143,7 +159,7 @@ else:
     answer = &quot;(call model with docs)&quot;
 print(answer)</code></pre>
     </div>
-    <p>Faithfulness check sketch — every claim sentence must overlap the source (crude but teachable):</p>
+    <p>Faithfulness check sketch — every claim sentence must overlap the source:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def unsupported_sentences(answer: str, source: str) -&gt; list[str]:
@@ -180,23 +196,12 @@ def validate_grounded(raw: str) -&gt; dict:
         raise ValueError(&quot;unknown must not include a factual answer&quot;)
     return data</code></pre>
     </div>
-    <p>Logging for postmortems:</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">def log_call(prompt_version: str, temperature: float, grounded: bool, text: str):
-    return {
-        &quot;prompt_version&quot;: prompt_version,
-        &quot;temperature&quot;: temperature,
-        &quot;grounded&quot;: grounded,
-        &quot;preview&quot;: text[:160],
-    }</code></pre>
-    </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Shipping demo prompts to prod</strong> — demos reward confident answers; prod needs abstention.</li>
     <li><strong>Citations without fetch</strong> — model invents links; nobody clicks until a lawyer does.</li>
-    <li><strong>RAG theater</strong> — retrieve docs but never instruct “use only these sources.”</li>
-    <li><strong>Over-trusting “reasoning” modes</strong> — longer chain-of-thought can still be wrong; verify outcomes.</li>
+    <li><strong>RAG theater</strong> — retrieve docs but never instruct &quot;use only these sources.&quot;</li>
+    <li><strong>Over-trusting &quot;reasoning&quot; modes</strong> — longer chain-of-thought can still be wrong; verify outcomes.</li>
     <li><strong>No eval for hallucinations</strong> — you only discover them via screenshots on social media.</li>
     <li><strong>One-size temperature</strong> — creative preset left on a compliance bot.</li>
     </ul>
@@ -212,7 +217,7 @@ def validate_grounded(raw: str) -&gt; dict:
     <li><strong>Faithfulness</strong> — Staying true to provided source text without adding claims.</li>
     <li><strong>Grounding</strong> — Conditioning answers on retrieved or tool-returned evidence.</li>
     <li><strong>Abstention</strong> — Declining to answer when evidence is insufficient.</li>
-    <li><strong>Knowledge cutoff</strong> — Date beyond which the model’s weights are not reliably updated.</li>
+    <li><strong>Knowledge cutoff</strong> — Date beyond which the model&#x27;s weights are not reliably updated.</li>
     <li><strong>Prompt brittleness</strong> — Large output changes from small wording changes.</li>
     <li><strong>Human-in-the-loop</strong> — Requiring human approval for high-impact actions or answers.</li>
     </ul>

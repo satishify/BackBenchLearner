@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Unimodal vs multimodal generative models across text, image, audio, and video—and a practical guide to choosing a modality pipeline.">
+  <meta name="description" content="Unimodal vs multimodal generative models across text, image, audio, and video — and a practical guide to choosing the right pipeline.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/common-model-types.html">
   <meta property="og:title" content="Common Model Types: Text, Image, Audio, Video, Multimodal | BackbenchLearner">
-  <meta property="og:description" content="Unimodal vs multimodal generative models across text, image, audio, and video—and a practical guide to choosing a modality pipeline.">
+  <meta property="og:description" content="Unimodal vs multimodal generative models across text, image, audio, and video — and a practical guide to choosing the right pipeline.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-2-prompting-rag/session-1-llms-decoding-apis/common-model-types.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Common Model Types: Text, Image, Audio, Video, Multimodal | BackbenchLearner">
-  <meta name="twitter:description" content="Unimodal vs multimodal generative models across text, image, audio, and video—and a practical guide to choosing a modality pipeline.">
+  <meta name="twitter:description" content="Unimodal vs multimodal generative models across text, image, audio, and video — and a practical guide to choosing the right pipeline.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,20 +36,52 @@
       <h1>Common Model Types: Text, Image, Audio, Video, Multimodal</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Not every problem wants a chat box. Speech notes, product photos, surveillance clips, and support tickets each live in a different <strong>modality</strong> — a type of signal the model consumes or produces. Choosing the wrong modality pipeline wastes compute and creates awkward UX (forcing users to describe a screenshot in words when vision would suffice).</p>
+    <p>Not every problem wants a chat box. Speech notes, product photos, surveillance clips, and support tickets each live in a different <strong>modality</strong> — a type of signal the model consumes or produces. Choosing the wrong pipeline wastes compute and creates awkward user experience (forcing users to describe a screenshot in words when vision would suffice).</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A <strong>modality</strong> is a channel of information: text, images, audio, video, tabular fields, sensor streams. Models are often <strong>unimodal</strong> (one channel in, one out) or <strong>multimodal</strong> (multiple channels, jointly).</p>
-    <p>Think of product shapes, not brand names:</p>
-    <ul>
-    <li><strong>Text models</strong> map text -&gt; text (or embeddings).</li>
-    <li><strong>Image models</strong> map noise/text -&gt; pixels, or pixels -&gt; labels/captions.</li>
-    <li><strong>Audio models</strong> map waveforms/spectrograms &lt;-&gt; text or other audio.</li>
-    <li><strong>Video models</strong> treat time + frames (often heavy cousins of image models).</li>
-    <li><strong>Multimodal models</strong> share a representation space so, for example, an image and a question can jointly produce an answer.</li>
-    </ul>
+    <p><strong>What is a modality?</strong> A channel of information: text, images, audio, video, tabular fields, or sensor streams.</p>
+    <p><strong>Why does it matter?</strong> Models are often <strong>unimodal</strong> (one channel in, one out) or <strong>multimodal</strong> (multiple channels, jointly). Pick the modality that matches the <em>native</em> form of the user&#x27;s problem.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>Typical input → output</th>
+        <th>Good at</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Text / LLM</strong></td>
+          <td>text → text</td>
+          <td>Reasoning over language, code, structured drafts</td>
+        </tr>
+        <tr>
+          <td><strong>Image generation</strong></td>
+          <td>text/noise → image</td>
+          <td>Concepts, layouts, creative variants</td>
+        </tr>
+        <tr>
+          <td><strong>Image understanding</strong></td>
+          <td>image → labels/captions</td>
+          <td>Search, moderation, OCR assist</td>
+        </tr>
+        <tr>
+          <td><strong>Speech / audio</strong></td>
+          <td>audio ↔ text</td>
+          <td>Transcription, voice interfaces</td>
+        </tr>
+        <tr>
+          <td><strong>Video</strong></td>
+          <td>video → understanding or new video</td>
+          <td>Short clips, summarization, detection over time</td>
+        </tr>
+        <tr>
+          <td><strong>Multimodal</strong></td>
+          <td>text + image + audio → answer</td>
+          <td>Same chat loop, richer inputs</td>
+        </tr>
+      </tbody>
+    </table>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Pick the modality that matches the <em>native</em> form of the user’s problem. Translation into text is a workaround, not always an architecture.</p>
+    <p>Pick the modality that matches the <em>native</em> form of the user&#x27;s problem. Translation into text is a workaround, not always the best architecture.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Unimodal families (high level)</h3>
@@ -63,31 +95,31 @@
       <tbody>
         <tr>
           <td><strong>Text / LLM</strong></td>
-          <td>text -&gt; text</td>
+          <td>text → text</td>
           <td>Reasoning over language, code, structured drafts</td>
           <td>Weak on pixels/sound without tools</td>
         </tr>
         <tr>
           <td><strong>Image generation</strong></td>
-          <td>text/noise -&gt; image</td>
+          <td>text/noise → image</td>
           <td>Concepts, layouts, variants</td>
           <td>Text spelling, precise counts, brand fidelity</td>
         </tr>
         <tr>
           <td><strong>Image understanding</strong></td>
-          <td>image -&gt; labels/captions/embeddings</td>
+          <td>image → labels/captions/embeddings</td>
           <td>Search, moderation, OCR assist</td>
           <td>Fine print, rare objects without fine-tuning</td>
         </tr>
         <tr>
           <td><strong>Speech / audio</strong></td>
-          <td>audio &lt;-&gt; text or audio</td>
+          <td>audio ↔ text or audio</td>
           <td>Transcription, voice interfaces, SFX</td>
           <td>Accents, overlap, domain jargon</td>
         </tr>
         <tr>
           <td><strong>Video</strong></td>
-          <td>text/video -&gt; video or understanding</td>
+          <td>text/video → video or understanding</td>
           <td>Short clips, summarization, detection over time</td>
           <td>Cost, temporal consistency, long duration</td>
         </tr>
@@ -96,9 +128,9 @@
     <h3>Multimodal in practice</h3>
     <p>Multimodal systems usually:</p>
     <ol>
-    <li>Encode each modality into vectors (encoders).</li>
-    <li>Fuse or align those vectors (shared space, cross-attention, adapters).</li>
-    <li>Decode into the target modality (text answer, caption, edited image).</li>
+    <li><strong>Encode</strong> each modality into vectors (numeric representations).</li>
+    <li><strong>Fuse or align</strong> those vectors (shared space, cross-attention, adapters).</li>
+    <li><strong>Decode</strong> into the target modality (text answer, caption, edited image).</li>
     </ol>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -109,27 +141,46 @@ flowchart LR
     F --> O[Decoder: text / image / action]
       </div>
     </div>
-    <p>You do not need one giant model for every demo. Many production stacks are <strong>pipelines</strong>: speech-to-text -&gt; LLM -&gt; text-to-speech, or image embedder -&gt; vector search -&gt; LLM for explanations. That is multimodal <em>as a system</em> even if each step is unimodal.</p>
+    <p>You do not need one giant model for every demo. Many production stacks are <strong>pipelines</strong>: speech-to-text → LLM → text-to-speech, or image embedder → vector search → LLM for explanations. That is multimodal <em>as a system</em> even if each step is unimodal.</p>
     <h3>Model families without the vendor brochure</h3>
     <p>Keep architecture shapes in mind, not slogans:</p>
-    <ul>
-    <li><strong>Autoregressive text models</strong> — generate left-to-right tokens (most chat LLMs).</li>
-    <li><strong>Embedding / dual-encoder models</strong> — map text or images to vectors for search and clustering.</li>
-    <li><strong>Diffusion-style image (and some video) models</strong> — iteratively denoise toward a sample guided by text or other conditions.</li>
-    <li><strong>Speech recognition / synthesis stacks</strong> — often specialized encoders and decoders rather than “one LLM that hears.”</li>
-    <li><strong>Vision-language models</strong> — image encoder + language model (or joint training) for captioning and visual Q&amp;A.</li>
-    </ul>
-    <p>Exact training recipes change yearly; the <em>job</em> each family does changes slowly. Design against the job.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>What it does</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Autoregressive text models</strong></td>
+          <td>Generate left-to-right tokens (most chat LLMs)</td>
+        </tr>
+        <tr>
+          <td><strong>Embedding / dual-encoder models</strong></td>
+          <td>Map text or images to vectors for search and clustering</td>
+        </tr>
+        <tr>
+          <td><strong>Diffusion-style image models</strong></td>
+          <td>Iteratively refine noise into an image guided by text</td>
+        </tr>
+        <tr>
+          <td><strong>Speech recognition / synthesis</strong></td>
+          <td>Specialized encoders and decoders for hearing and speaking</td>
+        </tr>
+        <tr>
+          <td><strong>Vision-language models</strong></td>
+          <td>Image encoder + language model for captioning and visual Q&amp;A</td>
+        </tr>
+      </tbody>
+    </table>
     <h3>When to pick which pipeline</h3>
-    <p>Use this decision sketch:</p>
     <ol>
-    <li><strong>Source of truth is text</strong> (tickets, policies, code) -&gt; text LLM +/- retrieval.</li>
-    <li><strong>User shows something visual</strong> (receipt, UI bug, shelf photo) -&gt; vision or multimodal understanding; do not force them to type a description if avoidable.</li>
-    <li><strong>Hands-busy / voice-native</strong> (driving, warehouse) -&gt; speech in/out; keep text as the internal reasoning layer if helpful.</li>
-    <li><strong>Creative assets</strong> (ads, storyboards) -&gt; image/video generation with human review; lock brand kits separately.</li>
-    <li><strong>Compliance or exact numbers</strong> -&gt; prefer structured extractors + databases; use generative models for narrative around verified fields.</li>
+    <li><strong>Source of truth is text</strong> (tickets, policies, code) → text LLM plus optional retrieval.</li>
+    <li><strong>User shows something visual</strong> (receipt, UI bug, shelf photo) → vision or multimodal understanding.</li>
+    <li><strong>Hands-busy / voice-native</strong> (driving, warehouse) → speech in/out; keep text as the internal reasoning layer if helpful.</li>
+    <li><strong>Creative assets</strong> (ads, storyboards) → image/video generation with human review.</li>
+    <li><strong>Compliance or exact numbers</strong> → prefer structured extractors plus databases; use generative models for narrative around verified fields.</li>
     </ol>
-    <p>Also separate <strong>understanding</strong> from <strong>generation</strong>. Classifying whether a photo shows a damaged package is different from generating a marketing image of a package. Same modality, different risk, latency, and evaluation.</p>
+    <p>Also separate <strong>understanding</strong> from <strong>generation</strong>. Classifying whether a photo shows a damaged package is different from generating a marketing image of a package.</p>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
     <p>Start with the cheapest modality that preserves information. Transcribing audio then prompting an LLM is often enough; jump to native audio-in models when latency, prosody, or overlapping speakers matter.</p>
@@ -152,13 +203,13 @@ flowchart LR
         </tr>
         <tr>
           <td>B. Stitched unimodal</td>
-          <td>ASR -&gt; OCR/caption -&gt; LLM</td>
+          <td>ASR → OCR/caption → LLM</td>
           <td>Clear ownership per step</td>
           <td>Error compounds across stages</td>
         </tr>
         <tr>
           <td>C. Multimodal model</td>
-          <td>Image + transcript -&gt; answer</td>
+          <td>Image + transcript → answer</td>
           <td>Fewer handoffs</td>
           <td>Harder to debug; vendor lock-in risk</td>
         </tr>
@@ -190,57 +241,31 @@ def choose_pipeline(ticket: Ticket) -&gt; str:
 
 
 print(choose_pipeline(Ticket(&quot;app crashes on save&quot;)))
-# text_llm_with_optional_rag
-
-print(choose_pipeline(Ticket(&quot;see photo&quot;, image_bytes=b&quot;...png&quot;)))
-# vision_caption_or_vqa_then_llm</code></pre>
+# text_llm_with_optional_rag</code></pre>
     </div>
     <p>The function is deliberately boring: modality choice is a product decision before it is a model-zoo decision.</p>
-    <p>Extend the same idea into a tiny routing table you could paste into a design doc:</p>
-    <div class="code-block" data-lang="python">
-      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python">ROUTES = {
-    (&quot;text&quot;,): &quot;llm_rag&quot;,
-    (&quot;image&quot;,): &quot;vision_then_llm&quot;,
-    (&quot;audio&quot;,): &quot;asr_then_llm&quot;,
-    (&quot;image&quot;, &quot;audio&quot;): &quot;parallel_asr_vision_then_llm&quot;,
-    (&quot;video&quot;,): &quot;keyframe_or_video_model_then_llm&quot;,
-}
-
-
-def route(*modalities: str) -&gt; str:
-    key = tuple(sorted(set(modalities)))
-    return ROUTES.get(key, &quot;clarify_inputs_with_user&quot;)
-
-
-print(route(&quot;text&quot;))
-print(route(&quot;image&quot;, &quot;audio&quot;))
-print(route(&quot;video&quot;))</code></pre>
-    </div>
-    <p>If <code>clarify_inputs_with_user</code> appears often in real traffic, your intake UX — not your model — is the bottleneck.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Modality mismatch</strong> — Feeding screenshots into a text-only bot via “describe the image” creates lossy telephone games.</li>
-    <li><strong>Pipeline latency stacking</strong> — ASR + OCR + LLM + TTS can exceed interactive budgets; measure end-to-end, not per model.</li>
+    <li><strong>Modality mismatch</strong> — Feeding screenshots into a text-only bot via &quot;describe the image&quot; creates lossy telephone games.</li>
+    <li><strong>Pipeline latency stacking</strong> — ASR (automatic speech recognition) + OCR + LLM + TTS (text-to-speech) can exceed interactive budgets; measure end-to-end.</li>
     <li><strong>Silent failure at boundaries</strong> — Bad transcription becomes confident LLM advice; always surface low-confidence ASR or OCR.</li>
-    <li><strong>Over-buying multimodal</strong> — A full video model for “extract the total from this invoice PDF” is overkill; OCR + rules/LLM may win.</li>
-    <li><strong>Evaluation theater</strong> — Pretty demos on clean studio audio/images hide production noise (glare, accents, compression).</li>
-    <li><strong>Privacy</strong> — Images and audio often contain PII; modality upgrades expand your threat surface.</li>
+    <li><strong>Over-buying multimodal</strong> — A full video model for &quot;extract the total from this invoice PDF&quot; is overkill; OCR + rules/LLM may win.</li>
+    <li><strong>Privacy</strong> — Images and audio often contain personally identifiable information (PII); modality upgrades expand your threat surface.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
-    <p>Multimodal does not mean “smarter about facts.” It means “can see or hear more.” Grounding and permissions still apply.</p>
+    <p>Multimodal does not mean &quot;smarter about facts.&quot; It means &quot;can see or hear more.&quot; Grounding and permissions still apply.</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Match models to modalities — text, image, audio, video, or multimodal fusion — and prefer the simplest pipeline that keeps the user’s native signal intact.</p>
+    <p>Match models to modalities — text, image, audio, video, or multimodal fusion — and prefer the simplest pipeline that keeps the user&#x27;s native signal intact.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Modality</strong> — A type of input/output signal such as text, image, audio, or video.</li>
     <li><strong>Unimodal model</strong> — Operates primarily on a single modality.</li>
     <li><strong>Multimodal model</strong> — Jointly handles two or more modalities.</li>
     <li><strong>Encoder / decoder</strong> — Modules that map a modality into vectors or back out to raw signals/tokens.</li>
-    <li><strong>ASR (Automatic Speech Recognition)</strong> — Speech -&gt; text.</li>
-    <li><strong>TTS (Text-to-Speech)</strong> — Text -&gt; audio.</li>
+    <li><strong>ASR (Automatic Speech Recognition)</strong> — Speech → text.</li>
+    <li><strong>TTS (Text-to-Speech)</strong> — Text → audio.</li>
     <li><strong>VQA (Visual Question Answering)</strong> — Answer questions about an image.</li>
     <li><strong>Embedding</strong> — Dense vector representation used for search, clustering, or fusion across modalities.</li>
     </ul>

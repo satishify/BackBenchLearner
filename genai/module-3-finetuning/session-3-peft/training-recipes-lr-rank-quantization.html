@@ -36,7 +36,7 @@
       <h1>Training Recipes: LR, Rank, and Quantization</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>PEFT fails more often from bad recipes than from bad theory. Learning rate, rank, epochs, and quantization interact. This lesson is a field guide for defaults that are sane for SFT-style LoRA—and how to tune when metrics stall.</p>
+    <p>PEFT fails more often from bad recipes than from bad theory. Learning rate, rank, epochs, and quantization all interact. This lesson is a field guide for defaults that work for SFT-style LoRA—and how to tune when metrics stall.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Think in three knobs:</p>
     <ol>
@@ -48,35 +48,35 @@
       <p class="callout-title">Key idea</p>
     <p>Change one major knob at a time, and always re-check task lift vs anchor regressions.</p>
     </aside>
-    <p>A common successful pattern: modest rank, slightly higher LR than full FT, one to two epochs on clean data, early stop on holdout.</p>
+    <p>A common successful pattern: modest rank, slightly higher learning rate than full fine-tuning, one to two epochs on clean data, early stop on holdout.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3>Learning rate</h3>
-    <p>LoRA often tolerates <strong>higher LRs</strong> than full fine-tuning because few parameters move.</p>
+    <p>LoRA often tolerates <strong>higher learning rates</strong> than full fine-tuning because only a few parameters move.</p>
     <table>
       <thead><tr>
-        <th>Setup</th>
-        <th>Typical starting LR (order of magnitude)</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Full FT 7B</td>
-          <td>~1e-5 to 2e-5</td>
+          <td><strong>Full FT ~1e-5 to 2e-5</strong></td>
+          <td>Updating every weight in a 7B model—small steps to avoid breaking the backbone.</td>
         </tr>
         <tr>
-          <td>LoRA SFT 7B</td>
-          <td>~1e-4 to 3e-4</td>
+          <td><strong>LoRA SFT ~1e-4 to 3e-4</strong></td>
+          <td>Only adapter weights move—can push harder without destabilizing the base.</td>
         </tr>
         <tr>
-          <td>Soft prompts</td>
-          <td>Often ~1e-3 to 5e-3 (very small param set)</td>
+          <td><strong>Soft prompts ~1e-3 to 5e-3</strong></td>
+          <td>Very tiny parameter set—often needs a higher learning rate to move at all.</td>
         </tr>
       </tbody>
     </table>
-    <p>Use cosine or linear decay with a short warmup. If loss spikes or anchors crash, cut LR by 2–5x.</p>
+    <p>Use cosine or linear decay with a short warmup. If loss spikes or anchors crash, cut learning rate by 2–5x.</p>
     <h3>Rank and alpha</h3>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">effective_scale ~= alpha / r</code></pre>
+      <pre><code class="language-text">effective scale ~= alpha / r</code></pre>
     </div>
     <p>Recipes:</p>
     <ul>
@@ -84,40 +84,35 @@
     <li>If underfit: <code>r=32</code> or add MLP targets before jumping to full FT.</li>
     <li>If overfit: lower <code>r</code>, fewer epochs, more diverse data.</li>
     </ul>
-    <p>Keep <code>alpha/r</code> stable when sweeping <code>r</code>, or you accidentally sweep LR too.</p>
+    <p>Keep <code>alpha/r</code> stable when sweeping <code>r</code>, or you accidentally sweep learning rate too.</p>
     <h3>Steps, epochs, batch</h3>
     <ul>
     <li>Prefer <strong>more unique data</strong> over a fifth epoch on 200 rows.</li>
-    <li>Effective batch via gradient accumulation if VRAM is tight.</li>
+    <li>Use gradient accumulation for effective batch size if VRAM is tight.</li>
     <li>Sequence length dominates memory; truncate thoughtfully (do not silently chop labels).</li>
     </ul>
     <h3>Quantization choices</h3>
     <table>
       <thead><tr>
-        <th>Mode</th>
-        <th>Memory</th>
-        <th>Risk</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>bf16/fp16 LoRA</td>
-          <td>Medium</td>
-          <td>Clean baseline</td>
+          <td><strong>bf16/fp16 LoRA</strong></td>
+          <td>Clean baseline when you have enough GPU memory.</td>
         </tr>
         <tr>
-          <td>8-bit backbone + LoRA</td>
-          <td>Lower</td>
-          <td>Usually mild quality hit</td>
+          <td><strong>8-bit backbone + LoRA</strong></td>
+          <td>Lower memory; usually a mild quality hit.</td>
         </tr>
         <tr>
-          <td>4-bit QLoRA</td>
-          <td>Lowest</td>
-          <td>Check eval carefully; watch library maturity</td>
+          <td><strong>4-bit QLoRA</strong></td>
+          <td>Smallest memory footprint; check eval carefully.</td>
         </tr>
         <tr>
-          <td>Serve merged bf16 after 4-bit train</td>
-          <td>Mixed</td>
-          <td>Validate; do not assume identity</td>
+          <td><strong>Serve merged bf16 after 4-bit train</strong></td>
+          <td>Common in practice; validate—do not assume identical quality.</td>
         </tr>
       </tbody>
     </table>
@@ -136,7 +131,7 @@ flowchart TD
     </div>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Log: LR, rank, alpha, targets, precision, epoch, trainable%, task scores, anchor scores. Without that table, PEFT tuning becomes folklore.</p>
+    <p>Log: learning rate, rank, alpha, targets, precision, epoch, trainable%, task scores, anchor scores. Without that table, PEFT tuning becomes folklore.</p>
     </aside>
     <h2 id="in-code">In code</h2>
     <p>A tiny hyperparameter search ledger—no training required.</p>
@@ -197,7 +192,7 @@ for rec in recipes:
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Copying full-FT LRs into LoRA</strong> — Training crawls; people &quot;fix&quot; it by over-epoching into overfit.</li>
+    <li><strong>Copying full-FT learning rates into LoRA</strong> — Training crawls; people &quot;fix&quot; it by over-epoching into overfit.</li>
     <li><strong>Sweeping rank while changing alpha/r</strong> — Confounded experiments.</li>
     <li><strong>4-bit everything including eval blindness</strong> — Ship decisions on numbers that do not match prod precision.</li>
     <li><strong>One giant batch of unrelated tasks</strong> — Need task balance or separate adapters.</li>

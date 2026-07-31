@@ -3,11 +3,30 @@ title: "Task Decomposition"
 description: "Split large goals into small, testable, executable subtasks so agents can retry, parallelize, and show partial progress."
 ---
 
-**Task decomposition** means breaking a large goal into smaller subtasks that are independently executable and checkable. Agents that skip this step try to “do the whole thing” in one blob of reasoning — and then cannot tell which part failed.
+**What is this for?** To show how **task decomposition**—breaking a big goal into smaller steps—makes agents reliable and debuggable.
+
+**Why does it exist?** Agents that skip decomposition try to "do the whole thing" in one blob of reasoning. Then they cannot tell which part failed, retry safely, or show partial progress.
 
 ## Intuition
 
-“Create the weekly support summary” is a goal, not a step. Fetching tickets is a step. Clustering themes is a step. Each step has inputs, outputs, and a pass/fail check. When step 3 fails, you retry step 3 — not the entire week. Decomposition is how reliability and traceability enter agent design.
+"Create the weekly support summary" is a **goal**, not a step.
+
+- Fetching tickets is a step.
+- Clustering themes is a step.
+- Each step has inputs, outputs, and a pass/fail check.
+
+When step 3 fails, you retry step 3—not the entire week. Decomposition is how reliability and traceability enter agent design.
+
+| Plain-English idea | What it means |
+| --- | --- |
+| **Goal** | The deliverable the user wants |
+| **Subtask / step** | One named action with a checkable output |
+| **Planner** | Breaks the goal into an ordered step list |
+| **Executor** | Runs one step and returns the result |
+
+:::key
+A step is not done because the model said "done." Prefer programmatic checks: row count > 0, JSON schema valid, tests green.
+:::
 
 ```mermaid
 flowchart TB
@@ -19,7 +38,7 @@ flowchart TB
 
 ## How it works
 
-### Why it matters
+### Why decomposition matters
 
 - **Reliability:** smaller blast radius per failure.
 - **Traceability:** logs map to named steps.
@@ -28,18 +47,31 @@ flowchart TB
 - **Parallelism:** independent branches can run together.
 - **Human review:** insert HITL on specific steps only.
 
+### Planner output (example)
+
+For a payment outage, a planner might output:
+
+```
+1. Check code diff for recent deploys
+2. Check auth-service logs (last 1 hour)
+3. Check db-primary status
+4. Compare findings and synthesize answer
+```
+
+The **executor** runs one line at a time—e.g., `github.get_commit_diff(...)`, then `splunk.query_logs(...)`.
+
 ### How to decompose well
 
-1. Start from the deliverable and walk backward (what must be true before we can publish?).
-2. Name steps as verbs with clear outputs (`fetch_tickets -> TicketList`).
-3. Keep steps roughly one tool call or one tight bundle — not mini-projects.
-4. Mark dependencies (S2 needs S1’s artifact).
+1. Start from the deliverable and walk backward (what must be true before we publish?).
+2. Name steps as verbs with clear outputs (`fetch_tickets` → `TicketList`).
+3. Keep steps roughly one tool call or one tight bundle—not mini-projects.
+4. Mark dependencies (step 2 needs step 1's artifact).
 5. Define a check for each step (row count > 0, schema valid, tests green).
 6. Cap depth: if you need more than ~7–10 steps, introduce phases or a sub-agent.
 
 ### Example
 
-Goal: “Create weekly support summary.”
+Goal: "Create weekly support summary."
 
 1. Fetch tickets from CRM for the date range.
 2. Cluster by issue type.
@@ -51,12 +83,12 @@ Each step can fail differently: CRM auth vs empty clusters vs tone policy on rec
 
 ### Static vs dynamic plans
 
-- **Static playbook:** predefined steps; model fills parameters. Best default in production.
-- **Dynamic planning:** model invents the step list. Flexible, easier to go off-rails — constrain with templates and validators.
+| Type | Plain-English idea | Best for |
+| --- | --- | --- |
+| **Static playbook** | Predefined steps; model fills parameters | Production default |
+| **Dynamic planning** | Model invents the step list | Flexible but easier to go off-rails |
 
-### Checks beat vibes
-
-A step is not done because the model said “done.” Prefer programmatic checks: `len(tickets) > 0`, JSON schema valid, `pytest` exit code 0, Slack API 200. Use LLM judges only when the property is inherently semantic (summary faithfulness).
+Constrain dynamic plans with templates and validators.
 
 ## In code
 
@@ -112,26 +144,26 @@ print(run_plan(STEPS).artifacts["summary"])
 
 ## What goes wrong
 
-- **Fake decomposition.** Five poetic bullets that still map to one giant tool.
-- **No checks.** Steps “succeed” on model assertion alone.
-- **Too fine.** Hundreds of micro-steps -> coordination hell.
+- **Fake decomposition.** Five poetic bullets that still map to one giant tool call.
+- **No checks.** Steps "succeed" on model assertion alone.
+- **Too fine.** Hundreds of micro-steps → coordination hell.
 - **Hidden dependencies.** Step 4 assumes a field step 2 never produced.
-- **Non-idempotent retries.** Re-running “charge card” doubles the charge — need idempotency keys.
+- **Non-idempotent retries.** Re-running "charge card" doubles the charge—need idempotency keys.
 - **Dynamic plans without bounds.** The agent invents endless new steps to look busy.
 
 ## Putting it into practice
 
-Take one messy goal from your backlog and force it into a table with columns: step name, input artifact, output artifact, check, retryable?, HITL?. If you cannot fill a row, the step is still a wish. Keep the first production version under eight steps; merge vanity steps that do not change the world or the artifact.
+Take one messy goal from your backlog and force it into a table with columns: step name, input artifact, output artifact, check, retryable?, HITL?. If you cannot fill a row, the step is still a wish.
 
-For side-effecting steps, write the idempotency story before the prompt. “Send Slack message” needs a dedupe key; “create ticket” needs an external reference you can look up. Decomposition without idempotency just creates precise, repeatable duplicates.
+Keep the first production version under eight steps. For side-effecting steps, write the idempotency story before the prompt.
 
 ## Parallel branches
 
-When two steps share no artifacts — for example fetching CRM tickets and fetching status-page incidents — run them concurrently inside the orchestrator, then join before summarize. Decomposition makes that parallelism obvious; a monolithic prompt hides it. Just keep join checks strict: both branches must pass their predicates before the merge step reads their outputs.
+When two steps share no artifacts—fetching CRM tickets and fetching status-page incidents—run them concurrently, then join before summarize. Decomposition makes that parallelism obvious.
 
 ## Naming steps for ops
 
-Use stable step IDs in logs (`fetch_tickets`, not “Step 1”). Dashboards and alerts should key off those IDs so a spike in `cluster_themes` failures pages the right owner. When you rename a step, keep the old ID as an alias for a release so historical metrics do not fracture. Decomposition is an operational interface, not only a prompting trick.
+Use stable step IDs in logs (`fetch_tickets`, not "Step 1"). Dashboards and alerts should key off those IDs so a spike in `cluster_themes` failures pages the right owner.
 
 ## One-line summary
 
@@ -140,8 +172,9 @@ Decompose goals into named, dependency-aware steps with programmatic checks and 
 ## Key terms
 
 - **Task decomposition:** splitting a goal into executable subtasks.
+- **Planner:** part that outputs a step-by-step plan.
+- **Executor:** part that runs one planned step safely.
 - **Artifact:** structured output of a step consumed by later steps.
 - **Playbook:** predefined step skeleton for a workflow.
 - **Idempotency:** safe to retry without duplicate side effects.
 - **Step check:** programmatic predicate that a step succeeded.
-- **Partial progress:** usable intermediate results when a later step fails.

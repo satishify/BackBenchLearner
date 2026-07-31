@@ -3,43 +3,43 @@ title: "Prompt Tuning and Prefix Tuning"
 description: "Soft prompts and prefixes: trainable virtual tokens that steer a frozen model without updating backbone weights."
 ---
 
-Not all PEFT methods patch weight matrices. Prompt tuning and prefix tuning learn **continuous prompts**—vectors in embedding or hidden space—while the transformer stays frozen. They are lighter than LoRA in parameter count and shine when you want many task specialists on one backbone.
+Not all PEFT methods change weight matrices. **Prompt tuning** and **prefix tuning** learn **soft prompts**—continuous vectors in embedding or hidden space—while the transformer stays frozen. They use even fewer trainable parameters than LoRA and shine when you want many task specialists on one backbone.
 
 ## Intuition
 
-Hard prompts are text you type. Soft prompts are vectors you optimize. The model "sees" extra tokens that never map to real words but still attend like tokens.
+A **hard prompt** is text you type. A **soft prompt** is a set of learnable vectors the model treats like extra tokens—even though they are not real words.
 
-- **Prompt tuning** — Train a small set of virtual token embeddings prepended to the input embeddings.
-- **Prefix tuning** — Train prefix vectors injected into every layer's key/value (or hidden) streams—more expressive, more parameters than pure prompt tuning.
+- **Prompt tuning** — Train a small set of virtual token embeddings prepended to the input.
+- **Prefix tuning** — Train prefix vectors injected into every layer's key/value streams—more expressive, more parameters than prompt tuning alone.
 
 :::key
-Soft prompts steer a frozen model by learning continuous "instructions" in activation space instead of rewriting `W`.
+Soft prompts steer a frozen model by learning continuous "instructions" in activation space instead of rewriting weights.
 :::
 
-If LoRA is a custom gearbox, soft prompts are a custom key fob: tiny, swappable, limited mechanical force—but enough for many classification and formatting tasks.
+If LoRA is a custom gearbox bolted onto the engine, soft prompts are a custom key fob: tiny, swappable, limited force—but enough for many classification and formatting tasks.
 
 ## How it works
 
 ### Prompt tuning
 
-Let `E` be the frozen embedding matrix. For input token ids you still embed with `E`. Additionally, learn `P` of shape `(n_virtual, d_model)` and concatenate:
+The model's embedding matrix stays frozen. You learn a small matrix P of virtual prompt vectors and prepend them to the input embeddings:
 
 ```text
-h_0 = [P; Embed(token_ids)]
+input to transformer = concat(learnable prompt P, embedded token ids)
 ```
 
-Only `P` trains. Typical `n_virtual` might be 8–100 depending on task difficulty.
+Only P trains. Typical prompt length might be 8–100 virtual tokens depending on task difficulty.
 
 ### Prefix tuning
 
-At each layer (or selected layers), learn prefixes for attention keys/values:
+At each layer (or selected layers), learn prefixes for attention keys and values:
 
 ```text
-K' = [K_prefix; K]
-V' = [V_prefix; V]
+K with prefix = concat(K_prefix, K)
+V with prefix = concat(V_prefix, V)
 ```
 
-So every block gets a task-specific "context" that attention can read. Capacity is higher than embedding-only prompt tuning.
+Every block gets task-specific context that attention can read. Capacity is higher than embedding-only prompt tuning.
 
 ```mermaid
 flowchart TD
@@ -51,19 +51,27 @@ flowchart TD
     L --> O[Logits]
 ```
 
+### Smarter soft-prompt variants
+
+Plain soft prompts work, but one fixed prompt for every input and every layer can be too blunt. These variants add selectivity:
+
+| Plain-English idea | When to use it |
+| --- | --- |
+| **SMoP (Sparse Mixture of Prompts)** | Pick from several prompt candidates instead of forcing one prompt to do all the work. Good when prompt budget is limited. |
+| **APT (Adaptive Prefix Tuning)** | Use different prefix lengths per layer—lower layers often need more capacity for phrase-level features; higher layers for semantics. |
+| **IDPG (Instance-Dependent Prompt Generation)** | Generate the prompt from the input itself, not just from a task label. Useful when one task has many subcases. |
+| **SPT (Selective Prompt Tuning)** | Insert soft prompts only in layers where they actually help—not everywhere by default. |
+
 ### Compared to LoRA
 
-| Aspect | Prompt / prefix tuning | LoRA |
-| --- | --- | --- |
-| What trains | Virtual tokens / prefixes | Low-rank matrix updates |
-| Typical size | Very small to small | Small to medium |
-| Strength | Extreme multi-task swapping | Stronger capacity for generation style |
-| Weakness | May underfit hard generative shifts | Larger artifacts than soft prompts |
-| Serving | Pass task prompt vectors | Load adapter or merge |
+| Plain-English idea | When to use it |
+| --- | --- |
+| **Soft prompts** | Smallest trainable footprint; extreme multi-task swapping; classification or light rewriting. |
+| **LoRA** | Stronger capacity for generation style and hard output contracts; slightly larger artifacts. |
 
 ### When to reach for soft prompts
 
-- Many tasks / tenants, one frozen 7B–70B server.
+- Many tasks or tenants, one frozen 7B–70B server.
 - Classification, routing, or light rewriting.
 - Extremely tight storage budgets per skill.
 - Research on multi-task composition of soft prompts.
@@ -152,7 +160,7 @@ Soft prompts are invisible in the text logs. Persist and version them like any o
 
 ### Composition and routing
 
-Soft prompts compose naturally with routing layers: embed `task_id -> prompt vectors`, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default "neutral" prompt for unknown tasks that falls back to base behavior.
+Soft prompts compose naturally with routing layers: map `task_id -> prompt vectors`, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default "neutral" prompt for unknown tasks that falls back to base behavior.
 
 ### Initialization and length
 

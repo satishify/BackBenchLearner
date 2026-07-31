@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, and write a crisp experiment report.">
+  <meta name="description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, read loss curves, and write a crisp experiment report.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html">
   <meta property="og:title" content="Lab: Eval and Writeup | BackbenchLearner">
-  <meta property="og:description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, and write a crisp experiment report.">
+  <meta property="og:description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, read loss curves, and write a crisp experiment report.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Lab: Eval and Writeup | BackbenchLearner">
-  <meta name="twitter:description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, and write a crisp experiment report.">
+  <meta name="twitter:description" content="Unseal holdout, compare fine-tune to baseline, check anchors for forgetting, read loss curves, and write a crisp experiment report.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,7 +36,7 @@
       <h1>Lab: Eval and Writeup</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Training without a writeup is a demo. This lesson is the finish line of the sprint: evaluate the pinned checkpoint on <strong>holdout + anchors</strong>, compare to baseline, and document what you would ship—or why you would not.</p>
+    <p>Training without a writeup is a demo. This lesson is the finish line: evaluate the pinned checkpoint on holdout and anchors, compare to baseline, and document what you would ship — or why you would not.</p>
     <h2 id="intuition">Intuition</h2>
     <p>A good lab writeup answers four questions in one page:</p>
     <ol>
@@ -103,7 +103,7 @@
     <ul>
     <li>Require task metric lift &gt;= 5 absolute points (or agreed threshold).</li>
     <li>Reject if anchor drop &gt; 10 points.</li>
-    <li>Flag for review if lift looks &quot;too good&quot; on tiny N—check contamination.</li>
+    <li>Flag for review if lift looks &quot;too good&quot; on tiny N — check contamination.</li>
     </ul>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -118,6 +118,42 @@ flowchart TD
     D -->|No| N[Writeup + next experiments]
       </div>
     </div>
+    <h3>Reading loss curves in your writeup</h3>
+    <p>Include a short &quot;training health&quot; paragraph alongside task metrics. The loss curve tells you <em>how</em> the run behaved, not just whether it finished.</p>
+    <table>
+      <thead><tr>
+        <th>Curve pattern</th>
+        <th>Plain-English idea</th>
+        <th>What to note in the writeup</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Underfitting</strong></td>
+          <td>Both train and validation loss stayed high</td>
+          <td>&quot;Model never learned — check data, LR, or train longer&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Overfitting</strong></td>
+          <td>Train loss fell but validation loss turned up</td>
+          <td>&quot;Stopped too late — pinned earlier checkpoint or reduce epochs&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>No learning</strong></td>
+          <td>Both curves flat near the start</td>
+          <td>&quot;Pipeline bug — check labels, template, or optimizer&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Healthy fine-tune</strong></td>
+          <td>Both losses fell together with a small gap</td>
+          <td>&quot;Stopped near validation minimum — run looks sane&quot;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>If training loss fell but holdout task score did not improve, say so plainly. A low loss number is not the product metric.</p>
+    <aside class="callout callout-tip">
+      <p class="callout-title">Tip</p>
+    <p>Paste the exact config and data hash into the writeup. Reproducibility is part of the grade in real teams — and in this lab.</p>
+    </aside>
     <h3>Writeup outline</h3>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -125,15 +161,30 @@ flowchart TD
 ## Task
 ## Data (counts, split rule, PII scrub)
 ## Method (base, LoRA r/alpha/targets, LR, epochs)
+## Training health (loss curve pattern)
 ## Results (table)
 ## Error analysis (top clusters)
 ## Risks (forgetting, leakage, serving mode)
 ## Decision + next steps</code></pre>
     </div>
-    <aside class="callout callout-tip">
-      <p class="callout-title">Tip</p>
-    <p>Paste the exact config and data hash into the writeup. Reproducibility is part of the grade in real teams—and in this lab.</p>
-    </aside>
+    <h3>Qualitative review without cherry-picking</h3>
+    <p>Sort holdout failures by error type. Pick the first two from each cluster, not your favorite dramatic examples. For each, note whether more data, cleaner labels, retrieval-augmented generation (RAG), or prompt changes would help more than another training run.</p>
+    <h3>Stakeholder summary (five lines)</h3>
+    <p>Busy readers need:</p>
+    <ol>
+    <li>Metric lift vs baseline.</li>
+    <li>Anchor health.</li>
+    <li>Artifact id.</li>
+    <li>Ship/no-ship.</li>
+    <li>Next experiment if no-ship.</li>
+    </ol>
+    <p>Put the essay below that block, not above it.</p>
+    <h3>After no-ship</h3>
+    <p>Common productive next steps: relabel contradictions, add 50 hard cases, switch targets to include MLP projections, lower LR, or abandon fine-tuning for a tool call. Write the choice down so the next sprint does not repeat the same config hoping for magic.</p>
+    <h3>Numbers to always include</h3>
+    <p>State N for holdout and anchors. A jump from 8/10 to 9/10 is not the same story as 40/50 to 45/50. When N is small, phrase results as &quot;promising, needs more labels&quot; rather than &quot;solved.&quot;</p>
+    <h3>Serving paragraph (required)</h3>
+    <p>End every writeup with how the artifact would be served (merged vs adapter), how to roll back, and which base revision it requires. Offline wins that cannot be deployed safely are incomplete wins.</p>
     <h2 id="in-code">In code</h2>
     <p>Generate a mini report from numeric results.</p>
     <div class="code-block" data-lang="python">
@@ -176,7 +227,6 @@ print(render_md(&quot;triage_lora_r16_lab&quot;, base, ft))</code></pre>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def flag_overlap(holdout_texts, train_texts, thresh=0.8):
-    # reuse a simple jaccard from fundamentals eval lesson
     from difflib import SequenceMatcher
     flags = []
     for h in holdout_texts:
@@ -192,31 +242,14 @@ print(render_md(&quot;triage_lora_r16_lab&quot;, base, ft))</code></pre>
     <li><strong>No serving note</strong> — Say merged vs adapter and how to roll back.</li>
     <li><strong>Moving goalposts</strong> — Changing metrics after seeing results.</li>
     <li><strong>Declaring victory on N=15</strong> — State confidence limits; gather more labels.</li>
+    <li><strong>Ignoring the loss curve</strong> — A pretty task chart with a diverging val loss means you pinned the wrong checkpoint.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>
     <p>If anchors fall hard, the writeup&#x27;s correct conclusion is &quot;do not ship,&quot; even if the JSON accuracy chart looks pretty.</p>
     </aside>
-    <h3>Qualitative review without cherry-picking</h3>
-    <p>Sort holdout failures by error type. Pick the first two from each cluster, not your favorite dramatic examples. For each, note whether more data, cleaner labels, RAG, or prompt changes would help more than another training run.</p>
-    <h3>Stakeholder summary (five lines)</h3>
-    <p>Busy readers need:</p>
-    <ol>
-    <li>Metric lift vs baseline.</li>
-    <li>Anchor health.</li>
-    <li>Artifact id.</li>
-    <li>Ship/no-ship.</li>
-    <li>Next experiment if no-ship.</li>
-    </ol>
-    <p>Put the essay below that block, not above it.</p>
-    <h3>After no-ship</h3>
-    <p>Common productive next steps: relabel contradictions, add 50 hard cases, switch targets to include MLP projections, lower LR, or abandon FT for a tool call. Write the choice down so the next sprint does not repeat the same config hoping for magic.</p>
-    <h3>Numbers to always include</h3>
-    <p>State N for holdout and anchors. A jump from 8/10 to 9/10 is not the same story as 40/50 to 45/50. When N is small, phrase results as &quot;promising, needs more labels&quot; rather than &quot;solved.&quot;</p>
-    <h3>Serving paragraph (required)</h3>
-    <p>End every writeup with how the artifact would be served (merged vs adapter), how to roll back, and which base revision it requires. Offline wins that cannot be deployed safely are incomplete wins.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Close the lab by <strong>scoring holdout and anchors against baseline</strong>, then write a short reproducible report that ends in an explicit ship or no-ship decision.</p>
+    <p>Close the lab by <strong>scoring holdout and anchors against baseline</strong>, interpreting the loss curve honestly, and writing a short reproducible report that ends in an explicit ship or no-ship decision.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Holdout unseal</strong> — First evaluation of the final set after training.</li>

@@ -36,51 +36,69 @@
       <h1>What is Machine Learning (ML)</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Machine learning is how most modern AI systems get their skills: instead of writing every rule, you collect examples (or feedback), fit a model, and let the machine generalize to new cases. If AI is the goal, ML is the dominant method for reaching it when the mapping from inputs to outputs is too complex to hand-author. Spam filters, demand forecasts, recommendation ranking, and many fraud detectors are ML long before anyone mentions Generative AI.</p>
+    <p>Machine learning (ML) is how most modern AI systems learn: instead of writing every rule by hand, you show the model examples and it picks up the pattern. This shift exists because many real-world problems are too messy to describe with manual rules alone.</p>
+    <ul>
+    <li>You give the model <strong>inputs</strong> (features) and often <strong>labels</strong> (correct answers).</li>
+    <li>The model adjusts its <strong>parameters</strong> so predictions match reality.</li>
+    <li>You check it on <strong>held-out data</strong> it has never seen — not just training examples.</li>
+    <li>The same basic loop covers simple lines and billion-parameter neural networks.</li>
+    </ul>
     <h2 id="intuition">Intuition</h2>
-    <p>You already do a form of ML every day. After enough rainy mornings, you bring an umbrella without deriving meteorology from first principles. The brain updates from <em>experience</em>. In software, experience is data: features (inputs) and, often, labels (desired outputs).</p>
+    <p>You already do a form of machine learning every day. After enough rainy mornings, you bring an umbrella without deriving meteorology from first principles. Your brain updates from <strong>experience</strong>. In software, experience is data: features (inputs) and, often, labels (desired outputs).</p>
     <p>Three questions organize almost every ML project:</p>
     <ol>
     <li>What am I predicting or discovering?</li>
     <li>What examples do I have?</li>
     <li>How will I know the model works on data it has never seen?</li>
     </ol>
-    <p>If you cannot answer (3), you are not doing ML engineering — you are fitting a curve and hoping. The discipline shows up in splits, baselines, and metrics that match the real decision, not in the brand name of the algorithm.</p>
+    <p>If you cannot answer (3), you are not doing ML engineering — you are fitting a curve and hoping.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Learning from data.</strong> A model is a function <code>f_theta(x)</code> with adjustable parameters <code>theta</code>. Training searches for <code>theta</code> that make predictions match reality well — usually by minimizing a loss (squared error, cross-entropy, etc.). After training, you freeze (or carefully update) <code>theta</code> and run inference on new <code>x</code>. The same skeleton covers linear regression and billion-parameter nets; scale and architecture change, the loop does not.</p>
+    <p><strong>Learning from data.</strong> A model is a function with adjustable parameters. Training searches for parameter values that make predictions match reality — usually by minimizing a <strong>loss</strong> (squared error, cross-entropy, etc.). After training, you run <strong>inference</strong> on new inputs. The same skeleton covers linear regression and large neural nets; scale and architecture change, the loop does not.</p>
     <p><strong>Three broad paradigms:</strong></p>
     <table>
       <thead><tr>
-        <th>Paradigm</th>
-        <th>What you have</th>
-        <th>Goal</th>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Supervised</td>
-          <td>Inputs + labels</td>
-          <td>Predict labels for new inputs</td>
+          <td><strong>Supervised learning</strong> — inputs plus labels; predict labels for new inputs</td>
+          <td>Spam filters, credit scoring, image triage</td>
         </tr>
         <tr>
-          <td>Unsupervised</td>
-          <td>Inputs only</td>
-          <td>Find structure (clusters, compressions, anomalies)</td>
+          <td><strong>Unsupervised learning</strong> — inputs only; find hidden structure</td>
+          <td>Customer segments, anomaly hints, compression</td>
         </tr>
         <tr>
-          <td>Reinforcement</td>
-          <td>Actions + rewards over time</td>
-          <td>Learn a policy that maximizes cumulative reward</td>
+          <td><strong>Reinforcement learning (RL)</strong> — actions plus rewards over time; learn a policy</td>
+          <td>Game-playing agents, some robotics and recommendation loops</td>
         </tr>
       </tbody>
     </table>
-    <p>Supervised learning powers spam filters, credit scoring, and medical image triage. Unsupervised learning powers customer segmentation, dimensionality reduction, and anomaly hints when labels are scarce. Reinforcement learning powers game-playing agents and some robotics and recommendation loops where delayed feedback matters. Semi-supervised and self-supervised methods blur the lines: they use unlabeled mass plus a pretext task (next token, masked image) to learn useful representations.</p>
+    <p>Semi-supervised and self-supervised methods blur the lines: they use lots of unlabeled data plus a pretext task (predict the next token, fill in a masked image) to learn useful representations.</p>
     <p><strong>Regression vs classification (supervised).</strong></p>
-    <ul>
-    <li><strong>Regression</strong> predicts a continuous number: house price, temperature, latency.</li>
-    <li><strong>Classification</strong> predicts a discrete class: spam/ham, disease/no disease, which digit.</li>
-    </ul>
-    <p>Same idea — map <code>x -&gt; y</code> — different output type and usually different loss. Multi-label classification (several tags at once) and ranking problems are cousins; start by naming the output space clearly.</p>
-    <p><strong>Train / test split intuition.</strong> If you grade a student only on questions they memorized, you overestimate skill. Likewise, if you evaluate a model on the same rows used to fit it, you overestimate generalization. Hold out a <strong>test set</strong> (and often a <strong>validation set</strong> for tuning) so metrics reflect performance on unseen data. Touch the test set once for final reporting; use validation for model selection.</p>
+    <table>
+      <thead><tr>
+        <th>Plain-English idea</th>
+        <th>When to use it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Regression</strong> — predict a continuous number (price, temperature, latency)</td>
+          <td>Forecasting quantities</td>
+        </tr>
+        <tr>
+          <td><strong>Binary classification</strong> — predict one of two labels (spam/ham, disease/no disease)</td>
+          <td>Yes/no decisions</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-class classification</strong> — predict one of many labels (which digit, which topic)</td>
+          <td>Picking among several categories</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Same idea — map input to output — different output type and usually different loss.</p>
+    <p><strong>Train / test split.</strong> If you grade a student only on questions they memorized, you overestimate skill. Likewise, if you evaluate a model on the same rows used to fit it, you overestimate generalization. Hold out a <strong>test set</strong> (and often a <strong>validation set</strong> for tuning) so metrics reflect performance on unseen data. Touch the test set once for final reporting; use validation for model selection.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -127,15 +145,15 @@ err_base = (baseline - y_test) ** 2
 print(f&quot;fit: y = {a:.3f} + {b:.3f}*x&quot;)
 print(f&quot;test MSE model={err_model:.3f} baseline={err_base:.3f}&quot;)</code></pre>
     </div>
-    <p>Even this toy fit shows the ML loop: choose a hypothesis class (a line), fit on train-ish data, compare to a baseline, evaluate on held-out points. Real projects add more features, regularization, cross-validation, and careful splits — the skeleton stays the same. Always ship a baseline first; if a fancy model cannot beat “predict the mean” or “always predict the majority class,” stop and fix the data or the problem statement.</p>
+    <p>Even this toy fit shows the ML loop: choose a hypothesis class (a line), fit on train data, compare to a baseline, evaluate on held-out points. Real projects add more features, regularization, cross-validation, and careful splits — the skeleton stays the same. Always ship a baseline first; if a fancy model cannot beat &quot;predict the mean,&quot; stop and fix the data or the problem statement.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Data leakage.</strong> Using future information or the label itself as a feature makes test scores look amazing and production fail.</li>
     <li><strong>Wrong split.</strong> Random splits on time-ordered or grouped data (same user in train and test) inflate metrics.</li>
-    <li><strong>Imbalanced classes.</strong> 99% accuracy can hide a useless minority-class detector; pick metrics that match the decision (precision, recall, F1, calibration).</li>
+    <li><strong>Imbalanced classes.</strong> 99% accuracy can hide a useless minority-class detector; pick metrics that match the decision (precision, recall, F1).</li>
     <li><strong>Overfitting.</strong> A model that memorizes noise on the train set will not travel. Prefer simpler models, more data, or regularization when train &gt;&gt; test performance.</li>
     <li><strong>Paradigm mismatch.</strong> Supervised labels may be expensive; unsupervised clusters may not match business labels; RL needs careful reward design or it will game the metric.</li>
-    <li><strong>Silent distribution shift.</strong> The world changes after launch; without monitoring, yesterday’s good model becomes tomorrow’s quiet failure.</li>
+    <li><strong>Silent distribution shift.</strong> The world changes after launch; without monitoring, yesterday&#x27;s good model becomes tomorrow&#x27;s quiet failure.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Machine learning fits models from data so systems generalize to new inputs — via supervised, unsupervised, or reinforcement paradigms, evaluated on held-out data.</p>
@@ -144,7 +162,7 @@ print(f&quot;test MSE model={err_model:.3f} baseline={err_base:.3f}&quot;)</code
     <li><strong>Machine learning (ML)</strong> — improving task performance by learning patterns from data or feedback</li>
     <li><strong>Supervised learning</strong> — training with labeled examples</li>
     <li><strong>Unsupervised learning</strong> — discovering structure without labels</li>
-    <li><strong>Reinforcement learning</strong> — learning actions from reward signals over time</li>
+    <li><strong>Reinforcement learning (RL)</strong> — learning actions from reward signals over time</li>
     <li><strong>Regression</strong> — predicting continuous targets</li>
     <li><strong>Classification</strong> — predicting discrete class labels</li>
     <li><strong>Train / validation / test split</strong> — partitions for fitting, tuning, and unbiased evaluation</li>
