@@ -165,6 +165,7 @@
     var frame = document.getElementById('content-frame');
     if (stage) stage.classList.toggle('visible', !!show);
     if (frame) frame.classList.toggle('visible', !!show);
+    document.body.classList.toggle('is-reading', !!show);
     if (!show) clearShellLessonRail();
   }
 

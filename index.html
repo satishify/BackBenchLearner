@@ -50,6 +50,8 @@
     html, body {
       height: 100%;
       max-height: 100%;
+      height: 100dvh;
+      max-height: 100dvh;
     }
     body {
       margin: 0;
@@ -58,6 +60,7 @@
       color: var(--text);
       line-height: 1.6;
       min-height: 100%;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -878,29 +881,72 @@
       z-index: 90;
     }
     .sidebar-backdrop.visible { display: block; }
+    /* Reading mode: reclaim chrome height on phones / small tablets */
+    @media (max-width: 900px) {
+      body.is-reading .page-footer,
+      body.is-reading .visitor-unlock-btn,
+      body.is-reading .visitor-panel,
+      body.is-reading .seo-discovery {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        border: 0 !important;
+      }
+      body.is-reading .page-header {
+        flex-shrink: 0;
+      }
+      body.is-reading .header-inner {
+        padding: 0.35rem 0.65rem;
+        gap: 0.35rem;
+      }
+      body.is-reading .site-logo-mark {
+        width: 28px;
+        height: 28px;
+      }
+      body.is-reading .site-logo-name {
+        font-size: 0.9rem;
+      }
+      body.is-reading .main-nav {
+        gap: 0.2rem;
+      }
+      body.is-reading .nav-trigger {
+        padding: 0.35rem 0.3rem;
+        font-size: 0.75rem;
+      }
+      body.is-reading .content-row {
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+      body.is-reading .lesson-stage.visible {
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+    }
     @media (max-width: 768px) {
       body { overflow-x: hidden; }
       .header-inner {
-        gap: 0.5rem;
+        gap: 0.35rem;
         flex-wrap: wrap;
-        padding: 0.65rem 0.85rem;
+        padding: 0.4rem 0.65rem;
       }
       /* Compact thumb control — overlays content, does not shrink the reader */
       .sidebar-toggle {
         display: inline-flex;
         position: fixed;
-        left: 0.65rem;
-        bottom: 0.65rem;
+        left: 0.5rem;
+        bottom: 0.5rem;
         z-index: 115;
         margin: 0;
-        width: 2.55rem;
-        height: 2.55rem;
+        width: 2.4rem;
+        height: 2.4rem;
         padding: 0;
-        border-radius: 11px;
+        border-radius: 10px;
         border: 1px solid rgba(15, 118, 110, 0.28);
         background: #0f766e;
         color: #ecfdf5;
-        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
         font-size: 0;
       }
       .sidebar-toggle:hover {
@@ -923,14 +969,20 @@
         border: 0;
       }
       .sidebar-toggle-icon {
-        width: 1.15rem;
-        height: 1.15rem;
+        width: 1.05rem;
+        height: 1.05rem;
       }
-      /* Free vertical space for the lesson iframe */
+      /* Always free bottom chrome on phones */
       .page-footer,
       .visitor-unlock-btn,
-      .visitor-panel {
+      .visitor-panel,
+      .seo-discovery {
         display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
       }
       .main-nav {
         width: 100%;
@@ -1113,11 +1165,11 @@
       <span class="label">location</span>
     </div>
   </div>
-  <script src="scripts/curriculum.js?v=20260731f"></script>
-  <script src="scripts/progress.js?v=20260731f"></script>
-  <script src="scripts/quizzes.js?v=20260731f"></script>
-  <script src="scripts/cheatsheets.js?v=20260731f"></script>
-  <script src="scripts/shell.js?v=20260731f"></script>
+  <script src="scripts/curriculum.js?v=20260731g"></script>
+  <script src="scripts/progress.js?v=20260731g"></script>
+  <script src="scripts/quizzes.js?v=20260731g"></script>
+  <script src="scripts/cheatsheets.js?v=20260731g"></script>
+  <script src="scripts/shell.js?v=20260731g"></script>
   <script>
     // Paint the conic progress ring from data-pct after the dashboard renders.
     (function () {
