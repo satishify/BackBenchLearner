@@ -36,9 +36,9 @@ CREATE TABLE events_2026_07 PARTITION OF events
 
 Shard key choice dominates success:
 
-- Hot key (celebrity tenant) → one shard melts (**hotspot**)
-- Missing shard key in query → scatter-gather all shards
-- Changing shard count → rebalancing pain (consistent hashing helps)
+- Hot key (celebrity tenant) -> one shard melts (**hotspot**)
+- Missing shard key in query -> scatter-gather all shards
+- Changing shard count -> rebalancing pain (consistent hashing helps)
 
 ## In code
 
@@ -96,7 +96,7 @@ def list_orders(user_id: int):
 
 @app.get("/admin/orders/{order_id}")
 def get_order_unknown_shard(order_id: int):
-    """Bad access pattern: no user_id → fan-out."""
+    """Bad access pattern: no user_id -> fan-out."""
     for shard in range(SHARD_COUNT):
         with connect(shard) as db:
             row = db.execute(

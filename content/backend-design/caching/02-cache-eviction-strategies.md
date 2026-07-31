@@ -105,7 +105,7 @@ def cache_user_profile(user_id: int, profile: dict) -> None:
 - **Assuming Redis LRU is exact** — Redis uses approximated LRU; fine in practice, not a perfect textbook list.
 
 :::tip
-Add ±10–20% random jitter to TTLs for hot keys so expiry is staggered across the fleet.
+Add +/-10–20% random jitter to TTLs for hot keys so expiry is staggered across the fleet.
 :::
 
 ## One-line summary

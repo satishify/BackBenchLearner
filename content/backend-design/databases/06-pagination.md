@@ -9,7 +9,7 @@ Page 1 of the feed looks fine. Page 50 is slow. Page 200 duplicates items becaus
 
 **Offset/limit:** `LIMIT 20 OFFSET 2000` means “skip 2000 rows, then take 20.” Databases often still walk those 2000 rows. Also, if a new row inserts at the top, your offsets shift — users see duplicates or skips.
 
-**Cursor (keyset):** remember the last item you saw (`created_at`, `id`) and ask for rows **after** that key: `WHERE (created_at, id) < (?, ?) ORDER BY … LIMIT 20`. The database seeks the index; concurrent inserts above the cursor do not reshuffle what you already viewed.
+**Cursor (keyset):** remember the last item you saw (`created_at`, `id`) and ask for rows **after** that key: `WHERE (created_at, id) < (?, ?) ORDER BY ... LIMIT 20`. The database seeks the index; concurrent inserts above the cursor do not reshuffle what you already viewed.
 
 Use offset for admin UIs with tiny tables and page numbers. Use cursors for infinite scroll, mobile feeds, and large datasets.
 
@@ -18,10 +18,10 @@ Use offset for admin UIs with tiny tables and page numbers. Use cursors for infi
 ```mermaid
 flowchart TB
     subgraph Offset["Offset"]
-        O1["page=3 → OFFSET 40"]
+        O1["page=3 -> OFFSET 40"]
     end
     subgraph Cursor["Cursor / keyset"]
-        C1["after=(ts,id) → WHERE tuple < after"]
+        C1["after=(ts,id) -> WHERE tuple < after"]
     end
 ```
 

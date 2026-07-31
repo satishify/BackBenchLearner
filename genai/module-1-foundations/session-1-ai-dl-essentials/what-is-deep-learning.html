@@ -38,7 +38,7 @@
 
     <p>Deep learning is machine learning with <em>multi-layer</em> neural networks that learn their own features. Instead of hand-crafting “edges” or “bag-of-words” signals, the model transforms raw inputs through stacked layers until later layers hold task-ready representations. That shift unlocked modern vision, speech, and the large language models behind GenAI. If classical ML is “engineer features, then fit a model,” deep learning often collapses those steps into one trainable pipeline.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Classical ML often looks like: engineer features → train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them into concepts — from pixels to textures to objects, or from tokens to phrases to discourse.</p>
+    <p>Classical ML often looks like: engineer features -&gt; train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them into concepts — from pixels to textures to objects, or from tokens to phrases to discourse.</p>
     <p>“Depth” means many successive nonlinear transforms. Each layer is usually a linear map (weights + bias) followed by a nonlinearity (ReLU, GELU, etc.). Without nonlinearities, stacking layers collapses to one big linear map — depth would buy nothing. With nonlinearities, composition can carve intricate decision regions and rich embeddings.</p>
     <p>Why care as a practitioner? Because many GenAI components <em>are</em> deep nets: transformers, convolutional backbones, diffusion U-Nets. Understanding depth and representation learning clarifies why these models need large data, why fine-tuning works, and why a shallow model on raw pixels usually fails.</p>
     <h2 id="how-it-works">How it works</h2>
@@ -56,8 +56,8 @@ y_hat = WL * h(L-1) + bL</code></pre>
     <p><strong>When DL wins vs classical ML.</strong></p>
     <table>
       <thead><tr>
-        <th>Prefer classical ML when…</th>
-        <th>Prefer deep learning when…</th>
+        <th>Prefer classical ML when...</th>
+        <th>Prefer deep learning when...</th>
       </tr></thead>
       <tbody>
         <tr>
@@ -95,12 +95,12 @@ rng = np.random.default_rng(0)
 # Input: batch of 4 examples, each with 3 features
 x = rng.normal(size=(4, 3))
 
-# Layer 1: 3 → 5, then ReLU
+# Layer 1: 3 -&gt; 5, then ReLU
 W1 = rng.normal(scale=0.5, size=(3, 5))
 b1 = np.zeros(5)
 h = np.maximum(0, x @ W1 + b1)  # ReLU
 
-# Layer 2: 5 → 2 logits (e.g. 2-class scores)
+# Layer 2: 5 -&gt; 2 logits (e.g. 2-class scores)
 W2 = rng.normal(scale=0.5, size=(5, 2))
 b2 = np.zeros(2)
 logits = h @ W2 + b2

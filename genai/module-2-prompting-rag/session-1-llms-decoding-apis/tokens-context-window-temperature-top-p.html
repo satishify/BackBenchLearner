@@ -39,7 +39,7 @@
     <p>GenAI bills and bugs both start with the same unit: the <strong>token</strong>. Once you see prompts, context limits, and sampling knobs in token terms, pricing, truncation failures, and “why did it get weird?” stop feeling mystical.</p>
     <h2 id="intuition">Intuition</h2>
     <p>The model never reads “words.” A tokenizer chops your string into discrete IDs from a fixed vocabulary. Those IDs fill a <strong>context window</strong> — a hard budget shared by system instructions, history, retrieved docs, tools, and the reply you hope to get.</p>
-    <p>After the model scores the next token, <strong>temperature</strong> and <strong>top-p</strong> reshape which candidates you are willing to sample. Low and narrow → boring but stable. High and wide → spicy but risky. Production systems treat these as reliability controls, not creativity cosmetics.</p>
+    <p>After the model scores the next token, <strong>temperature</strong> and <strong>top-p</strong> reshape which candidates you are willing to sample. Low and narrow -&gt; boring but stable. High and wide -&gt; spicy but risky. Production systems treat these as reliability controls, not creativity cosmetics.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Tokens drive cost and context. Sampling knobs drive variance. Separate “did it see the right evidence?” from “did we sample too wildly?”</p>
@@ -52,7 +52,7 @@
     <li>Rare words, code identifiers, and non-English scripts may split into many pieces.</li>
     <li>Whitespace and formatting count.</li>
     </ul>
-    <p>Rule-of-thumb for planning (not billing truth): ~4 characters per token for English prose, or ~100 tokens ≈ 75 words. Always measure with the real tokenizer in CI for anything cost-sensitive.</p>
+    <p>Rule-of-thumb for planning (not billing truth): ~4 characters per token for English prose, or ~100 tokens ~= 75 words. Always measure with the real tokenizer in CI for anything cost-sensitive.</p>
     <h3>Context window</h3>
     <p>If the window is <code>W</code> tokens, everything the model can attend to in one call must fit in <code>W</code> (API products sometimes split “input” vs “output” limits — read the docs for your provider). Overflow typically means:</p>
     <ul>
@@ -78,17 +78,17 @@ flowchart TB
     <p>Let <code>z_i</code> be the logit for vocabulary item <code>i</code>. Softmax turns logits into probabilities. Temperature <code>T &gt; 0</code> scales logits before softmax:</p>
     <p><code>p_i = softmax(z_i / T)</code></p>
     <ul>
-    <li><code>T → 0</code> (practically very small): distribution collapses toward the argmax → greedy-like, stable.</li>
+    <li><code>T -&gt; 0</code> (practically very small): distribution collapses toward the argmax -&gt; greedy-like, stable.</li>
     <li><code>T = 1</code>: use the model’s native distribution.</li>
-    <li><code>T &gt; 1</code>: flatten the distribution → more surprise, more nonsense risk.</li>
+    <li><code>T &gt; 1</code>: flatten the distribution -&gt; more surprise, more nonsense risk.</li>
     </ul>
     <p>Temperature does not add knowledge. It only changes how aggressively you explore the model’s uncertainty.</p>
     <h3>Top-p (nucleus sampling)</h3>
     <p>Sort tokens by probability descending. Keep the smallest prefix whose cumulative probability is at least <code>p</code>. Sample only inside that nucleus.</p>
     <ul>
-    <li><code>top_p = 0.1</code> → tiny, high-confidence set</li>
-    <li><code>top_p = 0.9</code> → broader, still cuts the long tail</li>
-    <li><code>top_p = 1.0</code> → effectively no nucleus cutoff</li>
+    <li><code>top_p = 0.1</code> -&gt; tiny, high-confidence set</li>
+    <li><code>top_p = 0.9</code> -&gt; broader, still cuts the long tail</li>
+    <li><code>top_p = 1.0</code> -&gt; effectively no nucleus cutoff</li>
     </ul>
     <p>Top-p adapts to the shape of the distribution: when the model is peaked, the nucleus is small; when it is flat, the nucleus grows.</p>
     <h3>Practical presets</h3>
@@ -218,10 +218,10 @@ print(nucleus(probs, 0.8))  # indices covering &gt;= 0.8 mass</code></pre>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Token</strong> — Vocabulary piece the model reads/writes; billing and limits are usually token-based.</li>
-    <li><strong>Tokenizer</strong> — Algorithm mapping text ↔ token IDs for a model family.</li>
+    <li><strong>Tokenizer</strong> — Algorithm mapping text &lt;-&gt; token IDs for a model family.</li>
     <li><strong>Context window</strong> — Max tokens attendable in one model call.</li>
     <li><strong>Temperature</strong> — Softmax temperature that sharpens or flattens next-token probabilities.</li>
-    <li><strong>Top-p / nucleus sampling</strong> — Sample from the smallest set of tokens whose cumulative probability ≥ p.</li>
+    <li><strong>Top-p / nucleus sampling</strong> — Sample from the smallest set of tokens whose cumulative probability &gt;= p.</li>
     <li><strong>Logit</strong> — Raw score for a vocabulary item before softmax.</li>
     <li><strong>Truncation</strong> — Dropping content that does not fit the context budget.</li>
     </ul>

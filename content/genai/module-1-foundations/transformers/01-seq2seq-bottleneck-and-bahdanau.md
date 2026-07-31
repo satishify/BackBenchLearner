@@ -15,13 +15,13 @@ Attention is not yet the full Transformer: recurrence remains, and training is s
 
 ## How it works
 
-**Encoder.** For source tokens `x_1 … x_S` (usually embeddings):
+**Encoder.** For source tokens `x_1 ... x_S` (usually embeddings):
 
 ```
 h_t = EncoderRNN(h_{t-1}, x_t)     # h_t shape: (d,)
 ```
 
-Store the list `H = [h_1, …, h_S]`. Bidirectional encoders concatenate forward/backward states so each `h_t` sees left and right source context.
+Store the list `H = [h_1, ..., h_S]`. Bidirectional encoders concatenate forward/backward states so each `h_t` sees left and right source context.
 
 **Decoder without attention (bottleneck).** Initialize from `h_S` (or a projection). At step `t` with previous target embedding `y_{t-1}`:
 

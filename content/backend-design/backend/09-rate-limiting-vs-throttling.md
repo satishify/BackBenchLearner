@@ -9,7 +9,7 @@ A script burns your password-reset endpoint and your SMS bill. Or a viral launch
 
 People use the words loosely. Useful distinction:
 
-- **Rate limiting** — enforce a quota: *N requests per window*. Exceed → reject (`429`) or delay. Protects fairness and abuse.
+- **Rate limiting** — enforce a quota: *N requests per window*. Exceed -> reject (`429`) or delay. Protects fairness and abuse.
 - **Throttling** — intentionally slow or shed load when the system is hot: reduce concurrency, queue, or return `503` with retry. Protects **system stability**.
 
 In practice one middleware often does both: per-API-key token buckets (limit) plus global concurrency caps (throttle). The product message differs: “you exceeded your plan” vs “we are overloaded, back off.”
@@ -131,7 +131,7 @@ Pair limits with **auth**: unauthenticated IPs share a harsh bucket; paying API 
 ## What goes wrong
 
 - **Only IP limits** — NAT and mobile gateways punish whole networks; authenticated keys are fairer.
-- **In-memory limits on many replicas** — effective limit becomes `N × replicas`; use Redis or the gateway.
+- **In-memory limits on many replicas** — effective limit becomes `N x replicas`; use Redis or the gateway.
 - **No Retry-After / jitter** — clients retry in sync and stampede.
 - **Limiting the wrong layer** — app returns 200 slowly while DB connection pool is already dead; add concurrency caps.
 - **Brutal limits on webhooks** — partner retries amplify; allowlist and separate budgets.

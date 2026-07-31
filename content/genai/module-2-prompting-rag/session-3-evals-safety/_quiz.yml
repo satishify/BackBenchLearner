@@ -1,6 +1,6 @@
 title: "2.3 Evaluations & AI Safety"
 questions:
-  - q: "A chatbot is 2% more accurate on a tiny academic set but p95 latency doubled and cost 5×. Ship it?"
+  - q: "A chatbot is 2% more accurate on a tiny academic set but p95 latency doubled and cost 5x. Ship it?"
     options:
       - "Yes—accuracy is the only axis that matters"
       - "No without a multi-objective review: quality, latency, cost, and safety together"
@@ -27,7 +27,7 @@ questions:
     answer: 1
     why: "Models are persuadable; policy and auth must gate tools in code, not trust chain-of-thought."
 
-  - q: "Safety evals that only use friendly prompts are insufficient because…"
+  - q: "Safety evals that only use friendly prompts are insufficient because..."
     options:
       - "Friendly prompts are illegal"
       - "Adversarial and jailbreak-style inputs reveal different failure modes"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "Attackers optimize against your rules; eval sets must include adversarial cases, not only happy-path chat."
 
-  - q: "Cost metric for an LLM endpoint is best computed as…"
+  - q: "Cost metric for an LLM endpoint is best computed as..."
     options:
       - "Number of engineers on the team"
       - "Token usage (and tool calls) per successful task, not only per raw request"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "High-blast-radius actions demand human-in-the-loop and strong auth, not autonomous tool fire."
 
-  - q: "Latency SLOs for chat should measure…"
+  - q: "Latency SLOs for chat should measure..."
     options:
       - "Only average token count in training data"
       - "User-perceived time-to-first-token and time-to-final, including tool/RAG hops"

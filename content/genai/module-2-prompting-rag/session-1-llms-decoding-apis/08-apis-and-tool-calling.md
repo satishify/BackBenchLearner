@@ -170,7 +170,7 @@ Hop limit:
 ```python
 def agent_loop(max_hops: int = 3):
     for hop in range(max_hops):
-        # call model → if tool_calls: execute → continue; else return text
+        # call model -> if tool_calls: execute -> continue; else return text
         pass
     return {"error": "max_tool_hops_exceeded"}
 ```

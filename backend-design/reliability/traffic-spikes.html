@@ -65,7 +65,7 @@ flowchart TB
     <li><strong>Shed / degrade</strong> — disable recommendations; read-only mode; return cached home.</li>
     <li><strong>Protect the DB</strong> — connection pools, statement timeouts, read replicas for heavy reads; avoid thundering migrations during launch windows.</li>
     </ol>
-    <p><strong>Load testing.</strong> Replay expected peak (and 2×) with realistic cache hit rates. Include dependency latency. A test that only hits <code>/healthz</code> lies.</p>
+    <p><strong>Load testing.</strong> Replay expected peak (and 2x) with realistic cache hit rates. Include dependency latency. A test that only hits <code>/healthz</code> lies.</p>
     <p><strong>Bot vs human.</strong> Spikes may be scrapers. WAF rules, auth on expensive endpoints, and cheaper public caches help.</p>
     <p><strong>Capacity planning vs elasticity.</strong> Auto-scale helps, but cold starts, image pulls, and DB connection ramp take time. For known events (product launch at 09:00), pre-scale app replicas and warm caches an hour ahead; do not rely on reactive scale alone. Cap max replicas so a runaway scraper cannot create a bigger bill than an outage — combine with rate limits so scale and limits work together.</p>
     <p><strong>Dependency budgets under spike.</strong> Even if the API scales, Stripe, email, or a legacy SOAP service may not. Put those behind queues and circuit breakers so your user-facing tier returns quickly while workers absorb the surge at a sustainable rate. Measure queue lag as a first-class SLO during launches.</p>
@@ -120,14 +120,14 @@ async def create_order(order_id: str, email: str):
     r.lpush(&quot;queue:email&quot;, json.dumps({&quot;order_id&quot;: order_id, &quot;email&quot;: email}))
     return {&quot;status&quot;: &quot;accepted&quot;}  # 202 semantics for heavy follow-up work</code></pre>
     </div>
-    <p>Auto-scale is platform config (CPU &gt; 60% → +replicas); pair it with connection pool limits so scaled apps do not drown Postgres.</p>
+    <p>Auto-scale is platform config (CPU &gt; 60% -&gt; +replicas); pair it with connection pool limits so scaled apps do not drown Postgres.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Scaling apps into an unscaled DB</strong> — 50 pods × 20 connections = connection storm.</li>
+    <li><strong>Scaling apps into an unscaled DB</strong> — 50 pods x 20 connections = connection storm.</li>
     <li><strong>Cache stampede on popular keys</strong> — use single-flight + TTL jitter (caching chapter).</li>
     <li><strong>Sync fan-out on write</strong> — each order triggers 10 outbound HTTP calls inline.</li>
     <li><strong>No rate limits on expensive search</strong> — one script takes you down.</li>
-    <li><strong>Launch without load tests</strong> — theoretical capacity ≠ measured capacity.</li>
+    <li><strong>Launch without load tests</strong> — theoretical capacity != measured capacity.</li>
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>

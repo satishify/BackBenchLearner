@@ -54,10 +54,10 @@ flowchart LR
     <h2 id="how-it-works">How it works</h2>
     <p>Routing rules common in production:</p>
     <ul>
-    <li><code>POST/PUT/PATCH/DELETE</code> → primary</li>
-    <li><code>GET</code> → replica pool</li>
-    <li>After a write in the same session → primary for a short window (sticky)</li>
-    <li>Very stale-tolerant analytics → replica is fine</li>
+    <li><code>POST/PUT/PATCH/DELETE</code> -&gt; primary</li>
+    <li><code>GET</code> -&gt; replica pool</li>
+    <li>After a write in the same session -&gt; primary for a short window (sticky)</li>
+    <li>Very stale-tolerant analytics -&gt; replica is fine</li>
     </ul>
     <p>Lag metrics matter: <code>replay_lag</code> seconds. If lag grows under load, replicas are not free capacity — they are delayed mirrors.</p>
     <p>Write scaling levers:</p>

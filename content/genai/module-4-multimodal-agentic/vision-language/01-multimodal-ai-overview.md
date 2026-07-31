@@ -21,7 +21,7 @@ Placeholder chapter — expand with diagrams and labs once your Module 4 notes a
 
 ## What to remember
 
-- Multimodal ≠ “many models glued with if-else”; the point is a **shared** representation.
+- Multimodal != “many models glued with if-else”; the point is a **shared** representation.
 - Product risk often sits at the boundary: OCR errors, wrong crop, or unsafe image generation.
 
 ## One-line summary
@@ -30,6 +30,6 @@ Multimodal AI joins text with vision (and other signals) so products can see and
 
 ## Key terms
 
-- **Modality** — a data type (text, image, audio…).
+- **Modality** — a data type (text, image, audio...).
 - **Embedding** — vector representation used for similarity and fusion.
 - **Alignment** — training so related items across modalities sit close in vector space.

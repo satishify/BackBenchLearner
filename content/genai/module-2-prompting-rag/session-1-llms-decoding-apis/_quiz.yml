@@ -1,6 +1,6 @@
 title: "2.1 LLMs, Decoding, Prompting & APIs"
 questions:
-  - q: "An LLM generating the next token is best described as…"
+  - q: "An LLM generating the next token is best described as..."
     options:
       - "A database lookup that always returns a stored sentence verbatim"
       - "Sampling (or argmax) from a conditional distribution over the vocabulary given context"
@@ -25,7 +25,7 @@ questions:
       - "$0.50 exactly"
       - "Free because tokens are not billed"
     answer: 0
-    why: "Cost ≈ 2000/1e6×0.50 + 500/1e6×1.50 = 0.001 + 0.00075 = $0.00175. Output tokens are often pricier."
+    why: "Cost ~= 2000/1e6x0.50 + 500/1e6x1.50 = 0.001 + 0.00075 = $0.00175. Output tokens are often pricier."
 
   - q: "You need stable JSON field names for a parser. Which decoding setup is most appropriate?"
     options:
@@ -36,10 +36,10 @@ questions:
     answer: 1
     why: "Structured outputs want low entropy sampling (and preferably schema constraints), not creative diversity."
 
-  - q: "Top-p (nucleus) sampling keeps…"
+  - q: "Top-p (nucleus) sampling keeps..."
     options:
       - "A fixed count of 5 tokens always"
-      - "The smallest set of top tokens whose cumulative probability ≥ p"
+      - "The smallest set of top tokens whose cumulative probability >= p"
       - "Only tokens below a random UUID"
       - "Every token in the vocabulary equally"
     answer: 1
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "System/developer channels are the constitution; user content is untrusted task input."
 
-  - q: "Tool calling / function calling is valuable because it…"
+  - q: "Tool calling / function calling is valuable because it..."
     options:
       - "Forces the model to invent SQL results without APIs"
       - "Lets the model emit structured intents that your runtime executes against real tools"
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "The model proposes a call; your backend runs the tool and returns facts—grounding actions outside pure text."
 
-  - q: "A support bot cites a refund policy that does not exist in your docs. This is primarily…"
+  - q: "A support bot cites a refund policy that does not exist in your docs. This is primarily..."
     options:
       - "A tokenizer bug that always inserts the word 'refund'"
       - "Hallucination / unsupported generation—fluency without grounded evidence"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "LMs can produce plausible falsehoods; products need retrieval, tools, or refusal patterns to constrain claims."
 
-  - q: "Context window is best treated as…"
+  - q: "Context window is best treated as..."
     options:
       - "An unlimited free hard drive for every PDF ever"
       - "A shared token budget for system, history, retrieved docs, and the new user turn"

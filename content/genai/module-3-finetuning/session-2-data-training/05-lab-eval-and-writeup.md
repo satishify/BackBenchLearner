@@ -40,7 +40,7 @@ Ship/no-ship is a scorecard decision. Chat anecdotes are optional color, not evi
 
 Decision rules (example):
 
-- Require task metric lift ≥ 5 absolute points (or agreed threshold).
+- Require task metric lift >= 5 absolute points (or agreed threshold).
 - Reject if anchor drop > 10 points.
 - Flag for review if lift looks "too good" on tiny N—check contamination.
 

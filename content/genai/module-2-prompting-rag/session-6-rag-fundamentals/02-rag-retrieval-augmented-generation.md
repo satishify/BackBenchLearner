@@ -95,7 +95,7 @@ print(prompt)
 # answer = llm.complete(prompt)
 ```
 
-Even with a fake embedder, the packer shape is what production RAG looks like: retrieve → label → constrain → generate.
+Even with a fake embedder, the packer shape is what production RAG looks like: retrieve -> label -> constrain -> generate.
 
 ## What goes wrong
 
@@ -127,4 +127,4 @@ RAG retrieves relevant private or fresh documents at query time and conditions t
 - **Generator:** LLM that produces the final answer from question + context.
 - **Context packing:** formatting chunks and instructions into the prompt.
 - **Grounding:** tying claims to retrieved evidence.
-- **Ingest pipeline:** offline clean → chunk → embed → index process.
+- **Ingest pipeline:** offline clean -> chunk -> embed -> index process.

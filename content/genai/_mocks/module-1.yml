@@ -30,7 +30,7 @@ questions:
       - "Deep nets never overfit"
       - "Pixels are already one-hot class labels"
     answer: 1
-    why: "Depth plus nonlinearity lets the network build edges→parts→objects style representations from pixels."
+    why: "Depth plus nonlinearity lets the network build edges->parts->objects style representations from pixels."
 
   - q: "Two sentences have cosine similarity 0.92 in embedding space but share almost no surface words. What does that usually indicate?"
     section: "Embeddings"
@@ -50,7 +50,7 @@ questions:
       - "Edit distance"
       - "BM25"
     answer: 1
-    why: "For unit vectors, cos(θ) = u·v. Normalization makes cosine search a dot-product lookup."
+    why: "For unit vectors, cos(theta) = u*v. Normalization makes cosine search a dot-product lookup."
 
   - q: "A single perceptron with a hard threshold fails to learn XOR. What is the core reason?"
     section: "Perceptron/MLP"
@@ -85,14 +85,14 @@ questions:
   - q: "For logits z = [2.0, 1.0, 0.1], softmax probabilities must satisfy which property?"
     section: "Loss/Softmax"
     options:
-      - "Each p_i ∈ (0,1) and Σ p_i = 1"
+      - "Each p_i in (0,1) and sum p_i = 1"
       - "The largest logit becomes probability 0"
       - "Probabilities are unbounded"
       - "Softmax ignores relative logit gaps"
     answer: 0
-    why: "Softmax maps ℝ^K to the probability simplex: positive entries that sum to one."
+    why: "Softmax maps R^K to the probability simplex: positive entries that sum to one."
 
-  - q: "Numeric application: logits [a, b] with a ≫ b. What happens to softmax(a) as (a−b) → ∞?"
+  - q: "Numeric application: logits [a, b] with a >> b. What happens to softmax(a) as (a-b) -> inf?"
     section: "Loss/Softmax"
     options:
       - "It approaches 0.5"
@@ -100,17 +100,17 @@ questions:
       - "It approaches 0"
       - "It oscillates"
     answer: 1
-    why: "exp(a)/[exp(a)+exp(b)] = 1/(1+exp(b−a)) → 1 as (a−b) → ∞. Softmax saturates on the winner."
+    why: "exp(a)/[exp(a)+exp(b)] = 1/(1+exp(b-a)) -> 1 as (a-b) -> inf. Softmax saturates on the winner."
 
   - q: "Cross-entropy with a one-hot label y=k reduces to which expression (up to constants)?"
     section: "Loss/Softmax"
     options:
-      - "−log p_k of the predicted class probability"
+      - "-log p_k of the predicted class probability"
       - "Mean squared error of all logits"
       - "Sum of absolute errors on incorrect classes only"
       - "KL divergence with a uniform prior only"
     answer: 0
-    why: "For one-hot targets, CE = −Σ y_i log p_i collapses to −log p_correct."
+    why: "For one-hot targets, CE = -sum y_i log p_i collapses to -log p_correct."
 
   - q: "In backprop, the gradient of loss w.r.t. an early-layer weight is obtained how?"
     section: "Backprop"
@@ -130,9 +130,9 @@ questions:
       - "Softmax outputs become one-hot before training starts"
       - "Batch size must equal vocabulary size"
     answer: 0
-    why: "Sigmoid derivatives ≤ 0.25; products across depth shrink updates for early parameters."
+    why: "Sigmoid derivatives <= 0.25; products across depth shrink updates for early parameters."
 
-  - q: "Numeric/conceptual: loss L = (ŷ − y)² with ŷ = w·x. At a given step ∂L/∂w = 2(ŷ−y)x. If ŷ > y and x > 0, SGD with positive LR should move w in which direction?"
+  - q: "Numeric/conceptual: loss L = (y_hat - y)^2 with y_hat = w*x. At a given step dL/dw = 2(y_hat-y)x. If y_hat > y and x > 0, SGD with positive LR should move w in which direction?"
     section: "Backprop"
     options:
       - "Increase w"
@@ -142,7 +142,7 @@ questions:
     answer: 1
     why: "Gradient is positive, so gradient descent subtracts a positive quantity from w — prediction moves down toward y."
 
-  - q: "Compared with a fully connected layer on a 224×224×3 image, a convolution mainly buys what inductive bias?"
+  - q: "Compared with a fully connected layer on a 224x224x3 image, a convolution mainly buys what inductive bias?"
     section: "CNN/RNN"
     options:
       - "Global unique weights per pixel with no sharing"
@@ -152,15 +152,15 @@ questions:
     answer: 1
     why: "CNNs reuse small kernels across space, encoding locality and translation equivariance cheaply."
 
-  - q: "A 3×3 convolution, stride 1, padding 1, on an H×W feature map yields approximately what spatial size?"
+  - q: "A 3x3 convolution, stride 1, padding 1, on an H x W feature map yields approximately what spatial size?"
     section: "CNN/RNN"
     options:
-      - "Always 1×1"
-      - "Roughly the same H×W (same padding)"
-      - "Always H/9 × W/9"
-      - "Always H+3 × W+3"
+      - "Always 1x1"
+      - "Roughly the same H x W (same padding)"
+      - "Always H/9 x W/9"
+      - "Always H+3 x W+3"
     answer: 1
-    why: "Padding 1 with 3×3 stride-1 preserves height/width for typical 'same' convolutions."
+    why: "Padding 1 with 3x3 stride-1 preserves height/width for typical 'same' convolutions."
 
   - q: "Why do vanilla RNNs struggle on long sequences relative to transformers?"
     section: "CNN/RNN"
@@ -180,9 +180,9 @@ questions:
       - "A fixed convolutional kernel of size 3"
       - "Sorting tokens alphabetically"
     answer: 0
-    why: "Classic scaled dot-product attention: softmax(QKᵀ/√d) V."
+    why: "Classic scaled dot-product attention: softmax(Q*K^T/sqrt(d)) V."
 
-  - q: "Why scale dot products by 1/√d_k before softmax in attention?"
+  - q: "Why scale dot products by 1/sqrt(d_k) before softmax in attention?"
     section: "Transformers"
     options:
       - "To force attention weights to be exactly sparse 0/1"
@@ -230,7 +230,7 @@ questions:
       - "2"
       - "A random sample among all three"
     answer: 1
-    why: "Greedy decoding picks argmax; 3.5 is the largest logit → index 1."
+    why: "Greedy decoding picks argmax; 3.5 is the largest logit -> index 1."
 
   - q: "During pretraining of a causal LM, the usual training objective is closest to which description?"
     section: "Foundations"

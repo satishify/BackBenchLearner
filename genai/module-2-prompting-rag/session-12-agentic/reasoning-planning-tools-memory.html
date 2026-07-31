@@ -38,7 +38,7 @@
 
     <p>Useful agents combine four capabilities: <strong>reasoning</strong> (what does success mean?), <strong>planning</strong> (in what order?), <strong>tool use</strong> (how do we affect the world?), and <strong>memory</strong> (what must we remember?). Missing any one turns a demo into a fragile script or a chatty dead end.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch → clean → summarize → visualize → deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.</p>
+    <p>Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch -&gt; clean -&gt; summarize -&gt; visualize -&gt; deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -67,7 +67,7 @@ flowchart TB
     <ol>
     <li>User asks for weekly sales report.</li>
     <li>Agent reasons: date range, currency, audience.</li>
-    <li>Plans: fetch → clean → summarize → chart → post.</li>
+    <li>Plans: fetch -&gt; clean -&gt; summarize -&gt; chart -&gt; post.</li>
     <li>Calls BI and spreadsheet tools.</li>
     <li>Reads memory for preferred format; stores “posted URL” for next week.</li>
     </ol>

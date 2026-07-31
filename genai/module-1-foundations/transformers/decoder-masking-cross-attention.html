@@ -42,7 +42,7 @@
     <p>Cross-attention is a second meeting room. The decoder brings questions (queries from the target side); the encoder brings a library of notes (keys and values from the source). Generating the French word for “cat” can attend strongly to the English token “cat” even though self-attention on the French prefix knows nothing about English.</p>
     <p>Decoder-only LLMs skip the encoder library and use the prompt + generated tokens as the only sequence — still causal self-attention, no cross-attn block. Encoder–decoder models (summarization, MT, some T5-style setups) keep both.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Causal mask.</strong> For length <code>n</code>, build an <code>n × n</code> matrix <code>M</code> where <code>M_ij = 0</code> if <code>j &lt;= i</code> and <code>-inf</code> if <code>j &gt; i</code> (upper triangle forbidden). Then:</p>
+    <p><strong>Causal mask.</strong> For length <code>n</code>, build an <code>n x n</code> matrix <code>M</code> where <code>M_ij = 0</code> if <code>j &lt;= i</code> and <code>-inf</code> if <code>j &gt; i</code> (upper triangle forbidden). Then:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">scores = Q K^T / sqrt(d_k) + M
@@ -150,7 +150,7 @@ print(&quot;cross-attn weights:\n&quot;, np.round(cross_w, 3))</code></pre>
     <p>Causal masks stop decoder self-attention from seeing future tokens, while cross-attention lets decoder queries read encoder keys/values for source–target alignment.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Causal / look-ahead mask:</strong> triangular mask enforcing <code>attend only to ≤ i</code>.</li>
+    <li><strong>Causal / look-ahead mask:</strong> triangular mask enforcing <code>attend only to &lt;= i</code>.</li>
     <li><strong>Teacher forcing:</strong> train on gold prefixes while predicting the next token at each position.</li>
     <li><strong>Cross-attention:</strong> Q from decoder, K/V from encoder (or another sequence).</li>
     <li><strong>Self-attention:</strong> Q/K/V from the same sequence.</li>

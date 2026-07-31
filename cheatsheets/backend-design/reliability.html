@@ -56,7 +56,7 @@
     </ul>
     <h2 id="race-conditions-locking">Race conditions &amp; locking</h2>
     <ul>
-    <li>Two requests, one invariant → lost updates. Fix with transactions, constraints, optimistic versions, or distributed locks.</li>
+    <li>Two requests, one invariant -&gt; lost updates. Fix with transactions, constraints, optimistic versions, or distributed locks.</li>
     <li>Distributed locks (Redis etc.): understand fencing tokens / TTL expiry; locks are not consensus magic.</li>
     </ul>
     <h2 id="event-driven-sagas">Event-driven &amp; sagas</h2>
@@ -77,7 +77,7 @@
     </ul>
     <h2 id="deployments">Deployments</h2>
     <ul>
-    <li>Blue/green, canary, rolling. Migrations: expand → migrate → contract (backward compatible).</li>
+    <li>Blue/green, canary, rolling. Migrations: expand -&gt; migrate -&gt; contract (backward compatible).</li>
     <li>Feature flags for risky behavior. Rollback plan before you need it.</li>
     </ul>
     <h2 id="traffic-spikes">Traffic spikes</h2>

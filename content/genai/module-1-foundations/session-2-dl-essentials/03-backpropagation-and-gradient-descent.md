@@ -41,7 +41,7 @@ dL/dw     = (y_hat - y) * x
 In a deeper net the chain looks like:
 
 ```
-loss → prediction → last layer → ... → first layer → inputs
+loss -> prediction -> last layer -> ... -> first layer -> inputs
 ```
 
 Each local derivative multiplies into the next. Matrix form uses Jacobians; frameworks (PyTorch, JAX) automate this with autograd. Conceptually you are still multiplying “how loss cares about this activation” by “how this activation cares about that weight.”
@@ -87,7 +87,7 @@ for step in range(40):
 
 for step, w_val, loss in history[::8]:
     print(f"step {step:2d}  w={w_val:.3f}  loss={loss:.4f}")
-print(f"final w ≈ {w:.3f} (target ~3.0)")
+print(f"final w ~= {w:.3f} (target ~3.0)")
 ```
 
 You just did a forward pass, computed `dL/dw` by hand (the “backprop” for this one-node graph), and applied GD. Scale that pattern to every edge in an MLP and you have deep learning’s training loop.

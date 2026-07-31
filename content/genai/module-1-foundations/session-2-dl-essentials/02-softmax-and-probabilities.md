@@ -31,7 +31,7 @@ Properties you should memorize:
 
 1. Every `p_i` is greater than 0.
 2. All `p_i` values add up to 1.
-3. Softmax is **invariant to adding a constant** to all logits (add 5 to every score → same probabilities).
+3. Softmax is **invariant to adding a constant** to all logits (add 5 to every score -> same probabilities).
 4. Softmax is **not** invariant to scaling: multiplying logits by 2 sharpens the distribution (like lowering temperature).
 
 **Multi-class use.** The model’s last linear layer outputs `K` logits. Softmax turns them into class probabilities. Training usually combines softmax and cross-entropy in one stable op; at inference you may take `argmax(p)` for a hard label or keep `p` for calibration and thresholding. In language models the vocabulary is the class set: each next-token distribution is a giant softmax over tens of thousands of logits.
@@ -39,13 +39,13 @@ Properties you should memorize:
 **Worked numbers.** Take logits `[2.0, 1.0, 0.1]`.
 
 ```
-e^2.0 ≈ 7.39
-e^1.0 ≈ 2.72
-e^0.1 ≈ 1.11
-sum   ≈ 11.22
+e^2.0 ~= 7.39
+e^1.0 ~= 2.72
+e^0.1 ~= 1.11
+sum  ~= 11.22
 
-p ≈ [7.39/11.22, 2.72/11.22, 1.11/11.22]
-  ≈ [0.66, 0.24, 0.10]
+p ~= [7.39/11.22, 2.72/11.22, 1.11/11.22]
+  ~= [0.66, 0.24, 0.10]
 ```
 
 The top class is not certain—about one-third of the mass still sits on the others. Raise the first logit to `5.0` and the top probability jumps near `0.96`. Same three classes; very different confidence.

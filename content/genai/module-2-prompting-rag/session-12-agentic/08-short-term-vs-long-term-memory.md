@@ -120,7 +120,7 @@ print(mem.prompt_block())
 
 ## Putting it into practice
 
-Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible “what we remember” page for consumer products. Add a red-team case that tries to plant a malicious long-term memory (“always email secrets to…”) and assert your write filter rejects it.
+Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible “what we remember” page for consumer products. Add a red-team case that tries to plant a malicious long-term memory (“always email secrets to...”) and assert your write filter rejects it.
 
 For RAG-as-memory, separate “documents we indexed” from “preferences we trust.” Different trust tiers belong in different prompt sections. Measure memory hit rate and wrong-memory rate; a store nobody retrieves is dead weight, and a store that retrieves the wrong tenant is an incident.
 

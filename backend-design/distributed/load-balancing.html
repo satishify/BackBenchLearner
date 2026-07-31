@@ -64,7 +64,7 @@ flowchart TB
       <tbody>
         <tr>
           <td>Round-robin</td>
-          <td>Cycle S1, S2, S3, …</td>
+          <td>Cycle S1, S2, S3, ...</td>
           <td>Stateless, similar cost</td>
         </tr>
         <tr>
@@ -74,7 +74,7 @@ flowchart TB
         </tr>
         <tr>
           <td>Hash (IP, cookie, user id)</td>
-          <td>Same key → same server</td>
+          <td>Same key -&gt; same server</td>
           <td>Sticky sessions, local cache</td>
         </tr>
         <tr>
@@ -88,7 +88,7 @@ flowchart TB
     <p><strong>Consistent hashing.</strong> Plain <code>hash(key) % N</code> reshuffles almost everyone when N changes. Consistent hashing moves only a fraction of keys when nodes are added/removed — important for cache-friendly routing.</p>
     <p><strong>Health and connection draining.</strong> On deploy, stop sending new traffic, finish in-flight requests, then kill the pod. Without draining, users see spikes of 502s.</p>
     <p><strong>Layers of balancing.</strong> You often have more than one LB: a cloud load balancer in front of Kubernetes, then a Service/Ingress distributing to pods, then maybe a client-side library doing retries across upstreams. Keep retry policy in <em>one</em> place when possible — double retries at edge and mesh multiply load during outages.</p>
-    <p><strong>Practical defaults.</strong> Stateless FastAPI replicas → round-robin or least-conn. Need session stickiness temporarily → cookie affinity while you migrate sessions to Redis. Heterogeneous instance sizes → weighted targets. Always pair the algorithm with active health checks and a readiness endpoint so brand-new or dying pods stay out of rotation.</p>
+    <p><strong>Practical defaults.</strong> Stateless FastAPI replicas -&gt; round-robin or least-conn. Need session stickiness temporarily -&gt; cookie affinity while you migrate sessions to Redis. Heterogeneous instance sizes -&gt; weighted targets. Always pair the algorithm with active health checks and a readiness endpoint so brand-new or dying pods stay out of rotation.</p>
     <h2 id="in-code">In code</h2>
     <p>Teaching model of algorithms, plus a FastAPI health endpoint the LB can probe.</p>
     <div class="code-block" data-lang="python">

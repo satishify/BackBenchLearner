@@ -18,7 +18,7 @@ questions:
     answer: 0
     why: "The chapter frames agents as reasoning + planning + tools + memory working together over multiple steps."
 
-  - q: "Prefer a single agent over multi-agent when…"
+  - q: "Prefer a single agent over multi-agent when..."
     options:
       - "You enjoy debugging distributed blame"
       - "One clear workflow with shared context is enough and coordination overhead would not pay off"
@@ -27,7 +27,7 @@ questions:
     answer: 1
     why: "Multi-agent adds handoff/latency complexity; use it when specialization and checks justify the cost."
 
-  - q: "Human-in-the-loop is most justified for…"
+  - q: "Human-in-the-loop is most justified for..."
     options:
       - "Capitalizing titles"
       - "High-risk irreversible actions (payments, access changes, legal filings)"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "HITL inserts approval gates where mistakes are expensive or ethically sensitive."
 
-  - q: "Task decomposition helps agents by…"
+  - q: "Task decomposition helps agents by..."
     options:
       - "Merging all goals into one giant ambiguous prompt"
       - "Breaking goals into checkable subtasks with clearer tool choices and stop criteria"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "The model proposes structured calls; trusted code validates and executes them."
 
-  - q: "Short-term vs long-term memory in agents maps best to…"
+  - q: "Short-term vs long-term memory in agents maps best to..."
     options:
       - "Temperature vs top-p"
       - "Working context / scratchpad for the active task vs durable stores (profiles, vector memories) across sessions"
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "STM is the live episode state; LTM persists knowledge that must be retrieved later."
 
-  - q: "Reflection / self-correction loops are most valuable when…"
+  - q: "Reflection / self-correction loops are most valuable when..."
     options:
       - "Outputs are already schema-perfect and verified externally"
       - "You can critique draft results against checks and revise before committing an action"
@@ -81,7 +81,7 @@ questions:
     answer: 1
     why: "Libraries optimize different layers; pick based on workflow shape, then keep policy and tests in your code."
 
-  - q: "Orchestration/workflow control should enforce…"
+  - q: "Orchestration/workflow control should enforce..."
     options:
       - "Unlimited retries forever on failing tools"
       - "Budgets, timeouts, idempotency, and explicit success/fail states for each step"

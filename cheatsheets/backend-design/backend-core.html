@@ -53,12 +53,12 @@
     <h2 id="http-methods-status-codes">HTTP methods &amp; status codes</h2>
     <ul>
     <li>GET safe/idempotent. POST create/non-idempotent by default. PUT replace. PATCH partial. DELETE remove.</li>
-    <li><strong>2xx</strong> success · <strong>3xx</strong> redirect · <strong>4xx</strong> client fault · <strong>5xx</strong> server fault.</li>
+    <li><strong>2xx</strong> success * <strong>3xx</strong> redirect * <strong>4xx</strong> client fault * <strong>5xx</strong> server fault.</li>
     <li>Memorable: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized (auth missing/bad), 403 Forbidden (authz), 404, 409 Conflict, 429 Too Many Requests, 500, 502/503.</li>
     </ul>
     <h2 id="stateless-vs-stateful">Stateless vs stateful</h2>
     <ul>
-    <li>Stateless request carries all needed context (tokens, ids) → easy horizontal scale.</li>
+    <li>Stateless request carries all needed context (tokens, ids) -&gt; easy horizontal scale.</li>
     <li>Stateful server sessions need sticky sessions or shared session store.</li>
     <li>Pick stateful only when you must (WebSockets, shopping cart edge cases) and design the store.</li>
     </ul>
@@ -88,7 +88,7 @@
     <h2 id="idempotency">Idempotency</h2>
     <ul>
     <li>Retries must not double-charge. Clients send <code>Idempotency-Key</code> on POST payments/orders.</li>
-    <li>Server stores key → response (or in-flight lock) for a TTL. Same key + same body → same outcome.</li>
+    <li>Server stores key -&gt; response (or in-flight lock) for a TTL. Same key + same body -&gt; same outcome.</li>
     </ul>
     <h2 id="25-minute-drill">25-minute drill</h2>
     <ol>

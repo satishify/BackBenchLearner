@@ -187,7 +187,7 @@ print(run_tool_call(&quot;get_weather&quot;, &#x27;{&quot;location&quot;: &quot;
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def agent_loop(max_hops: int = 3):
     for hop in range(max_hops):
-        # call model → if tool_calls: execute → continue; else return text
+        # call model -&gt; if tool_calls: execute -&gt; continue; else return text
         pass
     return {&quot;error&quot;: &quot;max_tool_hops_exceeded&quot;}</code></pre>
     </div>

@@ -21,7 +21,7 @@ questions:
   - q: What is a common safe fix for an inventory oversell race?
     options:
       - Check qty in Python, then update in a later request
-      - Atomic SQL such as UPDATE … WHERE qty >= 1
+      - Atomic SQL such as UPDATE ... WHERE qty >= 1
       - Store inventory only in a frontend variable
       - Remove unique constraints
     answer: 1

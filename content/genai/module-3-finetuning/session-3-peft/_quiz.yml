@@ -9,16 +9,16 @@ questions:
     answer: 1
     why: "PEFT keeps the pretrained backbone and learns small adapters or soft prompts for the task."
 
-  - q: "For a d×d weight, full ΔW has d² parameters. LoRA with rank r uses about how many (A is r×d, B is d×r)?"
+  - q: "For a d x d weight, full delta W has d^2 parameters. LoRA with rank r uses about how many (A is r x d, B is d x r)?"
     options:
-      - "d² still"
-      - "2·d·r (plus optional scaling), much less when r ≪ d"
-      - "r² only, independent of d"
+      - "d^2 still"
+      - "2*d*r (plus optional scaling), much less when r << d"
+      - "r^2 only, independent of d"
       - "d/r"
     answer: 1
-    why: "LoRA stores A and B with r·d + d·r = 2dr trainable params—e.g., d=4096, r=16 → ~131k vs ~16.8M."
+    why: "LoRA stores A and B with r*d + d*r = 2dr trainable params—e.g., d=4096, r=16 -> ~131k vs ~16.8M."
 
-  - q: "QLoRA primarily buys you…"
+  - q: "QLoRA primarily buys you..."
     options:
       - "Guaranteed higher accuracy than bf16 LoRA"
       - "Lower GPU memory by quantizing the frozen backbone while training LoRA adapters"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "Soft-prompt methods live in embedding/hidden prefix space; LoRA patches selected weight matrices."
 
-  - q: "Raising LoRA rank from 8 to 64 most directly…"
+  - q: "Raising LoRA rank from 8 to 64 most directly..."
     options:
       - "Guarantees better holdout scores always"
       - "Increases adapter capacity and trainable parameter count (and overfitting risk on tiny data)"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "Modular adapters enable multi-skill routing and cheap rollback; merging simplifies single-skill serving."
 
-  - q: "A common PEFT recipe mistake is…"
+  - q: "A common PEFT recipe mistake is..."
     options:
       - "Using a modest rank with a LoRA-scale LR and few clean epochs"
       - "Copying a full-FT learning rate unchanged onto LoRA and over-training noisy data"
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "PEFT needs its own LR/epoch regime; full-FT defaults plus dirty data are a frequent failure mode."
 
-  - q: "Prefix tuning injects trainable parameters mainly into…"
+  - q: "Prefix tuning injects trainable parameters mainly into..."
     options:
       - "Disk formatting tables"
       - "Per-layer attention key/value (or similar) prefixes while freezing the backbone"
@@ -72,16 +72,16 @@ questions:
     answer: 1
     why: "Prefixes condition attention states across layers without updating the full weight matrices."
 
-  - q: "d=4096, r=8 LoRA on one matrix: trainable params ≈ 2·4096·8 = 65,536. What % of a full d² update is that?"
+  - q: "d=4096, r=8 LoRA on one matrix: trainable params ~= 2*4096*8 = 65,536. What % of a full d^2 update is that?"
     options:
       - "About 50%"
-      - "About 0.39% (65536 / 4096²)"
+      - "About 0.39% (65536 / 4096^2)"
       - "100%"
       - "About 8%"
     answer: 1
-    why: "4096²=16,777,216; 65,536/16,777,216 ≈ 0.0039 → roughly 0.39% of a dense ΔW."
+    why: "4096^2=16,777,216; 65,536/16,777,216 ~= 0.0039 -> roughly 0.39% of a dense delta W."
 
-  - q: "When PEFT is the wrong tool despite good adapters…"
+  - q: "When PEFT is the wrong tool despite good adapters..."
     options:
       - "You need a stable tone on small clean data"
       - "You are asking adapters to memorize a huge changing fact database—use RAG instead"

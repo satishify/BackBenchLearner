@@ -132,7 +132,7 @@ HuggingFace-style sketch (illustrative):
 #     optimizer.step(); optimizer.zero_grad()
 ```
 
-No GPU required to understand the loop: forward → loss on assistant tokens → backward → step.
+No GPU required to understand the loop: forward -> loss on assistant tokens -> backward -> step.
 
 ## What goes wrong
 
@@ -167,7 +167,7 @@ When the task is narrow, mix 10–30% general instruction rows (public or intern
 
 ## Key terms
 
-- **Supervised fine-tuning (SFT)** — Training on labeled prompt→response demonstrations.
+- **Supervised fine-tuning (SFT)** — Training on labeled prompt->response demonstrations.
 - **Negative log-likelihood (NLL)** — Standard token-level loss for causal LMs.
 - **Instruct model** — Checkpoint already tuned to follow instructions; often the SFT starting point.
 - **Checkpoint** — Saved weights during or after training.

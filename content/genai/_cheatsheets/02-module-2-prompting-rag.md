@@ -1,5 +1,5 @@
 ---
-title: "Module 2 · Prompting, RAG & Agents revision"
+title: "Module 2 - Prompting, RAG & Agents revision"
 slug: module-2-prompting-rag
 module: "Module 2"
 minutes: 35
@@ -10,9 +10,9 @@ Chapters **2.1–2.9**. Skim headings; drill weak spots in full lessons.
 
 ## 2.1–2.2 LLMs, decoding, APIs, structured outputs
 
-- **Pretrain** (next-token on huge text) → **finetune / align** → **infer** (API call).
+- **Pretrain** (next-token on huge text) -> **finetune / align** -> **infer** (API call).
 - Context window = hard budget for system + history + retrieved docs + output.
-- Decoding knobs: temperature, top-p, max tokens, stop sequences. Determinism ≠ guaranteed without seed + temp 0 (still provider quirks).
+- Decoding knobs: temperature, top-p, max tokens, stop sequences. Determinism is not guaranteed without seed + temp 0 (still provider quirks).
 - **Structured outputs**: JSON schema / tool schemas / constrained decoding. Always validate; never trust raw model text as typed data.
 - Task prompts: summarize / QA / classify — specify format, audience, constraints, examples.
 
@@ -31,13 +31,13 @@ Chapters **2.1–2.9**. Skim headings; drill weak spots in full lessons.
 - **Prompt injection**: untrusted content (web, PDF, email) steers the model. Separate trust boundaries; don’t let tools run on attacker text blindly.
 - Least privilege for tools. Log tool calls. Human-in-the-loop for irreversible actions.
 
-## 2.6–2.8 RAG fundamentals → production
+## 2.6–2.8 RAG fundamentals to production
 
 ### Pipeline
-`query → embed → retrieve top-k → (rerank) → stuff into prompt → generate (+ cite)`
+`query -> embed -> retrieve top-k -> (rerank) -> stuff into prompt -> generate (+ cite)`
 
 ### Chunking
-- Too big → noisy context. Too small → lose meaning. Overlap helps boundaries. Metadata (source, section) enables filters.
+- Too big -> noisy context. Too small -> lose meaning. Overlap helps boundaries. Metadata (source, section) enables filters.
 
 ### Indexes (know the tradeoffs)
 - **Flat / brute force** — exact, slow at scale.
@@ -54,10 +54,10 @@ Chapters **2.1–2.9**. Skim headings; drill weak spots in full lessons.
 ## 2.9 Agentic AI & multi-agent
 
 - **Chatbot** = reply in thread. **Agent** = plan + tools + memory + stop condition.
-- Loop: observe → think/plan → act (tool) → observe → … → answer or escalate.
+- Loop: observe -> think/plan -> act (tool) -> observe -> ... -> answer or escalate.
 - Tools: typed functions; validate args; timeouts; idempotency for side effects.
 - Memory: short-term (scratchpad / messages) vs long-term (store + retrieve). Don’t dump everything into context.
-- Multi-agent: specialize roles; orchestrate (router, sequential, hierarchical). More agents ≠ more quality — more failure modes.
+- Multi-agent: specialize roles; orchestrate (router, sequential, hierarchical). More agents is not more quality — more failure modes.
 - Reflection / self-critique: second pass that checks against tools or rubric; cap retries.
 
 ## 30-minute drill

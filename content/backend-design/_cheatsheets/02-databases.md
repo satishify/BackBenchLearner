@@ -20,11 +20,11 @@ Revision for **Databases & Data Handling**.
 
 ## ACID
 - Atomicity, Consistency (constraints), Isolation, Durability.
-- “Consistency” here ≠ distributed CAP consistency — don’t mix vocab in interviews.
+- “Consistency” here != distributed CAP consistency — don’t mix vocab in interviews.
 
 ## Transactions & isolation
 - Phenomena: dirty read, non-repeatable read, phantom.
-- Levels (rough): Read Uncommitted → Read Committed → Repeatable Read → Serializable.
+- Levels (rough): Read Uncommitted -> Read Committed -> Repeatable Read -> Serializable.
 - Default often Read Committed. Serializable / SSI when correctness > throughput.
 
 ## Normalization vs denormalization
@@ -33,7 +33,7 @@ Revision for **Databases & Data Handling**.
 
 ## Pagination
 - Offset: simple, drifts under inserts, expensive deep pages.
-- Keyset / cursor: `WHERE (created_at, id) < (?, ?) ORDER BY … LIMIT n` — stable and fast with the right index.
+- Keyset / cursor: `WHERE (created_at, id) < (?, ?) ORDER BY ... LIMIT n` — stable and fast with the right index.
 
 ## Sharding & partitioning
 - Partition = split data (by key/range/hash). Shard = often distributed partition.
@@ -41,14 +41,14 @@ Revision for **Databases & Data Handling**.
 - Cross-shard joins/transactions are the tax you pay.
 
 ## Read replicas & write scaling
-- Replicas scale reads; replication lag → stale reads. Route accordingly.
+- Replicas scale reads; replication lag -> stale reads. Route accordingly.
 - Writes still hit primary (or a carefully designed multi-primary — hard).
 - Cache before you prematurely shard.
 
 ## Duplicates & locking
 - Unique constraints + idempotency keys prevent duplicates at the source of truth.
 - **Optimistic**: version/ETag; retry on conflict — good for low contention.
-- **Pessimistic**: `SELECT … FOR UPDATE` — good for high contention critical sections; watch deadlocks.
+- **Pessimistic**: `SELECT ... FOR UPDATE` — good for high contention critical sections; watch deadlocks.
 
 ## 30-minute drill
 1. Pick isolation level for “transfer money between two rows.”

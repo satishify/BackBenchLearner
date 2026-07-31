@@ -16,7 +16,7 @@ Classic anomalies:
 - **Phantom read** — new rows appear matching a prior query
 - **Lost update** — two writers overwrite each other
 
-SQL defines levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable. Postgres defaults to **Read Committed**; SQLite is typically serializable-ish with locking. Higher isolation ≠ always better for every endpoint — know your anomaly budget.
+SQL defines levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable. Postgres defaults to **Read Committed**; SQLite is typically serializable-ish with locking. Higher isolation != always better for every endpoint — know your anomaly budget.
 
 ## How it works
 
@@ -44,9 +44,9 @@ sequenceDiagram
 
 Patterns that help even at Read Committed:
 
-- `SELECT … FOR UPDATE` to lock rows you will change
-- Optimistic `UPDATE … WHERE version=?`
-- Single SQL statement that encodes the rule (`UPDATE … WHERE stock >= 1`)
+- `SELECT ... FOR UPDATE` to lock rows you will change
+- Optimistic `UPDATE ... WHERE version=?`
+- Single SQL statement that encodes the rule (`UPDATE ... WHERE stock >= 1`)
 
 ## In code
 

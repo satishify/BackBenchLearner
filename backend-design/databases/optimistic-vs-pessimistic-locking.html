@@ -38,8 +38,8 @@
 
     <p>Two editors open the same document. Both save. Last write wins and one author’s paragraph disappears. <strong>Pessimistic locking</strong> would have blocked the second editor at open/edit time. <strong>Optimistic locking</strong> lets both edit, then rejects the second save if the version changed — common in web APIs where holding DB locks across user think-time is impossible.</p>
     <h2 id="intuition">Intuition</h2>
-    <p><strong>Pessimistic:</strong> “Lock now so nobody else can change this until I’m done.” <code>SELECT … FOR UPDATE</code> inside a short transaction. Great for high-contention inventory when the critical section is milliseconds.</p>
-    <p><strong>Optimistic:</strong> “Assume conflict is rare; check a version/ETag at write.” <code>UPDATE … WHERE id=? AND version=?</code>. If <code>rowcount=0</code>, someone else won — reload and retry. Great for HTTP APIs and forms.</p>
+    <p><strong>Pessimistic:</strong> “Lock now so nobody else can change this until I’m done.” <code>SELECT ... FOR UPDATE</code> inside a short transaction. Great for high-contention inventory when the critical section is milliseconds.</p>
+    <p><strong>Optimistic:</strong> “Assume conflict is rare; check a version/ETag at write.” <code>UPDATE ... WHERE id=? AND version=?</code>. If <code>rowcount=0</code>, someone else won — reload and retry. Great for HTTP APIs and forms.</p>
     <p>Holding a pessimistic lock while waiting for a human is a deadlock factory. Optimistic fits request/response; pessimistic fits tight server-side critical sections.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">
@@ -54,7 +54,7 @@ sequenceDiagram
     B->>DB: SELECT version=1
     A->>DB: UPDATE ... version=2 WHERE version=1
     B->>DB: UPDATE ... WHERE version=1
-    DB-->>B: 0 rows → conflict
+    DB-->>B: 0 rows -> conflict
       </div>
     </div>
     <table>

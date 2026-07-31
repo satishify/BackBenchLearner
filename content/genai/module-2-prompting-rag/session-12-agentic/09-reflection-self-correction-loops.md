@@ -7,7 +7,7 @@ A **reflection loop** has the agent critique its own draft against explicit crit
 
 ## Intuition
 
-Humans rarely ship the first draft of a critical email. Agents can do the same: produce → check → revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.
+Humans rarely ship the first draft of a critical email. Agents can do the same: produce -> check -> revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.
 
 ```mermaid
 flowchart LR
@@ -114,7 +114,7 @@ print(reflect_loop("How long do I have to request a refund?"))
 
 Add reflection only behind a feature flag and measure delta on the golden set for one week. Track extra tokens per successful answer; if cost rises 40% for a 1% pass-rate lift, the loop is vanity. Prefer a cheap rule pass before any LLM critique — schema failures should never consume a judge call.
 
-For code agents, make tests the reflector: draft patch → run tests → feed failures back → revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.
+For code agents, make tests the reflector: draft patch -> run tests -> feed failures back -> revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.
 
 ## Critique prompts that work
 

@@ -15,9 +15,9 @@ Sagas trade atomicity for explicit compensations and eventual consistency — ev
 
 ## How it works
 
-**Happy path.** T1 → T2 → T3 each commit locally and emit progress.
+**Happy path.** T1 -> T2 -> T3 each commit locally and emit progress.
 
-**Failure.** T3 fails → run C2 then C1 (compensations) to undo prior effects.
+**Failure.** T3 fails -> run C2 then C1 (compensations) to undo prior effects.
 
 ```mermaid
 flowchart LR

@@ -114,7 +114,7 @@ flowchart LR
     <h3>Architecture families</h3>
     <p><strong>Encoder-only (BERT-like).</strong> Bidirectional attention over the input. Great for classification, NER, and dense embeddings. Not a chat generator by default — you usually attach a task head or use the embedding tower.</p>
     <p><strong>Decoder-only (GPT-like).</strong> Causal (left-to-right) attention. Autoregressive generation is native. Almost every modern chat and coding assistant sits here. Scaling laws, long context, and tool calling all grew fastest in this family.</p>
-    <p><strong>Encoder–decoder (T5/BART-like).</strong> Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups. Less common as the default chat API today, but still a strong mental model for “map X → Y.”</p>
+    <p><strong>Encoder–decoder (T5/BART-like).</strong> Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups. Less common as the default chat API today, but still a strong mental model for “map X -&gt; Y.”</p>
     <h3>Why two “similar” models feel different</h3>
     <p>Same Transformer math does not mean same product behavior. Differences compound from:</p>
     <ul>
@@ -128,11 +128,11 @@ flowchart LR
     <p>So “switch vendors” is never a drop-in rename of the model string. Re-run evals on your prompts, latency budget, and failure modes.</p>
     <h3>Choosing a family in practice</h3>
     <ul>
-    <li>Need search embeddings or a cheap classifier → encoder / embedding models.</li>
-    <li>Need chat, agents, code → decoder chat models.</li>
-    <li>Need tight X→Y transforms with clear input/output → consider encoder–decoder or a decoder with strict structured output.</li>
-    <li>Need private deployment or deep finetuning → open-weights decoder families.</li>
-    <li>Need images/PDFs in the same loop → multimodal chat models, not a text-only base plus wishful thinking.</li>
+    <li>Need search embeddings or a cheap classifier -&gt; encoder / embedding models.</li>
+    <li>Need chat, agents, code -&gt; decoder chat models.</li>
+    <li>Need tight X-&gt;Y transforms with clear input/output -&gt; consider encoder–decoder or a decoder with strict structured output.</li>
+    <li>Need private deployment or deep finetuning -&gt; open-weights decoder families.</li>
+    <li>Need images/PDFs in the same loop -&gt; multimodal chat models, not a text-only base plus wishful thinking.</li>
     </ul>
     <h2 id="in-code">In code</h2>
     <p>You do not need a GPU to practice the <em>decision</em> layer. Model a tiny registry that maps product jobs to family recommendations:</p>

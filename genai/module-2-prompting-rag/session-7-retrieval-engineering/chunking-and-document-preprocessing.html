@@ -121,7 +121,7 @@ Employees receive 12 casual leaves per year.
 Up to 5 unused casual leaves may carry to the next year.
 &quot;&quot;&quot;
 for c in split_markdown(doc, source=&quot;hr&quot;):
-    print(c.id, c.section, &quot;→&quot;, c.text[:60])</code></pre>
+    print(c.id, c.section, &quot;-&gt;&quot;, c.text[:60])</code></pre>
     </div>
     <p>Tune <code>max_words</code> against your embedder’s sweet spot; production code often counts real tokenizer tokens.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>

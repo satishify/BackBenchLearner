@@ -38,7 +38,7 @@
 
     <p>Free-form prose is for humans. Downstream code wants <strong>objects</strong>: enums, IDs, date ranges, confidence scores. Structured outputs turn the model from a storyteller into a component you can wire into queues, UI forms, and agents — but only if you validate every response like it came from an untrusted client.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Ask for “JSON” in a prompt and you will get JSON… until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:</p>
+    <p>Ask for “JSON” in a prompt and you will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:</p>
     <ol>
     <li>Tell the model the schema.</li>
     <li>Prefer API features that constrain decoding to valid JSON / schema when available.</li>
@@ -90,7 +90,7 @@ flowchart TB
     <p><code>Your previous output failed validation: published_daterange.end is before start. Reply with corrected JSON only.</code></p>
     <p>Cap retries (e.g. 2). Log failure rates per prompt version — a spike means schema or model drift.</p>
     <h3>Partial success and fallbacks</h3>
-    <p>For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object → no side effect.</p>
+    <p>For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object -&gt; no side effect.</p>
     <h3>Designing schemas models can hit</h3>
     <p>Schemas fail in production when they are written for lawyers instead of generators:</p>
     <ul>
@@ -102,7 +102,7 @@ flowchart TB
     </ul>
     <p>When the model must emit dates, demand ISO-8601 in the schema description and reject everything else in the validator. When it must emit IDs, prefer copying from provided context over inventing new ones — and check membership against your database.</p>
     <h3>Where structured output sits in an agent</h3>
-    <p>Agents often chain: plan JSON → tool calls → final answer JSON. Validate <strong>each</strong> stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.</p>
+    <p>Agents often chain: plan JSON -&gt; tool calls -&gt; final answer JSON. Validate <strong>each</strong> stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.</p>
     <h2 id="in-code">In code</h2>
     <p>Stdlib validation without external deps:</p>
     <div class="code-block" data-lang="python">

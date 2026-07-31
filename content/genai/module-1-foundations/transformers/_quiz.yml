@@ -1,6 +1,6 @@
 title: "1.3 The Transformer Architecture"
 questions:
-  - q: "Classical RNN seq2seq without attention failed on long inputs mainly because…"
+  - q: "Classical RNN seq2seq without attention failed on long inputs mainly because..."
     options:
       - "Softmax was undefined for text"
       - "The encoder crushed the whole source into a fixed bottleneck vector"
@@ -9,7 +9,7 @@ questions:
     answer: 1
     why: "Early encoder–decoder models passed a single context vector; early details were easily lost before attention provided soft lookup over source states."
 
-  - q: "In scaled dot-product self-attention, dividing by sqrt(d_k) is important because…"
+  - q: "In scaled dot-product self-attention, dividing by sqrt(d_k) is important because..."
     options:
       - "It makes attention exactly sparse like a hard switch"
       - "Large d_k makes dot products huge, saturating softmax and shrinking gradients"
@@ -21,11 +21,11 @@ questions:
   - q: "A sequence has length n=512 and head dimension d_k=64. Roughly how do the QK^T scores scale in compute?"
     options:
       - "O(n) only"
-      - "O(n² d_k) for the score matrix path (quadratic in sequence length)"
+      - "O(n^2 d_k) for the score matrix path (quadratic in sequence length)"
       - "O(log n) always"
       - "O(1) independent of n"
     answer: 1
-    why: "Forming n×n attention scores (and related matmuls) is quadratic in sequence length, which dominates long-context cost."
+    why: "Forming nxn attention scores (and related matmuls) is quadratic in sequence length, which dominates long-context cost."
 
   - q: "Why must Transformers inject positional information?"
     options:
@@ -43,9 +43,9 @@ questions:
       - "Disables cross-attention forever"
       - "Forces every token to attend uniformly to padding"
     answer: 1
-    why: "The look-ahead mask sets future logits to −∞ before softmax, matching left-to-right generation."
+    why: "The look-ahead mask sets future logits to -inf before softmax, matching left-to-right generation."
 
-  - q: "Cross-attention in an encoder–decoder Transformer lets the decoder…"
+  - q: "Cross-attention in an encoder–decoder Transformer lets the decoder..."
     options:
       - "Ignore the source and only self-attend"
       - "Query encoder memory so generated tokens can ground in the input sequence"
@@ -54,16 +54,16 @@ questions:
     answer: 1
     why: "Decoder queries attend over encoder keys/values—the soft alignment that replaced brittle fixed bottlenecks."
 
-  - q: "Multi-head attention’s practical benefit is mainly that…"
+  - q: "Multi-head attention’s practical benefit is mainly that..."
     options:
       - "One head is mathematically impossible"
       - "Different heads can specialize on distinct relation types in parallel subspaces"
-      - "It reduces attention complexity from O(n²) to O(1)"
+      - "It reduces attention complexity from O(n^2) to O(1)"
       - "It removes the need for feed-forward layers"
     answer: 1
     why: "Splitting into heads lets the model jointly attend to different patterns (syntax, coreference, etc.) before concatenating."
 
-  - q: "During autoregressive decoding, lowering temperature typically…"
+  - q: "During autoregressive decoding, lowering temperature typically..."
     options:
       - "Flattens the next-token distribution toward uniform noise"
       - "Sharpens toward high-probability tokens (more greedy/stable)"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "Smaller T concentrates mass on top logits, reducing diversity and usually increasing stability for factual tasks."
 
-  - q: "Bahdanau attention differed from the pure fixed-vector bottleneck by…"
+  - q: "Bahdanau attention differed from the pure fixed-vector bottleneck by..."
     options:
       - "Deleting the encoder entirely"
       - "Computing a soft weighted sum over encoder states for each decoder step"

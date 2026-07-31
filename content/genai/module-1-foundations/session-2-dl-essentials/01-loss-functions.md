@@ -45,7 +45,7 @@ Only the true side of the formula is active per example. Numerically, implement 
 CCE = -log(p_true_class)
 ```
 
-If the model gives the correct class probability `0.8`, loss is `-log(0.8) ≈ 0.22`. If it only gives `0.05`, loss is `-log(0.05) ≈ 3.0` — much larger. Soft labels (label smoothing) keep a small mass on other classes and reduce overconfidence.
+If the model gives the correct class probability `0.8`, loss is `-log(0.8) ~= 0.22`. If it only gives `0.05`, loss is `-log(0.05) ~= 3.0` — much larger. Soft labels (label smoothing) keep a small mass on other classes and reduce overconfidence.
 
 ```mermaid
 flowchart LR
@@ -57,7 +57,7 @@ flowchart LR
     CCE --> O
 ```
 
-**Why confident mistakes hurt more.** Suppose true class probability is 0.9 → loss `≈ 0.105`. If it is 0.01 → loss `≈ 4.6`. Ten times more confident wrong is not ten times the loss—it is much worse on a log scale. Training therefore spends capacity fixing arrogant errors before polishing already-good predictions. That property is exactly why CE pairs well with softmax: as the model drives `p_true` toward 1, loss gently approaches 0; as it drives `p_true` toward 0, loss grows without a soft ceiling.
+**Why confident mistakes hurt more.** Suppose true class probability is 0.9 -> loss `~= 0.105`. If it is 0.01 -> loss `~= 4.6`. Ten times more confident wrong is not ten times the loss—it is much worse on a log scale. Training therefore spends capacity fixing arrogant errors before polishing already-good predictions. That property is exactly why CE pairs well with softmax: as the model drives `p_true` toward 1, loss gently approaches 0; as it drives `p_true` toward 0, loss grows without a soft ceiling.
 
 ## In code
 

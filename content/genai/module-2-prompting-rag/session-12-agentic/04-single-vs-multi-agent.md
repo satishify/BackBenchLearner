@@ -35,7 +35,7 @@ flowchart LR
 ### Multi-agent
 
 - Specialized roles with narrower prompts and tools.
-- Useful pipelines: planner → researcher → implementer → reviewer.
+- Useful pipelines: planner -> researcher -> implementer -> reviewer.
 - Needs **orchestration**: who speaks when, what is passed, how disagreements resolve.
 - Needs **contracts**: typed artifacts between agents (brief, sources, draft, verdict).
 

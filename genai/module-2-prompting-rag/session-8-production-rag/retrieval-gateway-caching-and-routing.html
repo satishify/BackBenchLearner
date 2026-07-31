@@ -54,15 +54,15 @@
     <p>Order matters:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">authenticate → authorize (tenant, roles, doc ACL) → embed / cache / search → generate</code></pre>
+      <pre><code class="language-text">authenticate -&gt; authorize (tenant, roles, doc ACL) -&gt; embed / cache / search -&gt; generate</code></pre>
     </div>
     <p>Never embed first and “filter later” in the prompt. Metadata filters in the vector DB are necessary; they are not a substitute for rejecting unauthenticated calls. Log <code>subject_id</code>, <code>tenant_id</code>, and <code>policy_version</code> on every retrieval span so incidents are reconstructible.</p>
     <p>Multi-tenant rule of thumb: <strong>tenant_id is a mandatory filter</strong>, enforced in gateway code that builds the search request — not an optional argument the model can omit.</p>
     <h3>Semantic cache threshold tradeoff</h3>
     <p>Cache keys are often the query embedding (or a normalized string + embedding). On a new query, if <code>cosine(q, cached_q) &gt;= threshold</code> (and same tenant, locale, product surface), return the cached answer or cached chunks.</p>
     <ul>
-    <li><strong>Threshold too low</strong> → false hits: “reset password” matches “reset API key”; user gets the wrong runbook.</li>
-    <li><strong>Threshold too high</strong> → mostly misses; cache barely helps.</li>
+    <li><strong>Threshold too low</strong> -&gt; false hits: “reset password” matches “reset API key”; user gets the wrong runbook.</li>
+    <li><strong>Threshold too high</strong> -&gt; mostly misses; cache barely helps.</li>
     </ul>
     <p>Tune on a labeled pair set: same-intent vs different-intent. Optimize for <strong>low false-hit rate</strong> first; accept a lower hit rate. Invalidate on corpus or policy change (TTL alone is not enough when docs update). For regulated answers, cache <strong>chunk ids + generation inputs</strong>, not only final prose, so you can rebuild with the new model.</p>
     <h3>Query shaping</h3>
@@ -70,7 +70,7 @@
     <ul>
     <li>Strip boilerplate (“hi”, “please”, email signatures).</li>
     <li>Expand acronyms known for that tenant.</li>
-    <li>Rewrite follow-ups with conversation context (“what about the SLA?” → “What is the SLA for plan Pro?”).</li>
+    <li>Rewrite follow-ups with conversation context (“what about the SLA?” -&gt; “What is the SLA for plan Pro?”).</li>
     <li>Detect <strong>no-retrieval</strong> intents (chitchat, pure math) and skip the index.</li>
     </ul>
     <p>Shaping is a small model or rules + templates. Cap rewrite length; log both raw and shaped queries for eval.</p>

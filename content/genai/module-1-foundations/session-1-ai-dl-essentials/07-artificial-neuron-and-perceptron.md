@@ -47,12 +47,12 @@ If the prediction was too low (`y = 1`, `prediction = 0`), weights move toward `
 
 ```mermaid
 flowchart LR
-  X1[x1] --> Z[z = w·x + b]
+  X1[x1] --> Z[z = w*x + b]
   X2[x2] --> Z
   X3[xd] --> Z
-  Z --> A{Step: z ≥ 0?}
-  A -->|yes| Y1[ŷ = 1]
-  A -->|no| Y0[ŷ = 0]
+  Z --> A{Step: z >= 0?}
+  A -->|yes| Y1[y_hat = 1]
+  A -->|no| Y0[y_hat = 0]
 ```
 
 **AND and OR work; XOR does not.** Plot the four Boolean corners `(0,0), (0,1), (1,0), (1,1)`. For AND, only `(1,1)` is positive — one line separates it. For OR, only `(0,0)` is negative — again one line works. For **XOR**, positives sit on opposite corners `(0,1)` and `(1,0)`. No single straight line can put both positives on one side and both negatives on the other. That is the famous **XOR limitation**: one perceptron cannot learn XOR. Multilayer networks with nonlinear activations can.

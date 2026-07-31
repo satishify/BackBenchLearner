@@ -64,7 +64,7 @@ Bad labels (wrong JSON, leaked PII, contradictory policies) pull probability mas
 | Deduplication | Near-duplicates inflate overfit |
 | PII / secrets scrub | Models can memorize and regurgitate |
 | Train / eval split by user or ticket | Random split leaks near-duplicates |
-| Difficulty mix | Only easy rows → brittle on live mess |
+| Difficulty mix | Only easy rows -> brittle on live mess |
 
 Aim for **consistency over volume** early. A few hundred excellent rows beat ten thousand noisy ones for many format/style tasks. Scale data once the format is locked.
 

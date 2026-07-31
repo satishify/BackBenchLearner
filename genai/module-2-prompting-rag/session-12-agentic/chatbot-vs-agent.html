@@ -38,7 +38,7 @@
 
     <p>Both chatbots and agents can talk. The difference is whether the system’s job ends at a reply or continues until a task in the world is done. Confusing the two leads to either under-powered “agents” that only chat, or over-armed chatbots that should never have had write access.</p>
     <h2 id="intuition">Intuition</h2>
-    <p><strong>Chatbot:</strong> “How do I reset my password?” → explains steps. <strong>Agent:</strong> verifies identity → triggers reset link → updates the ticket → confirms completion.</p>
+    <p><strong>Chatbot:</strong> “How do I reset my password?” -&gt; explains steps. <strong>Agent:</strong> verifies identity -&gt; triggers reset link -&gt; updates the ticket -&gt; confirms completion.</p>
     <p>Same surface (a chat window), different contract with the user. Chatbots optimize for helpful messages. Agents optimize for completed outcomes — and therefore need tools, loops, and stop rules.</p>
     <table>
       <thead><tr>
@@ -126,7 +126,7 @@
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">def chatbot_password_reset(user_msg: str) -&gt; str:
     return (
-        &quot;To reset your password: open Settings → Security → Reset. &quot;
+        &quot;To reset your password: open Settings -&gt; Security -&gt; Reset. &quot;
         &quot;We will email a link. I cannot trigger it from chat.&quot;
     )
 
@@ -155,7 +155,7 @@ print(agent_password_reset(&quot;u_123&quot;, verified=True))</code></pre>
     <li><strong>Hidden multi-step.</strong> Long silent tool runs with no progress UI feel broken.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Audit your UI strings. Phrases like “I’ll take care of that” imply agent semantics; “Here’s how you can…” implies chatbot semantics. Mismatch is a trust bug. For each flow, pick a primary metric: deflection/CSAT for chatbots, task success and undo rate for agents. Review weekly which metric moved after prompt or model changes.</p>
+    <p>Audit your UI strings. Phrases like “I’ll take care of that” imply agent semantics; “Here’s how you can...” implies chatbot semantics. Mismatch is a trust bug. For each flow, pick a primary metric: deflection/CSAT for chatbots, task success and undo rate for agents. Review weekly which metric moved after prompt or model changes.</p>
     <p>A useful migration path is progressive disclosure of agency: answer first, then offer a button “Do this for me” that enters the tool loop with an explicit receipt. Users who only wanted information never pay the latency or risk tax; users who wanted completion get a clear contract. That hybrid covers most product surface area without pretending everything is fully autonomous.</p>
     <h2 id="boundary-cases">Boundary cases</h2>
     <p>Some products sit on the line: a FAQ bot that can create a ticket is mostly a chatbot with one agentic escape hatch. Treat each side effect as its own mini-agent contract — schema, auth, receipt — even if the rest of the UI stays conversational. Conversely, an “agent” that only drafts pull-request text without opening the PR is still a chatbot for shipping purposes. Name capabilities after what changes in external systems, not after the model vendor’s marketing tier.</p>

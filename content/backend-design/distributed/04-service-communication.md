@@ -25,7 +25,7 @@ sequenceDiagram
     B-->>-A: Response
 ```
 
-**Async messaging.** A publishes to a queue/topic; B consumes later. A acknowledges publish and continues. Natural backpressure buffer; eventual consistency; harder end-to-end tracing and UX (“processing…”).
+**Async messaging.** A publishes to a queue/topic; B consumes later. A acknowledges publish and continues. Natural backpressure buffer; eventual consistency; harder end-to-end tracing and UX (“processing...”).
 
 ```mermaid
 sequenceDiagram

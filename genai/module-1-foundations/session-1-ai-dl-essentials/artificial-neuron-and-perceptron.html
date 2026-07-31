@@ -68,12 +68,12 @@ b = b + learning_rate * (y - prediction)</code></pre>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
-  X1[x1] --> Z[z = w·x + b]
+  X1[x1] --> Z[z = w*x + b]
   X2[x2] --> Z
   X3[xd] --> Z
-  Z --> A{Step: z ≥ 0?}
-  A -->|yes| Y1[ŷ = 1]
-  A -->|no| Y0[ŷ = 0]
+  Z --> A{Step: z >= 0?}
+  A -->|yes| Y1[y_hat = 1]
+  A -->|no| Y0[y_hat = 0]
       </div>
     </div>
     <p><strong>AND and OR work; XOR does not.</strong> Plot the four Boolean corners <code>(0,0), (0,1), (1,0), (1,1)</code>. For AND, only <code>(1,1)</code> is positive — one line separates it. For OR, only <code>(0,0)</code> is negative — again one line works. For <strong>XOR</strong>, positives sit on opposite corners <code>(0,1)</code> and <code>(1,0)</code>. No single straight line can put both positives on one side and both negatives on the other. That is the famous <strong>XOR limitation</strong>: one perceptron cannot learn XOR. Multilayer networks with nonlinear activations can.</p>

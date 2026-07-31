@@ -96,7 +96,7 @@ def create_user(body: UserCreate):
     return UserOut(id=user_id, email=body.email)
 ```
 
-Run with `uvicorn main:app --reload`. Hit `POST /users` with `{"email":"a@example.com"}`, then `GET /users/1`. You have already practiced the core loop: contract → validate → persist → respond.
+Run with `uvicorn main:app --reload`. Hit `POST /users` with `{"email":"a@example.com"}`, then `GET /users/1`. You have already practiced the core loop: contract -> validate -> persist -> respond.
 
 ## What goes wrong
 

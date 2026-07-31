@@ -38,7 +38,7 @@
 
     <p>A <strong>monolith</strong> ships as one deployable unit: auth, orders, catalog, and billing in one codebase and process boundary. <strong>Microservices</strong> split those domains into separately deployable services talking over the network. Neither is morally superior — they optimize for different team sizes, scale shapes, and consistency needs. Choosing microservices too early is a common way to buy distributed-systems pain before you need the benefits.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A food truck (monolith) has one kitchen, one menu, one cash register. A food hall (microservices) has many kitchens; you can renovate tacos without closing sushi — but now you need hall rules, shared seating, and someone to coordinate when an order spans two stalls. Small team + unclear domain boundaries → food truck. Large org with independent release cadence and wildly different scale → food hall.</p>
+    <p>A food truck (monolith) has one kitchen, one menu, one cash register. A food hall (microservices) has many kitchens; you can renovate tacos without closing sushi — but now you need hall rules, shared seating, and someone to coordinate when an order spans two stalls. Small team + unclear domain boundaries -&gt; food truck. Large org with independent release cadence and wildly different scale -&gt; food hall.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Microservices trade deployment independence for network failure, eventual consistency, and operational complexity.</p>

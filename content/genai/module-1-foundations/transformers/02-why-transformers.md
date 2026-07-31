@@ -25,7 +25,7 @@ alpha_ti   = softmax_i(score_ti)
 c_t        = sum_i alpha_ti * encoder_h_i
 ```
 
-When translating “cat” → “chat”, alphas might peak on the source word “cat” instead of relying on a single compressed vector.
+When translating “cat” -> “chat”, alphas might peak on the source word “cat” instead of relying on a single compressed vector.
 
 **Transformer leap.** Self-attention drops the recurrent chain. For a sequence of embeddings `X`, each position computes queries, keys, and values and mixes information in matrix form:
 
@@ -90,7 +90,7 @@ You should see the moving average dilute the spike while attention puts most mas
 ## What goes wrong
 
 - **Treating Transformers as “just bigger RNNs.”** The inductive bias changed: no inherent left-to-right state unless you add masking and positions. Order is not free.
-- **Ignoring quadratic cost.** Full self-attention is O(n²) in sequence length. Long-context products need clever kernels, sparsity, or sliding windows — RNNs were cheap per step but weak at long range.
+- **Ignoring quadratic cost.** Full self-attention is O(n^2) in sequence length. Long-context products need clever kernels, sparsity, or sliding windows — RNNs were cheap per step but weak at long range.
 - **Assuming attention alone replaced everything.** Feed-forward layers, residuals, and normalization do heavy lifting; attention is the *routing* fabric.
 - **Over-crediting the 2017 paper for decoder-only LLMs.** The original Transformer was encoder–decoder for translation; GPT-style models reuse the decoder stack. Know which variant you are discussing in interviews.
 - **Forgetting data and scale.** Architecture unlocked parallelism; curated pre-training data and compute made the capability jump visible.

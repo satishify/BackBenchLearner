@@ -23,9 +23,9 @@ A lock is not a transaction. Prefer database constraints and atomic updates when
 
 **Redlock debate (brief).** Multi-node Redis locking is subtle under partitions. For many product use cases, a single Redis primary + short critical sections + DB uniqueness is enough; for strong correctness, prefer DB locks or consensus systems.
 
-**When not to use a lock.** If a unique constraint or `UPDATE … WHERE status = 'open'` already makes double-processing harmless or impossible, skip the lock — less moving parts. Locks shine for *leader-only* periodic jobs (“only one pod runs the nightly reconcile”), single-flight cache recomputation, or coordinating files in object storage where the DB cannot help.
+**When not to use a lock.** If a unique constraint or `UPDATE ... WHERE status = 'open'` already makes double-processing harmless or impossible, skip the lock — less moving parts. Locks shine for *leader-only* periodic jobs (“only one pod runs the nightly reconcile”), single-flight cache recomputation, or coordinating files in object storage where the DB cannot help.
 
-**Keep sections tiny.** Acquire → mutate quickly → release. Do not hold a lock while calling a slow payment API; instead take the lock to claim a row (`status = processing`), release, then call the API using idempotency keys. That way a stuck HTTP call does not freeze the whole cluster’s lock.
+**Keep sections tiny.** Acquire -> mutate quickly -> release. Do not hold a lock while calling a slow payment API; instead take the lock to claim a row (`status = processing`), release, then call the API using idempotency keys. That way a stuck HTTP call does not freeze the whole cluster’s lock.
 
 ```mermaid
 sequenceDiagram

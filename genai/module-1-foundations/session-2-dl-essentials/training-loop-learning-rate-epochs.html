@@ -69,7 +69,7 @@ flowchart TD
     </div>
     <p><strong>Monitoring.</strong> Log train loss every N steps and validation loss every epoch. Plot both. Early stopping (previous lesson) reads this plot automatically. Also watch for exploding loss after an LR change—that is your first debugging signal.</p>
     <h2 id="in-code">In code</h2>
-    <p>Toy linear regression with full-batch and minibatch gradient descent. We fit <code>y ≈ w x + b</code> on noisy data and watch loss fall.</p>
+    <p>Toy linear regression with full-batch and minibatch gradient descent. We fit <code>y ~= w x + b</code> on noisy data and watch loss fall.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -139,7 +139,7 @@ for epoch, tr, va in history[::8]:
       <tbody>
         <tr>
           <td>Much too high</td>
-          <td>Loss → NaN or oscillates upward</td>
+          <td>Loss -&gt; NaN or oscillates upward</td>
         </tr>
         <tr>
           <td>Slightly high</td>
@@ -163,7 +163,7 @@ for epoch, tr, va in history[::8]:
     <p><strong>Data leakage in validation.</strong> Preprocessing fit on train+val (e.g. scaling) makes val loss optimistic. Fit scalers on train only.</p>
     <p><strong>Shuffling validation.</strong> Optional for metrics; never required. Do shuffle training.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>The training loop is forward → loss → backward → update, repeated over batches and epochs—with learning rate setting step size and train/val curves telling you whether you are learning or memorizing.</p>
+    <p>The training loop is forward -&gt; loss -&gt; backward -&gt; update, repeated over batches and epochs—with learning rate setting step size and train/val curves telling you whether you are learning or memorizing.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Training loop</strong> — Repeated forward, loss, backward, and parameter update.</li>

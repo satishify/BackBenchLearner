@@ -38,7 +38,7 @@
 
     <p>A <strong>reflection loop</strong> has the agent critique its own draft against explicit criteria and revise before the user sees a final answer. Done well, it catches format breaks and shallow errors. Done poorly, it burns tokens arguing with itself.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Humans rarely ship the first draft of a critical email. Agents can do the same: produce → check → revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.</p>
+    <p>Humans rarely ship the first draft of a critical email. Agents can do the same: produce -&gt; check -&gt; revise. The check should be a rubric or program, not a vague “make it better.” Without a stop rule, reflection becomes infinite polish.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -155,7 +155,7 @@ print(reflect_loop(&quot;How long do I have to request a refund?&quot;))</code><
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
     <p>Add reflection only behind a feature flag and measure delta on the golden set for one week. Track extra tokens per successful answer; if cost rises 40% for a 1% pass-rate lift, the loop is vanity. Prefer a cheap rule pass before any LLM critique — schema failures should never consume a judge call.</p>
-    <p>For code agents, make tests the reflector: draft patch → run tests → feed failures back → revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.</p>
+    <p>For code agents, make tests the reflector: draft patch -&gt; run tests -&gt; feed failures back -&gt; revise, with a hard cap of two attempts before human handoff. That pattern outperforms essay-style self-critique on most engineering tasks because the checker is objective.</p>
     <h2 id="critique-prompts-that-work">Critique prompts that work</h2>
     <p>A usable critique prompt lists pass/fail bullets and demands JSON like <code>{ &quot;pass&quot;: false, &quot;issues&quot;: [&quot;...&quot;] }</code>. Ban vague advice (“improve clarity”) unless paired with a concrete defect. Feed only the draft plus evidence (tool JSON, citations), not the entire chat history, so the judge cannot be distracted by earlier role-play. Pin the judge model version in CI the same way you pin the actor model.</p>
     <h2 id="stop-conditions-beyond-round-caps">Stop conditions beyond round caps</h2>

@@ -39,7 +39,7 @@
     <p><strong>Embeddings</strong> map text to dense vectors so “reduce infra cost” can match “cloud spend optimization” even when the words differ. Semantic search ranks documents by vector similarity instead of exact keywords. Together they are the retrieval engine underneath most RAG systems.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Imagine every sentence as a point in a high-dimensional space where nearby points share meaning. The embedding model learned that geometry from huge text corpora: synonyms cluster, unrelated jargon sits far apart. A query becomes a point too; the nearest document points are your search results.</p>
-    <p>Keyword search asks “were these tokens present?” Semantic search asks “is the meaning close?” You often want both (hybrid search appears in the advanced chapter). For now, focus on the geometry: good embeddings + a similarity metric ≈ meaning-aware retrieval.</p>
+    <p>Keyword search asks “were these tokens present?” Semantic search asks “is the meaning close?” You often want both (hybrid search appears in the advanced chapter). For now, focus on the geometry: good embeddings + a similarity metric ~= meaning-aware retrieval.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -56,10 +56,10 @@ flowchart LR
     <p><strong>Cosine similarity.</strong> For vectors <code>A</code> and <code>B</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">cos(A, B) = (A · B) / (‖A‖ ‖B‖)</code></pre>
+      <pre><code class="language-text">cos(A, B) = (A * B) / (||A|| ||B||)</code></pre>
     </div>
     <p>Cosine cares about angle, not magnitude, which helps when some texts produce longer vectors. If all vectors are L2-normalized, cosine equals the dot product — a handy optimization in indexes.</p>
-    <p><strong>Euclidean distance</strong> <code>‖A - B‖</code> is related but sensitive to length. Many vector DBs support both; cosine / inner product dominate text search.</p>
+    <p><strong>Euclidean distance</strong> <code>||A - B||</code> is related but sensitive to length. Many vector DBs support both; cosine / inner product dominate text search.</p>
     <p><strong>Top-k retrieval.</strong> Embed the query, score all (or approximately all) stored vectors, return the <code>k</code> highest. Approximate nearest neighbor (ANN) indexes trade a little recall for huge speed — covered with vector databases next.</p>
     <p><strong>Chunking matters.</strong> Embeddings summarize a chunk into one point. A chunk that mixes three unrelated topics blurs that point. Prefer coherent chunks with modest overlap so boundary sentences are not lost.</p>
     <h2 id="in-code">In code</h2>
@@ -119,14 +119,14 @@ for text, score in search(&quot;how do I cut infra costs?&quot;):
     <p><strong>Dimensionality and storage.</strong> 384-d embeddings are lighter and often enough for FAQ search; 768–3072-d models may capture finer nuance at higher cost. Pick based on measured recall@k and budget, not brochure peak scores on unrelated benchmarks.</p>
     <p><strong>Domain shift.</strong> Internal codenames (“Project Falcon”) will not sit near “latency budget workstream” unless your corpus or fine-tuning teaches that. Hybrid search and synonym glossaries patch many gaps without a custom embedder. When gaps remain, consider fine-tuning a sentence model on query–doc pairs from search logs.</p>
     <p><strong>Batch vs real-time embedding.</strong> Ingest is bulk and retryable; query embedding is on the latency path. Cache query embeddings for identical strings in short TTLs if traffic repeats. Monitor embedder errors separately from vector DB errors so on-calls know which pager to wake.</p>
-    <p><strong>Evaluation tip.</strong> Build a mini set of query → expected doc titles and compute recall@10 whenever you change models or chunking. Embedding upgrades that look nicer in a notebook sometimes hurt your actual corpus — numbers beat vibes.</p>
+    <p><strong>Evaluation tip.</strong> Build a mini set of query -&gt; expected doc titles and compute recall@10 whenever you change models or chunking. Embedding upgrades that look nicer in a notebook sometimes hurt your actual corpus — numbers beat vibes.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Embeddings place text in a vector space so semantic search can rank meaning-neighbors with cosine similarity instead of exact keywords alone.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Embedding:</strong> dense vector representation of text (or other modalities).</li>
     <li><strong>Semantic search:</strong> retrieval by meaning similarity in embedding space.</li>
-    <li><strong>Cosine similarity:</strong> angle-based likeness <code> (A·B) / (‖A‖‖B‖) </code>.</li>
+    <li><strong>Cosine similarity:</strong> angle-based likeness <code> (A*B) / (||A||||B||) </code>.</li>
     <li><strong>Top-k:</strong> returning the k highest-scoring items.</li>
     <li><strong>Chunk:</strong> contiguous text unit embedded and indexed for retrieval.</li>
     <li><strong>ANN:</strong> approximate nearest neighbor search for large vector collections.</li>

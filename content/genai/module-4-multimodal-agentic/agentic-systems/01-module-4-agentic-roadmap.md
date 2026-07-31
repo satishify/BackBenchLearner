@@ -13,7 +13,7 @@ This **4.2** chapter is a **short placeholder** so Module 4 matches the course o
 
 ## Outline to fill later
 
-1. What makes an agent (perceive → reason → act → observe).
+1. What makes an agent (perceive -> reason -> act -> observe).
 2. Tool calling and governance.
 3. Single vs multi-agent patterns.
 4. Human-in-the-loop and evaluation.

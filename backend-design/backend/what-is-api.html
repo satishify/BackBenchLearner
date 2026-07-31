@@ -120,7 +120,7 @@ def create_user(body: UserCreate):
             raise HTTPException(status_code=409, detail=&quot;Email taken&quot;)
     return UserOut(id=user_id, email=body.email)</code></pre>
     </div>
-    <p>Run with <code>uvicorn main:app --reload</code>. Hit <code>POST /users</code> with <code>{&quot;email&quot;:&quot;a@example.com&quot;}</code>, then <code>GET /users/1</code>. You have already practiced the core loop: contract → validate → persist → respond.</p>
+    <p>Run with <code>uvicorn main:app --reload</code>. Hit <code>POST /users</code> with <code>{&quot;email&quot;:&quot;a@example.com&quot;}</code>, then <code>GET /users/1</code>. You have already practiced the core loop: contract -&gt; validate -&gt; persist -&gt; respond.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Leaky internals</strong> — returning stack traces or SQL errors teaches attackers your schema and panics clients.</li>

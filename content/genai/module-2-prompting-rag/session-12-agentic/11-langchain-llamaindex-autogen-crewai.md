@@ -26,7 +26,7 @@ Broad ecosystem: prompt templates, retrievers, tool wrappers, LCEL/runnables, ma
 
 ### LlamaIndex
 
-Centered on connecting data → indexes → query engines. Strong default for RAG-heavy assistants (files, Notion, DBs). You still own chunking strategy, evaluation, and citation policy; the library accelerates ingestion and retrieval patterns.
+Centered on connecting data -> indexes -> query engines. Strong default for RAG-heavy assistants (files, Notion, DBs). You still own chunking strategy, evaluation, and citation policy; the library accelerates ingestion and retrieval patterns.
 
 ### AutoGen
 

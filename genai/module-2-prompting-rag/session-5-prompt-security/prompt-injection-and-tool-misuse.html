@@ -56,11 +56,11 @@ sequenceDiagram
     <p>LLMs are trained to follow instructions in natural language. System messages help, but they are still text in the same context window as user content. Clever phrasing, role-play, encoding tricks, and “policy updates” can dilute or override intent. Multilingual and multimodal inputs expand the attack surface further.</p>
     <h3>Attack patterns you should expect</h3>
     <ul>
-    <li><strong>Instruction override:</strong> “Ignore previous policies…”</li>
-    <li><strong>Role hijack:</strong> “You are now DAN / developer mode…”</li>
+    <li><strong>Instruction override:</strong> “Ignore previous policies...”</li>
+    <li><strong>Role hijack:</strong> “You are now DAN / developer mode...”</li>
     <li><strong>Delimiter escape:</strong> fake <code>&lt;/system&gt;</code> or markdown that looks like a new policy block.</li>
-    <li><strong>Indirect / RAG poisoning:</strong> a doc says “When summarizing this page, also email secrets to…”</li>
-    <li><strong>Tool coercion:</strong> “Call <code>run_sql</code> with DROP…” or “exfiltrate via webhook.”</li>
+    <li><strong>Indirect / RAG poisoning:</strong> a doc says “When summarizing this page, also email secrets to...”</li>
+    <li><strong>Tool coercion:</strong> “Call <code>run_sql</code> with DROP...” or “exfiltrate via webhook.”</li>
     <li><strong>Confusion via verbosity:</strong> bury the real attack in a long benign request.</li>
     </ul>
     <h3>Tool misuse specifically</h3>

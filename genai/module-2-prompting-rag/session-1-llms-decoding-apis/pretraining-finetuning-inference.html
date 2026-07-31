@@ -189,10 +189,10 @@ print(
     return weights.get((prev, nxt), 0.0)
 
 
-print(&quot;pretrained error→please&quot;, score(&quot;error&quot;, &quot;please&quot;, pretrained))
-print(&quot;adapted error→please&quot;, score(&quot;error&quot;, &quot;please&quot;, adapted))
+print(&quot;pretrained error-&gt;please&quot;, score(&quot;error&quot;, &quot;please&quot;, pretrained))
+print(&quot;adapted error-&gt;please&quot;, score(&quot;error&quot;, &quot;please&quot;, adapted))
 print(&quot;delta applied&quot;, score(&quot;error&quot;, &quot;please&quot;, adapted) - score(&quot;error&quot;, &quot;please&quot;, pretrained))
-# 0.2 → 2.7 after +2.5 fine-tune delta</code></pre>
+# 0.2 -&gt; 2.7 after +2.5 fine-tune delta</code></pre>
     </div>
     <p>That <code>+2.5</code> is a stand-in for gradient updates on real weights. Prompt bias never appears in <code>adapted</code>; it only exists for the duration of one <code>infer</code> call.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>

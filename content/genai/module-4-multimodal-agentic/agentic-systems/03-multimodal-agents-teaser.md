@@ -3,7 +3,7 @@ title: "Multimodal Agents (Teaser)"
 description: "How vision + tools combine: agents that can see screenshots and act."
 ---
 
-Module 4 joins **vision** (4.1) with **agents** (4.2). A multimodal agent might: read a screenshot → extract an error code → call a runbook API → propose a fix — with a human approval step.
+Module 4 joins **vision** (4.1) with **agents** (4.2). A multimodal agent might: read a screenshot -> extract an error code -> call a runbook API -> propose a fix — with a human approval step.
 
 ## Building blocks
 

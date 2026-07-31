@@ -7,7 +7,7 @@ Some questions die in a single search. “Which teams own services that still ca
 
 ## Intuition
 
-Single-hop RAG is a one-trip library visit. Multi-hop is a research session: read something, realize you need another source, go again. Agents add a clipboard — goals, scratch notes, and a loop: think → act (search/tool) → observe → until done or budget exhausted.
+Single-hop RAG is a one-trip library visit. Multi-hop is a research session: read something, realize you need another source, go again. Agents add a clipboard — goals, scratch notes, and a loop: think -> act (search/tool) -> observe -> until done or budget exhausted.
 
 Not every question deserves an agent. Hopping increases latency, cost, and failure modes. Use it when the answer structurally depends on intermediate entities.
 
@@ -74,7 +74,7 @@ h1, h2 = multi_hop_auth_v1()
 print("hop1 services:", [h["id"] for h in h1])
 print("hop2 owners:")
 for row in h2:
-    print(" ", row["id"], "→", row["owner"])
+    print(" ", row["id"], "->", row["owner"])
 
 # Agentic-style control: stop when hops==max or no new ids
 ```
@@ -101,7 +101,7 @@ Replace lexical `retrieve` with hybrid search and wrap the loop in an LLM planne
 
 ## Cost and UX for multi-hop
 
-Show users that work is happening: “Looking up services… checking owners…” reduces perceived latency and builds trust. Cap wall-clock time and return a partial answer with citations plus “incomplete: hop budget reached” rather than spinning. Cache hop-1 results for repeated entity hubs (popular dependencies) with short TTLs.
+Show users that work is happening: “Looking up services... checking owners...” reduces perceived latency and builds trust. Cap wall-clock time and return a partial answer with citations plus “incomplete: hop budget reached” rather than spinning. Cache hop-1 results for repeated entity hubs (popular dependencies) with short TTLs.
 
 Security: each hop must re-apply ACL filters. An agent that retrieves a public architecture doc in hop 1 must not be allowed to open a restricted HR note in hop 2 just because the plan mentioned an employee name extracted earlier.
 

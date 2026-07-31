@@ -37,7 +37,7 @@ flowchart TD
 | Edit then run | Human fixes draft | Customer emails |
 | Tool allow on ask | Agent requests elevation | Rare admin ops |
 | Review sampling | Spot-check auto path | Quality audits |
-| Escalation on confidence | Low score → human | Ambiguous intents |
+| Escalation on confidence | Low score -> human | Ambiguous intents |
 
 ### Designing the queue
 
@@ -114,7 +114,7 @@ Wire `human_review` to a real queue UI; keep the policy (`needs_hitl`) in versio
 
 - **Rubber-stamping.** Reviewers approve everything; HITL becomes theater.
 - **Alert fatigue.** Too many low-value gates; humans stop reading evidence.
-- **Unclear UI.** Missing blast radius and citations → inconsistent decisions.
+- **Unclear UI.** Missing blast radius and citations -> inconsistent decisions.
 - **No feedback loop.** Rejections never become golden tests.
 - **All-human bottleneck.** Refusing to auto anything prevents learning where risk is low.
 - **Silent auto path.** Users not told when a human did vs did not intervene.

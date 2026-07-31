@@ -25,10 +25,10 @@ flowchart LR
 
 Routing rules common in production:
 
-- `POST/PUT/PATCH/DELETE` → primary
-- `GET` → replica pool
-- After a write in the same session → primary for a short window (sticky)
-- Very stale-tolerant analytics → replica is fine
+- `POST/PUT/PATCH/DELETE` -> primary
+- `GET` -> replica pool
+- After a write in the same session -> primary for a short window (sticky)
+- Very stale-tolerant analytics -> replica is fine
 
 Lag metrics matter: `replay_lag` seconds. If lag grows under load, replicas are not free capacity — they are delayed mirrors.
 

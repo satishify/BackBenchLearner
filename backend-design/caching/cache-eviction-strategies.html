@@ -151,7 +151,7 @@ def cache_user_profile(user_id: int, profile: dict) -&gt; None:
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Add ±10–20% random jitter to TTLs for hot keys so expiry is staggered across the fleet.</p>
+    <p>Add +/-10–20% random jitter to TTLs for hot keys so expiry is staggered across the fleet.</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Use TTL to bound staleness and LRU/LFU to bound memory — most systems need both.</p>

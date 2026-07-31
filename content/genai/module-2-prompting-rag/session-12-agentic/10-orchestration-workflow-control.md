@@ -24,7 +24,7 @@ Think of an airport ground crew, not a free-jazz solo. Flights (steps) have sequ
 
 ### Example
 
-Primary search API fails twice → wait with backoff → failover to backup index → continue summarization → if backup also fails, return “degraded: cached summary” instead of hanging.
+Primary search API fails twice -> wait with backoff -> failover to backup index -> continue summarization -> if backup also fails, return “degraded: cached summary” instead of hanging.
 
 ```mermaid
 flowchart TD

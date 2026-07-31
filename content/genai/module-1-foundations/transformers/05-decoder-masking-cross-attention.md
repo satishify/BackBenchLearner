@@ -15,7 +15,7 @@ Decoder-only LLMs skip the encoder library and use the prompt + generated tokens
 
 ## How it works
 
-**Causal mask.** For length `n`, build an `n × n` matrix `M` where `M_ij = 0` if `j <= i` and `-inf` if `j > i` (upper triangle forbidden). Then:
+**Causal mask.** For length `n`, build an `n x n` matrix `M` where `M_ij = 0` if `j <= i` and `-inf` if `j > i` (upper triangle forbidden). Then:
 
 ```
 scores = Q K^T / sqrt(d_k) + M
@@ -112,7 +112,7 @@ Causal masks stop decoder self-attention from seeing future tokens, while cross-
 
 ## Key terms
 
-- **Causal / look-ahead mask:** triangular mask enforcing `attend only to ≤ i`.
+- **Causal / look-ahead mask:** triangular mask enforcing `attend only to <= i`.
 - **Teacher forcing:** train on gold prefixes while predicting the next token at each position.
 - **Cross-attention:** Q from decoder, K/V from encoder (or another sequence).
 - **Self-attention:** Q/K/V from the same sequence.

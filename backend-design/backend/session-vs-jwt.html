@@ -39,7 +39,7 @@
     <p>“Just use JWT” is not a security architecture. Sessions and JWTs both answer “is this request allowed?” — they differ in <strong>where session state lives</strong>, how you <strong>revoke</strong> access, and what happens when you run <strong>many API replicas</strong>. Pick the trade-offs on purpose.</p>
     <h2 id="intuition">Intuition</h2>
     <p><strong>Session-based auth:</strong> after login, the server stores a session record (Redis/DB) and gives the browser an opaque <strong>session id</strong> cookie. Each request sends the cookie; the server looks up the session. Revocation is deleting a row. Data can change every request (role upgrades apply immediately).</p>
-    <p><strong>JWT (JSON Web Token):</strong> after login, the server signs a compact token containing claims (<code>sub</code>, <code>exp</code>, maybe <code>role</code>). The client sends <code>Authorization: Bearer …</code>. Servers validate the signature and expiry <strong>without a DB hit</strong> (for pure JWT). Revocation is hard: you wait for <code>exp</code>, or maintain a denylist (which reintroduces server state).</p>
+    <p><strong>JWT (JSON Web Token):</strong> after login, the server signs a compact token containing claims (<code>sub</code>, <code>exp</code>, maybe <code>role</code>). The client sends <code>Authorization: Bearer ...</code>. Servers validate the signature and expiry <strong>without a DB hit</strong> (for pure JWT). Revocation is hard: you wait for <code>exp</code>, or maintain a denylist (which reintroduces server state).</p>
     <p>Opaque tokens looked up in Redis are “session-shaped” even if you put them in a Bearer header. The real axis is <strong>reference token</strong> (lookup) vs <strong>self-contained signed token</strong>.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">
@@ -51,7 +51,7 @@ sequenceDiagram
 
     Note over B,Store: Session cookie
     B->>API: POST /login
-    API->>Store: SET sess:abc → {user:1}
+    API->>Store: SET sess:abc -> {user:1}
     API-->>B: Set-Cookie: sid=abc
     B->>API: GET /me Cookie: sid=abc
     API->>Store: GET sess:abc

@@ -16,7 +16,7 @@ Greedy pick (always argmax) is like always choosing the safest next word: cohere
 **The loop.**
 
 1. Start with tokenized prompt (and optional BOS).
-2. Forward the causal model → logits for the last position.
+2. Forward the causal model -> logits for the last position.
 3. Optionally divide logits by **temperature** `T` (`logits / T`): `T < 1` sharpens; `T > 1` flattens.
 4. Convert to probabilities; apply a decoding policy.
 5. Append the chosen token; stop on EOS, stop string, or `max_tokens`.
@@ -38,7 +38,7 @@ P(x_1..x_L) = product_t P(x_t | x_1..x_{t-1})
 | Greedy | `argmax P` | Fast, deterministic, myopic |
 | Beam search | Keep top-`B` partial strings | Better global score, less diversity, heavier |
 | Top-k | Sample from k largest probs | Fixed-size candidate set |
-| Top-p | Smallest set with mass ≥ p | Adaptive support; common in chat |
+| Top-p | Smallest set with mass >= p | Adaptive support; common in chat |
 
 **KV cache (systems note).** Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys/values so each new token only pays for the new row — critical for product latency, even though the *algorithm* is still left-to-right.
 

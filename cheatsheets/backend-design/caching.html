@@ -50,9 +50,9 @@
     </ul>
     <h2 id="common-patterns">Common patterns</h2>
     <ul>
-    <li><strong>Cache-aside</strong>: app reads cache → miss → DB → fill. App writes DB then invalidates/updates cache.</li>
-    <li><strong>Write-through / write-behind</strong>: cache participates in writes (complexity ↑).</li>
-    <li>Stampede: many miss together → lock / singleflight / probabilistic early expire.</li>
+    <li><strong>Cache-aside</strong>: app reads cache -&gt; miss -&gt; DB -&gt; fill. App writes DB then invalidates/updates cache.</li>
+    <li><strong>Write-through / write-behind</strong>: cache participates in writes (more complexity).</li>
+    <li>Stampede: many miss together -&gt; lock / singleflight / probabilistic early expire.</li>
     </ul>
     <h2 id="eviction">Eviction</h2>
     <ul>
@@ -63,7 +63,7 @@
     <ul>
     <li>Invalidate on write (delete key) is simpler than updating every shape of cached object.</li>
     <li>Read-your-writes: sometimes sticky to primary or short bypass after mutate.</li>
-    <li>Multi-layer: browser → CDN → app cache → DB — each layer needs a story.</li>
+    <li>Multi-layer: browser -&gt; CDN -&gt; app cache -&gt; DB — each layer needs a story.</li>
     </ul>
     <h2 id="cdn-edge">CDN &amp; edge</h2>
     <ul>
@@ -72,9 +72,9 @@
     </ul>
     <h2 id="when-cache-makes-systems-wrong">When cache makes systems wrong</h2>
     <ul>
-    <li>Stale permissions, prices, inventory → real money bugs.</li>
-    <li>Partial invalidation (forgot secondary key) → zombie data.</li>
-    <li>Caching errors (5xx) or empty results without short TTL → outages amplify.</li>
+    <li>Stale permissions, prices, inventory -&gt; real money bugs.</li>
+    <li>Partial invalidation (forgot secondary key) -&gt; zombie data.</li>
+    <li>Caching errors (5xx) or empty results without short TTL -&gt; outages amplify.</li>
     <li>Debug: “Is this layer serving old bytes?” before rewriting business logic.</li>
     </ul>
     <h2 id="20-minute-drill">20-minute drill</h2>

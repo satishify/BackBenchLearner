@@ -13,7 +13,7 @@ Methods answer two questions: **does this change server state?** and **is retryi
 - **Idempotent** methods (GET, PUT, DELETE, HEAD, OPTIONS) may be retried: doing them N times has the same effect as once (for that resource).
 - **POST** is neither safe nor idempotent by default — each call may create a new side effect.
 
-PUT replaces a whole resource at a known URL. PATCH applies a partial update. DELETE removes. POST creates or triggers actions when the server assigns identity (`POST /orders` → `201` with new id).
+PUT replaces a whole resource at a known URL. PATCH applies a partial update. DELETE removes. POST creates or triggers actions when the server assigns identity (`POST /orders` -> `201` with new id).
 
 ## How it works
 

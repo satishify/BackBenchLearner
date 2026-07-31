@@ -40,7 +40,7 @@
     <h2 id="intuition">Intuition</h2>
     <p>People use the words loosely. Useful distinction:</p>
     <ul>
-    <li><strong>Rate limiting</strong> — enforce a quota: <em>N requests per window</em>. Exceed → reject (<code>429</code>) or delay. Protects fairness and abuse.</li>
+    <li><strong>Rate limiting</strong> — enforce a quota: <em>N requests per window</em>. Exceed -&gt; reject (<code>429</code>) or delay. Protects fairness and abuse.</li>
     <li><strong>Throttling</strong> — intentionally slow or shed load when the system is hot: reduce concurrency, queue, or return <code>503</code> with retry. Protects <strong>system stability</strong>.</li>
     </ul>
     <p>In practice one middleware often does both: per-API-key token buckets (limit) plus global concurrency caps (throttle). The product message differs: “you exceeded your plan” vs “we are overloaded, back off.”</p>
@@ -177,7 +177,7 @@ def search(q: str):
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Only IP limits</strong> — NAT and mobile gateways punish whole networks; authenticated keys are fairer.</li>
-    <li><strong>In-memory limits on many replicas</strong> — effective limit becomes <code>N × replicas</code>; use Redis or the gateway.</li>
+    <li><strong>In-memory limits on many replicas</strong> — effective limit becomes <code>N x replicas</code>; use Redis or the gateway.</li>
     <li><strong>No Retry-After / jitter</strong> — clients retry in sync and stampede.</li>
     <li><strong>Limiting the wrong layer</strong> — app returns 200 slowly while DB connection pool is already dead; add concurrency caps.</li>
     <li><strong>Brutal limits on webhooks</strong> — partner retries amplify; allowlist and separate budgets.</li>

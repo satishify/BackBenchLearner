@@ -23,7 +23,7 @@ flowchart LR
 **BM25 intuition.** Documents that contain query terms more often score higher, but term frequency saturates (tenth “latency” helps less than the first). Rare terms across the corpus get higher weight (inverse document frequency). Long documents are penalized so they do not win by sheer bulk. The classic scoring flavor is:
 
 ```
-score ≈ IDF(term) * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * doc_len / avg_len))
+score ~= IDF(term) * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * doc_len / avg_len))
 ```
 
 You do not memorize constants `k1` and `b`; you remember “TF with saturation + IDF + length norm.”
@@ -32,11 +32,11 @@ You do not memorize constants `k1` and `b`; you remember “TF with saturation +
 
 **Fusion methods.**
 
-- **Convex combination:** `final = α * norm(dense) + (1-α) * norm(bm25)` after score normalization.
+- **Convex combination:** `final = alpha * norm(dense) + (1-alpha) * norm(bm25)` after score normalization.
 - **Reciprocal Rank Fusion (RRF):** for each document, add `1 / (k + rank)` from each list; robust when score scales differ.
 - **Cascade:** take union of top-n from each, then re-rank with a cross-encoder.
 
-**When to bias α.** More BM25 for support desks with ticket IDs; more dense for conceptual wiki Q&A. Measure — do not guess forever.
+**When to bias alpha.** More BM25 for support desks with ticket IDs; more dense for conceptual wiki Q&A. Measure — do not guess forever.
 
 ## In code
 
@@ -129,7 +129,7 @@ Expect the error-code document to surface even when dense paraphrase matching is
 
 ## Tuning hybrid systems
 
-**Normalize before blending.** Min-max or z-score within the retrieved candidate set, not across the whole corpus, so scores are comparable for that query. RRF avoids much of this pain and is a strong default when you lack time to tune α.
+**Normalize before blending.** Min-max or z-score within the retrieved candidate set, not across the whole corpus, so scores are comparable for that query. RRF avoids much of this pain and is a strong default when you lack time to tune alpha.
 
 **Analyzers and languages.** BM25 quality hinges on tokenization: lowercasing, stemming, stopwords, CJK segmentation. A dense model multilingual story does not automatically fix a keyword analyzer that splits Unicode poorly. Test with real queries from each locale you support.
 
@@ -148,4 +148,4 @@ Hybrid search fuses BM25’s exact-term strength with dense embedding recall so 
 - **Hybrid search:** combining sparse and dense candidate lists.
 - **RRF (reciprocal rank fusion):** rank-based merge robust to incompatible score scales.
 - **IDF:** higher weight for terms that appear in fewer documents.
-- **α-fusion:** weighted mix of normalized channel scores.
+- **alpha-fusion:** weighted mix of normalized channel scores.

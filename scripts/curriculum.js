@@ -353,27 +353,27 @@ window.BBL.CURRICULUM = {
     "modules": [
       {
         "id": "module-1-foundations",
-        "title": "Module 1 · Foundations of GenAI & LLMs",
+        "title": "Module 1 - Foundations of GenAI & LLMs",
         "blurb": "Understand the machinery before you use it."
       },
       {
         "id": "module-2-prompting-rag",
-        "title": "Module 2 · Prompting, RAG & Agents",
+        "title": "Module 2 - Prompting, RAG & Agents",
         "blurb": "From APIs and prompts to retrieval, indexes, and agentic systems."
       },
       {
         "id": "module-3-finetuning",
-        "title": "Module 3 · LLM Fine-tuning & Alignment",
+        "title": "Module 3 - LLM Fine-tuning & Alignment",
         "blurb": "When your own data is the advantage."
       },
       {
         "id": "module-4-multimodal-agentic",
-        "title": "Module 4 · Multimodal & Agentic AI",
+        "title": "Module 4 - Multimodal & Agentic AI",
         "blurb": "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
       },
       {
         "id": "module-5-deployment-safety",
-        "title": "Module 5 · Deployment, Optimisation & AI Safety",
+        "title": "Module 5 - Deployment, Optimisation & AI Safety",
         "blurb": "Turning a prototype into something you can operate."
       }
     ],

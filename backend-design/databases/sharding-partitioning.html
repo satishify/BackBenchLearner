@@ -63,9 +63,9 @@ CREATE TABLE events_2026_07 PARTITION OF events
     </div>
     <p>Shard key choice dominates success:</p>
     <ul>
-    <li>Hot key (celebrity tenant) → one shard melts (<strong>hotspot</strong>)</li>
-    <li>Missing shard key in query → scatter-gather all shards</li>
-    <li>Changing shard count → rebalancing pain (consistent hashing helps)</li>
+    <li>Hot key (celebrity tenant) -&gt; one shard melts (<strong>hotspot</strong>)</li>
+    <li>Missing shard key in query -&gt; scatter-gather all shards</li>
+    <li>Changing shard count -&gt; rebalancing pain (consistent hashing helps)</li>
     </ul>
     <h2 id="in-code">In code</h2>
     <p>SQLite cannot replace real distributed shards, but you can model shard routing in FastAPI — the same idea as Vitess/Citus/app-level sharding.</p>
@@ -122,7 +122,7 @@ def list_orders(user_id: int):
 
 @app.get(&quot;/admin/orders/{order_id}&quot;)
 def get_order_unknown_shard(order_id: int):
-    &quot;&quot;&quot;Bad access pattern: no user_id → fan-out.&quot;&quot;&quot;
+    &quot;&quot;&quot;Bad access pattern: no user_id -&gt; fan-out.&quot;&quot;&quot;
     for shard in range(SHARD_COUNT):
         with connect(shard) as db:
             row = db.execute(

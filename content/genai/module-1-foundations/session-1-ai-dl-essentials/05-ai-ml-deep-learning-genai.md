@@ -29,7 +29,7 @@ flowchart TB
 ```
 
 :::key
-Accurate nesting: **AI ⊃ ML ⊃ DL**. Gen AI **overlaps** those layers; it is not “the innermost ring.”
+Accurate nesting: **AI includes ML includes DL**. Gen AI **overlaps** those layers; it is not “the innermost ring.”
 :::
 
 ## How it works
@@ -54,10 +54,10 @@ Accurate nesting: **AI ⊃ ML ⊃ DL**. Gen AI **overlaps** those layers; it is 
 
 Ask these in order:
 
-1. **Is any intelligence claim involved?** If yes → at least **AI**.
-2. **Does it learn parameters from data?** If yes → **ML** (and still AI). If no (pure rules) → say AI, not ML.
-3. **Is the learner a deep neural net?** If yes → **deep learning**. If it is XGBoost on spreadsheet columns → ML, not DL.
-4. **Does the product primarily create new content?** If yes → **Gen AI** is fair. A fraud score of `0.87` is ML/DL, not Gen AI — even if the team branded the dashboard “AI.”
+1. **Is any intelligence claim involved?** If yes -> at least **AI**.
+2. **Does it learn parameters from data?** If yes -> **ML** (and still AI). If no (pure rules) -> say AI, not ML.
+3. **Is the learner a deep neural net?** If yes -> **deep learning**. If it is XGBoost on spreadsheet columns -> ML, not DL.
+4. **Does the product primarily create new content?** If yes -> **Gen AI** is fair. A fraud score of `0.87` is ML/DL, not Gen AI — even if the team branded the dashboard “AI.”
 
 :::tip
 In interviews, prefer the *most specific true* term. Calling a boosted tree “AI” is true but weak; calling a diffusion model “ML” is true but undersells what stakeholders care about.
@@ -99,17 +99,17 @@ def label_system(learns_from_data: bool, uses_deep_net: bool, creates_content: b
         tags.append("deep learning")
     if creates_content:
         tags.append("Gen AI")
-    return " ⊃ ".join(tags) if not creates_content else " + ".join(tags)
+    return " > ".join(tags) if not creates_content else " + ".join(tags)
 
 
 print(label_system(False, False, False))
 # AI
 
 print(label_system(True, False, False))
-# AI ⊃ ML
+# AI > ML
 
 print(label_system(True, True, False))
-# AI ⊃ ML ⊃ deep learning
+# AI > ML > deep learning
 
 print(label_system(True, True, True))
 # AI + ML + deep learning + Gen AI
@@ -131,7 +131,7 @@ for name, learn, deep, gen in cases:
     print(f"{name}: {label_system(learn, deep, gen)}")
 ```
 
-Expected mental labels: rules = AI only; boosting = AI ⊃ ML; KYC CNN = AI ⊃ ML ⊃ deep learning; dispute draft = all four tags with Gen AI called out as the product shape.
+Expected mental labels: rules = AI only; boosting = AI includes ML; KYC CNN = AI includes ML includes deep learning; dispute draft = all four tags with Gen AI called out as the product shape.
 
 ## What goes wrong
 

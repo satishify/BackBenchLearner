@@ -7,14 +7,14 @@
   <meta name="description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-2-prompting-rag.html">
-  <meta property="og:title" content="Module 2 · Prompting, RAG &amp; Agents revision | Cheat Sheet | BackbenchLearner">
+  <meta property="og:title" content="Module 2 - Prompting, RAG &amp; Agents revision | Cheat Sheet | BackbenchLearner">
   <meta property="og:description" content="APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-2-prompting-rag.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
-  <title>Module 2 · Prompting, RAG &amp; Agents revision | Cheat Sheet | BackbenchLearner</title>
+  <title>Module 2 - Prompting, RAG &amp; Agents revision | Cheat Sheet | BackbenchLearner</title>
   <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,15 +39,15 @@
 <body class="cheatsheet-page" data-topic="genai" data-cheatsheet="genai/module-2-prompting-rag">
   <div class="wrapper">
     <nav><a href="../../index.html#cheatsheet">&larr; Cheat sheets</a></nav>
-    <h1>Module 2 · Prompting, RAG &amp; Agents revision</h1>
+    <h1>Module 2 - Prompting, RAG &amp; Agents revision</h1>
     <p class="cheat-banner">Revision guide · ~35 min · dense bullets, not full lessons</p>
 
     <p>Chapters <strong>2.1–2.9</strong>. Skim headings; drill weak spots in full lessons.</p>
     <h2 id="2122-llms-decoding-apis-structured-outputs">2.1–2.2 LLMs, decoding, APIs, structured outputs</h2>
     <ul>
-    <li><strong>Pretrain</strong> (next-token on huge text) → <strong>finetune / align</strong> → <strong>infer</strong> (API call).</li>
+    <li><strong>Pretrain</strong> (next-token on huge text) -&gt; <strong>finetune / align</strong> -&gt; <strong>infer</strong> (API call).</li>
     <li>Context window = hard budget for system + history + retrieved docs + output.</li>
-    <li>Decoding knobs: temperature, top-p, max tokens, stop sequences. Determinism ≠ guaranteed without seed + temp 0 (still provider quirks).</li>
+    <li>Decoding knobs: temperature, top-p, max tokens, stop sequences. Determinism is not guaranteed without seed + temp 0 (still provider quirks).</li>
     <li><strong>Structured outputs</strong>: JSON schema / tool schemas / constrained decoding. Always validate; never trust raw model text as typed data.</li>
     <li>Task prompts: summarize / QA / classify — specify format, audience, constraints, examples.</li>
     </ul>
@@ -68,12 +68,12 @@
     <li><strong>Prompt injection</strong>: untrusted content (web, PDF, email) steers the model. Separate trust boundaries; don’t let tools run on attacker text blindly.</li>
     <li>Least privilege for tools. Log tool calls. Human-in-the-loop for irreversible actions.</li>
     </ul>
-    <h2 id="2628-rag-fundamentals-production">2.6–2.8 RAG fundamentals → production</h2>
+    <h2 id="2628-rag-fundamentals-to-production">2.6–2.8 RAG fundamentals to production</h2>
     <h3>Pipeline</h3>
-    <p><code>query → embed → retrieve top-k → (rerank) → stuff into prompt → generate (+ cite)</code></p>
+    <p><code>query -&gt; embed -&gt; retrieve top-k -&gt; (rerank) -&gt; stuff into prompt -&gt; generate (+ cite)</code></p>
     <h3>Chunking</h3>
     <ul>
-    <li>Too big → noisy context. Too small → lose meaning. Overlap helps boundaries. Metadata (source, section) enables filters.</li>
+    <li>Too big -&gt; noisy context. Too small -&gt; lose meaning. Overlap helps boundaries. Metadata (source, section) enables filters.</li>
     </ul>
     <h3>Indexes (know the tradeoffs)</h3>
     <ul>
@@ -92,10 +92,10 @@
     <h2 id="29-agentic-ai-multi-agent">2.9 Agentic AI &amp; multi-agent</h2>
     <ul>
     <li><strong>Chatbot</strong> = reply in thread. <strong>Agent</strong> = plan + tools + memory + stop condition.</li>
-    <li>Loop: observe → think/plan → act (tool) → observe → … → answer or escalate.</li>
+    <li>Loop: observe -&gt; think/plan -&gt; act (tool) -&gt; observe -&gt; ... -&gt; answer or escalate.</li>
     <li>Tools: typed functions; validate args; timeouts; idempotency for side effects.</li>
     <li>Memory: short-term (scratchpad / messages) vs long-term (store + retrieve). Don’t dump everything into context.</li>
-    <li>Multi-agent: specialize roles; orchestrate (router, sequential, hierarchical). More agents ≠ more quality — more failure modes.</li>
+    <li>Multi-agent: specialize roles; orchestrate (router, sequential, hierarchical). More agents is not more quality — more failure modes.</li>
     <li>Reflection / self-critique: second pass that checks against tools or rubric; cap retries.</li>
     </ul>
     <h2 id="30-minute-drill">30-minute drill</h2>

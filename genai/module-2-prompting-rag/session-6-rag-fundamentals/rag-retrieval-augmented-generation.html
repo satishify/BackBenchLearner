@@ -120,7 +120,7 @@ prompt = pack_prompt(&quot;How many casual leaves do I get?&quot;, hits)
 print(prompt)
 # answer = llm.complete(prompt)</code></pre>
     </div>
-    <p>Even with a fake embedder, the packer shape is what production RAG looks like: retrieve → label → constrain → generate.</p>
+    <p>Even with a fake embedder, the packer shape is what production RAG looks like: retrieve -&gt; label -&gt; constrain -&gt; generate.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Retrieval miss.</strong> Right answer exists but never enters the prompt; the model invents or hedges wrongly. Fix chunking, hybrid search, and query rewriting before blaming the LLM.</li>
@@ -144,7 +144,7 @@ print(prompt)
     <li><strong>Generator:</strong> LLM that produces the final answer from question + context.</li>
     <li><strong>Context packing:</strong> formatting chunks and instructions into the prompt.</li>
     <li><strong>Grounding:</strong> tying claims to retrieved evidence.</li>
-    <li><strong>Ingest pipeline:</strong> offline clean → chunk → embed → index process.</li>
+    <li><strong>Ingest pipeline:</strong> offline clean -&gt; chunk -&gt; embed -&gt; index process.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

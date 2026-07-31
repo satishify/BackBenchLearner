@@ -35,7 +35,7 @@ flowchart TB
 6. **Shed / degrade** — disable recommendations; read-only mode; return cached home.
 7. **Protect the DB** — connection pools, statement timeouts, read replicas for heavy reads; avoid thundering migrations during launch windows.
 
-**Load testing.** Replay expected peak (and 2×) with realistic cache hit rates. Include dependency latency. A test that only hits `/healthz` lies.
+**Load testing.** Replay expected peak (and 2x) with realistic cache hit rates. Include dependency latency. A test that only hits `/healthz` lies.
 
 **Bot vs human.** Spikes may be scrapers. WAF rules, auth on expensive endpoints, and cheaper public caches help.
 
@@ -96,15 +96,15 @@ async def create_order(order_id: str, email: str):
     return {"status": "accepted"}  # 202 semantics for heavy follow-up work
 ```
 
-Auto-scale is platform config (CPU > 60% → +replicas); pair it with connection pool limits so scaled apps do not drown Postgres.
+Auto-scale is platform config (CPU > 60% -> +replicas); pair it with connection pool limits so scaled apps do not drown Postgres.
 
 ## What goes wrong
 
-- **Scaling apps into an unscaled DB** — 50 pods × 20 connections = connection storm.
+- **Scaling apps into an unscaled DB** — 50 pods x 20 connections = connection storm.
 - **Cache stampede on popular keys** — use single-flight + TTL jitter (caching chapter).
 - **Sync fan-out on write** — each order triggers 10 outbound HTTP calls inline.
 - **No rate limits on expensive search** — one script takes you down.
-- **Launch without load tests** — theoretical capacity ≠ measured capacity.
+- **Launch without load tests** — theoretical capacity != measured capacity.
 
 :::tip
 Before a marketing launch: freeze risky migrations, pre-warm caches, raise rate-limit headroom for known partners, and staff an on-call war room with dashboards open.

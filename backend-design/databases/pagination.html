@@ -39,17 +39,17 @@
     <p>Page 1 of the feed looks fine. Page 50 is slow. Page 200 duplicates items because new rows were inserted while the user scrolled. <strong>Offset pagination</strong> is simple and breaks under deep pages and concurrent writes. <strong>Cursor pagination</strong> scales and stays stable — at the cost of “jump to page 17.”</p>
     <h2 id="intuition">Intuition</h2>
     <p><strong>Offset/limit:</strong> <code>LIMIT 20 OFFSET 2000</code> means “skip 2000 rows, then take 20.” Databases often still walk those 2000 rows. Also, if a new row inserts at the top, your offsets shift — users see duplicates or skips.</p>
-    <p><strong>Cursor (keyset):</strong> remember the last item you saw (<code>created_at</code>, <code>id</code>) and ask for rows <strong>after</strong> that key: <code>WHERE (created_at, id) &lt; (?, ?) ORDER BY … LIMIT 20</code>. The database seeks the index; concurrent inserts above the cursor do not reshuffle what you already viewed.</p>
+    <p><strong>Cursor (keyset):</strong> remember the last item you saw (<code>created_at</code>, <code>id</code>) and ask for rows <strong>after</strong> that key: <code>WHERE (created_at, id) &lt; (?, ?) ORDER BY ... LIMIT 20</code>. The database seeks the index; concurrent inserts above the cursor do not reshuffle what you already viewed.</p>
     <p>Use offset for admin UIs with tiny tables and page numbers. Use cursors for infinite scroll, mobile feeds, and large datasets.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
     subgraph Offset["Offset"]
-        O1["page=3 → OFFSET 40"]
+        O1["page=3 -> OFFSET 40"]
     end
     subgraph Cursor["Cursor / keyset"]
-        C1["after=(ts,id) → WHERE tuple < after"]
+        C1["after=(ts,id) -> WHERE tuple < after"]
     end
       </div>
     </div>

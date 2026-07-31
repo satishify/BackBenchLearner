@@ -7,8 +7,8 @@ Both chatbots and agents can talk. The difference is whether the system’s job 
 
 ## Intuition
 
-**Chatbot:** “How do I reset my password?” → explains steps.  
-**Agent:** verifies identity → triggers reset link → updates the ticket → confirms completion.
+**Chatbot:** “How do I reset my password?” -> explains steps.  
+**Agent:** verifies identity -> triggers reset link -> updates the ticket -> confirms completion.
 
 Same surface (a chat window), different contract with the user. Chatbots optimize for helpful messages. Agents optimize for completed outcomes — and therefore need tools, loops, and stop rules.
 
@@ -77,7 +77,7 @@ Two handlers, same user utterance — different contracts.
 ```python
 def chatbot_password_reset(user_msg: str) -> str:
     return (
-        "To reset your password: open Settings → Security → Reset. "
+        "To reset your password: open Settings -> Security -> Reset. "
         "We will email a link. I cannot trigger it from chat."
     )
 
@@ -109,7 +109,7 @@ Product question: which return type did you promise in the UI copy?
 
 ## Putting it into practice
 
-Audit your UI strings. Phrases like “I’ll take care of that” imply agent semantics; “Here’s how you can…” implies chatbot semantics. Mismatch is a trust bug. For each flow, pick a primary metric: deflection/CSAT for chatbots, task success and undo rate for agents. Review weekly which metric moved after prompt or model changes.
+Audit your UI strings. Phrases like “I’ll take care of that” imply agent semantics; “Here’s how you can...” implies chatbot semantics. Mismatch is a trust bug. For each flow, pick a primary metric: deflection/CSAT for chatbots, task success and undo rate for agents. Review weekly which metric moved after prompt or model changes.
 
 A useful migration path is progressive disclosure of agency: answer first, then offer a button “Do this for me” that enters the tool loop with an explicit receipt. Users who only wanted information never pay the latency or risk tax; users who wanted completion get a clear contract. That hybrid covers most product surface area without pretending everything is fully autonomous.
 

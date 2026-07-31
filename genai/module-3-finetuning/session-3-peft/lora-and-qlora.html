@@ -38,11 +38,11 @@
 
     <p>LoRA (Low-Rank Adaptation) is the PEFT method most product teams meet first. Instead of updating a full weight matrix <code>W</code>, you learn a thin update <code>BA</code> and add it at runtime. QLoRA pairs that idea with a quantized frozen backbone so large models fit on smaller GPUs.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A dense update <code>ΔW</code> for a <code>d x d</code> matrix has <code>d^2</code> parameters. LoRA assumes task updates are approximately <strong>low rank</strong>:</p>
+    <p>A dense update <code>delta W</code> for a <code>d x d</code> matrix has <code>d^2</code> parameters. LoRA assumes task updates are approximately <strong>low rank</strong>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">W&#x27; = W + ΔW
-ΔW ≈ B @ A    where A is r x d, B is d x r, r &lt;&lt; d</code></pre>
+      <pre><code class="language-text">W&#x27; = W + delta W
+delta W ~= B @ A    where A is r x d, B is d x r, r &lt;&lt; d</code></pre>
     </div>
     <p>You train <code>A</code> and <code>B</code> (plus maybe biases/heads); <code>W</code> stays frozen. After training you can keep them separate or <strong>merge</strong> <code>W + BA</code> into a single matrix for serving.</p>
     <aside class="callout callout-key">
@@ -57,7 +57,7 @@
     <li>Attention projections: <code>q_proj</code>, <code>k_proj</code>, <code>v_proj</code>, <code>o_proj</code></li>
     <li>Sometimes MLP: <code>gate_proj</code>, <code>up_proj</code>, <code>down_proj</code></li>
     </ul>
-    <p>More targets → more capacity and memory. Start with attention; expand if underfit.</p>
+    <p>More targets -&gt; more capacity and memory. Start with attention; expand if underfit.</p>
     <h3>Rank <code>r</code> and scaling</h3>
     <ul>
     <li><strong><code>r</code> (rank)</strong> — Capacity knob. Typical starting points: 8, 16, 32.</li>
@@ -130,7 +130,7 @@ print(&quot;out_dim&quot;, len(y), &quot;trainable&quot;, d * r + r * d)
 
 
 def merge_W(W, A, B, scale_factor):
-    # ΔW_ij = scale * sum_k B_ik * A_kj
+    # delta W_ij = scale * sum_k B_ik * A_kj
     d = len(W)
     r = len(A)
     merged = [row[:] for row in W]

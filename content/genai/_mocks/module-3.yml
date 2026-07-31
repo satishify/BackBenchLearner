@@ -46,7 +46,7 @@ questions:
     section: "SFT"
     options:
       - "Ranking two answers without demonstrations"
-      - "Imitating curated prompt→response pairs via next-token cross-entropy"
+      - "Imitating curated prompt->response pairs via next-token cross-entropy"
       - "Always requiring PPO and a separate reward model"
       - "Updating only the tokenizer merge rules"
     answer: 1
@@ -106,7 +106,7 @@ questions:
     section: "Data Prep"
     options:
       - "Raw HTML dumps with no roles"
-      - "Structured messages (system/user/assistant) or clear instruction→response fields matching the chat template"
+      - "Structured messages (system/user/assistant) or clear instruction->response fields matching the chat template"
       - "Only unlabeled embeddings"
       - "Screenshots of Slack without text extraction"
     answer: 1
@@ -172,15 +172,15 @@ questions:
     answer: 1
     why: "KL/reference anchoring preserves fluency and prior capabilities while chasing preference reward."
 
-  - q: "LoRA approximates a weight update ΔW as what?"
+  - q: "LoRA approximates a weight update delta W as what?"
     section: "LoRA/QLoRA/Adapters"
     options:
       - "A full dense matrix with no structure"
-      - "A product of low-rank matrices B·A (rank r ≪ full dim)"
+      - "A product of low-rank matrices B*A (rank r << full dim)"
       - "A change only to the learning-rate schedule"
       - "Tokenizer surgery"
     answer: 1
-    why: "LoRA injects trainable low-rank adapters; ΔW ≈ BA with far fewer parameters than dense FT."
+    why: "LoRA injects trainable low-rank adapters; delta W ~= BA with far fewer parameters than dense FT."
 
   - q: "QLoRA’s primary systems win is?"
     section: "LoRA/QLoRA/Adapters"
@@ -218,9 +218,9 @@ questions:
       - "Underfitting only, never overfitting"
       - "More capacity to memorize noise / increase forgetting without enough clean data"
       - "Mandatory deletion of LayerNorm"
-      - "Automatic 384× PQ compression"
+      - "Automatic 384x PQ compression"
     answer: 1
-    why: "Higher rank ≈ more trainable freedom; without data quality/quantity it overfits and can harm the base."
+    why: "Higher rank ~= more trainable freedom; without data quality/quantity it overfits and can harm the base."
 
   - q: "Adapter modules (Houlsby/Pfeiffer-style) insert small bottleneck MLPs. Relative to full FT, the design goal is?"
     section: "LoRA/QLoRA/Adapters"

@@ -9,7 +9,7 @@ Serving is how a trained (or frozen) model becomes a **callable dependency**. Fo
 
 Local serving means you own the process that loads weights and runs forward passes. Hosted serving means you own an HTTP client and a bill. Local wins on data gravity, air-gapped demos, and per-token cost at steady high volume — if you can staff GPUs and paging. Hosted wins on time-to-first-feature, elastic bursts, and not learning CUDA at 2 a.m.
 
-Design your application against a **narrow interface**: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model ids. Swap local ↔ hosted behind that interface. Do not sprinkle vendor SDKs through business logic.
+Design your application against a **narrow interface**: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model ids. Swap local <-> hosted behind that interface. Do not sprinkle vendor SDKs through business logic.
 
 :::key
 Pin a model id and a serving mode in config. “Whatever the playground default is today” is not a deployment strategy.
@@ -122,7 +122,7 @@ Point `LOCAL_LLM_URL` at Ollama, vLLM, or any OpenAI-compatible shim. Keep promp
 ## What goes wrong
 
 - **SDK lock-in.** Business code imports one vendor deeply; migration becomes a rewrite. Wrap early.
-- **Unbounded context locally.** A 128k model flag does not mean your GPU can hold 128k × batch. OOMs look like “random” crashes.
+- **Unbounded context locally.** A 128k model flag does not mean your GPU can hold 128k x batch. OOMs look like “random” crashes.
 - **Silent model drift on hosted.** Provider updates a dated alias. Pin versions; re-run golden evals on change.
 - **No budget for tokens.** Local feels “free” until electricity and GPU lease show up; hosted feels fine until one recursive agent loop.
 - **Different safety stacks.** Hosted filters refuse a prompt local accepts (or the reverse). Document behavior per backend.
@@ -137,7 +137,7 @@ Serve models behind a pinned, timeout-aware client interface so you can run the 
 ## Key terms
 
 - **Model serving:** process of loading weights and answering inference requests.
-- **Local runtime:** self-hosted engine (vLLM, llama.cpp, Ollama, …).
+- **Local runtime:** self-hosted engine (vLLM, llama.cpp, Ollama, ...).
 - **Hosted API:** vendor-managed inference endpoint.
 - **Continuous batching:** packing many in-flight generations onto a GPU efficiently.
 - **Quantization:** lower-precision weights/activations to reduce memory and cost.

@@ -7,7 +7,7 @@ A **monolith** ships as one deployable unit: auth, orders, catalog, and billing 
 
 ## Intuition
 
-A food truck (monolith) has one kitchen, one menu, one cash register. A food hall (microservices) has many kitchens; you can renovate tacos without closing sushi — but now you need hall rules, shared seating, and someone to coordinate when an order spans two stalls. Small team + unclear domain boundaries → food truck. Large org with independent release cadence and wildly different scale → food hall.
+A food truck (monolith) has one kitchen, one menu, one cash register. A food hall (microservices) has many kitchens; you can renovate tacos without closing sushi — but now you need hall rules, shared seating, and someone to coordinate when an order spans two stalls. Small team + unclear domain boundaries -> food truck. Large org with independent release cadence and wildly different scale -> food hall.
 
 :::key
 Microservices trade deployment independence for network failure, eventual consistency, and operational complexity.

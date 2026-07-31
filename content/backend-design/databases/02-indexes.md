@@ -7,7 +7,7 @@ Your `users` table hits a million rows. `SELECT * FROM users WHERE email = ?` go
 
 ## Intuition
 
-A book’s index does not copy the whole book; it maps keywords → page numbers. A database index maps column values → row locations (or primary keys). Without it, the planner may choose a **sequential scan**. With a selective index, it does an **index lookup** (and maybe a heap/table fetch).
+A book’s index does not copy the whole book; it maps keywords -> page numbers. A database index maps column values -> row locations (or primary keys). Without it, the planner may choose a **sequential scan**. With a selective index, it does an **index lookup** (and maybe a heap/table fetch).
 
 Indexes help `WHERE`, `JOIN`, `ORDER BY`, and `UNIQUE` constraints. They hurt `INSERT`/`UPDATE`/`DELETE` because each write updates the index too. Too many indexes is a classic “fast reads, dead writes” failure mode.
 

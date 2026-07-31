@@ -9,7 +9,7 @@ questions:
     answer: 1
     why: "Multimodal systems jointly handle modalities such as text and images in a shared or fused representation."
 
-  - q: "A VLM is best described as…"
+  - q: "A VLM is best described as..."
     options:
       - "A database of stock photos"
       - "A model that can consume images (and text) and produce language outputs about them"

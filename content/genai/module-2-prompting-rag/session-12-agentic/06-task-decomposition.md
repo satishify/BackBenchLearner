@@ -31,7 +31,7 @@ flowchart TB
 ### How to decompose well
 
 1. Start from the deliverable and walk backward (what must be true before we can publish?).
-2. Name steps as verbs with clear outputs (`fetch_tickets → TicketList`).
+2. Name steps as verbs with clear outputs (`fetch_tickets -> TicketList`).
 3. Keep steps roughly one tool call or one tight bundle — not mini-projects.
 4. Mark dependencies (S2 needs S1’s artifact).
 5. Define a check for each step (row count > 0, schema valid, tests green).
@@ -114,7 +114,7 @@ print(run_plan(STEPS).artifacts["summary"])
 
 - **Fake decomposition.** Five poetic bullets that still map to one giant tool.
 - **No checks.** Steps “succeed” on model assertion alone.
-- **Too fine.** Hundreds of micro-steps → coordination hell.
+- **Too fine.** Hundreds of micro-steps -> coordination hell.
 - **Hidden dependencies.** Step 4 assumes a field step 2 never produced.
 - **Non-idempotent retries.** Re-running “charge card” doubles the charge — need idempotency keys.
 - **Dynamic plans without bounds.** The agent invents endless new steps to look busy.

@@ -42,7 +42,7 @@
     <p>An <strong>embedding</strong> is a short dense vector (say 64 or 768 numbers) looked up by word ID. Training nudges those vectors so words that appear in similar contexts drift together. Distance and direction start to mean something: analogies, clustering of sentiment words, and smoother generalization to rare synonyms. You are no longer storing a flag; you are storing a <em>point in meaning-space</em>.</p>
     <p>Think of one-hot as a locker number and embedding as a GPS coordinate for the idea behind the word. Lockers don’t know which neighbors are related; GPS does.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Vocabulary and IDs.</strong> Map each unique token to an integer <code>0 … V-1</code>. Unknown words often share an <code>&lt;unk&gt;</code> id.</p>
+    <p><strong>Vocabulary and IDs.</strong> Map each unique token to an integer <code>0 ... V-1</code>. Unknown words often share an <code>&lt;unk&gt;</code> id.</p>
     <p><strong>One-hot.</strong> For token id <code>i</code> and vocab size <code>V</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>

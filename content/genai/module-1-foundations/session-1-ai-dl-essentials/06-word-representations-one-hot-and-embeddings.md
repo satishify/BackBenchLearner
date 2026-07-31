@@ -15,7 +15,7 @@ Think of one-hot as a locker number and embedding as a GPS coordinate for the id
 
 ## How it works
 
-**Vocabulary and IDs.** Map each unique token to an integer `0 … V-1`. Unknown words often share an `<unk>` id.
+**Vocabulary and IDs.** Map each unique token to an integer `0 ... V-1`. Unknown words often share an `<unk>` id.
 
 **One-hot.** For token id `i` and vocab size `V`:
 

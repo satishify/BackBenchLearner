@@ -9,7 +9,7 @@ questions:
     answer: 1
     why: "Rapidly changing factual content belongs in retrieval; fine-tuning is a poor knowledge database."
 
-  - q: "Fine-tuning is a better fit than prompting alone when…"
+  - q: "Fine-tuning is a better fit than prompting alone when..."
     options:
       - "You need a stable stylistic/format habit or domain skill that few-shots cannot reliably lock"
       - "You have zero labeled examples and no eval"
@@ -18,16 +18,16 @@ questions:
     answer: 0
     why: "Adaptation shines for consistent behavior patterns; fresh facts still prefer RAG/tools."
 
-  - q: "Supervised fine-tuning (SFT) trains on…"
+  - q: "Supervised fine-tuning (SFT) trains on..."
     options:
       - "Preference pairs only with a reward model"
-      - "Input→desired output demonstrations (instruction/response examples)"
+      - "Input->desired output demonstrations (instruction/response examples)"
       - "Random tokens with no labels"
       - "Only unlabeled raw web text forever"
     answer: 1
     why: "SFT imitates labeled completions; preference methods (RLHF/DPO) come after or beside that stage."
 
-  - q: "Full fine-tune vs freezing most layers — freezing helps primarily by…"
+  - q: "Full fine-tune vs freezing most layers — freezing helps primarily by..."
     options:
       - "Increasing catastrophic forgetting on purpose"
       - "Cutting trainable parameters/memory and often preserving general capabilities"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "Fewer updated weights mean cheaper training and less drift from the pretrained prior—on the path to PEFT."
 
-  - q: "RLHF’s distinctive ingredient versus plain SFT is…"
+  - q: "RLHF’s distinctive ingredient versus plain SFT is..."
     options:
       - "A preference/reward signal guiding the policy beyond single gold demos"
       - "Deleting the base model"
@@ -45,7 +45,7 @@ questions:
     answer: 0
     why: "RLHF optimizes against preference feedback (via a reward model / PPO-style loop), not only imitation."
 
-  - q: "DPO is attractive in practice because it…"
+  - q: "DPO is attractive in practice because it..."
     options:
       - "Requires sampling a live reward model with PPO always"
       - "Optimizes directly on preference pairs without a separate RL loop"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "When behavior (not facts) is the bottleneck, supervised adaptation on clean demos is the usual escalation."
 
-  - q: "Alignment (RLHF/DPO) without a held-out preference/eval set is dangerous because…"
+  - q: "Alignment (RLHF/DPO) without a held-out preference/eval set is dangerous because..."
     options:
       - "Preferences cannot be wrong"
       - "You can overfit annotator quirks or sycophancy and not notice capability regressions"

@@ -38,7 +38,7 @@
 
     <p>Your <code>users</code> table hits a million rows. <code>SELECT * FROM users WHERE email = ?</code> goes from instant to multi-second. The query is correct; the database is <strong>scanning</strong> every row. An <strong>index</strong> is a side structure (usually a B-tree) that lets the engine jump to matching rows — at the cost of slower writes and extra disk.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>A book’s index does not copy the whole book; it maps keywords → page numbers. A database index maps column values → row locations (or primary keys). Without it, the planner may choose a <strong>sequential scan</strong>. With a selective index, it does an <strong>index lookup</strong> (and maybe a heap/table fetch).</p>
+    <p>A book’s index does not copy the whole book; it maps keywords -&gt; page numbers. A database index maps column values -&gt; row locations (or primary keys). Without it, the planner may choose a <strong>sequential scan</strong>. With a selective index, it does an <strong>index lookup</strong> (and maybe a heap/table fetch).</p>
     <p>Indexes help <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>, and <code>UNIQUE</code> constraints. They hurt <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> because each write updates the index too. Too many indexes is a classic “fast reads, dead writes” failure mode.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">

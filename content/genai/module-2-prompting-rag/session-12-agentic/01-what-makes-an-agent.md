@@ -61,7 +61,7 @@ Ship the lowest level that delivers value. Autonomy is a product choice, not a b
 - Perfect long-term memory
 - Open-ended “do anything” tools
 
-Those are optional upgrades. The defining loop is goal → plan → act → observe → adjust.
+Those are optional upgrades. The defining loop is goal -> plan -> act -> observe -> adjust.
 
 ## In code
 

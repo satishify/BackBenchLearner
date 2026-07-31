@@ -50,7 +50,7 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Offline dataset.</strong> Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (“what is our policy on teleportation?” → should refuse).</p>
+    <p><strong>Offline dataset.</strong> Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (“what is our policy on teleportation?” -&gt; should refuse).</p>
     <p><strong>Retrieval metrics.</strong></p>
     <ul>
     <li><strong>Recall@k:</strong> fraction of questions where at least one gold chunk appears in top-k.</li>
@@ -152,7 +152,7 @@ print(f&quot;recall@2={rec:.2f} toy_faithfulness={faith:.2f}&quot;)</code></pre>
     <h2 id="building-an-eval-practice-that-sticks">Building an eval practice that sticks</h2>
     <p><strong>Ownership.</strong> Assign a DRI for the golden set. Without ownership, suites rot and everyone ignores failing dashboards. Pair eng with a domain expert who can adjudicate controversial gold labels.</p>
     <p><strong>Synthetic + real.</strong> LLM-generated questions help coverage early, but always include real user phrasings — typos, code-switches, and terse fragments. Synthetic-only suites overestimate readiness.</p>
-    <p><strong>Regression gates.</strong> Block deploys on: recall@k drop beyond ε, faithfulness drop beyond ε, or any failed mandatory abstention case. Allow UX wording changes to ship with softer gates if retrieval metrics hold.</p>
+    <p><strong>Regression gates.</strong> Block deploys on: recall@k drop beyond epsilon, faithfulness drop beyond epsilon, or any failed mandatory abstention case. Allow UX wording changes to ship with softer gates if retrieval metrics hold.</p>
     <p><strong>Incident learning.</strong> After each wrong-answer incident, add one example that would have caught it, link the PR that fixed the stage, and note which metric moved. That feedback loop is how RAG systems mature past demo quality.</p>
     <h2 id="metric-pitfalls">Metric pitfalls</h2>
     <p>Recall@k can look perfect while every packed chunk is only tangentially related — hence context precision. Faithfulness can look perfect on extractive answers that ignore the question — hence answer relevance. Report a small <strong>scorecard</strong>, not a single vanity number. When stakeholders ask “is RAG good now?”, answer with the scorecard and the top failing slices (<code>ids</code>, <code>multi-hop</code>, <code>multilingual</code>), not a gut feel.</p>

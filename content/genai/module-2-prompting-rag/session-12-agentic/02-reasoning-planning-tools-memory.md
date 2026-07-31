@@ -7,7 +7,7 @@ Useful agents combine four capabilities: **reasoning** (what does success mean?)
 
 ## Intuition
 
-Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch → clean → summarize → visualize → deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.
+Imagine a weekly sales report request. Reasoning clarifies constraints (“last 7 days, USD, exclude test accounts”). Planning orders work (fetch -> clean -> summarize -> visualize -> deliver). Tools talk to BI and docs. Memory recalls that this stakeholder wants a three-bullet exec summary, not a novel. Alone, each piece is ordinary; together they complete jobs.
 
 ```mermaid
 flowchart TB
@@ -45,7 +45,7 @@ Write memory deliberately. Dumping full transcripts forever creates cost, privac
 
 1. User asks for weekly sales report.
 2. Agent reasons: date range, currency, audience.
-3. Plans: fetch → clean → summarize → chart → post.
+3. Plans: fetch -> clean -> summarize -> chart -> post.
 4. Calls BI and spreadsheet tools.
 5. Reads memory for preferred format; stores “posted URL” for next week.
 

@@ -34,7 +34,7 @@ questions:
       - Delete the test set so metrics cannot leak
       - Skip the model and only print the dataset size
     answer: 1
-    why: The flow is load → split → scale when needed → train baseline → evaluate with metrics like precision, recall, and F1.
+    why: The flow is load -> split -> scale when needed -> train baseline -> evaluate with metrics like precision, recall, and F1.
 
   - q: What should a solid automation workflow include for safe retries?
     options:

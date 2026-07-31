@@ -45,7 +45,7 @@
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <p><strong>Commands vs events.</strong> A command (<code>ReserveInventory</code>) is a request to do work, usually aimed at one owner. An event (<code>InventoryReserved</code>) is a broadcast fact. Confusing them leads to “who is supposed to act?” ambiguity.</p>
-    <p><strong>Topology.</strong> Producers → broker (Kafka topic, SNS/SQS, Rabbit exchange) → consumers. Fan-out lets notifications, analytics, and search indexers all listen to <code>OrderPlaced</code> without the order service importing their clients.</p>
+    <p><strong>Topology.</strong> Producers -&gt; broker (Kafka topic, SNS/SQS, Rabbit exchange) -&gt; consumers. Fan-out lets notifications, analytics, and search indexers all listen to <code>OrderPlaced</code> without the order service importing their clients.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR

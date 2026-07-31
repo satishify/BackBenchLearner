@@ -26,7 +26,7 @@ V = X W_V    # (n, d_v)
 Often `d_v = d_k`. Pairwise scores are dot products between queries and keys:
 
 ```
-scores_ij = (Q_i · K_j) / sqrt(d_k)
+scores_ij = (Q_i * K_j) / sqrt(d_k)
 ```
 
 Divide by `sqrt(d_k)` so that as dimension grows, scores do not explode into huge magnitudes that push softmax into tiny gradients. Then:
@@ -39,7 +39,7 @@ Row `i` of the softmax matrix is a probability distribution over positions that 
 
 **Worked intuition.** Sentence: “The animal did not cross the street because it was tired.” For query position “it”, high weight often lands on “animal” (antecedent) and “tired” (predicate). The updated embedding of “it” becomes a mixture that encodes that binding — fuel for later layers and the final next-token head.
 
-**Complexity.** Computing `Q K^T` is O(n² d_k). That quadratic term is why context-window length dominates cost and why “128k context” is an engineering story, not a free lunch.
+**Complexity.** Computing `Q K^T` is O(n^2 d_k). That quadratic term is why context-window length dominates cost and why “128k context” is an engineering story, not a free lunch.
 
 ```mermaid
 flowchart LR

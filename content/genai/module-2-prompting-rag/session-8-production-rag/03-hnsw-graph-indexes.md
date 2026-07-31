@@ -21,8 +21,8 @@ HNSW buys high recall with graph memory. If RAM is the constraint, look at quant
 
 Each vector is inserted with a random maximum layer (geometric distribution — few points appear on the top layers). At every layer up to that max, the new point connects to up to **M** nearest neighbors found under the current graph, with heuristics that keep edges useful (not only the absolute closest, which can create traffic jams).
 
-- **M** — typical degree / max neighbors per node (per layer; some implementations use `2M` on the base layer). Higher M → denser graph → better recall, more RAM, slower builds.
-- **efConstruction** — size of the candidate set explored while inserting. Higher → better graph quality, longer index build.
+- **M** — typical degree / max neighbors per node (per layer; some implementations use `2M` on the base layer). Higher M -> denser graph -> better recall, more RAM, slower builds.
+- **efConstruction** — size of the candidate set explored while inserting. Higher -> better graph quality, longer index build.
 
 Build is write-heavy and often offline or batched. Online upserts are supported by many engines but can fragment quality if you never rebuild.
 
@@ -33,7 +33,7 @@ Build is write-heavy and often offline or batched. Online upserts are supported 
 3. Drop one layer; repeat.
 4. On the base layer, run a best-first search bounded by **efSearch**: keep a dynamic candidate list of size `efSearch`, expand neighbors, return the best `k`.
 
-**efSearch** must be ≥ `k`. Raising it improves recall roughly monotonically and increases latency. It is the primary runtime trade-off — change it without rebuilding the index.
+**efSearch** must be >= `k`. Raising it improves recall roughly monotonically and increases latency. It is the primary runtime trade-off — change it without rebuilding the index.
 
 ### Compare to nprobe
 

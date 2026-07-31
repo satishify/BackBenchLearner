@@ -57,7 +57,7 @@ flowchart LR
 Fit a line with the closed-form least-squares solution (stdlib only), then compare to a naive average baseline. No scikit-learn.
 
 ```python
-# Predict y from x: y ≈ a + b*x  (ordinary least squares, 1-D)
+# Predict y from x: y ~= a + b*x  (ordinary least squares, 1-D)
 xs = [1.0, 2.0, 3.0, 4.0, 5.0]
 ys = [2.1, 3.9, 6.2, 7.8, 10.1]
 
@@ -94,7 +94,7 @@ Even this toy fit shows the ML loop: choose a hypothesis class (a line), fit on 
 - **Data leakage.** Using future information or the label itself as a feature makes test scores look amazing and production fail.
 - **Wrong split.** Random splits on time-ordered or grouped data (same user in train and test) inflate metrics.
 - **Imbalanced classes.** 99% accuracy can hide a useless minority-class detector; pick metrics that match the decision (precision, recall, F1, calibration).
-- **Overfitting.** A model that memorizes noise on the train set will not travel. Prefer simpler models, more data, or regularization when train ≫ test performance.
+- **Overfitting.** A model that memorizes noise on the train set will not travel. Prefer simpler models, more data, or regularization when train >> test performance.
 - **Paradigm mismatch.** Supervised labels may be expensive; unsupervised clusters may not match business labels; RL needs careful reward design or it will game the metric.
 - **Silent distribution shift.** The world changes after launch; without monitoring, yesterday’s good model becomes tomorrow’s quiet failure.
 

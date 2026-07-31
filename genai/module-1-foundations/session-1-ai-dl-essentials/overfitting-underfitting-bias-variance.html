@@ -47,7 +47,7 @@
     <p><strong>Bias</strong> is error from wrong assumptions (too simple a model). <strong>Variance</strong> is error from sensitivity to the particular training sample (too wiggly a model). Irreducible <strong>noise</strong> remains even with a perfect learner. Roughly:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">Expected error ≈ Bias^2 + Variance + Noise</code></pre>
+      <pre><code class="language-text">Expected error ~= Bias^2 + Variance + Noise</code></pre>
     </div>
     <p>You rarely minimize bias and variance at once. Bigger models and longer training cut bias but can inflate variance unless you regularize, add data, or stop early.</p>
     <h2 id="how-it-works">How it works</h2>
@@ -81,7 +81,7 @@
       </tbody>
     </table>
     <p>A rising validation loss while training loss still falls is the classic overfit signal. In LLMs and classifiers, watch validation perplexity or F1 the same way.</p>
-    <p><strong>Capacity knobs.</strong> More parameters, deeper trees, higher polynomial degree, longer fine-tuning → more capacity → lower bias risk, higher overfit risk. Less capacity or stronger constraints → opposite.</p>
+    <p><strong>Capacity knobs.</strong> More parameters, deeper trees, higher polynomial degree, longer fine-tuning -&gt; more capacity -&gt; lower bias risk, higher overfit risk. Less capacity or stronger constraints -&gt; opposite.</p>
     <p><strong>What helps.</strong></p>
     <ul>
     <li><strong>More diverse data</strong> — best variance reducer when you can get it.</li>

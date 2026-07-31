@@ -46,7 +46,7 @@
     <li><strong>Phantom read</strong> — new rows appear matching a prior query</li>
     <li><strong>Lost update</strong> — two writers overwrite each other</li>
     </ul>
-    <p>SQL defines levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable. Postgres defaults to <strong>Read Committed</strong>; SQLite is typically serializable-ish with locking. Higher isolation ≠ always better for every endpoint — know your anomaly budget.</p>
+    <p>SQL defines levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable. Postgres defaults to <strong>Read Committed</strong>; SQLite is typically serializable-ish with locking. Higher isolation != always better for every endpoint — know your anomaly budget.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -99,9 +99,9 @@ sequenceDiagram
     <p>*Engines differ; Postgres RR prevents many phantoms via snapshots but true serializability needs <code>SERIALIZABLE</code>.</p>
     <p>Patterns that help even at Read Committed:</p>
     <ul>
-    <li><code>SELECT … FOR UPDATE</code> to lock rows you will change</li>
-    <li>Optimistic <code>UPDATE … WHERE version=?</code></li>
-    <li>Single SQL statement that encodes the rule (<code>UPDATE … WHERE stock &gt;= 1</code>)</li>
+    <li><code>SELECT ... FOR UPDATE</code> to lock rows you will change</li>
+    <li>Optimistic <code>UPDATE ... WHERE version=?</code></li>
+    <li>Single SQL statement that encodes the rule (<code>UPDATE ... WHERE stock &gt;= 1</code>)</li>
     </ul>
     <h2 id="in-code">In code</h2>
     <p>Demonstrate a race, then fix with a transactional conditional update (works under concurrent FastAPI workers).</p>

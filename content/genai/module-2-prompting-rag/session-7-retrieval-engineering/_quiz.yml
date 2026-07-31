@@ -1,6 +1,6 @@
 title: "2.7 RAG Retrieval Engineering"
 questions:
-  - q: "A bi-encoder retrieval setup embeds queries and documents separately so that…"
+  - q: "A bi-encoder retrieval setup embeds queries and documents separately so that..."
     options:
       - "Every query must cross-attend every document token at search time"
       - "Document embeddings can be precomputed and indexed; query embedding is compared at search time"
@@ -9,7 +9,7 @@ questions:
     answer: 1
     why: "Bi-encoders enable offline indexing of corpus vectors; only the query is embedded online for ANN/dot-product search."
 
-  - q: "Chunks that are too large most often hurt RAG by…"
+  - q: "Chunks that are too large most often hurt RAG by..."
     options:
       - "Increasing precision of every retrieval"
       - "Packing irrelevant sentences into the prompt and wasting context"
@@ -18,7 +18,7 @@ questions:
     answer: 1
     why: "Huge chunks dilute the signal and burn tokens; too-small chunks can orphan necessary context—tune both."
 
-  - q: "Hybrid search (BM25 + dense) helps most when…"
+  - q: "Hybrid search (BM25 + dense) helps most when..."
     options:
       - "You only ever query with synonyms and never need exact SKUs"
       - "Some queries need exact tokens (IDs, error codes) while others need paraphrase matching"
@@ -27,7 +27,7 @@ questions:
     answer: 1
     why: "Lexical and dense signals cover complementary failure modes; fusion/rerank combines strengths."
 
-  - q: "A cross-encoder reranker is typically applied…"
+  - q: "A cross-encoder reranker is typically applied..."
     options:
       - "To the entire web as a first-stage index"
       - "To a small candidate set from cheap retrieval to reorder by query–doc relevance"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "Cross-encoders are accurate but expensive; they refine top-N, not replace first-stage retrieval at corpus scale."
 
-  - q: "Query rewriting is most useful when…"
+  - q: "Query rewriting is most useful when..."
     options:
       - "The user’s query is already a perfect keyword list with IDs"
       - "Conversational or underspecified questions need expansion/clarification before search"
@@ -52,9 +52,9 @@ questions:
       - "3,000"
       - "50"
     answer: 1
-    why: "With stride 450, starts are 0…2700 → 7 windows (ceil((3000−500)/450)+1 = 6+1 = 7)."
+    why: "With stride 450, starts are 0...2700 -> 7 windows (ceil((3000-500)/450)+1 = 6+1 = 7)."
 
-  - q: "Document preprocessing that usually improves retrieval quality includes…"
+  - q: "Document preprocessing that usually improves retrieval quality includes..."
     options:
       - "Leaving boilerplate nav menus and cookie banners in every chunk"
       - "Cleaning noise, preserving headings/structure, and attaching source metadata"

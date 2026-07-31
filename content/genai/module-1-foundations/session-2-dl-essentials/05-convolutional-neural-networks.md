@@ -3,11 +3,11 @@ title: "Convolutional Neural Networks"
 description: "Local filters, shared weights, and feature maps — how CNNs exploit spatial structure in images, with a NumPy convolution you can run by hand."
 ---
 
-A fully connected net on a 224×224 RGB image would wire every pixel to every hidden unit and drown in parameters. **Convolutional neural networks (CNNs)** refuse that waste: they slide small filters across the input, reuse the same weights everywhere, and build a hierarchy from edges to parts to objects. Vision systems, many speech front-ends, and even some text models historically leaned on this inductive bias. Even if your day job is transformers, CNN thinking—locality, weight sharing, translation equivariance—still shows up in patches, depthwise convs, and “look at nearby structure first.”
+A fully connected net on a 224x224 RGB image would wire every pixel to every hidden unit and drown in parameters. **Convolutional neural networks (CNNs)** refuse that waste: they slide small filters across the input, reuse the same weights everywhere, and build a hierarchy from edges to parts to objects. Vision systems, many speech front-ends, and even some text models historically leaned on this inductive bias. Even if your day job is transformers, CNN thinking—locality, weight sharing, translation equivariance—still shows up in patches, depthwise convs, and “look at nearby structure first.”
 
 ## Intuition
 
-Stand in front of a photo with a tiny cardboard stencil that has a 3×3 hole. At each placement you compute a weighted mix of the nine visible pixels—maybe “bright on the left, dark on the right” to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a **convolution** (in deep learning, usually a cross-correlation with a learnable kernel). One stencil produces one **feature map**. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.
+Stand in front of a photo with a tiny cardboard stencil that has a 3x3 hole. At each placement you compute a weighted mix of the nine visible pixels—maybe “bright on the left, dark on the right” to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a **convolution** (in deep learning, usually a cross-correlation with a learnable kernel). One stencil produces one **feature map**. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.
 
 Because the same stencil is reused at every location, a filter that learns “cat ear texture” in the top-left can fire for an ear in the bottom-right without new weights. That is **weight sharing**. Because each output depends only on a local **receptive field**, early layers stay cheap and spatially grounded. Deeper layers compose local detections into larger patterns—the receptive field grows as you stack convs and pool.
 
@@ -15,7 +15,7 @@ Pooling (or strided convolution) downsamples the map: keep the strongest respons
 
 ## How it works
 
-**2D convolution (single channel, stride 1, no padding).** Input `X` is `H × W`. Kernel `K` is `kH × kW`. Output at position `(i, j)`:
+**2D convolution (single channel, stride 1, no padding).** Input `X` is `H x W`. Kernel `K` is `kH x kW`. Output at position `(i, j)`:
 
 ```
 Y[i, j] = sum over u,v of  K[u, v] * X[i + u, j + v]
@@ -32,9 +32,9 @@ out_W = W - kW + 1
 
 **Multiple channels.** An RGB input has `C_in = 3`. Each output channel has a kernel stack of shape `(C_in, kH, kW)`; you sum across input channels as well. A layer with `C_out` filters learns `C_out` such stacks, plus optional biases.
 
-**Parameter count (conv vs dense).** One 3×3 filter on 64 input channels to 128 output channels has about `128 * 64 * 3 * 3` weights—independent of `H` and `W`. A dense layer from `H*W*64` to `H*W*128` scales with image size and explodes.
+**Parameter count (conv vs dense).** One 3x3 filter on 64 input channels to 128 output channels has about `128 * 64 * 3 * 3` weights—independent of `H` and `W`. A dense layer from `H*W*64` to `H*W*128` scales with image size and explodes.
 
-**Typical block.** Conv → activation (ReLU) → optional BatchNorm → optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.
+**Typical block.** Conv -> activation (ReLU) -> optional BatchNorm -> optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.
 
 ```mermaid
 flowchart LR
@@ -47,7 +47,7 @@ flowchart LR
 
 ## In code
 
-A tiny NumPy “valid” convolution on a 5×5 patch with a 3×3 edge-ish kernel:
+A tiny NumPy “valid” convolution on a 5x5 patch with a 3x3 edge-ish kernel:
 
 ```python
 import numpy as np
@@ -94,9 +94,9 @@ In PyTorch this is `nn.Conv2d` / `F.conv2d`; you almost never write the nested l
 
 ## What goes wrong
 
-**Wrong spatial sizes.** Forget padding or miscount stride and the next layer’s expected `H×W` will not match—shape errors or silent cropping.
+**Wrong spatial sizes.** Forget padding or miscount stride and the next layer’s expected `H x W` will not match—shape errors or silent cropping.
 
-**Too little receptive field.** Tiny stacks of 3×3 without depth or dilation never “see” the whole object; the classifier guesses from local texture.
+**Too little receptive field.** Tiny stacks of 3x3 without depth or dilation never “see” the whole object; the classifier guesses from local texture.
 
 **Treating conv like a bag of dense layers.** Global FC layers early destroy the spatial bias and revive the parameter explosion CNNs were meant to avoid.
 

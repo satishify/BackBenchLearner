@@ -7,7 +7,7 @@ The user double-clicks Pay. The mobile app times out at 30s and retries. Your se
 
 ## Intuition
 
-HTTP already treats GET, PUT, and DELETE as idempotent. `POST /charges` is not — each call may create a new charge. The fix used by Stripe and many payment APIs: the client sends an **Idempotency-Key** (UUID) with the first attempt. The server stores the key → outcome. Retries with the same key return the **same result** without re-charging.
+HTTP already treats GET, PUT, and DELETE as idempotent. `POST /charges` is not — each call may create a new charge. The fix used by Stripe and many payment APIs: the client sends an **Idempotency-Key** (UUID) with the first attempt. The server stores the key -> outcome. Retries with the same key return the **same result** without re-charging.
 
 Idempotency is not only payments. Order creation, seat booking, “send invite email,” and wallet transfers all need it whenever clients retry or users mash buttons.
 

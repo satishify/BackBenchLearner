@@ -38,7 +38,7 @@
 
     <p>Some questions die in a single search. “Which teams own services that still call the deprecated Auth v1 API, and what is their on-call?” needs a <strong>hop</strong>: find services using Auth v1, then look up ownership, then on-call. <strong>Multi-hop retrieval</strong> chains those lookups. <strong>Agentic retrieval</strong> lets an LLM decide the next query, tool, or stop condition instead of a fixed one-shot RAG pack.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Single-hop RAG is a one-trip library visit. Multi-hop is a research session: read something, realize you need another source, go again. Agents add a clipboard — goals, scratch notes, and a loop: think → act (search/tool) → observe → until done or budget exhausted.</p>
+    <p>Single-hop RAG is a one-trip library visit. Multi-hop is a research session: read something, realize you need another source, go again. Agents add a clipboard — goals, scratch notes, and a loop: think -&gt; act (search/tool) -&gt; observe -&gt; until done or budget exhausted.</p>
     <p>Not every question deserves an agent. Hopping increases latency, cost, and failure modes. Use it when the answer structurally depends on intermediate entities.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -98,7 +98,7 @@ h1, h2 = multi_hop_auth_v1()
 print(&quot;hop1 services:&quot;, [h[&quot;id&quot;] for h in h1])
 print(&quot;hop2 owners:&quot;)
 for row in h2:
-    print(&quot; &quot;, row[&quot;id&quot;], &quot;→&quot;, row[&quot;owner&quot;])
+    print(&quot; &quot;, row[&quot;id&quot;], &quot;-&gt;&quot;, row[&quot;owner&quot;])
 
 # Agentic-style control: stop when hops==max or no new ids</code></pre>
     </div>
@@ -117,7 +117,7 @@ for row in h2:
     <p><strong>Deterministic skeletons.</strong> For known question templates (“who owns services depending on X?”), a coded plan beats an open-ended agent: fewer tokens, fewer loops, easier tests. Reserve free-form agency for long-tail questions after a router says “complex.”</p>
     <p><strong>Eval for hops.</strong> Label not only final answers but required intermediate entities. Score hop success separately so you know whether failures are planning bugs or retrieval bugs.</p>
     <h2 id="cost-and-ux-for-multi-hop">Cost and UX for multi-hop</h2>
-    <p>Show users that work is happening: “Looking up services… checking owners…” reduces perceived latency and builds trust. Cap wall-clock time and return a partial answer with citations plus “incomplete: hop budget reached” rather than spinning. Cache hop-1 results for repeated entity hubs (popular dependencies) with short TTLs.</p>
+    <p>Show users that work is happening: “Looking up services... checking owners...” reduces perceived latency and builds trust. Cap wall-clock time and return a partial answer with citations plus “incomplete: hop budget reached” rather than spinning. Cache hop-1 results for repeated entity hubs (popular dependencies) with short TTLs.</p>
     <p>Security: each hop must re-apply ACL filters. An agent that retrieves a public architecture doc in hop 1 must not be allowed to open a restricted HR note in hop 2 just because the plan mentioned an employee name extracted earlier.</p>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Multi-hop and agentic retrieval chain planned searches when one lookup cannot gather all entities, under strict budgets and citation discipline.</p>

@@ -39,7 +39,7 @@ flowchart LR
 
 **Backpressure and visibility.** When consumers lag, queue depth and consumer lag metrics are your early warning — not CPU on the API pods. Scale consumers, slow producers, or shed low-priority topics before disk fills. For SQS, visibility timeout must exceed worst-case processing time or another worker will grab an in-flight message and you will double-process. For Kafka, lag per partition tells you whether to add consumers in the group (up to the partition count).
 
-**Choosing quickly.** Need replay and many independent readers of the same facts → Kafka (or similar log). Need classic job queue with routing and per-message ack → RabbitMQ. Want minimal ops inside AWS → SQS (+ SNS for fan-out). Do not pick Kafka only because it is popular if you truly need a work queue with simple ack semantics.
+**Choosing quickly.** Need replay and many independent readers of the same facts -> Kafka (or similar log). Need classic job queue with routing and per-message ack -> RabbitMQ. Want minimal ops inside AWS -> SQS (+ SNS for fan-out). Do not pick Kafka only because it is popular if you truly need a work queue with simple ack semantics.
 
 ## In code
 

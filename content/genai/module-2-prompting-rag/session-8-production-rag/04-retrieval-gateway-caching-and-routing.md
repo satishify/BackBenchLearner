@@ -25,7 +25,7 @@ A false cache hit is worse than a cache miss. Serving yesterday’s answer for a
 Order matters:
 
 ```
-authenticate → authorize (tenant, roles, doc ACL) → embed / cache / search → generate
+authenticate -> authorize (tenant, roles, doc ACL) -> embed / cache / search -> generate
 ```
 
 Never embed first and “filter later” in the prompt. Metadata filters in the vector DB are necessary; they are not a substitute for rejecting unauthenticated calls. Log `subject_id`, `tenant_id`, and `policy_version` on every retrieval span so incidents are reconstructible.
@@ -36,8 +36,8 @@ Multi-tenant rule of thumb: **tenant_id is a mandatory filter**, enforced in gat
 
 Cache keys are often the query embedding (or a normalized string + embedding). On a new query, if `cosine(q, cached_q) >= threshold` (and same tenant, locale, product surface), return the cached answer or cached chunks.
 
-- **Threshold too low** → false hits: “reset password” matches “reset API key”; user gets the wrong runbook.
-- **Threshold too high** → mostly misses; cache barely helps.
+- **Threshold too low** -> false hits: “reset password” matches “reset API key”; user gets the wrong runbook.
+- **Threshold too high** -> mostly misses; cache barely helps.
 
 Tune on a labeled pair set: same-intent vs different-intent. Optimize for **low false-hit rate** first; accept a lower hit rate. Invalidate on corpus or policy change (TTL alone is not enough when docs update). For regulated answers, cache **chunk ids + generation inputs**, not only final prose, so you can rebuild with the new model.
 
@@ -47,7 +47,7 @@ Before search:
 
 - Strip boilerplate (“hi”, “please”, email signatures).
 - Expand acronyms known for that tenant.
-- Rewrite follow-ups with conversation context (“what about the SLA?” → “What is the SLA for plan Pro?”).
+- Rewrite follow-ups with conversation context (“what about the SLA?” -> “What is the SLA for plan Pro?”).
 - Detect **no-retrieval** intents (chitchat, pure math) and skip the index.
 
 Shaping is a small model or rules + templates. Cap rewrite length; log both raw and shaped queries for eval.

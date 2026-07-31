@@ -8,7 +8,7 @@ welcomeTitle: "Gen AI & Agentic AI"
 welcomeTagline: "Session-aligned path from deep learning essentials through production RAG, agents, and fine-tuning."
 modules:
   - id: module-1-foundations
-    title: "Module 1 · Foundations of GenAI & LLMs"
+    title: "Module 1 - Foundations of GenAI & LLMs"
     blurb: "Understand the machinery before you use it."
     chapters:
       - id: session-1-ai-dl-essentials
@@ -18,7 +18,7 @@ modules:
       - id: transformers
         title: "1.3 The Transformer Architecture"
   - id: module-2-prompting-rag
-    title: "Module 2 · Prompting, RAG & Agents"
+    title: "Module 2 - Prompting, RAG & Agents"
     blurb: "From APIs and prompts to retrieval, indexes, and agentic systems."
     chapters:
       - id: session-1-llms-decoding-apis
@@ -40,7 +40,7 @@ modules:
       - id: session-12-agentic
         title: "2.9 Agentic AI & Multi-Agent Orchestration"
   - id: module-3-finetuning
-    title: "Module 3 · LLM Fine-tuning & Alignment"
+    title: "Module 3 - LLM Fine-tuning & Alignment"
     blurb: "When your own data is the advantage."
     chapters:
       - id: session-1-fundamentals
@@ -50,7 +50,7 @@ modules:
       - id: session-3-peft
         title: "3.3 PEFT, Adapters & Soft Prompting"
   - id: module-4-multimodal-agentic
-    title: "Module 4 · Multimodal & Agentic AI"
+    title: "Module 4 - Multimodal & Agentic AI"
     blurb: "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
     chapters:
       - id: vision-language
@@ -58,7 +58,7 @@ modules:
       - id: agentic-systems
         title: "4.2 Agentic AI Systems"
   - id: module-5-deployment-safety
-    title: "Module 5 · Deployment, Optimisation & AI Safety"
+    title: "Module 5 - Deployment, Optimisation & AI Safety"
     blurb: "Turning a prototype into something you can operate."
     chapters:
       - id: production-rag-agents

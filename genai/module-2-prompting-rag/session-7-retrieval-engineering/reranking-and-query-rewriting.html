@@ -59,11 +59,11 @@ flowchart LR
     <p>Keep rewrites <strong>instrumented</strong>: log original vs rewritten and A/B hit rates.</p>
     <p><strong>Rerankers.</strong></p>
     <ul>
-    <li><strong>Cross-encoders:</strong> jointly encode <code>(query, document)</code> for a relevance score; accurate, slower — perfect for N≤100.</li>
+    <li><strong>Cross-encoders:</strong> jointly encode <code>(query, document)</code> for a relevance score; accurate, slower — perfect for N&lt;=100.</li>
     <li><strong>LLM rerankers:</strong> prompt a model to order passages; flexible, costlier.</li>
     <li><strong>Feature rerankers:</strong> boost by recency, click priors, or metadata match.</li>
     </ul>
-    <p><strong>Typical cascade.</strong> Hybrid retrieve N=50 → cross-encode → keep k=5 → generate. Most quality gains per dollar sit in this cascade, not in doubling LLM size.</p>
+    <p><strong>Typical cascade.</strong> Hybrid retrieve N=50 -&gt; cross-encode -&gt; keep k=5 -&gt; generate. Most quality gains per dollar sit in this cascade, not in doubling LLM size.</p>
     <h2 id="in-code">In code</h2>
     <p>Toy rewrite (glossary + strip chitchat) and a cross-encoder stand-in that scores token overlap with a length penalty — swap for a real model later.</p>
     <div class="code-block" data-lang="python">

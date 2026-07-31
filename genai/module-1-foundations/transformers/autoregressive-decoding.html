@@ -44,7 +44,7 @@
     <p><strong>The loop.</strong></p>
     <ol>
     <li>Start with tokenized prompt (and optional BOS).</li>
-    <li>Forward the causal model → logits for the last position.</li>
+    <li>Forward the causal model -&gt; logits for the last position.</li>
     <li>Optionally divide logits by <strong>temperature</strong> <code>T</code> (<code>logits / T</code>): <code>T &lt; 1</code> sharpens; <code>T &gt; 1</code> flattens.</li>
     <li>Convert to probabilities; apply a decoding policy.</li>
     <li>Append the chosen token; stop on EOS, stop string, or <code>max_tokens</code>.</li>
@@ -83,7 +83,7 @@
         </tr>
         <tr>
           <td>Top-p</td>
-          <td>Smallest set with mass ≥ p</td>
+          <td>Smallest set with mass &gt;= p</td>
           <td>Adaptive support; common in chat</td>
         </tr>
       </tbody>

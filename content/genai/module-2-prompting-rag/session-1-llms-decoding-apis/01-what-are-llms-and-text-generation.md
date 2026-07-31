@@ -22,7 +22,7 @@ An LLM is a probability machine over sequences. Fluency comes from modeling lang
 Text is split into tokens before the model sees it. Roughly:
 
 - Short common words may be one token (`the`).
-- Rare or long words may split (`unbelievable` → pieces).
+- Rare or long words may split (`unbelievable` -> pieces).
 - Spaces and punctuation count.
 
 Exact tokenization depends on the model’s vocabulary. For mental math, English often lands around ~0.75 words per token — useful for estimating context limits, not for precision.
@@ -156,7 +156,7 @@ Real LLMs replace this hand-built table with a neural net that conditions on *ma
 - **Mistaking memorization for retrieval** — Asking “what did Alice email last Tuesday?” without tools yields fiction or generic guesses.
 - **Over-trusting fluency** — Smooth prose raises perceived confidence; it does not raise truth probability.
 - **Stopping rules** — Without max tokens or stop sequences, generation can ramble; with bad stops, it cuts mid-thought.
-- **Toy models mislead** — Bigram greed is local; real transformers condition on the whole context window with attention, which is why they handle long-range agreement better — but the *loop* (predict → append → repeat) is the same.
+- **Toy models mislead** — Bigram greed is local; real transformers condition on the whole context window with attention, which is why they handle long-range agreement better — but the *loop* (predict -> append -> repeat) is the same.
 
 :::warn
 Never ship an LLM answer as a system of record. Log prompts, ground facts, and verify high-stakes outputs with humans or deterministic checks.

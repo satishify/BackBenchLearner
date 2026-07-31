@@ -46,16 +46,16 @@ Hidden layers use a nonlinear activation (often ReLU). The output activation dep
 
 ```mermaid
 flowchart LR
-  X[Input x] --> H1["Hidden: W1x+b1 → ReLU"]
-  H1 --> H2["Hidden: W2h1+b2 → ReLU"]
-  H2 --> O["Output: W3h2+b3 → linear/sigmoid/softmax"]
+  X[Input x] --> H1["Hidden: W1x+b1 -> ReLU"]
+  H1 --> H2["Hidden: W2h1+b2 -> ReLU"]
+  H2 --> O["Output: W3h2+b3 -> linear/sigmoid/softmax"]
 ```
 
 **Why this beats one perceptron.** Two hidden units with ReLU can create piecewise-linear regions; more units and layers tile space into richer polyhedral decision regions. XOR becomes solvable: one hidden layer can remap the four corners into a linearly separable feature space, then the output layer finishes the job.
 
-**Width vs depth.** A very wide shallow MLP can approximate many functions, but depth often reuses features hierarchically with fewer total parameters for structured data (images, language). In practice you choose both: enough width to express combinations, enough depth to compose them. Transformers still rely on MLP blocks (usually two linear maps with a GELU/SwiGLU in between) after each attention layer — the same “linear → nonlinear → linear” motif at massive scale.
+**Width vs depth.** A very wide shallow MLP can approximate many functions, but depth often reuses features hierarchically with fewer total parameters for structured data (images, language). In practice you choose both: enough width to express combinations, enough depth to compose them. Transformers still rely on MLP blocks (usually two linear maps with a GELU/SwiGLU in between) after each attention layer — the same “linear -> nonlinear -> linear” motif at massive scale.
 
-**Output pairing (quick table).** Regression → linear output + MSE. Binary classification → sigmoid + binary cross-entropy. Multi-class → softmax + categorical cross-entropy. Softmax turns logits into a probability distribution that sums to 1; the loss then punishes confident wrong classes especially hard.
+**Output pairing (quick table).** Regression -> linear output + MSE. Binary classification -> sigmoid + binary cross-entropy. Multi-class -> softmax + categorical cross-entropy. Softmax turns logits into a probability distribution that sums to 1; the loss then punishes confident wrong classes especially hard.
 
 ## In code
 
@@ -79,7 +79,7 @@ print("sigmoid", np.round(sigmoid(zs), 3))
 print("tanh   ", np.round(tanh(zs), 3))
 print("relu   ", relu(zs))
 
-# MLP: 2 → 3 (ReLU) → 1 (linear)
+# MLP: 2 -> 3 (ReLU) -> 1 (linear)
 rng = np.random.default_rng(0)
 x = np.array([0.5, -1.0])          # one example, 2 features
 W1 = rng.normal(scale=0.8, size=(2, 3))

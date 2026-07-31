@@ -65,7 +65,7 @@ BCE = average of those losses over examples</code></pre>
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">CCE = -log(p_true_class)</code></pre>
     </div>
-    <p>If the model gives the correct class probability <code>0.8</code>, loss is <code>-log(0.8) ≈ 0.22</code>. If it only gives <code>0.05</code>, loss is <code>-log(0.05) ≈ 3.0</code> — much larger. Soft labels (label smoothing) keep a small mass on other classes and reduce overconfidence.</p>
+    <p>If the model gives the correct class probability <code>0.8</code>, loss is <code>-log(0.8) ~= 0.22</code>. If it only gives <code>0.05</code>, loss is <code>-log(0.05) ~= 3.0</code> — much larger. Soft labels (label smoothing) keep a small mass on other classes and reduce overconfidence.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -77,7 +77,7 @@ flowchart LR
     CCE --> O
       </div>
     </div>
-    <p><strong>Why confident mistakes hurt more.</strong> Suppose true class probability is 0.9 → loss <code>≈ 0.105</code>. If it is 0.01 → loss <code>≈ 4.6</code>. Ten times more confident wrong is not ten times the loss—it is much worse on a log scale. Training therefore spends capacity fixing arrogant errors before polishing already-good predictions. That property is exactly why CE pairs well with softmax: as the model drives <code>p_true</code> toward 1, loss gently approaches 0; as it drives <code>p_true</code> toward 0, loss grows without a soft ceiling.</p>
+    <p><strong>Why confident mistakes hurt more.</strong> Suppose true class probability is 0.9 -&gt; loss <code>~= 0.105</code>. If it is 0.01 -&gt; loss <code>~= 4.6</code>. Ten times more confident wrong is not ten times the loss—it is much worse on a log scale. Training therefore spends capacity fixing arrogant errors before polishing already-good predictions. That property is exactly why CE pairs well with softmax: as the model drives <code>p_true</code> toward 1, loss gently approaches 0; as it drives <code>p_true</code> toward 0, loss grows without a soft ceiling.</p>
     <h2 id="in-code">In code</h2>
     <p>Compute the three losses from scratch (NumPy). Use clipping for stable logs in teaching code; production prefers fused logit losses.</p>
     <div class="code-block" data-lang="python">

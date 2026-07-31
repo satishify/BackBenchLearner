@@ -61,7 +61,7 @@ flowchart TB
     <h3>How to decompose well</h3>
     <ol>
     <li>Start from the deliverable and walk backward (what must be true before we can publish?).</li>
-    <li>Name steps as verbs with clear outputs (<code>fetch_tickets → TicketList</code>).</li>
+    <li>Name steps as verbs with clear outputs (<code>fetch_tickets -&gt; TicketList</code>).</li>
     <li>Keep steps roughly one tool call or one tight bundle — not mini-projects.</li>
     <li>Mark dependencies (S2 needs S1’s artifact).</li>
     <li>Define a check for each step (row count &gt; 0, schema valid, tests green).</li>
@@ -138,7 +138,7 @@ print(run_plan(STEPS).artifacts[&quot;summary&quot;])</code></pre>
     <ul>
     <li><strong>Fake decomposition.</strong> Five poetic bullets that still map to one giant tool.</li>
     <li><strong>No checks.</strong> Steps “succeed” on model assertion alone.</li>
-    <li><strong>Too fine.</strong> Hundreds of micro-steps → coordination hell.</li>
+    <li><strong>Too fine.</strong> Hundreds of micro-steps -&gt; coordination hell.</li>
     <li><strong>Hidden dependencies.</strong> Step 4 assumes a field step 2 never produced.</li>
     <li><strong>Non-idempotent retries.</strong> Re-running “charge card” doubles the charge — need idempotency keys.</li>
     <li><strong>Dynamic plans without bounds.</strong> The agent invents endless new steps to look busy.</li>

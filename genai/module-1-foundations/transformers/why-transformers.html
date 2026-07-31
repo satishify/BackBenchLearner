@@ -50,7 +50,7 @@
 alpha_ti   = softmax_i(score_ti)
 c_t        = sum_i alpha_ti * encoder_h_i</code></pre>
     </div>
-    <p>When translating “cat” → “chat”, alphas might peak on the source word “cat” instead of relying on a single compressed vector.</p>
+    <p>When translating “cat” -&gt; “chat”, alphas might peak on the source word “cat” instead of relying on a single compressed vector.</p>
     <p><strong>Transformer leap.</strong> Self-attention drops the recurrent chain. For a sequence of embeddings <code>X</code>, each position computes queries, keys, and values and mixes information in matrix form:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -109,7 +109,7 @@ print(&quot;attention context ~&quot;, np.round(ctx, 3))</code></pre>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Treating Transformers as “just bigger RNNs.”</strong> The inductive bias changed: no inherent left-to-right state unless you add masking and positions. Order is not free.</li>
-    <li><strong>Ignoring quadratic cost.</strong> Full self-attention is O(n²) in sequence length. Long-context products need clever kernels, sparsity, or sliding windows — RNNs were cheap per step but weak at long range.</li>
+    <li><strong>Ignoring quadratic cost.</strong> Full self-attention is O(n^2) in sequence length. Long-context products need clever kernels, sparsity, or sliding windows — RNNs were cheap per step but weak at long range.</li>
     <li><strong>Assuming attention alone replaced everything.</strong> Feed-forward layers, residuals, and normalization do heavy lifting; attention is the <em>routing</em> fabric.</li>
     <li><strong>Over-crediting the 2017 paper for decoder-only LLMs.</strong> The original Transformer was encoder–decoder for translation; GPT-style models reuse the decoder stack. Know which variant you are discussing in interviews.</li>
     <li><strong>Forgetting data and scale.</strong> Architecture unlocked parallelism; curated pre-training data and compute made the capability jump visible.</li>

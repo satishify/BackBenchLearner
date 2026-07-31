@@ -7,7 +7,7 @@ Deep learning is machine learning with *multi-layer* neural networks that learn 
 
 ## Intuition
 
-Classical ML often looks like: engineer features → train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them into concepts — from pixels to textures to objects, or from tokens to phrases to discourse.
+Classical ML often looks like: engineer features -> train a shallow model (logistic regression, random forest). Deep learning folds feature engineering into the model. Early layers detect simple patterns; deeper layers recombine them into concepts — from pixels to textures to objects, or from tokens to phrases to discourse.
 
 “Depth” means many successive nonlinear transforms. Each layer is usually a linear map (weights + bias) followed by a nonlinearity (ReLU, GELU, etc.). Without nonlinearities, stacking layers collapses to one big linear map — depth would buy nothing. With nonlinearities, composition can carve intricate decision regions and rich embeddings.
 
@@ -34,7 +34,7 @@ Training adjusts all `W, b` with gradient-based optimization (backpropagation + 
 
 **When DL wins vs classical ML.**
 
-| Prefer classical ML when… | Prefer deep learning when… |
+| Prefer classical ML when... | Prefer deep learning when... |
 | --- | --- |
 | Tabular data is small/medium and well-featured | Inputs are raw and high-dimensional (images, audio, text) |
 | You need strong interpretability and fast iteration | End-to-end accuracy dominates and you have data/compute |
@@ -62,12 +62,12 @@ rng = np.random.default_rng(0)
 # Input: batch of 4 examples, each with 3 features
 x = rng.normal(size=(4, 3))
 
-# Layer 1: 3 → 5, then ReLU
+# Layer 1: 3 -> 5, then ReLU
 W1 = rng.normal(scale=0.5, size=(3, 5))
 b1 = np.zeros(5)
 h = np.maximum(0, x @ W1 + b1)  # ReLU
 
-# Layer 2: 5 → 2 logits (e.g. 2-class scores)
+# Layer 2: 5 -> 2 logits (e.g. 2-class scores)
 W2 = rng.normal(scale=0.5, size=(5, 2))
 b2 = np.zeros(2)
 logits = h @ W2 + b2

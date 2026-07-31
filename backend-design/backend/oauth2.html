@@ -94,7 +94,7 @@ REDIRECT_URI = &quot;http://localhost:8000/auth/callback&quot;
 AUTH_URL = &quot;https://accounts.google.com/o/oauth2/v2/auth&quot;
 TOKEN_URL = &quot;https://oauth2.googleapis.com/token&quot;
 
-# ephemeral store → use Redis in production
+# ephemeral store -&gt; use Redis in production
 PENDING: dict[str, float] = {}
 SESSIONS: dict[str, int] = {}
 
@@ -123,7 +123,7 @@ def callback(code: str | None = None, state: str | None = None, response: Respon
         raise HTTPException(400, &quot;Invalid state&quot;)
     del PENDING[state]
 
-    # Exchange code → tokens (pseudo; use httpx.post in real code)
+    # Exchange code -&gt; tokens (pseudo; use httpx.post in real code)
     token_payload = {
         &quot;code&quot;: code,
         &quot;client_id&quot;: CLIENT_ID,

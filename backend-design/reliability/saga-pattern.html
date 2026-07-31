@@ -44,8 +44,8 @@
     <p>Sagas trade atomicity for explicit compensations and eventual consistency — every step must be idempotent, including the undo.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Happy path.</strong> T1 → T2 → T3 each commit locally and emit progress.</p>
-    <p><strong>Failure.</strong> T3 fails → run C2 then C1 (compensations) to undo prior effects.</p>
+    <p><strong>Happy path.</strong> T1 -&gt; T2 -&gt; T3 each commit locally and emit progress.</p>
+    <p><strong>Failure.</strong> T3 fails -&gt; run C2 then C1 (compensations) to undo prior effects.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR

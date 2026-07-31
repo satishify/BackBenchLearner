@@ -55,7 +55,7 @@ flowchart LR
 
 **Decoder-only (GPT-like).** Causal (left-to-right) attention. Autoregressive generation is native. Almost every modern chat and coding assistant sits here. Scaling laws, long context, and tool calling all grew fastest in this family.
 
-**Encoder–decoder (T5/BART-like).** Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups. Less common as the default chat API today, but still a strong mental model for “map X → Y.”
+**Encoder–decoder (T5/BART-like).** Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups. Less common as the default chat API today, but still a strong mental model for “map X -> Y.”
 
 ### Why two “similar” models feel different
 
@@ -72,11 +72,11 @@ So “switch vendors” is never a drop-in rename of the model string. Re-run ev
 
 ### Choosing a family in practice
 
-- Need search embeddings or a cheap classifier → encoder / embedding models.
-- Need chat, agents, code → decoder chat models.
-- Need tight X→Y transforms with clear input/output → consider encoder–decoder or a decoder with strict structured output.
-- Need private deployment or deep finetuning → open-weights decoder families.
-- Need images/PDFs in the same loop → multimodal chat models, not a text-only base plus wishful thinking.
+- Need search embeddings or a cheap classifier -> encoder / embedding models.
+- Need chat, agents, code -> decoder chat models.
+- Need tight X->Y transforms with clear input/output -> consider encoder–decoder or a decoder with strict structured output.
+- Need private deployment or deep finetuning -> open-weights decoder families.
+- Need images/PDFs in the same loop -> multimodal chat models, not a text-only base plus wishful thinking.
 
 ## In code
 

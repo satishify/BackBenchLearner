@@ -1,6 +1,6 @@
 title: "3.2 Data Prep & Training Mechanisms"
 questions:
-  - q: "A high-quality SFT JSONL row should minimally include…"
+  - q: "A high-quality SFT JSONL row should minimally include..."
     options:
       - "Only a free-form essay with no task boundary"
       - "A clear instruction/input and the target assistant response in a consistent chat/schema format"
@@ -9,7 +9,7 @@ questions:
     answer: 1
     why: "Instruction format consistency lets the model learn the mapping you will use at inference."
 
-  - q: "Label noise at 15% on a 2-class intent set most likely causes…"
+  - q: "Label noise at 15% on a 2-class intent set most likely causes..."
     options:
       - "Perfect calibration automatically"
       - "Ceiling on accuracy and confusing gradients—clean labels beat clever optimizers"
@@ -18,7 +18,7 @@ questions:
     answer: 1
     why: "Noisy supervision caps achievable quality; data cleaning usually outperforms hyperparameter heroics."
 
-  - q: "Catastrophic forgetting after domain SFT shows up as…"
+  - q: "Catastrophic forgetting after domain SFT shows up as..."
     options:
       - "Better scores on unrelated general instruction anchors"
       - "Regressions on general/anchor tasks while the niche task improves"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "Diverging train vs holdout signals memorization; use early stopping and cleaner data."
 
-  - q: "Eval writeups for a fine-tune should compare…"
+  - q: "Eval writeups for a fine-tune should compare..."
     options:
       - "Only qualitative vibes from one friend"
       - "Baseline vs adapted model on task metrics plus anchor/regression suites"
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "The lab asks for measured deltas on the target task and checks that general behavior did not collapse."
 
-  - q: "Mixing a small replay of general instruct data during domain SFT mainly fights…"
+  - q: "Mixing a small replay of general instruct data during domain SFT mainly fights..."
     options:
       - "GPU underutilization only"
       - "Catastrophic forgetting of broad skills"

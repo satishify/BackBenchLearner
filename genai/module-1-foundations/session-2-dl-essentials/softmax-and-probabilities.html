@@ -57,20 +57,20 @@
     <ol>
     <li>Every <code>p_i</code> is greater than 0.</li>
     <li>All <code>p_i</code> values add up to 1.</li>
-    <li>Softmax is <strong>invariant to adding a constant</strong> to all logits (add 5 to every score → same probabilities).</li>
+    <li>Softmax is <strong>invariant to adding a constant</strong> to all logits (add 5 to every score -&gt; same probabilities).</li>
     <li>Softmax is <strong>not</strong> invariant to scaling: multiplying logits by 2 sharpens the distribution (like lowering temperature).</li>
     </ol>
     <p><strong>Multi-class use.</strong> The model’s last linear layer outputs <code>K</code> logits. Softmax turns them into class probabilities. Training usually combines softmax and cross-entropy in one stable op; at inference you may take <code>argmax(p)</code> for a hard label or keep <code>p</code> for calibration and thresholding. In language models the vocabulary is the class set: each next-token distribution is a giant softmax over tens of thousands of logits.</p>
     <p><strong>Worked numbers.</strong> Take logits <code>[2.0, 1.0, 0.1]</code>.</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">e^2.0 ≈ 7.39
-e^1.0 ≈ 2.72
-e^0.1 ≈ 1.11
-sum   ≈ 11.22
+      <pre><code class="language-text">e^2.0 ~= 7.39
+e^1.0 ~= 2.72
+e^0.1 ~= 1.11
+sum  ~= 11.22
 
-p ≈ [7.39/11.22, 2.72/11.22, 1.11/11.22]
-  ≈ [0.66, 0.24, 0.10]</code></pre>
+p ~= [7.39/11.22, 2.72/11.22, 1.11/11.22]
+  ~= [0.66, 0.24, 0.10]</code></pre>
     </div>
     <p>The top class is not certain—about one-third of the mass still sits on the others. Raise the first logit to <code>5.0</code> and the top probability jumps near <code>0.96</code>. Same three classes; very different confidence.</p>
     <div class="diagram-wrap">

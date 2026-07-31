@@ -101,9 +101,9 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <p><strong>What usually bottlenecks first.</strong> App CPU → scale app horizontally. DB CPU/IO → vertical DB, then read replicas, then shard. Redis memory → bigger Redis or cluster. Don’t scale the wrong tier.</p>
+    <p><strong>What usually bottlenecks first.</strong> App CPU -&gt; scale app horizontally. DB CPU/IO -&gt; vertical DB, then read replicas, then shard. Redis memory -&gt; bigger Redis or cluster. Don’t scale the wrong tier.</p>
     <p><strong>Elasticity.</strong> Horizontal pairs with auto-scaling: add pods when CPU or RPS rises, remove when calm. Vertical changes are clumsier (resize = often restart).</p>
-    <p><strong>Cost and risk.</strong> A larger instance can be the cheapest fix for a week-long crunch. Long term, a single fat DB or app node concentrates blast radius: one failure, one AZ issue, one noisy neighbor. Horizontal scale spreads risk but introduces coordination cost — load balancers, service discovery, rolling deploys, and careful connection pooling so 20 new pods do not open 20 × N database connections and flatten Postgres.</p>
+    <p><strong>Cost and risk.</strong> A larger instance can be the cheapest fix for a week-long crunch. Long term, a single fat DB or app node concentrates blast radius: one failure, one AZ issue, one noisy neighbor. Horizontal scale spreads risk but introduces coordination cost — load balancers, service discovery, rolling deploys, and careful connection pooling so 20 new pods do not open 20 x N database connections and flatten Postgres.</p>
     <p><strong>Hybrid reality.</strong> Most mature systems do both: vertically size the database within reason, horizontally scale the app and workers, then add read replicas or shards only when metrics prove the data tier is the constraint. Scale the bottleneck you measured, not the tier that is easiest to click “upgrade” on.</p>
     <h2 id="in-code">In code</h2>
     <p>Design for horizontal scale: no in-process session affinity; store sessions in Redis; expose multiple uvicorn workers/replicas.</p>
@@ -142,7 +142,7 @@ def me(session_id: str | None = Cookie(default=None)):
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-bash"># same image, N tasks behind a load balancer
 uvicorn app:app --host 0.0.0.0 --port 8000
-# scale: replica count 1 → 8 when RPS rises</code></pre>
+# scale: replica count 1 -&gt; 8 when RPS rises</code></pre>
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
@@ -154,7 +154,7 @@ uvicorn app:app --host 0.0.0.0 --port 8000
     </ul>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Default path: vertical until painful, then make the app stateless and scale horizontally; scale the data tier with a deliberate plan (replicas → partition).</p>
+    <p>Default path: vertical until painful, then make the app stateless and scale horizontally; scale the data tier with a deliberate plan (replicas -&gt; partition).</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Scale up for simple capacity; scale out for elastic capacity and redundancy — but only after state lives outside the app process.</p>

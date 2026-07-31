@@ -40,9 +40,9 @@
     <h2 id="intuition">Intuition</h2>
     <p>At each step the model scores the whole vocabulary. Decoding is the policy that picks one token:</p>
     <ul>
-    <li><strong>Greedy / near-greedy</strong> — take the best (or nearly best) option → stable, repetitive risk.</li>
-    <li><strong>Truncated sampling</strong> — only consider a shortlist (top-k or nucleus / top-p) → controlled variety.</li>
-    <li><strong>Penalties and stops</strong> — reshape scores or force an exit → fight loops and enforce boundaries.</li>
+    <li><strong>Greedy / near-greedy</strong> — take the best (or nearly best) option -&gt; stable, repetitive risk.</li>
+    <li><strong>Truncated sampling</strong> — only consider a shortlist (top-k or nucleus / top-p) -&gt; controlled variety.</li>
+    <li><strong>Penalties and stops</strong> — reshape scores or force an exit -&gt; fight loops and enforce boundaries.</li>
     </ul>
     <p>Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends. Latency and cost scale with how long you let that loop run.</p>
     <aside class="callout callout-key">
@@ -70,7 +70,7 @@
         </tr>
         <tr>
           <td>top_p</td>
-          <td>Keep nucleus with mass ≥ p</td>
+          <td>Keep nucleus with mass &gt;= p</td>
           <td>Adaptive shortlist</td>
         </tr>
         <tr>
@@ -95,7 +95,7 @@
     <li>Model emits logits <code>z</code>.</li>
     <li>Optional penalties adjust logits for tokens already used.</li>
     <li>Temperature scales: <code>z&#x27; = z / T</code>.</li>
-    <li>Softmax → probabilities.</li>
+    <li>Softmax -&gt; probabilities.</li>
     <li>Top-k and/or top-p mask the allowed set.</li>
     <li>Sample (or argmax) one token; append; repeat until EOS, stop string, or max length.</li>
     </ol>
@@ -118,8 +118,8 @@ flowchart LR
     <p>Using both is fine if you understand the order your API applies them; setting both extremely tight (tiny k and tiny p) can leave an empty or brittle candidate set.</p>
     <h3>Penalties</h3>
     <ul>
-    <li><strong>Presence penalty</strong> — punish tokens that appeared at least once → pushes topic diversity.</li>
-    <li><strong>Frequency penalty</strong> — punish in proportion to count → fights “the the the” loops.</li>
+    <li><strong>Presence penalty</strong> — punish tokens that appeared at least once -&gt; pushes topic diversity.</li>
+    <li><strong>Frequency penalty</strong> — punish in proportion to count -&gt; fights “the the the” loops.</li>
     </ul>
     <p>Overdoing penalties on code or legal text makes identifiers and defined terms drift. Prefer clearer prompts and lower temperature before cranking penalties.</p>
     <h3>Stops and max tokens</h3>

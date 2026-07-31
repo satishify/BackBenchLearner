@@ -45,7 +45,7 @@ flowchart TD
 
 ## In code
 
-Toy linear regression with full-batch and minibatch gradient descent. We fit `y ≈ w x + b` on noisy data and watch loss fall.
+Toy linear regression with full-batch and minibatch gradient descent. We fit `y ~= w x + b` on noisy data and watch loss fall.
 
 ```python
 import numpy as np
@@ -112,7 +112,7 @@ Try `lr = 1.0` and watch loss explode or bounce. Try `lr = 1e-5` and notice almo
 
 | Learning rate | Typical symptom |
 | --- | --- |
-| Much too high | Loss → NaN or oscillates upward |
+| Much too high | Loss -> NaN or oscillates upward |
 | Slightly high | Fast early drop, then unstable plateaus |
 | Good | Smooth decrease of train (and val) loss |
 | Too low | Tiny slope; needs huge epoch count |
@@ -133,7 +133,7 @@ Try `lr = 1.0` and watch loss explode or bounce. Try `lr = 1e-5` and notice almo
 
 ## One-line summary
 
-The training loop is forward → loss → backward → update, repeated over batches and epochs—with learning rate setting step size and train/val curves telling you whether you are learning or memorizing.
+The training loop is forward -> loss -> backward -> update, repeated over batches and epochs—with learning rate setting step size and train/val curves telling you whether you are learning or memorizing.
 
 ## Key terms
 

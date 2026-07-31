@@ -9,9 +9,9 @@ Sampling knobs are how you turn a probability distribution into a product behavi
 
 At each step the model scores the whole vocabulary. Decoding is the policy that picks one token:
 
-- **Greedy / near-greedy** — take the best (or nearly best) option → stable, repetitive risk.
-- **Truncated sampling** — only consider a shortlist (top-k or nucleus / top-p) → controlled variety.
-- **Penalties and stops** — reshape scores or force an exit → fight loops and enforce boundaries.
+- **Greedy / near-greedy** — take the best (or nearly best) option -> stable, repetitive risk.
+- **Truncated sampling** — only consider a shortlist (top-k or nucleus / top-p) -> controlled variety.
+- **Penalties and stops** — reshape scores or force an exit -> fight loops and enforce boundaries.
 
 Temperature changes the shape of the distribution; top-k / top-p change which slice you sample from; max tokens and stop sequences decide when the loop ends. Latency and cost scale with how long you let that loop run.
 
@@ -27,7 +27,7 @@ Decode for the contract: factual extraction wants a short leash; ideation wants 
 | --- | --- | --- |
 | temperature | Sharpness of softmax | Primary diversity dial |
 | top_k | Keep only k highest-prob tokens | Hard shortlist |
-| top_p | Keep nucleus with mass ≥ p | Adaptive shortlist |
+| top_p | Keep nucleus with mass >= p | Adaptive shortlist |
 | frequency / presence penalty | Discourage reused tokens | Helps long prose; can hurt code |
 | max_tokens / max_output | Hard length cap | Cost + latency ceiling |
 | stop sequences | End when a string appears | Great for delimiters and turn ends |
@@ -37,7 +37,7 @@ Decode for the contract: factual extraction wants a short leash; ideation wants 
 1. Model emits logits `z`.
 2. Optional penalties adjust logits for tokens already used.
 3. Temperature scales: `z' = z / T`.
-4. Softmax → probabilities.
+4. Softmax -> probabilities.
 5. Top-k and/or top-p mask the allowed set.
 6. Sample (or argmax) one token; append; repeat until EOS, stop string, or max length.
 
@@ -60,8 +60,8 @@ Using both is fine if you understand the order your API applies them; setting bo
 
 ### Penalties
 
-- **Presence penalty** — punish tokens that appeared at least once → pushes topic diversity.
-- **Frequency penalty** — punish in proportion to count → fights “the the the” loops.
+- **Presence penalty** — punish tokens that appeared at least once -> pushes topic diversity.
+- **Frequency penalty** — punish in proportion to count -> fights “the the the” loops.
 
 Overdoing penalties on code or legal text makes identifiers and defined terms drift. Prefer clearer prompts and lower temperature before cranking penalties.
 

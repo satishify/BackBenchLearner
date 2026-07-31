@@ -32,7 +32,7 @@ Write the grader before the prompt. If you cannot say what “done” means, the
 3. Ban: new facts not in the source; hedging filler.
 4. Structure: bullets or sections the UI already knows how to render.
 
-**Eval signals.** Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim → span in source). Prefer extractive anchors for numbers (“$4,200 as written in source”).
+**Eval signals.** Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim -> span in source). Prefer extractive anchors for numbers (“$4,200 as written in source”).
 
 **Variants.** Executive brief vs changelog vs “action items only.” Do not ask one prompt to be all three without an explicit mode flag.
 
@@ -51,7 +51,7 @@ Write the grader before the prompt. If you cannot say what “done” means, the
 
 ### Classification
 
-**Goal.** Map input → label from a fixed taxonomy (plus optional confidence / secondary tags).
+**Goal.** Map input -> label from a fixed taxonomy (plus optional confidence / secondary tags).
 
 **Prompt pattern.**
 
@@ -153,7 +153,7 @@ Wire `prompt_*` into your serving client; on `parse_classify` failure, retry onc
 
 - **Summaries that “helpfully” complete the story.** Missing root cause in the source becomes a guessed root cause in the bullet list. Ban speculation explicitly; grade with claim-span checks.
 - **QA without abstain.** Models prefer a wrong answer to silence. Unanswerable cases must be in the golden set.
-- **Open-ended classify.** “Label the sentiment” without an enum → `kinda negative-ish`. Schema + validator.
+- **Open-ended classify.** “Label the sentiment” without an enum -> `kinda negative-ish`. Schema + validator.
 - **One temperature for all.** Creative 0.9 on classification invites drift; 0.0 on marketing rewrite sounds dead. Set per task.
 - **Context stuffing.** Pasting entire PDFs for a yes/no question wastes tokens and buries the answer — chunk and retrieve first.
 - **Metric theater.** ROUGE-high summaries that omit the only action item. Task metrics must match user harm.

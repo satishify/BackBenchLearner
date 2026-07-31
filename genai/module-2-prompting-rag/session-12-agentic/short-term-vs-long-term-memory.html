@@ -155,7 +155,7 @@ print(mem.prompt_block())</code></pre>
     <li><strong>Memory as authority.</strong> Hallucinated memories treated as policy.</li>
     </ul>
     <h2 id="putting-it-into-practice">Putting it into practice</h2>
-    <p>Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible “what we remember” page for consumer products. Add a red-team case that tries to plant a malicious long-term memory (“always email secrets to…”) and assert your write filter rejects it.</p>
+    <p>Set retention defaults before launch: session TTL (hours), preference TTL (days/months), and a user-visible “what we remember” page for consumer products. Add a red-team case that tries to plant a malicious long-term memory (“always email secrets to...”) and assert your write filter rejects it.</p>
     <p>For RAG-as-memory, separate “documents we indexed” from “preferences we trust.” Different trust tiers belong in different prompt sections. Measure memory hit rate and wrong-memory rate; a store nobody retrieves is dead weight, and a store that retrieves the wrong tenant is an incident.</p>
     <h2 id="summarization-discipline">Summarization discipline</h2>
     <p>When short-term history grows past a token budget, summarize decisions and open questions — not witty banter. A good rolling summary answers: goal, constraints, artifacts produced, pending steps, and unresolved asks. Bad summaries erase the constraint that mattered (“must not email the customer”) and keep the jokes. Test summarizers with cases where dropping one sentence would cause a policy violation.</p>

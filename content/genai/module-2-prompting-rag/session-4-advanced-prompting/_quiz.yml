@@ -18,7 +18,7 @@ questions:
     answer: 1
     why: "Scratch-pad reasoning helps hard multi-step tasks; structured extraction often wants direct, short answers."
 
-  - q: "Few-shot exemplars fail in production most often when…"
+  - q: "Few-shot exemplars fail in production most often when..."
     options:
       - "They demonstrate the exact I/O contract and edge cases"
       - "They are inconsistent with each other or with the written rules"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "System/developer messages are high-privilege instructions; ephemeral tasks belong in the user channel."
 
-  - q: "An output contract is incomplete if you only…"
+  - q: "An output contract is incomplete if you only..."
     options:
       - "Define schema, examples, validators, and repair/fail behavior"
       - "Say 'respond in JSON' with no fields, types, or validation"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "Prompt eval/regression suites catch format and behavior drift before production parsers fail."
 
-  - q: "Role design for a billing assistant should prioritize…"
+  - q: "Role design for a billing assistant should prioritize..."
     options:
       - "Unlimited tool use with no scope"
       - "Clear authority boundaries: what it can decide, what it must escalate, what it must never invent"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "Endless case lists do not scale; principles plus retrieval cover long-tail policy better."
 
-  - q: "For regression testing prompts, a golden set should include…"
+  - q: "For regression testing prompts, a golden set should include..."
     options:
       - "Only the easiest happy-path query"
       - "Happy paths, adversarial/jailbreak-ish inputs, and schema-stress cases"

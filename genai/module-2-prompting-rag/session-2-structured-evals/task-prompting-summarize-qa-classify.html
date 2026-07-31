@@ -59,7 +59,7 @@
     <li>Ban: new facts not in the source; hedging filler.</li>
     <li>Structure: bullets or sections the UI already knows how to render.</li>
     </ol>
-    <p><strong>Eval signals.</strong> Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim → span in source). Prefer extractive anchors for numbers (“$4,200 as written in source”).</p>
+    <p><strong>Eval signals.</strong> Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim -&gt; span in source). Prefer extractive anchors for numbers (“$4,200 as written in source”).</p>
     <p><strong>Variants.</strong> Executive brief vs changelog vs “action items only.” Do not ask one prompt to be all three without an explicit mode flag.</p>
     <h3>Question answering</h3>
     <p><strong>Goal.</strong> Correct answer grounded in provided context (closed-book only when you truly want parametric knowledge).</p>
@@ -72,7 +72,7 @@
     </ol>
     <p><strong>Eval signals.</strong> Exact match / token F1 against gold for short answers; faithfulness rubrics for long ones; refusal correctness on unanswerable items. Include adversarial context that almost-but-not-quite answers the question.</p>
     <h3>Classification</h3>
-    <p><strong>Goal.</strong> Map input → label from a fixed taxonomy (plus optional confidence / secondary tags).</p>
+    <p><strong>Goal.</strong> Map input -&gt; label from a fixed taxonomy (plus optional confidence / secondary tags).</p>
     <p><strong>Prompt pattern.</strong></p>
     <ol>
     <li>List labels with one-line definitions and boundary examples.</li>
@@ -170,7 +170,7 @@ print(parse_classify(&#x27;{&quot;label&quot;: &quot;billing&quot;, &quot;confid
     <ul>
     <li><strong>Summaries that “helpfully” complete the story.</strong> Missing root cause in the source becomes a guessed root cause in the bullet list. Ban speculation explicitly; grade with claim-span checks.</li>
     <li><strong>QA without abstain.</strong> Models prefer a wrong answer to silence. Unanswerable cases must be in the golden set.</li>
-    <li><strong>Open-ended classify.</strong> “Label the sentiment” without an enum → <code>kinda negative-ish</code>. Schema + validator.</li>
+    <li><strong>Open-ended classify.</strong> “Label the sentiment” without an enum -&gt; <code>kinda negative-ish</code>. Schema + validator.</li>
     <li><strong>One temperature for all.</strong> Creative 0.9 on classification invites drift; 0.0 on marketing rewrite sounds dead. Set per task.</li>
     <li><strong>Context stuffing.</strong> Pasting entire PDFs for a yes/no question wastes tokens and buries the answer — chunk and retrieve first.</li>
     <li><strong>Metric theater.</strong> ROUGE-high summaries that omit the only action item. Task metrics must match user harm.</li>

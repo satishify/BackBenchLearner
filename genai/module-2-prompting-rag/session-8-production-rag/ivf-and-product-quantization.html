@@ -54,33 +54,33 @@
     <p><strong>Scan cost (approximate).</strong> If lists are balanced, each list holds about <code>N / nlist</code> vectors. Probing <code>nprobe</code> lists visits roughly:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">scanned ≈ (nprobe / nlist) * N</code></pre>
+      <pre><code class="language-text">scanned ~= (nprobe / nlist) * N</code></pre>
     </div>
-    <p><strong>Numeric example.</strong> N = 1,000,000, nlist ≈ 1000, nprobe = 8:</p>
+    <p><strong>Numeric example.</strong> N = 1,000,000, nlist ~= 1000, nprobe = 8:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">scanned ≈ (8 / 1000) * 1_000_000 = 8000</code></pre>
+      <pre><code class="language-text">scanned ~= (8 / 1000) * 1_000_000 = 8000</code></pre>
     </div>
-    <p>You compare against about <strong>8,000</strong> candidates instead of <strong>1,000,000</strong> — roughly a <strong>125×</strong> reduction in distance work, before PQ and before SIMD tricks. Raising <code>nprobe</code> improves recall and raises latency almost linearly in the scanned set. Raising <code>nlist</code> shrinks each list but makes centroid selection noisier if training data is thin.</p>
+    <p>You compare against about <strong>8,000</strong> candidates instead of <strong>1,000,000</strong> — roughly a <strong>125x</strong> reduction in distance work, before PQ and before SIMD tricks. Raising <code>nprobe</code> improves recall and raises latency almost linearly in the scanned set. Raising <code>nlist</code> shrinks each list but makes centroid selection noisier if training data is thin.</p>
     <h3>Memory: float32 vs PQ codes</h3>
     <p>A single 768-dimensional float32 vector:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">768 * 4 bytes = 3072 bytes</code></pre>
     </div>
-    <p>A common PQ setup encodes the vector into an <strong>8-byte</strong> code (for example 8 subspaces × 1 byte each, or similar bit budgets). Compression ratio:</p>
+    <p>A common PQ setup encodes the vector into an <strong>8-byte</strong> code (for example 8 subspaces x 1 byte each, or similar bit budgets). Compression ratio:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">3072 / 8 = 384</code></pre>
     </div>
-    <p>So an 8-byte PQ code is about <strong>384× smaller</strong> than the float32 vector. One million float32 vectors need roughly 3 GB just for coordinates; the same corpus in 8-byte codes needs about 8 MB for codes (plus codebooks and inverted-list bookkeeping — still far cheaper than full floats).</p>
+    <p>So an 8-byte PQ code is about <strong>384x smaller</strong> than the float32 vector. One million float32 vectors need roughly 3 GB just for coordinates; the same corpus in 8-byte codes needs about 8 MB for codes (plus codebooks and inverted-list bookkeeping — still far cheaper than full floats).</p>
     <h3>IVF+PQ pipeline (residuals)</h3>
     <p>Production stacks usually quantize <strong>residuals</strong>, not raw vectors:</p>
     <ol>
     <li><strong>Train IVF centroids</strong> with k-means on the embedding space.</li>
     <li><strong>Assign</strong> each vector <code>x</code> to nearest centroid <code>c</code>.</li>
     <li>Form the <strong>residual</strong> <code>r = x - c</code> (what remains after the coarse code).</li>
-    <li>Train <strong>PQ</strong> on residuals: split <code>r</code> into <code>m</code> subvectors; for each subspace learn a small codebook (often 256 centroids → 1 byte per subspace).</li>
+    <li>Train <strong>PQ</strong> on residuals: split <code>r</code> into <code>m</code> subvectors; for each subspace learn a small codebook (often 256 centroids -&gt; 1 byte per subspace).</li>
     <li>Store for each point: list id + PQ code of the residual.</li>
     <li>At query time: pick <code>nprobe</code> lists; for each candidate, estimate distance with <strong>ADC</strong> — compare the query (or query residual relative to that list’s centroid) against codebook tables without reconstructing full float vectors.</li>
     </ol>
@@ -132,11 +132,11 @@ flowchart LR
 
 rng = np.random.default_rng(7)
 N, D, nlist, nprobe = 1_000_000, 768, 1000, 8
-print(&quot;scanned ≈&quot;, (nprobe / nlist) * N)          # 8000
+print(&quot;scanned ~=&quot;, (nprobe / nlist) * N)          # 8000
 print(&quot;float32 bytes&quot;, D * 4, &quot;PQ bytes&quot;, 8,
-      &quot;ratio&quot;, (D * 4) // 8)                       # 3072, 8, 384×
+      &quot;ratio&quot;, (D * 4) // 8)                       # 3072, 8, 384x
 
-# Mini IVF on a toy sample (16-d): assign → residual → 4-byte PQ
+# Mini IVF on a toy sample (16-d): assign -&gt; residual -&gt; 4-byte PQ
 sample = rng.normal(size=(2000, 16)).astype(np.float32)
 centroids = sample[rng.choice(len(sample), size=32, replace=False)]
 labels = ((sample[:, None, :] - centroids[None, :, :]) ** 2).sum(axis=2).argmin(axis=1)
@@ -156,12 +156,12 @@ print(&quot;PQ code&quot;, codes)</code></pre>
     <li><strong>Unbalanced lists.</strong> Hot centroids swallow most traffic; p99 latency spikes. Re-train, split hot cells, or use better initialization.</li>
     <li><strong>PQ without residuals.</strong> Encoding raw vectors when IVF already assigned a centroid wastes code capacity and hurts recall.</li>
     <li><strong>Training on the wrong distribution.</strong> Centroids fit last month’s embeddings; a new embedder or domain shift invalidates lists. Re-train after model changes.</li>
-    <li><strong>Celebrating compression only.</strong> 384× smaller codes with 40% recall@10 is not a win for RAG. Gate on recall and answer faithfulness, not RAM alone.</li>
+    <li><strong>Celebrating compression only.</strong> 384x smaller codes with 40% recall@10 is not a win for RAG. Gate on recall and answer faithfulness, not RAM alone.</li>
     <li><strong>Filter + IVF interaction.</strong> Aggressive metadata filters can empty the probed lists. Engines differ on filter-then-probe vs probe-then-filter; measure under real ACL predicates.</li>
     </ul>
     <p>Use IVF+PQ when HNSW RAM hurts and you can retrain after embedder changes; keep a flat sample index for recall baselines. Version model id with <code>nlist</code>/PQ params, and document shipped <code>nprobe</code> so on-call does not “fix latency” by silently killing recall.</p>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>IVF probes a few coarse clusters so you scan about <code>(nprobe / nlist) * N</code> vectors, and PQ stores residuals as tiny codes (~384× smaller than 768-d float32 at 8 bytes) scored with ADC at query time.</p>
+    <p>IVF probes a few coarse clusters so you scan about <code>(nprobe / nlist) * N</code> vectors, and PQ stores residuals as tiny codes (~384x smaller than 768-d float32 at 8 bytes) scored with ADC at query time.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>IVF (inverted file):</strong> partition vectors into lists by nearest coarse centroid; search probes <code>nprobe</code> lists.</li>

@@ -186,11 +186,11 @@ anchor_pass not collapsing</code></pre>
     <li><strong>Val up, anchors down</strong> — Lower LR, fewer steps, mix replay data.</li>
     <li><strong>Trainable% ~100%</strong> — PEFT wrapping failed; stop and fix.</li>
     </ul>
-    <p>Write the symptom → check mapping in your notes; it will save the second experiment.</p>
+    <p>Write the symptom -&gt; check mapping in your notes; it will save the second experiment.</p>
     <h3>Resource-honest scope</h3>
     <p>If you only have a laptop CPU, still produce: validated JSONL, config file, toy loop proving you understand gradients on adapters, and a filled scorecard with &quot;simulated&quot; or API-evaluated numbers if you call a hosted base model for baselines. The sprint grades process rigor.</p>
     <h3>Optional stretch</h3>
-    <p>Add a second run that changes exactly one knob (rank 16 → 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.</p>
+    <p>Add a second run that changes exactly one knob (rank 16 -&gt; 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.</p>
     <h3>Logging fields worth keeping</h3>
     <p>Even in a short sprint, log: timestamp, run_id, step, train_loss, val_schema_rate, val_intent_acc, anchor_pass, lr, epoch. A CSV with those columns is enough to reconstruct why you pinned a checkpoint. If you only save the final adapter, you cannot explain the curve later.</p>
     <h3>Collaboration note</h3>

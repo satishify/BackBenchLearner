@@ -22,7 +22,7 @@ flowchart TB
 
 **Core API.**
 
-- **Upsert:** store `id → vector`, plus metadata (`source`, `tenant`, `updated_at`).
+- **Upsert:** store `id -> vector`, plus metadata (`source`, `tenant`, `updated_at`).
 - **Query:** vector + `top_k` + optional metadata filter (`tenant = acme AND lang = en`).
 - **Delete / tombstone:** remove outdated chunks when docs change.
 
@@ -37,7 +37,7 @@ flowchart TB
 
 **Hybrid storage.** Many teams keep keywords in Elasticsearch/OpenSearch and vectors in a specialist (or use one engine that does both). Postgres + `pgvector` is a popular starting point when operational simplicity beats peak ANN performance.
 
-**Common systems.** Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension × cardinality.
+**Common systems.** Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension x cardinality.
 
 **Operations.** Version embedding models: a model change requires **full re-embed**. Track index build time, recall@k vs a flat baseline, p95 query latency, and staleness of upserts. Back up ids and metadata; vectors can be regenerated if you keep source text.
 

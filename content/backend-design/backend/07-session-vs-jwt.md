@@ -9,7 +9,7 @@ description: "Compare session-based authentication and JWT for secure backend au
 
 **Session-based auth:** after login, the server stores a session record (Redis/DB) and gives the browser an opaque **session id** cookie. Each request sends the cookie; the server looks up the session. Revocation is deleting a row. Data can change every request (role upgrades apply immediately).
 
-**JWT (JSON Web Token):** after login, the server signs a compact token containing claims (`sub`, `exp`, maybe `role`). The client sends `Authorization: Bearer …`. Servers validate the signature and expiry **without a DB hit** (for pure JWT). Revocation is hard: you wait for `exp`, or maintain a denylist (which reintroduces server state).
+**JWT (JSON Web Token):** after login, the server signs a compact token containing claims (`sub`, `exp`, maybe `role`). The client sends `Authorization: Bearer ...`. Servers validate the signature and expiry **without a DB hit** (for pure JWT). Revocation is hard: you wait for `exp`, or maintain a denylist (which reintroduces server state).
 
 Opaque tokens looked up in Redis are “session-shaped” even if you put them in a Bearer header. The real axis is **reference token** (lookup) vs **self-contained signed token**.
 
@@ -23,7 +23,7 @@ sequenceDiagram
 
     Note over B,Store: Session cookie
     B->>API: POST /login
-    API->>Store: SET sess:abc → {user:1}
+    API->>Store: SET sess:abc -> {user:1}
     API-->>B: Set-Cookie: sid=abc
     B->>API: GET /me Cookie: sid=abc
     API->>Store: GET sess:abc

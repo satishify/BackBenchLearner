@@ -48,8 +48,8 @@
     <h3>Build: layers and neighbors</h3>
     <p>Each vector is inserted with a random maximum layer (geometric distribution — few points appear on the top layers). At every layer up to that max, the new point connects to up to <strong>M</strong> nearest neighbors found under the current graph, with heuristics that keep edges useful (not only the absolute closest, which can create traffic jams).</p>
     <ul>
-    <li><strong>M</strong> — typical degree / max neighbors per node (per layer; some implementations use <code>2M</code> on the base layer). Higher M → denser graph → better recall, more RAM, slower builds.</li>
-    <li><strong>efConstruction</strong> — size of the candidate set explored while inserting. Higher → better graph quality, longer index build.</li>
+    <li><strong>M</strong> — typical degree / max neighbors per node (per layer; some implementations use <code>2M</code> on the base layer). Higher M -&gt; denser graph -&gt; better recall, more RAM, slower builds.</li>
+    <li><strong>efConstruction</strong> — size of the candidate set explored while inserting. Higher -&gt; better graph quality, longer index build.</li>
     </ul>
     <p>Build is write-heavy and often offline or batched. Online upserts are supported by many engines but can fragment quality if you never rebuild.</p>
     <h3>Search: greedy then expand</h3>
@@ -59,7 +59,7 @@
     <li>Drop one layer; repeat.</li>
     <li>On the base layer, run a best-first search bounded by <strong>efSearch</strong>: keep a dynamic candidate list of size <code>efSearch</code>, expand neighbors, return the best <code>k</code>.</li>
     </ol>
-    <p><strong>efSearch</strong> must be ≥ <code>k</code>. Raising it improves recall roughly monotonically and increases latency. It is the primary runtime trade-off — change it without rebuilding the index.</p>
+    <p><strong>efSearch</strong> must be &gt;= <code>k</code>. Raising it improves recall roughly monotonically and increases latency. It is the primary runtime trade-off — change it without rebuilding the index.</p>
     <h3>Compare to nprobe</h3>
     <table>
       <thead><tr>

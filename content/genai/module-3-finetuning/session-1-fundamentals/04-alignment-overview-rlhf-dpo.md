@@ -77,7 +77,7 @@ Teams like DPO when they want preference gains with a simpler trainer. Quality s
 | Safety-critical nuanced refusals | Preference data + strong eval; not vibes |
 
 :::tip
-Garbage preferences in → confident wrong values out. Invest in rater guidelines and agreement checks before fancy optimizers.
+Garbage preferences in -> confident wrong values out. Invest in rater guidelines and agreement checks before fancy optimizers.
 :::
 
 ## In code
@@ -137,7 +137,7 @@ Good pairs share the same prompt and differ on the dimension you care about (cor
 
 ### Where SFT ends and preferences begin
 
-Ship SFT when the main bugs are format and imitation. Reach for preferences when raters systematically prefer B over A even though both are "valid," or when safety policy needs graded judgment. Many teams do SFT → DPO → evaluate; RLHF stacks appear when they already invest in reward modeling infrastructure.
+Ship SFT when the main bugs are format and imitation. Reach for preferences when raters systematically prefer B over A even though both are "valid," or when safety policy needs graded judgment. Many teams do SFT -> DPO -> evaluate; RLHF stacks appear when they already invest in reward modeling infrastructure.
 
 ### KL and over-optimization (plain language)
 

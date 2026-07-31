@@ -52,7 +52,7 @@ flowchart TB
     <h2 id="how-it-works">How it works</h2>
     <p><strong>Core API.</strong></p>
     <ul>
-    <li><strong>Upsert:</strong> store <code>id → vector</code>, plus metadata (<code>source</code>, <code>tenant</code>, <code>updated_at</code>).</li>
+    <li><strong>Upsert:</strong> store <code>id -&gt; vector</code>, plus metadata (<code>source</code>, <code>tenant</code>, <code>updated_at</code>).</li>
     <li><strong>Query:</strong> vector + <code>top_k</code> + optional metadata filter (<code>tenant = acme AND lang = en</code>).</li>
     <li><strong>Delete / tombstone:</strong> remove outdated chunks when docs change.</li>
     </ul>
@@ -65,7 +65,7 @@ flowchart TB
     </ul>
     <p><strong>Metadata filtering.</strong> Essential for multi-tenant SaaS and ACL. Filter-then-search vs search-then-filter changes performance; engines differ. Always enforce authorization in your app layer too — the index filter is necessary but not sufficient if misconfigured.</p>
     <p><strong>Hybrid storage.</strong> Many teams keep keywords in Elasticsearch/OpenSearch and vectors in a specialist (or use one engine that does both). Postgres + <code>pgvector</code> is a popular starting point when operational simplicity beats peak ANN performance.</p>
-    <p><strong>Common systems.</strong> Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension × cardinality.</p>
+    <p><strong>Common systems.</strong> Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model (managed vs self-host), filter strength, hybrid search, and cost at your dimension x cardinality.</p>
     <p><strong>Operations.</strong> Version embedding models: a model change requires <strong>full re-embed</strong>. Track index build time, recall@k vs a flat baseline, p95 query latency, and staleness of upserts. Back up ids and metadata; vectors can be regenerated if you keep source text.</p>
     <h2 id="in-code">In code</h2>
     <p>Simulate a tiny in-memory vector store with cosine search and metadata filters — the mental model behind every hosted API.</p>

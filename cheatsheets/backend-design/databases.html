@@ -58,12 +58,12 @@
     <h2 id="acid">ACID</h2>
     <ul>
     <li>Atomicity, Consistency (constraints), Isolation, Durability.</li>
-    <li>“Consistency” here ≠ distributed CAP consistency — don’t mix vocab in interviews.</li>
+    <li>“Consistency” here != distributed CAP consistency — don’t mix vocab in interviews.</li>
     </ul>
     <h2 id="transactions-isolation">Transactions &amp; isolation</h2>
     <ul>
     <li>Phenomena: dirty read, non-repeatable read, phantom.</li>
-    <li>Levels (rough): Read Uncommitted → Read Committed → Repeatable Read → Serializable.</li>
+    <li>Levels (rough): Read Uncommitted -&gt; Read Committed -&gt; Repeatable Read -&gt; Serializable.</li>
     <li>Default often Read Committed. Serializable / SSI when correctness &gt; throughput.</li>
     </ul>
     <h2 id="normalization-vs-denormalization">Normalization vs denormalization</h2>
@@ -74,7 +74,7 @@
     <h2 id="pagination">Pagination</h2>
     <ul>
     <li>Offset: simple, drifts under inserts, expensive deep pages.</li>
-    <li>Keyset / cursor: <code>WHERE (created_at, id) &lt; (?, ?) ORDER BY … LIMIT n</code> — stable and fast with the right index.</li>
+    <li>Keyset / cursor: <code>WHERE (created_at, id) &lt; (?, ?) ORDER BY ... LIMIT n</code> — stable and fast with the right index.</li>
     </ul>
     <h2 id="sharding-partitioning">Sharding &amp; partitioning</h2>
     <ul>
@@ -84,7 +84,7 @@
     </ul>
     <h2 id="read-replicas-write-scaling">Read replicas &amp; write scaling</h2>
     <ul>
-    <li>Replicas scale reads; replication lag → stale reads. Route accordingly.</li>
+    <li>Replicas scale reads; replication lag -&gt; stale reads. Route accordingly.</li>
     <li>Writes still hit primary (or a carefully designed multi-primary — hard).</li>
     <li>Cache before you prematurely shard.</li>
     </ul>
@@ -92,7 +92,7 @@
     <ul>
     <li>Unique constraints + idempotency keys prevent duplicates at the source of truth.</li>
     <li><strong>Optimistic</strong>: version/ETag; retry on conflict — good for low contention.</li>
-    <li><strong>Pessimistic</strong>: <code>SELECT … FOR UPDATE</code> — good for high contention critical sections; watch deadlocks.</li>
+    <li><strong>Pessimistic</strong>: <code>SELECT ... FOR UPDATE</code> — good for high contention critical sections; watch deadlocks.</li>
     </ul>
     <h2 id="30-minute-drill">30-minute drill</h2>
     <ol>

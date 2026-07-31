@@ -120,7 +120,7 @@ relative to the same gap under pi_ref
     </table>
     <aside class="callout callout-tip">
       <p class="callout-title">Tip</p>
-    <p>Garbage preferences in → confident wrong values out. Invest in rater guidelines and agreement checks before fancy optimizers.</p>
+    <p>Garbage preferences in -&gt; confident wrong values out. Invest in rater guidelines and agreement checks before fancy optimizers.</p>
     </aside>
     <h2 id="in-code">In code</h2>
     <p>Toy preference update: push up winner score, push down loser, keep a reference gap in mind.</p>
@@ -173,7 +173,7 @@ for step in range(5):
     <h3>Preference data quality bar</h3>
     <p>Good pairs share the same prompt and differ on the dimension you care about (correctness, tone, refusal). Bad pairs mix unrelated axes (one answer wrong, the other just longer). Write rater guidelines with examples of ties, and measure inter-rater agreement. If agreement is poor, fix the guide before training.</p>
     <h3>Where SFT ends and preferences begin</h3>
-    <p>Ship SFT when the main bugs are format and imitation. Reach for preferences when raters systematically prefer B over A even though both are &quot;valid,&quot; or when safety policy needs graded judgment. Many teams do SFT → DPO → evaluate; RLHF stacks appear when they already invest in reward modeling infrastructure.</p>
+    <p>Ship SFT when the main bugs are format and imitation. Reach for preferences when raters systematically prefer B over A even though both are &quot;valid,&quot; or when safety policy needs graded judgment. Many teams do SFT -&gt; DPO -&gt; evaluate; RLHF stacks appear when they already invest in reward modeling infrastructure.</p>
     <h3>KL and over-optimization (plain language)</h3>
     <p>The reference model is a leash. Without it, optimizers invent high-reward nonsense: endless apologies, empty hedging, or keyword stuffing that fooled the reward model. If outputs get strangely verbose or sycophantic after preference tuning, strengthen the leash (higher beta / KL) and revisit the preference labels.</p>
     <h2 id="one-line-summary">One-line summary</h2>

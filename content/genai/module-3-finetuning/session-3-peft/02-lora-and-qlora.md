@@ -7,11 +7,11 @@ LoRA (Low-Rank Adaptation) is the PEFT method most product teams meet first. Ins
 
 ## Intuition
 
-A dense update `ΔW` for a `d x d` matrix has `d^2` parameters. LoRA assumes task updates are approximately **low rank**:
+A dense update `delta W` for a `d x d` matrix has `d^2` parameters. LoRA assumes task updates are approximately **low rank**:
 
 ```text
-W' = W + ΔW
-ΔW ≈ B @ A    where A is r x d, B is d x r, r << d
+W' = W + delta W
+delta W ~= B @ A    where A is r x d, B is d x r, r << d
 ```
 
 You train `A` and `B` (plus maybe biases/heads); `W` stays frozen. After training you can keep them separate or **merge** `W + BA` into a single matrix for serving.
@@ -31,7 +31,7 @@ Common targets in transformers:
 - Attention projections: `q_proj`, `k_proj`, `v_proj`, `o_proj`
 - Sometimes MLP: `gate_proj`, `up_proj`, `down_proj`
 
-More targets → more capacity and memory. Start with attention; expand if underfit.
+More targets -> more capacity and memory. Start with attention; expand if underfit.
 
 ### Rank `r` and scaling
 
@@ -106,7 +106,7 @@ print("out_dim", len(y), "trainable", d * r + r * d)
 
 
 def merge_W(W, A, B, scale_factor):
-    # ΔW_ij = scale * sum_k B_ik * A_kj
+    # delta W_ij = scale * sum_k B_ik * A_kj
     d = len(W)
     r = len(A)
     merged = [row[:] for row in W]

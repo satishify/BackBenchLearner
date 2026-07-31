@@ -3,22 +3,22 @@ questions:
   - q: "IVF with N=1,000,000 vectors, nlist=1000, nprobe=8. Approximately how many vectors are scanned (balanced lists)?"
     options:
       - "1,000,000 (always full scan)"
-      - "8,000 ≈ (nprobe/nlist)×N"
+      - "8,000 ~= (nprobe/nlist)xN"
       - "1,000"
       - "8"
     answer: 1
-    why: "scanned ≈ (8/1000)×1,000,000 = 8,000 candidates—about a 125× reduction versus comparing all N."
+    why: "scanned ~= (8/1000)x1,000,000 = 8,000 candidates—about a 125x reduction versus comparing all N."
 
-  - q: "A 768-dim float32 vector uses 768×4=3072 bytes. An 8-byte PQ code yields what compression ratio?"
+  - q: "A 768-dim float32 vector uses 768x4=3072 bytes. An 8-byte PQ code yields what compression ratio?"
     options:
-      - "8×"
-      - "768×"
-      - "384× (3072/8)"
-      - "1× (no compression)"
+      - "8x"
+      - "768x"
+      - "384x (3072/8)"
+      - "1x (no compression)"
     answer: 2
-    why: "3072÷8 = 384, so the PQ code is about 384× smaller than the float32 coordinates (before codebook/list overhead)."
+    why: "3072÷8 = 384, so the PQ code is about 384x smaller than the float32 coordinates (before codebook/list overhead)."
 
-  - q: "If nlist≈sqrt(N) is used as a starting heuristic for N=1e6, nlist is about…"
+  - q: "If nlist~=sqrt(N) is used as a starting heuristic for N=1e6, nlist is about..."
     options:
       - "10"
       - "1000"
@@ -27,7 +27,7 @@ questions:
     answer: 1
     why: "sqrt(1,000,000)=1,000 lists is a common IVF starting point taught in the lesson—always validate recall."
 
-  - q: "Raising nprobe while holding nlist fixed typically…"
+  - q: "Raising nprobe while holding nlist fixed typically..."
     options:
       - "Lowers recall and lowers latency"
       - "Raises recall and raises latency roughly with more lists scanned"
@@ -36,7 +36,7 @@ questions:
     answer: 1
     why: "More probes visit more candidates: better chance of true neighbors, more distance work."
 
-  - q: "Why quantize residuals (x − centroid) in IVF+PQ rather than raw vectors?"
+  - q: "Why quantize residuals (x - centroid) in IVF+PQ rather than raw vectors?"
     options:
       - "Residuals are always zero"
       - "The coarse centroid already explains much of the vector; PQ models the leftover better at the same code length"
@@ -45,7 +45,7 @@ questions:
     answer: 1
     why: "Residual PQ usually improves distance estimates versus quantizing raw vectors at fixed code size."
 
-  - q: "HNSW’s efSearch knob is most analogous to IVF’s…"
+  - q: "HNSW’s efSearch knob is most analogous to IVF’s..."
     options:
       - "Embedding dimension d"
       - "nprobe (spend more query compute for recall)"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "efSearch widens graph exploration at query time, similar in spirit to probing more IVF lists."
 
-  - q: "A retrieval gateway cache helps most when…"
+  - q: "A retrieval gateway cache helps most when..."
     options:
       - "Every query is unique forever"
       - "Popular normalized queries repeat and can reuse prior top-k results safely"
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "Caching repeated retrievals cuts latency/cost; keys must include tenant/ACL and embedding-model version."
 
-  - q: "Multi-hop / agentic retrieval is warranted when…"
+  - q: "Multi-hop / agentic retrieval is warranted when..."
     options:
       - "A single keyword always finds the full answer"
       - "Answering needs chained lookups (find entity A, then fetch related record B)"
@@ -72,7 +72,7 @@ questions:
     answer: 1
     why: "One-shot RAG packs fail when evidence is spread across dependent hops."
 
-  - q: "Faithfulness/groundedness metrics primarily detect…"
+  - q: "Faithfulness/groundedness metrics primarily detect..."
     options:
       - "Whether ANN recall@10 is 100%"
       - "Whether the answer’s claims are supported by retrieved evidence"
@@ -81,11 +81,11 @@ questions:
     answer: 1
     why: "You can retrieve well and still hallucinate; faithfulness checks claim–evidence alignment."
 
-  - q: "Citations that point to chunk IDs the model never saw in context indicate…"
+  - q: "Citations that point to chunk IDs the model never saw in context indicate..."
     options:
       - "Perfect grounding"
       - "Fabricated citations—enforce cite-only-from-provided-sources or post-validate spans"
       - "That IVF nprobe was too high"
-      - "That PQ compression was 384× too small"
+      - "That PQ compression was 384x too small"
     answer: 1
     why: "Hallucinated references look authoritative; validate citations against the actual prompt evidence set."

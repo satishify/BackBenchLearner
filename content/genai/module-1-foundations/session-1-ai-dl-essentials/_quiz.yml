@@ -34,7 +34,7 @@ questions:
       - "15,000,000"
       - "50,000 / 300"
     answer: 2
-    why: "The table is V × d = 50,000 × 300 = 15,000,000 trainable parameters (one row per token)."
+    why: "The table is V x d = 50,000 x 300 = 15,000,000 trainable parameters (one row per token)."
 
   - q: "In a perceptron / artificial neuron, what role does the nonlinear activation play?"
     options:
@@ -63,7 +63,7 @@ questions:
     answer: 1
     why: "Dropout forces redundancy by randomly masking units, a classic regularizer against brittle co-adaptation."
 
-  - q: "Deep Learning is best described relative to classical ML feature engineering as…"
+  - q: "Deep Learning is best described relative to classical ML feature engineering as..."
     options:
       - "Always requiring fewer data and less compute"
       - "Learning hierarchical representations from raw or lightly processed inputs via multi-layer nets"

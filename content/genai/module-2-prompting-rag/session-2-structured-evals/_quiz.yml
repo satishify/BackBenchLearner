@@ -45,7 +45,7 @@ questions:
     answer: 1
     why: "With tiny noisy data, prompting + clear taxonomy usually beats jumping straight to heavy fine-tuning."
 
-  - q: "QA prompting that must cite a provided passage should instruct the model to…"
+  - q: "QA prompting that must cite a provided passage should instruct the model to..."
     options:
       - "Ignore the passage and use world knowledge first"
       - "Answer only from the passage and refuse or say unknown when unsupported"
@@ -54,7 +54,7 @@ questions:
     answer: 1
     why: "Grounded QA needs an explicit closed-book-over-context policy so the model does not freestyle."
 
-  - q: "Structured decoding / JSON mode helps most when…"
+  - q: "Structured decoding / JSON mode helps most when..."
     options:
       - "You want open-ended poetry with no fields"
       - "Downstream code will parse fields and a malformed key breaks the pipeline"

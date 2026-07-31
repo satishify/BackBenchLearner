@@ -16,11 +16,11 @@ Revision for the **Backend Core Concepts** chapter.
 
 ## HTTP methods & status codes
 - GET safe/idempotent. POST create/non-idempotent by default. PUT replace. PATCH partial. DELETE remove.
-- **2xx** success · **3xx** redirect · **4xx** client fault · **5xx** server fault.
+- **2xx** success * **3xx** redirect * **4xx** client fault * **5xx** server fault.
 - Memorable: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized (auth missing/bad), 403 Forbidden (authz), 404, 409 Conflict, 429 Too Many Requests, 500, 502/503.
 
 ## Stateless vs stateful
-- Stateless request carries all needed context (tokens, ids) → easy horizontal scale.
+- Stateless request carries all needed context (tokens, ids) -> easy horizontal scale.
 - Stateful server sessions need sticky sessions or shared session store.
 - Pick stateful only when you must (WebSockets, shopping cart edge cases) and design the store.
 
@@ -45,7 +45,7 @@ Revision for the **Backend Core Concepts** chapter.
 
 ## Idempotency
 - Retries must not double-charge. Clients send `Idempotency-Key` on POST payments/orders.
-- Server stores key → response (or in-flight lock) for a TTL. Same key + same body → same outcome.
+- Server stores key -> response (or in-flight lock) for a TTL. Same key + same body -> same outcome.
 
 ## 25-minute drill
 1. Map 401 vs 403 with one example each.

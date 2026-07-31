@@ -18,8 +18,8 @@ Order matters: identify first, then permit. Returning `401` means “we don’t 
 Typical request pipeline:
 
 1. Extract credential (cookie, `Authorization: Bearer`, API key header)
-2. Authenticate → `user_id` / service principal
-3. Authorize → role, scope, or row-level rule
+2. Authenticate -> `user_id` / service principal
+3. Authorize -> role, scope, or row-level rule
 4. Run business logic
 
 ```mermaid
@@ -29,7 +29,7 @@ sequenceDiagram
     participant DB as DB
 
     C->>API: GET /notes/7  Bearer token
-    API->>API: Authn: token → user=42
+    API->>API: Authn: token -> user=42
     API->>DB: SELECT owner_id FROM notes WHERE id=7
     alt owner_id == 42 or role=admin
         API-->>C: 200 note
@@ -70,7 +70,7 @@ def db():
     c.row_factory = sqlite3.Row
     return c
 
-# --- Authn: credential → user ---
+# --- Authn: credential -> user ---
 def hash_pw(pw: str, salt: str) -> str:
     return hashlib.sha256(f"{salt}:{pw}".encode()).hexdigest()
 

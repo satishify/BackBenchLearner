@@ -24,13 +24,13 @@ flowchart LR
     v1a --> v2b[v2]
 ```
 
-**Blue-green.** Two full environments. Green (new) warms up; switch load balancer from blue → green. Rollback = switch back. Cost: roughly 2× capacity during cutover. DB migrations still need care (both may touch data).
+**Blue-green.** Two full environments. Green (new) warms up; switch load balancer from blue -> green. Rollback = switch back. Cost: roughly 2x capacity during cutover. DB migrations still need care (both may touch data).
 
 **Canary.** Send 1–5% of traffic to the new version; compare error/latency; ramp up. Best signal-to-risk ratio when you have good metrics.
 
-**DB migrations.** Expand/contract pattern: deploy code that reads old+new → migrate data → deploy code that writes new → remove old. Never expand and contract in one scary step if you need zero downtime.
+**DB migrations.** Expand/contract pattern: deploy code that reads old+new -> migrate data -> deploy code that writes new -> remove old. Never expand and contract in one scary step if you need zero downtime.
 
-**Health and readiness.** Liveness ≠ readiness. Ready means “can take traffic” (deps up). Only ready instances enter the LB pool. Connection draining finishes in-flight requests before kill.
+**Health and readiness.** Liveness != readiness. Ready means “can take traffic” (deps up). Only ready instances enter the LB pool. Connection draining finishes in-flight requests before kill.
 
 **Feature flags as deploy armor.** Ship dark code behind a flag, deploy widely while still serving old behavior, then flip the flag for 1% of users. If metrics tank, flip off without redeploying binaries — faster than baking a new image. Flags do not replace canaries, but they shrink the window where a bad code path is unavoidable.
 
@@ -58,7 +58,7 @@ def liveness():
 
 @app.get("/readyz")
 def readiness():
-    # fail readiness if critical dep is down → LB stops new traffic
+    # fail readiness if critical dep is down -> LB stops new traffic
     try:
         r.ping()
     except Exception:

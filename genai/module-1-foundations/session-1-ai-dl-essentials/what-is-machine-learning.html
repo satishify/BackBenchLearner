@@ -98,7 +98,7 @@ flowchart LR
     <p>Fit a line with the closed-form least-squares solution (stdlib only), then compare to a naive average baseline. No scikit-learn.</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-python"># Predict y from x: y ≈ a + b*x  (ordinary least squares, 1-D)
+      <pre><code class="language-python"># Predict y from x: y ~= a + b*x  (ordinary least squares, 1-D)
 xs = [1.0, 2.0, 3.0, 4.0, 5.0]
 ys = [2.1, 3.9, 6.2, 7.8, 10.1]
 
@@ -133,7 +133,7 @@ print(f&quot;test MSE model={err_model:.3f} baseline={err_base:.3f}&quot;)</code
     <li><strong>Data leakage.</strong> Using future information or the label itself as a feature makes test scores look amazing and production fail.</li>
     <li><strong>Wrong split.</strong> Random splits on time-ordered or grouped data (same user in train and test) inflate metrics.</li>
     <li><strong>Imbalanced classes.</strong> 99% accuracy can hide a useless minority-class detector; pick metrics that match the decision (precision, recall, F1, calibration).</li>
-    <li><strong>Overfitting.</strong> A model that memorizes noise on the train set will not travel. Prefer simpler models, more data, or regularization when train ≫ test performance.</li>
+    <li><strong>Overfitting.</strong> A model that memorizes noise on the train set will not travel. Prefer simpler models, more data, or regularization when train &gt;&gt; test performance.</li>
     <li><strong>Paradigm mismatch.</strong> Supervised labels may be expensive; unsupervised clusters may not match business labels; RL needs careful reward design or it will game the metric.</li>
     <li><strong>Silent distribution shift.</strong> The world changes after launch; without monitoring, yesterday’s good model becomes tomorrow’s quiet failure.</li>
     </ul>

@@ -30,11 +30,11 @@ Keep rewrites **instrumented**: log original vs rewritten and A/B hit rates.
 
 **Rerankers.**
 
-- **Cross-encoders:** jointly encode `(query, document)` for a relevance score; accurate, slower — perfect for N≤100.
+- **Cross-encoders:** jointly encode `(query, document)` for a relevance score; accurate, slower — perfect for N<=100.
 - **LLM rerankers:** prompt a model to order passages; flexible, costlier.
 - **Feature rerankers:** boost by recency, click priors, or metadata match.
 
-**Typical cascade.** Hybrid retrieve N=50 → cross-encode → keep k=5 → generate. Most quality gains per dollar sit in this cascade, not in doubling LLM size.
+**Typical cascade.** Hybrid retrieve N=50 -> cross-encode -> keep k=5 -> generate. Most quality gains per dollar sit in this cascade, not in doubling LLM size.
 
 ## In code
 

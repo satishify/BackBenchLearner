@@ -52,8 +52,8 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-1-foundations",
       "slug": "module-1-foundations",
-      "title": "Module 1 · Foundations revision",
-      "description": "AI → DL → transformers in one sitting. Re-read before Module 1 mock.",
+      "title": "Module 1 - Foundations revision",
+      "description": "AI to DL to transformers in one sitting. Re-read before Module 1 mock.",
       "minutes": 30,
       "module": "Module 1",
       "path": "cheatsheets/genai/module-1-foundations.html"
@@ -61,7 +61,7 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-2-prompting-rag",
       "slug": "module-2-prompting-rag",
-      "title": "Module 2 · Prompting, RAG & Agents revision",
+      "title": "Module 2 - Prompting, RAG & Agents revision",
       "description": "APIs, evals, prompting, RAG indexes, production retrieval, agentic loops — exam-dense.",
       "minutes": 35,
       "module": "Module 2",
@@ -70,7 +70,7 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-3-finetuning",
       "slug": "module-3-finetuning",
-      "title": "Module 3 · Fine-tuning revision",
+      "title": "Module 3 - Fine-tuning revision",
       "description": "When to fine-tune, SFT vs preference, PEFT/LoRA recipes — interview-ready.",
       "minutes": 25,
       "module": "Module 3",
@@ -79,7 +79,7 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-4-multimodal-agentic",
       "slug": "module-4-multimodal-agentic",
-      "title": "Module 4 · Multimodal & agents revision",
+      "title": "Module 4 - Multimodal & agents revision",
       "description": "Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.",
       "minutes": 15,
       "module": "Module 4",

@@ -46,11 +46,11 @@ flowchart TB
 | Failure | Node down = outage | Survive single-node loss |
 | Cost shape | Premium large instances | Commodity + orchestration |
 
-**What usually bottlenecks first.** App CPU → scale app horizontally. DB CPU/IO → vertical DB, then read replicas, then shard. Redis memory → bigger Redis or cluster. Don’t scale the wrong tier.
+**What usually bottlenecks first.** App CPU -> scale app horizontally. DB CPU/IO -> vertical DB, then read replicas, then shard. Redis memory -> bigger Redis or cluster. Don’t scale the wrong tier.
 
 **Elasticity.** Horizontal pairs with auto-scaling: add pods when CPU or RPS rises, remove when calm. Vertical changes are clumsier (resize = often restart).
 
-**Cost and risk.** A larger instance can be the cheapest fix for a week-long crunch. Long term, a single fat DB or app node concentrates blast radius: one failure, one AZ issue, one noisy neighbor. Horizontal scale spreads risk but introduces coordination cost — load balancers, service discovery, rolling deploys, and careful connection pooling so 20 new pods do not open 20 × N database connections and flatten Postgres.
+**Cost and risk.** A larger instance can be the cheapest fix for a week-long crunch. Long term, a single fat DB or app node concentrates blast radius: one failure, one AZ issue, one noisy neighbor. Horizontal scale spreads risk but introduces coordination cost — load balancers, service discovery, rolling deploys, and careful connection pooling so 20 new pods do not open 20 x N database connections and flatten Postgres.
 
 **Hybrid reality.** Most mature systems do both: vertically size the database within reason, horizontally scale the app and workers, then add read replicas or shards only when metrics prove the data tier is the constraint. Scale the bottleneck you measured, not the tier that is easiest to click “upgrade” on.
 
@@ -93,7 +93,7 @@ Run multiple replicas (ops sketch):
 ```bash
 # same image, N tasks behind a load balancer
 uvicorn app:app --host 0.0.0.0 --port 8000
-# scale: replica count 1 → 8 when RPS rises
+# scale: replica count 1 -> 8 when RPS rises
 ```
 
 ## What goes wrong
@@ -105,7 +105,7 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 - **Auto-scale flapping** — thresholds too tight; constant churn and cold-start latency.
 
 :::tip
-Default path: vertical until painful, then make the app stateless and scale horizontally; scale the data tier with a deliberate plan (replicas → partition).
+Default path: vertical until painful, then make the app stateless and scale horizontally; scale the data tier with a deliberate plan (replicas -> partition).
 :::
 
 ## One-line summary

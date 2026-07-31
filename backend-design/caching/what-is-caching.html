@@ -46,7 +46,7 @@
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <p><strong>Definition.</strong> A cache is a store optimized for fast reads of recently or frequently used data, with a policy for what lives there and when it dies (TTL, eviction, invalidation).</p>
-    <p><strong>Request path.</strong> A typical read looks like: check cache → on hit, return; on miss, load from source of truth → write into cache → return. Writes to the source of truth create a consistency problem (covered in later lessons): you must invalidate, overwrite, or accept TTL-bounded staleness.</p>
+    <p><strong>Request path.</strong> A typical read looks like: check cache -&gt; on hit, return; on miss, load from source of truth -&gt; write into cache -&gt; return. Writes to the source of truth create a consistency problem (covered in later lessons): you must invalidate, overwrite, or accept TTL-bounded staleness.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR

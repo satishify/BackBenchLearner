@@ -15,7 +15,7 @@ If two requests can touch the same row, design an atomic check-and-update — ne
 
 ## How it works
 
-**Lost update.** Read balance 100, read balance 100, write 100−30, write 100−20 → final 80 instead of 50.
+**Lost update.** Read balance 100, read balance 100, write 100-30, write 100-20 -> final 80 instead of 50.
 
 **Check-then-act.** `if not exists: insert` races to unique violations or duplicates without a constraint.
 
@@ -24,12 +24,12 @@ If two requests can touch the same row, design an atomic check-and-update — ne
 | Tool | Idea |
 | --- | --- |
 | DB unique constraints | Last line of defense for duplicates |
-| `UPDATE … WHERE` version/condition | Optimistic concurrency |
-| `SELECT … FOR UPDATE` | Pessimistic row lock |
+| `UPDATE ... WHERE` version/condition | Optimistic concurrency |
+| `SELECT ... FOR UPDATE` | Pessimistic row lock |
 | Serializability | Strong isolation (costly) |
 | Distributed lock | Cross-service mutex (next lesson) |
 
-**Optimistic vs pessimistic (preview).** Optimistic: assume rare conflict; bump version; retry on conflict. Pessimistic: lock row while you decide. High contention → pessimistic or queue serialization; low contention → optimistic.
+**Optimistic vs pessimistic (preview).** Optimistic: assume rare conflict; bump version; retry on conflict. Pessimistic: lock row while you decide. High contention -> pessimistic or queue serialization; low contention -> optimistic.
 
 ```mermaid
 sequenceDiagram

@@ -20,7 +20,7 @@ flowchart TB
 
 ## How it works
 
-**Offline dataset.** Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (“what is our policy on teleportation?” → should refuse).
+**Offline dataset.** Collect questions with reference answers and, ideally, gold document IDs. Include multi-hop, ID-heavy, and adversarial empties (“what is our policy on teleportation?” -> should refuse).
 
 **Retrieval metrics.**
 
@@ -108,7 +108,7 @@ Replace the toy faithfulness scorer with a calibrated judge or entailment model 
 
 **Synthetic + real.** LLM-generated questions help coverage early, but always include real user phrasings — typos, code-switches, and terse fragments. Synthetic-only suites overestimate readiness.
 
-**Regression gates.** Block deploys on: recall@k drop beyond ε, faithfulness drop beyond ε, or any failed mandatory abstention case. Allow UX wording changes to ship with softer gates if retrieval metrics hold.
+**Regression gates.** Block deploys on: recall@k drop beyond epsilon, faithfulness drop beyond epsilon, or any failed mandatory abstention case. Allow UX wording changes to ship with softer gates if retrieval metrics hold.
 
 **Incident learning.** After each wrong-answer incident, add one example that would have caught it, link the PR that fixed the stage, and note which metric moved. That feedback loop is how RAG systems mature past demo quality.
 

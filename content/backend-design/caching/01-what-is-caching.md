@@ -19,7 +19,7 @@ Cache the expensive, read-heavy, slowly changing path — not every byte that mo
 
 **Definition.** A cache is a store optimized for fast reads of recently or frequently used data, with a policy for what lives there and when it dies (TTL, eviction, invalidation).
 
-**Request path.** A typical read looks like: check cache → on hit, return; on miss, load from source of truth → write into cache → return. Writes to the source of truth create a consistency problem (covered in later lessons): you must invalidate, overwrite, or accept TTL-bounded staleness.
+**Request path.** A typical read looks like: check cache -> on hit, return; on miss, load from source of truth -> write into cache -> return. Writes to the source of truth create a consistency problem (covered in later lessons): you must invalidate, overwrite, or accept TTL-bounded staleness.
 
 ```mermaid
 flowchart LR

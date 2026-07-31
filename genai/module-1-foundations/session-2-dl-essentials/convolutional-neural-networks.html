@@ -36,13 +36,13 @@
       <h1>Convolutional Neural Networks</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A fully connected net on a 224×224 RGB image would wire every pixel to every hidden unit and drown in parameters. <strong>Convolutional neural networks (CNNs)</strong> refuse that waste: they slide small filters across the input, reuse the same weights everywhere, and build a hierarchy from edges to parts to objects. Vision systems, many speech front-ends, and even some text models historically leaned on this inductive bias. Even if your day job is transformers, CNN thinking—locality, weight sharing, translation equivariance—still shows up in patches, depthwise convs, and “look at nearby structure first.”</p>
+    <p>A fully connected net on a 224x224 RGB image would wire every pixel to every hidden unit and drown in parameters. <strong>Convolutional neural networks (CNNs)</strong> refuse that waste: they slide small filters across the input, reuse the same weights everywhere, and build a hierarchy from edges to parts to objects. Vision systems, many speech front-ends, and even some text models historically leaned on this inductive bias. Even if your day job is transformers, CNN thinking—locality, weight sharing, translation equivariance—still shows up in patches, depthwise convs, and “look at nearby structure first.”</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Stand in front of a photo with a tiny cardboard stencil that has a 3×3 hole. At each placement you compute a weighted mix of the nine visible pixels—maybe “bright on the left, dark on the right” to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a <strong>convolution</strong> (in deep learning, usually a cross-correlation with a learnable kernel). One stencil produces one <strong>feature map</strong>. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.</p>
+    <p>Stand in front of a photo with a tiny cardboard stencil that has a 3x3 hole. At each placement you compute a weighted mix of the nine visible pixels—maybe “bright on the left, dark on the right” to detect a vertical edge. Slide the stencil across the whole image. That sliding mix is a <strong>convolution</strong> (in deep learning, usually a cross-correlation with a learnable kernel). One stencil produces one <strong>feature map</strong>. Stack many stencils and you get many feature maps: horizontal edges, blobs, color transitions.</p>
     <p>Because the same stencil is reused at every location, a filter that learns “cat ear texture” in the top-left can fire for an ear in the bottom-right without new weights. That is <strong>weight sharing</strong>. Because each output depends only on a local <strong>receptive field</strong>, early layers stay cheap and spatially grounded. Deeper layers compose local detections into larger patterns—the receptive field grows as you stack convs and pool.</p>
     <p>Pooling (or strided convolution) downsamples the map: keep the strongest response in each neighborhood. You trade precise pixel location for coarser, more invariant features. Classification heads usually flatten or global-pool the final maps into a vector, then apply a small MLP or linear layer.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>2D convolution (single channel, stride 1, no padding).</strong> Input <code>X</code> is <code>H × W</code>. Kernel <code>K</code> is <code>kH × kW</code>. Output at position <code>(i, j)</code>:</p>
+    <p><strong>2D convolution (single channel, stride 1, no padding).</strong> Input <code>X</code> is <code>H x W</code>. Kernel <code>K</code> is <code>kH x kW</code>. Output at position <code>(i, j)</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">Y[i, j] = sum over u,v of  K[u, v] * X[i + u, j + v]</code></pre>
@@ -55,8 +55,8 @@ out_W = W - kW + 1</code></pre>
     </div>
     <p><strong>Padding</strong> adds a border (often zeros) so output can match input size (“same” padding). <strong>Stride</strong> <code>s</code> skips positions: step the filter by <code>s</code> pixels; sizes shrink roughly by <code>s</code>.</p>
     <p><strong>Multiple channels.</strong> An RGB input has <code>C_in = 3</code>. Each output channel has a kernel stack of shape <code>(C_in, kH, kW)</code>; you sum across input channels as well. A layer with <code>C_out</code> filters learns <code>C_out</code> such stacks, plus optional biases.</p>
-    <p><strong>Parameter count (conv vs dense).</strong> One 3×3 filter on 64 input channels to 128 output channels has about <code>128 * 64 * 3 * 3</code> weights—independent of <code>H</code> and <code>W</code>. A dense layer from <code>H*W*64</code> to <code>H*W*128</code> scales with image size and explodes.</p>
-    <p><strong>Typical block.</strong> Conv → activation (ReLU) → optional BatchNorm → optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.</p>
+    <p><strong>Parameter count (conv vs dense).</strong> One 3x3 filter on 64 input channels to 128 output channels has about <code>128 * 64 * 3 * 3</code> weights—independent of <code>H</code> and <code>W</code>. A dense layer from <code>H*W*64</code> to <code>H*W*128</code> scales with image size and explodes.</p>
+    <p><strong>Typical block.</strong> Conv -&gt; activation (ReLU) -&gt; optional BatchNorm -&gt; optional pool. Stack blocks; optionally add residual shortcuts (ResNet-style) so gradients travel further.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -68,7 +68,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="in-code">In code</h2>
-    <p>A tiny NumPy “valid” convolution on a 5×5 patch with a 3×3 edge-ish kernel:</p>
+    <p>A tiny NumPy “valid” convolution on a 5x5 patch with a 3x3 edge-ish kernel:</p>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">import numpy as np
@@ -112,8 +112,8 @@ def max_pool2x2(f):
     </div>
     <p>In PyTorch this is <code>nn.Conv2d</code> / <code>F.conv2d</code>; you almost never write the nested loops—but doing it once makes the shapes unforgettable.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
-    <p><strong>Wrong spatial sizes.</strong> Forget padding or miscount stride and the next layer’s expected <code>H×W</code> will not match—shape errors or silent cropping.</p>
-    <p><strong>Too little receptive field.</strong> Tiny stacks of 3×3 without depth or dilation never “see” the whole object; the classifier guesses from local texture.</p>
+    <p><strong>Wrong spatial sizes.</strong> Forget padding or miscount stride and the next layer’s expected <code>H x W</code> will not match—shape errors or silent cropping.</p>
+    <p><strong>Too little receptive field.</strong> Tiny stacks of 3x3 without depth or dilation never “see” the whole object; the classifier guesses from local texture.</p>
     <p><strong>Treating conv like a bag of dense layers.</strong> Global FC layers early destroy the spatial bias and revive the parameter explosion CNNs were meant to avoid.</p>
     <p><strong>Data without locality.</strong> Pure tabular features with no neighborhood structure gain little from 2D conv; use models that match the data geometry.</p>
     <p><strong>Overclaiming translation magic.</strong> Weight sharing gives <strong>equivariance</strong> of feature maps under shifts (features move when the object moves); after global pooling you get more invariance. Neither is free robustness to rotation, scale, or occlusion—those need data, augmentation, or extra design.</p>

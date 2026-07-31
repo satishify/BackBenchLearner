@@ -11,9 +11,9 @@ A **modality** is a channel of information: text, images, audio, video, tabular 
 
 Think of product shapes, not brand names:
 
-- **Text models** map text → text (or embeddings).
-- **Image models** map noise/text → pixels, or pixels → labels/captions.
-- **Audio models** map waveforms/spectrograms ↔ text or other audio.
+- **Text models** map text -> text (or embeddings).
+- **Image models** map noise/text -> pixels, or pixels -> labels/captions.
+- **Audio models** map waveforms/spectrograms <-> text or other audio.
 - **Video models** treat time + frames (often heavy cousins of image models).
 - **Multimodal models** share a representation space so, for example, an image and a question can jointly produce an answer.
 
@@ -27,11 +27,11 @@ Pick the modality that matches the *native* form of the user’s problem. Transl
 
 | Family | Typical I/O | What they are good at | Common failure mode |
 | --- | --- | --- | --- |
-| **Text / LLM** | text → text | Reasoning over language, code, structured drafts | Weak on pixels/sound without tools |
-| **Image generation** | text/noise → image | Concepts, layouts, variants | Text spelling, precise counts, brand fidelity |
-| **Image understanding** | image → labels/captions/embeddings | Search, moderation, OCR assist | Fine print, rare objects without fine-tuning |
-| **Speech / audio** | audio ↔ text or audio | Transcription, voice interfaces, SFX | Accents, overlap, domain jargon |
-| **Video** | text/video → video or understanding | Short clips, summarization, detection over time | Cost, temporal consistency, long duration |
+| **Text / LLM** | text -> text | Reasoning over language, code, structured drafts | Weak on pixels/sound without tools |
+| **Image generation** | text/noise -> image | Concepts, layouts, variants | Text spelling, precise counts, brand fidelity |
+| **Image understanding** | image -> labels/captions/embeddings | Search, moderation, OCR assist | Fine print, rare objects without fine-tuning |
+| **Speech / audio** | audio <-> text or audio | Transcription, voice interfaces, SFX | Accents, overlap, domain jargon |
+| **Video** | text/video -> video or understanding | Short clips, summarization, detection over time | Cost, temporal consistency, long duration |
 
 ### Multimodal in practice
 
@@ -49,7 +49,7 @@ flowchart LR
     F --> O[Decoder: text / image / action]
 ```
 
-You do not need one giant model for every demo. Many production stacks are **pipelines**: speech-to-text → LLM → text-to-speech, or image embedder → vector search → LLM for explanations. That is multimodal *as a system* even if each step is unimodal.
+You do not need one giant model for every demo. Many production stacks are **pipelines**: speech-to-text -> LLM -> text-to-speech, or image embedder -> vector search -> LLM for explanations. That is multimodal *as a system* even if each step is unimodal.
 
 ### Model families without the vendor brochure
 
@@ -67,11 +67,11 @@ Exact training recipes change yearly; the *job* each family does changes slowly.
 
 Use this decision sketch:
 
-1. **Source of truth is text** (tickets, policies, code) → text LLM ± retrieval.
-2. **User shows something visual** (receipt, UI bug, shelf photo) → vision or multimodal understanding; do not force them to type a description if avoidable.
-3. **Hands-busy / voice-native** (driving, warehouse) → speech in/out; keep text as the internal reasoning layer if helpful.
-4. **Creative assets** (ads, storyboards) → image/video generation with human review; lock brand kits separately.
-5. **Compliance or exact numbers** → prefer structured extractors + databases; use generative models for narrative around verified fields.
+1. **Source of truth is text** (tickets, policies, code) -> text LLM +/- retrieval.
+2. **User shows something visual** (receipt, UI bug, shelf photo) -> vision or multimodal understanding; do not force them to type a description if avoidable.
+3. **Hands-busy / voice-native** (driving, warehouse) -> speech in/out; keep text as the internal reasoning layer if helpful.
+4. **Creative assets** (ads, storyboards) -> image/video generation with human review; lock brand kits separately.
+5. **Compliance or exact numbers** -> prefer structured extractors + databases; use generative models for narrative around verified fields.
 
 Also separate **understanding** from **generation**. Classifying whether a photo shows a damaged package is different from generating a marketing image of a package. Same modality, different risk, latency, and evaluation.
 
@@ -86,8 +86,8 @@ A field-support app receives: a photo of an error screen, a voice note, and a sh
 | Approach | Pipeline | Pros | Cons |
 | --- | --- | --- | --- |
 | A. Text-only | User must type everything | Simple | Loses visual detail; high user effort |
-| B. Stitched unimodal | ASR → OCR/caption → LLM | Clear ownership per step | Error compounds across stages |
-| C. Multimodal model | Image + transcript → answer | Fewer handoffs | Harder to debug; vendor lock-in risk |
+| B. Stitched unimodal | ASR -> OCR/caption -> LLM | Clear ownership per step | Error compounds across stages |
+| C. Multimodal model | Image + transcript -> answer | Fewer handoffs | Harder to debug; vendor lock-in risk |
 
 ```python
 from dataclasses import dataclass
@@ -169,7 +169,7 @@ Match models to modalities — text, image, audio, video, or multimodal fusion �
 - **Unimodal model** — Operates primarily on a single modality.
 - **Multimodal model** — Jointly handles two or more modalities.
 - **Encoder / decoder** — Modules that map a modality into vectors or back out to raw signals/tokens.
-- **ASR (Automatic Speech Recognition)** — Speech → text.
-- **TTS (Text-to-Speech)** — Text → audio.
+- **ASR (Automatic Speech Recognition)** — Speech -> text.
+- **TTS (Text-to-Speech)** — Text -> audio.
 - **VQA (Visual Question Answering)** — Answer questions about an image.
 - **Embedding** — Dense vector representation used for search, clustering, or fusion across modalities.

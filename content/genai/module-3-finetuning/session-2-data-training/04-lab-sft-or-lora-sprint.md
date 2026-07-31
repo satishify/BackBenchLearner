@@ -149,7 +149,7 @@ If val improves only on examples duplicated from train, fix the split before any
 - **Val up, anchors down** — Lower LR, fewer steps, mix replay data.
 - **Trainable% ~100%** — PEFT wrapping failed; stop and fix.
 
-Write the symptom → check mapping in your notes; it will save the second experiment.
+Write the symptom -> check mapping in your notes; it will save the second experiment.
 
 ### Resource-honest scope
 
@@ -157,7 +157,7 @@ If you only have a laptop CPU, still produce: validated JSONL, config file, toy 
 
 ### Optional stretch
 
-Add a second run that changes exactly one knob (rank 16 → 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.
+Add a second run that changes exactly one knob (rank 16 -> 32). Compare val curves. That single ablation teaches more than five unrelated blog configs.
 
 ### Logging fields worth keeping
 

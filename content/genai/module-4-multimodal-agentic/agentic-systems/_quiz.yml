@@ -18,7 +18,7 @@ questions:
     answer: 1
     why: "Module 4.2 is a short stub; Module 2.9 already has the full agent track."
 
-  - q: "A multimodal agent might…"
+  - q: "A multimodal agent might..."
     options:
       - "Only sort CSV files offline forever"
       - "Read a screenshot with vision, then call tools to act on what it saw"

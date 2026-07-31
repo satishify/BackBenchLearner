@@ -42,12 +42,12 @@
     <p>Bahdanau attention changes the job description. The encoder still produces a state per source position, but <strong>keeps all of them</strong>. At each decoder step, the model scores “how relevant is source position <code>i</code> to what I’m about to say?”, turns scores into a softmax distribution (alignment weights), and builds a <strong>fresh</strong> context as a weighted sum of encoder states. Translating the French word for “cat” can look directly at English “cat” instead of hoping it survived in a single summary vector.</p>
     <p>Attention is not yet the full Transformer: recurrence remains, and training is still largely sequential. But the key idea—<strong>content-based soft lookup over memories</strong>—is the ancestor of Q/K/V attention you will study next.</p>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Encoder.</strong> For source tokens <code>x_1 … x_S</code> (usually embeddings):</p>
+    <p><strong>Encoder.</strong> For source tokens <code>x_1 ... x_S</code> (usually embeddings):</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">h_t = EncoderRNN(h_{t-1}, x_t)     # h_t shape: (d,)</code></pre>
     </div>
-    <p>Store the list <code>H = [h_1, …, h_S]</code>. Bidirectional encoders concatenate forward/backward states so each <code>h_t</code> sees left and right source context.</p>
+    <p>Store the list <code>H = [h_1, ..., h_S]</code>. Bidirectional encoders concatenate forward/backward states so each <code>h_t</code> sees left and right source context.</p>
     <p><strong>Decoder without attention (bottleneck).</strong> Initialize from <code>h_S</code> (or a projection). At step <code>t</code> with previous target embedding <code>y_{t-1}</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>

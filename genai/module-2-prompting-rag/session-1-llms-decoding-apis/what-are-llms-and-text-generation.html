@@ -49,7 +49,7 @@
     <p>Text is split into tokens before the model sees it. Roughly:</p>
     <ul>
     <li>Short common words may be one token (<code>the</code>).</li>
-    <li>Rare or long words may split (<code>unbelievable</code> → pieces).</li>
+    <li>Rare or long words may split (<code>unbelievable</code> -&gt; pieces).</li>
     <li>Spaces and punctuation count.</li>
     </ul>
     <p>Exact tokenization depends on the model’s vocabulary. For mental math, English often lands around ~0.75 words per token — useful for estimating context limits, not for precision.</p>
@@ -167,7 +167,7 @@ print(sample_next(&quot;The&quot;))  # often &quot;cat&quot;, sometimes &quot;do
     <li><strong>Mistaking memorization for retrieval</strong> — Asking “what did Alice email last Tuesday?” without tools yields fiction or generic guesses.</li>
     <li><strong>Over-trusting fluency</strong> — Smooth prose raises perceived confidence; it does not raise truth probability.</li>
     <li><strong>Stopping rules</strong> — Without max tokens or stop sequences, generation can ramble; with bad stops, it cuts mid-thought.</li>
-    <li><strong>Toy models mislead</strong> — Bigram greed is local; real transformers condition on the whole context window with attention, which is why they handle long-range agreement better — but the <em>loop</em> (predict → append → repeat) is the same.</li>
+    <li><strong>Toy models mislead</strong> — Bigram greed is local; real transformers condition on the whole context window with attention, which is why they handle long-range agreement better — but the <em>loop</em> (predict -&gt; append -&gt; repeat) is the same.</li>
     </ul>
     <aside class="callout callout-warn">
       <p class="callout-title">Watch out</p>

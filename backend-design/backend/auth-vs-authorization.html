@@ -45,8 +45,8 @@
     <p>Typical request pipeline:</p>
     <ol>
     <li>Extract credential (cookie, <code>Authorization: Bearer</code>, API key header)</li>
-    <li>Authenticate → <code>user_id</code> / service principal</li>
-    <li>Authorize → role, scope, or row-level rule</li>
+    <li>Authenticate -&gt; <code>user_id</code> / service principal</li>
+    <li>Authorize -&gt; role, scope, or row-level rule</li>
     <li>Run business logic</li>
     </ol>
     <div class="diagram-wrap">
@@ -57,7 +57,7 @@ sequenceDiagram
     participant DB as DB
 
     C->>API: GET /notes/7  Bearer token
-    API->>API: Authn: token → user=42
+    API->>API: Authn: token -> user=42
     API->>DB: SELECT owner_id FROM notes WHERE id=7
     alt owner_id == 42 or role=admin
         API-->>C: 200 note
@@ -96,7 +96,7 @@ def db():
     c.row_factory = sqlite3.Row
     return c
 
-# --- Authn: credential → user ---
+# --- Authn: credential -&gt; user ---
 def hash_pw(pw: str, salt: str) -&gt; str:
     return hashlib.sha256(f&quot;{salt}:{pw}&quot;.encode()).hexdigest()
 

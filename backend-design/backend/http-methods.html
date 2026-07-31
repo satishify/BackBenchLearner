@@ -44,7 +44,7 @@
     <li><strong>Idempotent</strong> methods (GET, PUT, DELETE, HEAD, OPTIONS) may be retried: doing them N times has the same effect as once (for that resource).</li>
     <li><strong>POST</strong> is neither safe nor idempotent by default — each call may create a new side effect.</li>
     </ul>
-    <p>PUT replaces a whole resource at a known URL. PATCH applies a partial update. DELETE removes. POST creates or triggers actions when the server assigns identity (<code>POST /orders</code> → <code>201</code> with new id).</p>
+    <p>PUT replaces a whole resource at a known URL. PATCH applies a partial update. DELETE removes. POST creates or triggers actions when the server assigns identity (<code>POST /orders</code> -&gt; <code>201</code> with new id).</p>
     <h2 id="how-it-works">How it works</h2>
     <table>
       <thead><tr>

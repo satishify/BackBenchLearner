@@ -19,10 +19,10 @@ Separate policy (system), task (user), and demonstration (few-shot turns). If ev
 
 ### Four prompt components
 
-1. **Instruction** — the verb phrase: classify, extract, rewrite, refuse if…
+1. **Instruction** — the verb phrase: classify, extract, rewrite, refuse if...
 2. **Context** — facts, policies, retrieved snippets, product glossary
 3. **Input data** — the customer email, JSON row, or code under review
-4. **Output indicator** — schema, labels, bullet rules, “answer only with…”
+4. **Output indicator** — schema, labels, bullet rules, “answer only with...”
 
 Minimal pattern:
 
@@ -71,7 +71,7 @@ Providers differ on how strongly system messages outweigh user text. Defense in 
 - **Few-shot** — shows the mapping. Best when edge cases are visual (weird enums, terse style). Keep examples short and representative.
 - **Chain-style hints** — “think step by step” or scratchpads help some reasoning tasks, but they burn tokens and are not a substitute for tools on arithmetic or live facts.
 
-Prefer clarifying the contract over stacking adjectives (“be extremely careful and very precise…”). Models respond better to checkable rules than to emotional intensity.
+Prefer clarifying the contract over stacking adjectives (“be extremely careful and very precise...”). Models respond better to checkable rules than to emotional intensity.
 
 ### Production prompt hygiene
 
@@ -156,7 +156,7 @@ def lint_user_prompt(prompt: str) -> list[str]:
 ## What goes wrong
 
 - **Instruction buried under data** — the model summarizes the email instead of extracting fields.
-- **Role collapse** — stuffing policy into the user message makes it easy for hostile input to override (“ignore previous…”).
+- **Role collapse** — stuffing policy into the user message makes it easy for hostile input to override (“ignore previous...”).
 - **Too many few-shots** — examples consume context and can bias toward the demo domain.
 - **Contradictory rules** — system says brief; user says write an essay; history says use JSON.
 - **Unfenced untrusted text** — customer content that looks like instructions becomes prompt injection fuel.

@@ -7,7 +7,7 @@ Free-form prose is for humans. Downstream code wants **objects**: enums, IDs, da
 
 ## Intuition
 
-Ask for “JSON” in a prompt and you will get JSON… until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:
+Ask for “JSON” in a prompt and you will get JSON... until you do not. Trailing commas, markdown fences, renamed keys, and partially truncated objects appear under load. Reliability is a stack:
 
 1. Tell the model the schema.
 2. Prefer API features that constrain decoding to valid JSON / schema when available.
@@ -68,7 +68,7 @@ Cap retries (e.g. 2). Log failure rates per prompt version — a spike means sch
 
 ### Partial success and fallbacks
 
-For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object → no side effect.
+For UX, you may accept a partial object with defaults for optional fields. For actions (refunds, deletes, emails), fail closed: no valid object -> no side effect.
 
 ### Designing schemas models can hit
 
@@ -84,7 +84,7 @@ When the model must emit dates, demand ISO-8601 in the schema description and re
 
 ### Where structured output sits in an agent
 
-Agents often chain: plan JSON → tool calls → final answer JSON. Validate **each** stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.
+Agents often chain: plan JSON -> tool calls -> final answer JSON. Validate **each** stage. A pretty final paragraph that skipped a failed plan object is how silent wrong workflows ship. Persist the validated objects, not only the chat text, so support can replay what the system believed.
 
 ## In code
 

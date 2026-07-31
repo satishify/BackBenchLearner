@@ -47,10 +47,10 @@
     <h2 id="how-it-works">How it works</h2>
     <h3>Four prompt components</h3>
     <ol>
-    <li><strong>Instruction</strong> — the verb phrase: classify, extract, rewrite, refuse if…</li>
+    <li><strong>Instruction</strong> — the verb phrase: classify, extract, rewrite, refuse if...</li>
     <li><strong>Context</strong> — facts, policies, retrieved snippets, product glossary</li>
     <li><strong>Input data</strong> — the customer email, JSON row, or code under review</li>
-    <li><strong>Output indicator</strong> — schema, labels, bullet rules, “answer only with…”</li>
+    <li><strong>Output indicator</strong> — schema, labels, bullet rules, “answer only with...”</li>
     </ol>
     <p>Minimal pattern:</p>
     <div class="code-block" data-lang="text">
@@ -113,7 +113,7 @@ sequenceDiagram
     <li><strong>Few-shot</strong> — shows the mapping. Best when edge cases are visual (weird enums, terse style). Keep examples short and representative.</li>
     <li><strong>Chain-style hints</strong> — “think step by step” or scratchpads help some reasoning tasks, but they burn tokens and are not a substitute for tools on arithmetic or live facts.</li>
     </ul>
-    <p>Prefer clarifying the contract over stacking adjectives (“be extremely careful and very precise…”). Models respond better to checkable rules than to emotional intensity.</p>
+    <p>Prefer clarifying the contract over stacking adjectives (“be extremely careful and very precise...”). Models respond better to checkable rules than to emotional intensity.</p>
     <h3>Production prompt hygiene</h3>
     <p>Version prompts like code (<code>support_v3</code>). Keep a golden set of inputs with expected properties (label, JSON keys, refusal). On model upgrades, run the suite before you celebrate the new default. For multi-tenant apps, never put another customer’s history in the few-shot block.</p>
     <h2 id="in-code">In code</h2>
@@ -190,7 +190,7 @@ print(build_sentiment_messages(&quot;I think the food was okay.&quot;)[1][&quot;
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Instruction buried under data</strong> — the model summarizes the email instead of extracting fields.</li>
-    <li><strong>Role collapse</strong> — stuffing policy into the user message makes it easy for hostile input to override (“ignore previous…”).</li>
+    <li><strong>Role collapse</strong> — stuffing policy into the user message makes it easy for hostile input to override (“ignore previous...”).</li>
     <li><strong>Too many few-shots</strong> — examples consume context and can bias toward the demo domain.</li>
     <li><strong>Contradictory rules</strong> — system says brief; user says write an essay; history says use JSON.</li>
     <li><strong>Unfenced untrusted text</strong> — customer content that looks like instructions becomes prompt injection fuel.</li>

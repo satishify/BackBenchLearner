@@ -2,12 +2,12 @@ title: "1.2 Deep Learning Essentials"
 questions:
   - q: "You train a 3-class intent classifier. The model assigns probability 0.02 to the true class. What is the cross-entropy contribution for that example (natural log)?"
     options:
-      - "log(0.02) ≈ −3.91 (so loss ≈ +3.91)"
+      - "log(0.02) ~= -3.91 (so loss ~= +3.91)"
       - "0.02"
-      - "1 − 0.02 = 0.98"
-      - "0.02² = 0.0004"
+      - "1 - 0.02 = 0.98"
+      - "0.02^2 = 0.0004"
     answer: 0
-    why: "Multi-class CE is −log p_true. A tiny probability on the correct class yields a large positive loss, punishing confident mistakes."
+    why: "Multi-class CE is -log p_true. A tiny probability on the correct class yields a large positive loss, punishing confident mistakes."
 
   - q: "When is MSE a better default loss than cross-entropy?"
     options:
@@ -34,7 +34,7 @@ questions:
       - "It replaces softmax with argmax forever"
       - "It removes the need for a temperature parameter"
     answer: 1
-    why: "exp of large logits overflows; shifting by −max is algebraically exact for softmax but numerically safe."
+    why: "exp of large logits overflows; shifting by -max is algebraically exact for softmax but numerically safe."
 
   - q: "Temperature T=0.5 vs T=2.0 on the same logits at inference — what happens?"
     options:
@@ -45,7 +45,7 @@ questions:
     answer: 1
     why: "Dividing logits by T<1 amplifies gaps (peakier); T>1 shrinks gaps (flatter), trading certainty for diversity."
 
-  - q: "Backpropagation’s core job in gradient descent is to…"
+  - q: "Backpropagation’s core job in gradient descent is to..."
     options:
       - "Randomly reset all weights each step"
       - "Compute how loss changes w.r.t. each parameter via the chain rule"

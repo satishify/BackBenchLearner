@@ -62,7 +62,7 @@ def cache_key(user_id: int, name: str) -> str:
     return f"u:{user_id}:{name}"
 
 
-# --- Wrong: shared key → data leak ---
+# --- Wrong: shared key -> data leak ---
 # r.set("cart", json.dumps(cart))
 
 # --- Right: per-user key ---
@@ -109,7 +109,7 @@ async def checkout_balance(user_id: int):
 - **Caching authorization decisions** too long — revoked users keep access until TTL.
 - **Negative caching without care** — caching 404 for a product that is then created; still 404.
 - **Multi-layer disagreement** — CDN has v1, Redis has v2, DB has v3; debugging becomes archaeology.
-- **Silent fallback** — cache down → every request hits DB → outage that looks like a DB incident.
+- **Silent fallback** — cache down -> every request hits DB -> outage that looks like a DB incident.
 - **Security via obscurity of keys** — predictable keys plus open Redis = data breach.
 
 :::warn

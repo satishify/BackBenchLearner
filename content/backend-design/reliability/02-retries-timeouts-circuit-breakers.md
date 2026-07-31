@@ -15,7 +15,7 @@ Every sync dependency needs a timeout; retries need backoff and idempotency; bre
 
 ## How it works
 
-**Timeouts.** Bound how long you wait for connect and read. Without them, thread/connection pools exhaust. Set budgets from your p99 SLA (inbound 2s ⇒ outbound call maybe 300–500 ms).
+**Timeouts.** Bound how long you wait for connect and read. Without them, thread/connection pools exhaust. Set budgets from your p99 SLA (inbound 2s => outbound call maybe 300–500 ms).
 
 **Retries.** Retry *transient* failures (timeouts, 503, connection reset) on **idempotent** operations (GET, or PUT with idempotency key). Use exponential backoff + jitter so you do not synchronize a thundering herd. Cap attempts. Do not blindly retry POSTs that create orders unless idempotent.
 
@@ -32,7 +32,7 @@ stateDiagram-v2
 
 **Bulkheads.** Separate connection pools per dependency so one hung service cannot eat all workers.
 
-**How the three fit together.** Timeout is the first line: fail a single slow call. Retry is the second: absorb blips when safe. The breaker is the third: after a streak of failures, stop paying the timeout cost on every request and return a fast error (or degraded response). When the breaker is open, your graceful-degradation path can serve cached data instead of waiting 800 ms × 3 retries for a dead dependency.
+**How the three fit together.** Timeout is the first line: fail a single slow call. Retry is the second: absorb blips when safe. The breaker is the third: after a streak of failures, stop paying the timeout cost on every request and return a fast error (or degraded response). When the breaker is open, your graceful-degradation path can serve cached data instead of waiting 800 ms x 3 retries for a dead dependency.
 
 **Budget math.** If the client waits 2 seconds and you have two sequential downstream calls, you cannot give each a 2-second timeout. Split the budget, leave margin for your own work, and prefer failing one hop early over letting the whole request pile up until the load balancer cuts you off with a generic 502.
 

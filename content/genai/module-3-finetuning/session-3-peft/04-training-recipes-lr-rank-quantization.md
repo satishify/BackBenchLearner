@@ -36,7 +36,7 @@ Use cosine or linear decay with a short warmup. If loss spikes or anchors crash,
 ### Rank and alpha
 
 ```text
-effective_scale ≈ alpha / r
+effective_scale ~= alpha / r
 ```
 
 Recipes:

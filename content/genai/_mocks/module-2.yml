@@ -16,7 +16,7 @@ questions:
     section: "LLMs/Decoding"
     options:
       - "Always take the single most likely token"
-      - "Sample from the smallest set of tokens whose cumulative probability mass ≥ 0.9"
+      - "Sample from the smallest set of tokens whose cumulative probability mass >= 0.9"
       - "Discard the top 90% of the vocabulary"
       - "Sample uniformly from the entire vocabulary"
     answer: 1
@@ -30,7 +30,7 @@ questions:
       - "About 200 tokens"
       - "Zero — generation never counts against the window"
     answer: 0
-    why: "Budget ≈ 8000 − 1500 − 5000 − 200 = 1300 tokens for the completion (plus any hidden overhead)."
+    why: "Budget ~= 8000 - 1500 - 5000 - 200 = 1300 tokens for the completion (plus any hidden overhead)."
 
   - q: "An LLM answers a factual question confidently with a citation URL that does not exist. Which limitation does this illustrate best?"
     section: "LLMs/Decoding"
@@ -182,15 +182,15 @@ questions:
     answer: 1
     why: "Authorization must be enforced at data access time; prompts cannot be trusted as a tenancy boundary."
 
-  - q: "Numeric (PQ): a 768-d float32 vector uses 768×4 = 3072 bytes. An 8-byte PQ code compresses it by approximately what factor?"
+  - q: "Numeric (PQ): a 768-d float32 vector uses 768x4 = 3072 bytes. An 8-byte PQ code compresses it by approximately what factor?"
     section: "Retrieval/IVF-PQ"
     options:
-      - "8×"
-      - "96×"
-      - "384×"
-      - "3072×"
+      - "8x"
+      - "96x"
+      - "384x"
+      - "3072x"
     answer: 2
-    why: "3072 / 8 = 384. Eight-byte PQ codes are about 384× smaller than float32 768-d vectors."
+    why: "3072 / 8 = 384. Eight-byte PQ codes are about 384x smaller than float32 768-d vectors."
 
   - q: "Numeric (IVF): N=1,000,000 vectors, nlist=1000, nprobe=8, lists roughly balanced. About how many vectors are scanned?"
     section: "Retrieval/IVF-PQ"
@@ -200,7 +200,7 @@ questions:
       - "8,000"
       - "1,000,000"
     answer: 2
-    why: "scanned ≈ (nprobe/nlist)×N = (8/1000)×1e6 = 8000 candidates."
+    why: "scanned ~= (nprobe/nlist)xN = (8/1000)x1e6 = 8000 candidates."
 
   - q: "You raise nprobe from 8 to 32 on the same IVF index. What is the expected primary trade-off?"
     section: "Retrieval/IVF-PQ"
@@ -210,9 +210,9 @@ questions:
       - "PQ codes become longer automatically"
       - "Embeddings switch from cosine to Jaccard"
     answer: 1
-    why: "More lists probed → more candidates → better chance of true neighbors, more distance work."
+    why: "More lists probed -> more candidates -> better chance of true neighbors, more distance work."
 
-  - q: "Why do IVF+PQ systems often quantize residuals (x − centroid) instead of raw x?"
+  - q: "Why do IVF+PQ systems often quantize residuals (x - centroid) instead of raw x?"
     section: "Retrieval/IVF-PQ"
     options:
       - "Residuals are always sparse one-hot labels"
@@ -290,7 +290,7 @@ questions:
       - "Never calling APIs"
       - "Training without any loss function"
     answer: 1
-    why: "Agents close a loop: observe → reason/plan → act with tools → update state until done or escalate."
+    why: "Agents close a loop: observe -> reason/plan -> act with tools -> update state until done or escalate."
 
   - q: "A travel agent books the wrong flight because it trusted a hallucinated confirmation id from its own earlier message. What missing pattern would have helped?"
     section: "Agents"

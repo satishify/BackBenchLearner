@@ -68,14 +68,14 @@
     </ul>
     <h2 id="message-queues">Message queues</h2>
     <ul>
-    <li>Producer → broker → consumers. At-least-once delivery is common → <strong>idempotent consumers</strong>.</li>
-    <li>Competing consumers scale throughput. Poison messages → DLQ.</li>
+    <li>Producer -&gt; broker -&gt; consumers. At-least-once delivery is common -&gt; <strong>idempotent consumers</strong>.</li>
+    <li>Competing consumers scale throughput. Poison messages -&gt; DLQ.</li>
     <li>Ordering: per-partition / per-key, not global free lunch.</li>
     <li>Use for: emails, webhooks, fan-out, smoothing spikes — not as a database.</li>
     </ul>
     <h2 id="25-minute-drill">25-minute drill</h2>
     <ol>
-    <li>Sketch request path: client → CDN → LB → 3 app nodes → primary+replica DB.</li>
+    <li>Sketch request path: client -&gt; CDN -&gt; LB -&gt; 3 app nodes -&gt; primary+replica DB.</li>
     <li>Argue monolith vs services for a 3-person team.</li>
     <li>Why “exactly once” processing is usually “at-least-once + idempotency.”</li>
     </ol>

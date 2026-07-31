@@ -19,7 +19,7 @@ Fluency is not evidence. Design for verification, not for trust in tone.
 
 ### Why hallucinations happen
 
-- **Objective mismatch** — next-token likelihood ≠ factual correctness.
+- **Objective mismatch** — next-token likelihood != factual correctness.
 - **Missing or stale knowledge** — cutoffs, private data, rare entities.
 - **Prompt pressure** — “list three papers” pushes invention if none are known.
 - **Context gaps** — evidence never entered the window, or was truncated.

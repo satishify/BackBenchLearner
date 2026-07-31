@@ -140,10 +140,10 @@ def score(prev: str, nxt: str, weights: dict) -> float:
     return weights.get((prev, nxt), 0.0)
 
 
-print("pretrained error→please", score("error", "please", pretrained))
-print("adapted error→please", score("error", "please", adapted))
+print("pretrained error->please", score("error", "please", pretrained))
+print("adapted error->please", score("error", "please", adapted))
 print("delta applied", score("error", "please", adapted) - score("error", "please", pretrained))
-# 0.2 → 2.7 after +2.5 fine-tune delta
+# 0.2 -> 2.7 after +2.5 fine-tune delta
 ```
 
 That `+2.5` is a stand-in for gradient updates on real weights. Prompt bias never appears in `adapted`; it only exists for the duration of one `infer` call.

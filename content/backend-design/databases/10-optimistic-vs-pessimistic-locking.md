@@ -7,9 +7,9 @@ Two editors open the same document. Both save. Last write wins and one author’
 
 ## Intuition
 
-**Pessimistic:** “Lock now so nobody else can change this until I’m done.” `SELECT … FOR UPDATE` inside a short transaction. Great for high-contention inventory when the critical section is milliseconds.
+**Pessimistic:** “Lock now so nobody else can change this until I’m done.” `SELECT ... FOR UPDATE` inside a short transaction. Great for high-contention inventory when the critical section is milliseconds.
 
-**Optimistic:** “Assume conflict is rare; check a version/ETag at write.” `UPDATE … WHERE id=? AND version=?`. If `rowcount=0`, someone else won — reload and retry. Great for HTTP APIs and forms.
+**Optimistic:** “Assume conflict is rare; check a version/ETag at write.” `UPDATE ... WHERE id=? AND version=?`. If `rowcount=0`, someone else won — reload and retry. Great for HTTP APIs and forms.
 
 Holding a pessimistic lock while waiting for a human is a deadlock factory. Optimistic fits request/response; pessimistic fits tight server-side critical sections.
 
@@ -26,7 +26,7 @@ sequenceDiagram
     B->>DB: SELECT version=1
     A->>DB: UPDATE ... version=2 WHERE version=1
     B->>DB: UPDATE ... WHERE version=1
-    DB-->>B: 0 rows → conflict
+    DB-->>B: 0 rows -> conflict
 ```
 
 | | Pessimistic | Optimistic |

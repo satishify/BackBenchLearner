@@ -39,7 +39,7 @@
     <p>Serving is how a trained (or frozen) model becomes a <strong>callable dependency</strong>. For product work you will bounce between <strong>local</strong> runtimes (laptop GPU, on-prem box, self-hosted container) and <strong>hosted</strong> APIs (vendor endpoints). The model weights may be identical; the operational contract is not. This lesson is about choosing and wiring that contract without painting yourself into a corner.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Local serving means you own the process that loads weights and runs forward passes. Hosted serving means you own an HTTP client and a bill. Local wins on data gravity, air-gapped demos, and per-token cost at steady high volume — if you can staff GPUs and paging. Hosted wins on time-to-first-feature, elastic bursts, and not learning CUDA at 2 a.m.</p>
-    <p>Design your application against a <strong>narrow interface</strong>: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model ids. Swap local ↔ hosted behind that interface. Do not sprinkle vendor SDKs through business logic.</p>
+    <p>Design your application against a <strong>narrow interface</strong>: messages in, text (or tokens, or JSON) out, with timeouts, retries, and model ids. Swap local &lt;-&gt; hosted behind that interface. Do not sprinkle vendor SDKs through business logic.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Pin a model id and a serving mode in config. “Whatever the playground default is today” is not a deployment strategy.</p>
@@ -170,7 +170,7 @@ def ask(user_text: str) -&gt; str:
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>SDK lock-in.</strong> Business code imports one vendor deeply; migration becomes a rewrite. Wrap early.</li>
-    <li><strong>Unbounded context locally.</strong> A 128k model flag does not mean your GPU can hold 128k × batch. OOMs look like “random” crashes.</li>
+    <li><strong>Unbounded context locally.</strong> A 128k model flag does not mean your GPU can hold 128k x batch. OOMs look like “random” crashes.</li>
     <li><strong>Silent model drift on hosted.</strong> Provider updates a dated alias. Pin versions; re-run golden evals on change.</li>
     <li><strong>No budget for tokens.</strong> Local feels “free” until electricity and GPU lease show up; hosted feels fine until one recursive agent loop.</li>
     <li><strong>Different safety stacks.</strong> Hosted filters refuse a prompt local accepts (or the reverse). Document behavior per backend.</li>
@@ -182,7 +182,7 @@ def ask(user_text: str) -&gt; str:
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Model serving:</strong> process of loading weights and answering inference requests.</li>
-    <li><strong>Local runtime:</strong> self-hosted engine (vLLM, llama.cpp, Ollama, …).</li>
+    <li><strong>Local runtime:</strong> self-hosted engine (vLLM, llama.cpp, Ollama, ...).</li>
     <li><strong>Hosted API:</strong> vendor-managed inference endpoint.</li>
     <li><strong>Continuous batching:</strong> packing many in-flight generations onto a GPU efficiently.</li>
     <li><strong>Quantization:</strong> lower-precision weights/activations to reduce memory and cost.</li>

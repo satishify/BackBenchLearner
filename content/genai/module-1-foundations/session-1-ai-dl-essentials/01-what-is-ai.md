@@ -21,7 +21,7 @@ AI is goal-directed behavior under uncertainty — not magic consciousness, and 
 
 **Turing test (briefly).** In 1950 Alan Turing asked whether a machine could imitate a human well enough in text conversation that a judge cannot tell them apart. Passing that test is a *behavioral* bar for “acting humanly.” It is historically important, but it is a narrow yardstick: a system can fail the Turing test and still be extremely useful (a chess engine, a fraud detector), or pass conversationally and still lack reliable world knowledge. Modern chatbots blur the line because language fluency is now cheap; usefulness still depends on grounding, tools, and evaluation.
 
-**Four classic framings** (human-like vs rational × thinking vs acting):
+**Four classic framings** (human-like vs rational x thinking vs acting):
 
 - Think humanly — model human cognition.
 - Act humanly — behave like a person (Turing-style).
@@ -30,7 +30,7 @@ AI is goal-directed behavior under uncertainty — not magic consciousness, and 
 
 Most production systems aim at **acting rationally**: minimize error, maximize reward, meet SLAs. Mimicking human quirks is rarely the objective unless you are studying cognition itself.
 
-**GOFAI → modern ML.** Early AI (often called Good Old-Fashioned AI, or symbolic AI) encoded knowledge as symbols and rules: logic programs, expert systems, search over game trees. That worked for crisply defined domains (checkers, medical rule sets) and failed when the world was noisy, high-dimensional, or poorly formalized (vision, speech, open-ended language). Hand-writing features for every lighting condition or slang phrase does not scale.
+**GOFAI -> modern ML.** Early AI (often called Good Old-Fashioned AI, or symbolic AI) encoded knowledge as symbols and rules: logic programs, expert systems, search over game trees. That worked for crisply defined domains (checkers, medical rule sets) and failed when the world was noisy, high-dimensional, or poorly formalized (vision, speech, open-ended language). Hand-writing features for every lighting condition or slang phrase does not scale.
 
 **AI winters (briefly).** When expectations outran results — brittle expert systems, combinatorial explosion in search, overhyped timelines — funding and interest collapsed in cycles often called AI winters (notably mid-1970s and late 1980s). The field recovered as compute grew, data became abundant, and statistical learning methods started winning benchmarks. The lesson for builders: demo-friendly stories without a path to messy production data recreate winter dynamics inside a company.
 
@@ -94,7 +94,7 @@ The rule version is transparent and cheap — until a new scam phrasing appears.
 
 ## What goes wrong
 
-- **Anthropomorphism.** Fluency ≠ understanding. Agents that sound confident can still be wrong.
+- **Anthropomorphism.** Fluency != understanding. Agents that sound confident can still be wrong.
 - **Brittle rules.** Symbolic systems break outside the scenarios their authors imagined.
 - **Narrow metrics.** Optimizing one score (accuracy, engagement) can hurt fairness, safety, or long-term trust.
 - **Hype cycles.** Overpromising recreates winter dynamics: disappointment after demos that do not survive messy production data.
@@ -107,7 +107,7 @@ When someone says “we use AI,” ask: Is it rules, classical ML, deep learning
 
 ## One-line summary
 
-AI builds goal-seeking systems; GenAI is one modern, generative branch inside the broader AI → ML → DL stack.
+AI builds goal-seeking systems; GenAI is one modern, generative branch inside the broader AI -> ML -> DL stack.
 
 ## Key terms
 

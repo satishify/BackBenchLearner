@@ -3,8 +3,8 @@ title: "Agents vs Chatbots (Recap)"
 description: "Short contrast: one-shot chat vs agent loops that use tools and memory."
 ---
 
-A **chatbot** typically: user message → model reply → done.  
-An **agent** typically: user goal → plan → tool call → observe → maybe plan again → final answer.
+A **chatbot** typically: user message -> model reply -> done.  
+An **agent** typically: user goal -> plan -> tool call -> observe -> maybe plan again -> final answer.
 
 ## When you need an agent
 

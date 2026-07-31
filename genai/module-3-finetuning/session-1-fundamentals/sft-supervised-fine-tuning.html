@@ -155,7 +155,7 @@ for prev, target in pairs:
 #     loss.backward()
 #     optimizer.step(); optimizer.zero_grad()</code></pre>
     </div>
-    <p>No GPU required to understand the loop: forward → loss on assistant tokens → backward → step.</p>
+    <p>No GPU required to understand the loop: forward -&gt; loss on assistant tokens -&gt; backward -&gt; step.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Too many epochs on tiny data</strong> — Memorization and brittle parroting of train tickets.</li>
@@ -183,7 +183,7 @@ for prev, target in pairs:
     <p><strong>SFT</strong> adapts a pretrained LM by minimizing next-token loss on curated assistant responses so the model imitates your task format and style.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Supervised fine-tuning (SFT)</strong> — Training on labeled prompt→response demonstrations.</li>
+    <li><strong>Supervised fine-tuning (SFT)</strong> — Training on labeled prompt-&gt;response demonstrations.</li>
     <li><strong>Negative log-likelihood (NLL)</strong> — Standard token-level loss for causal LMs.</li>
     <li><strong>Instruct model</strong> — Checkpoint already tuned to follow instructions; often the SFT starting point.</li>
     <li><strong>Checkpoint</strong> — Saved weights during or after training.</li>

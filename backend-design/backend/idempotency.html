@@ -38,7 +38,7 @@
 
     <p>The user double-clicks Pay. The mobile app times out at 30s and retries. Your server charged the card twice. Finance escalates. <strong>Idempotency</strong> is the property that makes “at least once” delivery on flaky networks safe: doing the same logical operation one time or ten times yields one business effect.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>HTTP already treats GET, PUT, and DELETE as idempotent. <code>POST /charges</code> is not — each call may create a new charge. The fix used by Stripe and many payment APIs: the client sends an <strong>Idempotency-Key</strong> (UUID) with the first attempt. The server stores the key → outcome. Retries with the same key return the <strong>same result</strong> without re-charging.</p>
+    <p>HTTP already treats GET, PUT, and DELETE as idempotent. <code>POST /charges</code> is not — each call may create a new charge. The fix used by Stripe and many payment APIs: the client sends an <strong>Idempotency-Key</strong> (UUID) with the first attempt. The server stores the key -&gt; outcome. Retries with the same key return the <strong>same result</strong> without re-charging.</p>
     <p>Idempotency is not only payments. Order creation, seat booking, “send invite email,” and wallet transfers all need it whenever clients retry or users mash buttons.</p>
     <h2 id="how-it-works">How it works</h2>
     <div class="diagram-wrap">

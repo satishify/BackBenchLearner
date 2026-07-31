@@ -18,7 +18,7 @@ A fine-tune without a baseline is a story, not an experiment. Lab prep locks fou
 If you cannot beat your own prompt baseline on a clean holdout, do not celebrate a LoRA run.
 :::
 
-Pick a narrow task. Good lab scopes: support triage JSON, meeting → action items, SQL comment → query draft, doc → FAQ answer with a fixed template. Avoid "be a general employee assistant."
+Pick a narrow task. Good lab scopes: support triage JSON, meeting -> action items, SQL comment -> query draft, doc -> FAQ answer with a fixed template. Avoid "be a general employee assistant."
 
 ## How it works
 

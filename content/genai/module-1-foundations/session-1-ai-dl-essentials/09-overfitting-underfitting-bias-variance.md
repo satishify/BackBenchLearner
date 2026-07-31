@@ -18,7 +18,7 @@ In ML terms:
 
 
 ```
-Expected error ≈ Bias^2 + Variance + Noise
+Expected error ~= Bias^2 + Variance + Noise
 ```
 
 
@@ -36,7 +36,7 @@ You rarely minimize bias and variance at once. Bigger models and longer training
 
 A rising validation loss while training loss still falls is the classic overfit signal. In LLMs and classifiers, watch validation perplexity or F1 the same way.
 
-**Capacity knobs.** More parameters, deeper trees, higher polynomial degree, longer fine-tuning → more capacity → lower bias risk, higher overfit risk. Less capacity or stronger constraints → opposite.
+**Capacity knobs.** More parameters, deeper trees, higher polynomial degree, longer fine-tuning -> more capacity -> lower bias risk, higher overfit risk. Less capacity or stronger constraints -> opposite.
 
 **What helps.**
 

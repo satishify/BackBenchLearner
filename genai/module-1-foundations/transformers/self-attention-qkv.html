@@ -52,7 +52,7 @@ V = X W_V    # (n, d_v)</code></pre>
     <p>Often <code>d_v = d_k</code>. Pairwise scores are dot products between queries and keys:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
-      <pre><code class="language-text">scores_ij = (Q_i · K_j) / sqrt(d_k)</code></pre>
+      <pre><code class="language-text">scores_ij = (Q_i * K_j) / sqrt(d_k)</code></pre>
     </div>
     <p>Divide by <code>sqrt(d_k)</code> so that as dimension grows, scores do not explode into huge magnitudes that push softmax into tiny gradients. Then:</p>
     <div class="code-block" data-lang="text">
@@ -61,7 +61,7 @@ V = X W_V    # (n, d_v)</code></pre>
     </div>
     <p>Row <code>i</code> of the softmax matrix is a probability distribution over positions that token <code>i</code> will read from. Multiplying by <code>V</code> yields a new vector for each token: a soft retrieval of information from the sequence.</p>
     <p><strong>Worked intuition.</strong> Sentence: “The animal did not cross the street because it was tired.” For query position “it”, high weight often lands on “animal” (antecedent) and “tired” (predicate). The updated embedding of “it” becomes a mixture that encodes that binding — fuel for later layers and the final next-token head.</p>
-    <p><strong>Complexity.</strong> Computing <code>Q K^T</code> is O(n² d_k). That quadratic term is why context-window length dominates cost and why “128k context” is an engineering story, not a free lunch.</p>
+    <p><strong>Complexity.</strong> Computing <code>Q K^T</code> is O(n^2 d_k). That quadratic term is why context-window length dominates cost and why “128k context” is an engineering story, not a free lunch.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR

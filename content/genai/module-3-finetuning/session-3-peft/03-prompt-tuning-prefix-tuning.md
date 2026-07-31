@@ -152,7 +152,7 @@ Soft prompts are invisible in the text logs. Persist and version them like any o
 
 ### Composition and routing
 
-Soft prompts compose naturally with routing layers: embed `task_id → prompt vectors`, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default "neutral" prompt for unknown tasks that falls back to base behavior.
+Soft prompts compose naturally with routing layers: embed `task_id -> prompt vectors`, concatenate, generate. For prefix tuning, store per-layer tensors keyed by task id. Keep a default "neutral" prompt for unknown tasks that falls back to base behavior.
 
 ### Initialization and length
 

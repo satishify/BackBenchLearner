@@ -9,7 +9,7 @@ description: "Turn text into vectors, compare meaning with cosine similarity, an
 
 Imagine every sentence as a point in a high-dimensional space where nearby points share meaning. The embedding model learned that geometry from huge text corpora: synonyms cluster, unrelated jargon sits far apart. A query becomes a point too; the nearest document points are your search results.
 
-Keyword search asks “were these tokens present?” Semantic search asks “is the meaning close?” You often want both (hybrid search appears in the advanced chapter). For now, focus on the geometry: good embeddings + a similarity metric ≈ meaning-aware retrieval.
+Keyword search asks “were these tokens present?” Semantic search asks “is the meaning close?” You often want both (hybrid search appears in the advanced chapter). For now, focus on the geometry: good embeddings + a similarity metric ~= meaning-aware retrieval.
 
 ```mermaid
 flowchart LR
@@ -29,12 +29,12 @@ flowchart LR
 **Cosine similarity.** For vectors `A` and `B`:
 
 ```
-cos(A, B) = (A · B) / (‖A‖ ‖B‖)
+cos(A, B) = (A * B) / (||A|| ||B||)
 ```
 
 Cosine cares about angle, not magnitude, which helps when some texts produce longer vectors. If all vectors are L2-normalized, cosine equals the dot product — a handy optimization in indexes.
 
-**Euclidean distance** `‖A - B‖` is related but sensitive to length. Many vector DBs support both; cosine / inner product dominate text search.
+**Euclidean distance** `||A - B||` is related but sensitive to length. Many vector DBs support both; cosine / inner product dominate text search.
 
 **Top-k retrieval.** Embed the query, score all (or approximately all) stored vectors, return the `k` highest. Approximate nearest neighbor (ANN) indexes trade a little recall for huge speed — covered with vector databases next.
 
@@ -104,7 +104,7 @@ You should see the two cost-related lines outrank the cake recipe. Replace `embe
 
 **Batch vs real-time embedding.** Ingest is bulk and retryable; query embedding is on the latency path. Cache query embeddings for identical strings in short TTLs if traffic repeats. Monitor embedder errors separately from vector DB errors so on-calls know which pager to wake.
 
-**Evaluation tip.** Build a mini set of query → expected doc titles and compute recall@10 whenever you change models or chunking. Embedding upgrades that look nicer in a notebook sometimes hurt your actual corpus — numbers beat vibes.
+**Evaluation tip.** Build a mini set of query -> expected doc titles and compute recall@10 whenever you change models or chunking. Embedding upgrades that look nicer in a notebook sometimes hurt your actual corpus — numbers beat vibes.
 
 ## One-line summary
 
@@ -114,7 +114,7 @@ Embeddings place text in a vector space so semantic search can rank meaning-neig
 
 - **Embedding:** dense vector representation of text (or other modalities).
 - **Semantic search:** retrieval by meaning similarity in embedding space.
-- **Cosine similarity:** angle-based likeness ` (A·B) / (‖A‖‖B‖) `.
+- **Cosine similarity:** angle-based likeness ` (A*B) / (||A||||B||) `.
 - **Top-k:** returning the k highest-scoring items.
 - **Chunk:** contiguous text unit embedded and indexed for retrieval.
 - **ANN:** approximate nearest neighbor search for large vector collections.

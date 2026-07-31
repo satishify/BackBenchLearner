@@ -28,12 +28,12 @@ Revision for **Distributed Systems & Scaling**.
 - Timeouts, retries with jitter, bulkheads, circuit breakers — default when calling others.
 
 ## Message queues
-- Producer → broker → consumers. At-least-once delivery is common → **idempotent consumers**.
-- Competing consumers scale throughput. Poison messages → DLQ.
+- Producer -> broker -> consumers. At-least-once delivery is common -> **idempotent consumers**.
+- Competing consumers scale throughput. Poison messages -> DLQ.
 - Ordering: per-partition / per-key, not global free lunch.
 - Use for: emails, webhooks, fan-out, smoothing spikes — not as a database.
 
 ## 25-minute drill
-1. Sketch request path: client → CDN → LB → 3 app nodes → primary+replica DB.
+1. Sketch request path: client -> CDN -> LB -> 3 app nodes -> primary+replica DB.
 2. Argue monolith vs services for a 3-person team.
 3. Why “exactly once” processing is usually “at-least-once + idempotency.”

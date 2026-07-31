@@ -18,7 +18,7 @@ Revision for **Reliability & Real-World Problems**.
 - Don’t retry non-idempotent POSTs without keys.
 
 ## Race conditions & locking
-- Two requests, one invariant → lost updates. Fix with transactions, constraints, optimistic versions, or distributed locks.
+- Two requests, one invariant -> lost updates. Fix with transactions, constraints, optimistic versions, or distributed locks.
 - Distributed locks (Redis etc.): understand fencing tokens / TTL expiry; locks are not consensus magic.
 
 ## Event-driven & sagas
@@ -35,7 +35,7 @@ Revision for **Reliability & Real-World Problems**.
 - Alert on symptoms (error rate, latency, saturation) not only causes.
 
 ## Deployments
-- Blue/green, canary, rolling. Migrations: expand → migrate → contract (backward compatible).
+- Blue/green, canary, rolling. Migrations: expand -> migrate -> contract (backward compatible).
 - Feature flags for risky behavior. Rollback plan before you need it.
 
 ## Traffic spikes

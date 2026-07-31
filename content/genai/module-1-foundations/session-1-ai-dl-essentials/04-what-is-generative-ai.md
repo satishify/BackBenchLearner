@@ -11,7 +11,7 @@ A **discriminative** model answers: “Given this email, is it spam?” It learn
 
 Think of weather. Discriminative: given today’s sensors, will it rain? Generative: simulate tomorrow’s radar map consistent with climate statistics. Both are useful; they optimize different questions. Product teams often need both: generate a draft reply, then classify whether it is safe to send.
 
-GenAI sits inside the AI → ML → DL nesting for most modern systems: deep networks learn a distribution; decoding samples from it. Older generative ideas (n-gram LMs, HMMs, classic topic models) share the *sampling* idea with far less capacity.
+GenAI sits inside the AI -> ML -> DL nesting for most modern systems: deep networks learn a distribution; decoding samples from it. Older generative ideas (n-gram LMs, HMMs, classic topic models) share the *sampling* idea with far less capacity.
 
 ## How it works
 
@@ -25,7 +25,7 @@ GenAI sits inside the AI → ML → DL nesting for most modern systems: deep net
 
 Many modern systems blend both: an LLM generates text (generative) while a separate classifier filters toxicity (discriminative). Choosing the wrong family wastes budget — do not sample essays when you only needed a calibrated yes/no.
 
-**Sampling new content.** After training, you do not dump the entire distribution — you *sample*. Autoregressive language models generate one token at a time from `p(next_token | previous_tokens)`. Diffusion models iteratively denoise random noise toward an image. GANs push a generator to fool a discriminator. Different architectures, same idea: randomness + learned probabilities → novel outputs. Decoding choices (greedy, temperature, top-k, top-p) trade diversity against coherence.
+**Sampling new content.** After training, you do not dump the entire distribution — you *sample*. Autoregressive language models generate one token at a time from `p(next_token | previous_tokens)`. Diffusion models iteratively denoise random noise toward an image. GANs push a generator to fool a discriminator. Different architectures, same idea: randomness + learned probabilities -> novel outputs. Decoding choices (greedy, temperature, top-k, top-p) trade diversity against coherence.
 
 **LLMs as generative models.** Large Language Models are (usually) deep neural nets trained to predict the next token on massive text. At inference they are generative: given a prompt, they sample a continuation. Instruction tuning and RLHF shape *which* continuations users prefer, but the core act remains sampling from a conditional distribution over tokens. Tools, RAG, and structured outputs are ways to steer that sampling toward usefulness and truthfulness — they do not turn the model into a database by themselves.
 
@@ -34,7 +34,7 @@ Many modern systems blend both: an LLM generates text (generative) while a separ
 - Text / code — LLMs, code models
 - Images — diffusion, GANs, autoregressive vision
 - Audio / speech — waveform or codec language models
-- Multimodal — models that map text↔image, or take mixed inputs
+- Multimodal — models that map text<->image, or take mixed inputs
 
 **Not magic.** Generation can be wrong, biased, or insecure. Models invent plausible citations, leak training snippets, or follow adversarial prompts. Treat outputs as proposals to verify, especially for facts, law, medicine, and security-sensitive code. Cost and latency also matter: every token or denoising step burns compute.
 
@@ -81,7 +81,7 @@ Real LLMs use huge vocabularies and context-dependent probabilities, plus decodi
 
 ## What goes wrong
 
-- **Hallucinations.** Fluent samples can be false; probability ≠ correctness.
+- **Hallucinations.** Fluent samples can be false; probability != correctness.
 - **Mode collapse / blandness.** Poor training or overly greedy decoding yields repetitive, low-diversity outputs.
 - **Prompt sensitivity.** Small wording changes can flip behavior; brittle UX without eval harnesses.
 - **Data and IP risk.** Models may regurgitate sensitive or copyrighted material; policy and filtering matter.

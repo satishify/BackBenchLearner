@@ -47,7 +47,7 @@
     <h2 id="how-it-works">How it works</h2>
     <p><strong>Definition.</strong> Artificial Intelligence is the science and engineering of systems that perform tasks that typically require intelligence: perception, language, planning, prediction, and decision-making. “Intelligence” here is operational — measured by task success — not a claim about subjective experience.</p>
     <p><strong>Turing test (briefly).</strong> In 1950 Alan Turing asked whether a machine could imitate a human well enough in text conversation that a judge cannot tell them apart. Passing that test is a <em>behavioral</em> bar for “acting humanly.” It is historically important, but it is a narrow yardstick: a system can fail the Turing test and still be extremely useful (a chess engine, a fraud detector), or pass conversationally and still lack reliable world knowledge. Modern chatbots blur the line because language fluency is now cheap; usefulness still depends on grounding, tools, and evaluation.</p>
-    <p><strong>Four classic framings</strong> (human-like vs rational × thinking vs acting):</p>
+    <p><strong>Four classic framings</strong> (human-like vs rational x thinking vs acting):</p>
     <ul>
     <li>Think humanly — model human cognition.</li>
     <li>Act humanly — behave like a person (Turing-style).</li>
@@ -55,7 +55,7 @@
     <li>Act rationally — choose actions that maximize expected success.</li>
     </ul>
     <p>Most production systems aim at <strong>acting rationally</strong>: minimize error, maximize reward, meet SLAs. Mimicking human quirks is rarely the objective unless you are studying cognition itself.</p>
-    <p><strong>GOFAI → modern ML.</strong> Early AI (often called Good Old-Fashioned AI, or symbolic AI) encoded knowledge as symbols and rules: logic programs, expert systems, search over game trees. That worked for crisply defined domains (checkers, medical rule sets) and failed when the world was noisy, high-dimensional, or poorly formalized (vision, speech, open-ended language). Hand-writing features for every lighting condition or slang phrase does not scale.</p>
+    <p><strong>GOFAI -&gt; modern ML.</strong> Early AI (often called Good Old-Fashioned AI, or symbolic AI) encoded knowledge as symbols and rules: logic programs, expert systems, search over game trees. That worked for crisply defined domains (checkers, medical rule sets) and failed when the world was noisy, high-dimensional, or poorly formalized (vision, speech, open-ended language). Hand-writing features for every lighting condition or slang phrase does not scale.</p>
     <p><strong>AI winters (briefly).</strong> When expectations outran results — brittle expert systems, combinatorial explosion in search, overhyped timelines — funding and interest collapsed in cycles often called AI winters (notably mid-1970s and late 1980s). The field recovered as compute grew, data became abundant, and statistical learning methods started winning benchmarks. The lesson for builders: demo-friendly stories without a path to messy production data recreate winter dynamics inside a company.</p>
     <p><strong>Where GenAI sits.</strong> Generative AI is a <em>subset</em> of AI: models that sample new content (text, images, audio, code) from learned distributions. GenAI systems are usually built with deep learning, which is a subset of machine learning, which is a subset of AI. Plenty of valuable AI is <em>not</em> generative: ranking ads, detecting fraud, forecasting demand.</p>
     <div class="diagram-wrap">
@@ -114,7 +114,7 @@ print(is_spam_learned(&quot;hosting invoice draft&quot;))  # False</code></pre>
     <p>The rule version is transparent and cheap — until a new scam phrasing appears. The example-based version adapts when you add more labeled tickets, but it can fail on unfamiliar wording and needs data hygiene. Real systems often combine both: learned detectors plus hard policy rules (“never auto-refund above $X”).</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li><strong>Anthropomorphism.</strong> Fluency ≠ understanding. Agents that sound confident can still be wrong.</li>
+    <li><strong>Anthropomorphism.</strong> Fluency != understanding. Agents that sound confident can still be wrong.</li>
     <li><strong>Brittle rules.</strong> Symbolic systems break outside the scenarios their authors imagined.</li>
     <li><strong>Narrow metrics.</strong> Optimizing one score (accuracy, engagement) can hurt fairness, safety, or long-term trust.</li>
     <li><strong>Hype cycles.</strong> Overpromising recreates winter dynamics: disappointment after demos that do not survive messy production data.</li>
@@ -126,7 +126,7 @@ print(is_spam_learned(&quot;hosting invoice draft&quot;))  # False</code></pre>
     <p>When someone says “we use AI,” ask: Is it rules, classical ML, deep learning, or generative models — and what is the objective function?</p>
     </aside>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>AI builds goal-seeking systems; GenAI is one modern, generative branch inside the broader AI → ML → DL stack.</p>
+    <p>AI builds goal-seeking systems; GenAI is one modern, generative branch inside the broader AI -&gt; ML -&gt; DL stack.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>Artificial Intelligence (AI)</strong> — field of building systems that perform intelligent tasks under uncertainty</li>

@@ -17,7 +17,7 @@ Events are past-tense facts for others to react to; they are not a substitute fo
 
 **Commands vs events.** A command (`ReserveInventory`) is a request to do work, usually aimed at one owner. An event (`InventoryReserved`) is a broadcast fact. Confusing them leads to “who is supposed to act?” ambiguity.
 
-**Topology.** Producers → broker (Kafka topic, SNS/SQS, Rabbit exchange) → consumers. Fan-out lets notifications, analytics, and search indexers all listen to `OrderPlaced` without the order service importing their clients.
+**Topology.** Producers -> broker (Kafka topic, SNS/SQS, Rabbit exchange) -> consumers. Fan-out lets notifications, analytics, and search indexers all listen to `OrderPlaced` without the order service importing their clients.
 
 ```mermaid
 flowchart LR

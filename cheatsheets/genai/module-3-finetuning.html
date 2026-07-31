@@ -7,14 +7,14 @@
   <meta name="description" content="When to fine-tune, SFT vs preference, PEFT/LoRA recipes — interview-ready.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-3-finetuning.html">
-  <meta property="og:title" content="Module 3 · Fine-tuning revision | Cheat Sheet | BackbenchLearner">
+  <meta property="og:title" content="Module 3 - Fine-tuning revision | Cheat Sheet | BackbenchLearner">
   <meta property="og:description" content="When to fine-tune, SFT vs preference, PEFT/LoRA recipes — interview-ready.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-3-finetuning.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
-  <title>Module 3 · Fine-tuning revision | Cheat Sheet | BackbenchLearner</title>
+  <title>Module 3 - Fine-tuning revision | Cheat Sheet | BackbenchLearner</title>
   <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +39,7 @@
 <body class="cheatsheet-page" data-topic="genai" data-cheatsheet="genai/module-3-finetuning">
   <div class="wrapper">
     <nav><a href="../../index.html#cheatsheet">&larr; Cheat sheets</a></nav>
-    <h1>Module 3 · Fine-tuning revision</h1>
+    <h1>Module 3 - Fine-tuning revision</h1>
     <p class="cheat-banner">Revision guide · ~25 min · dense bullets, not full lessons</p>
 
     <p>Chapters <strong>3.1–3.3</strong>. Prefer PEFT mental models over memorizing every hyperparameter.</p>
@@ -51,13 +51,13 @@
     </ul>
     <h3>Flavors</h3>
     <ul>
-    <li><strong>SFT (supervised fine-tuning)</strong> — train on instruction → ideal response pairs.</li>
+    <li><strong>SFT (supervised fine-tuning)</strong> — train on instruction -&gt; ideal response pairs.</li>
     <li><strong>Preference / RLHF / DPO-style</strong> — learn from ranked pairs (chosen vs rejected). Aligns tone and policy; needs careful data.</li>
     <li><strong>Continued pretraining</strong> — domain corpus without instruction format (legal text, codebases).</li>
     </ul>
     <h3>Data</h3>
     <ul>
-    <li>Quality ≫ quantity. Deduplicate, strip PII, balance tasks, fix label noise.</li>
+    <li>Quality matters more than quantity. Deduplicate, strip PII, balance tasks, fix label noise.</li>
     <li>Instruction format consistency (roles, special tokens) must match serving chat template.</li>
     <li>Hold out eval that mirrors production; watch <strong>catastrophic forgetting</strong> of general skills.</li>
     </ul>
@@ -65,15 +65,15 @@
     <ul>
     <li>Packing / packing efficiency; max length truncation strategy.</li>
     <li>Loss usually on assistant tokens only (mask user/system).</li>
-    <li>Overfit signs: train loss ↓↓, val / prod quality ↓ or regurgitation of train examples.</li>
+    <li>Overfit signs: train loss drops a lot, val / prod quality drops, or the model regurgitates train examples.</li>
     <li>Checkpoints, early stopping on a task metric (not only loss).</li>
     </ul>
     <h2 id="33-peft-adapters-soft-prompts">3.3 PEFT, adapters, soft prompts</h2>
     <h3>Why PEFT</h3>
     <ul>
-    <li>Full finetune updates all weights → expensive, huge artifacts, hard multi-tenant.</li>
+    <li>Full finetune updates all weights -&gt; expensive, huge artifacts, hard multi-tenant.</li>
     <li><strong>Adapters / LoRA</strong>: train small low-rank updates; freeze base. Serve many adapters on one base.</li>
-    <li><strong>LoRA</strong>: <code>ΔW ≈ BA</code> with rank <code>r</code>. Higher <code>r</code> → more capacity + VRAM. Common start: modest <code>r</code>, tune LR.</li>
+    <li><strong>LoRA</strong>: approximates the weight update as two small matrices B and A multiplied together (low rank). Higher rank means more capacity and VRAM. Common start: modest rank, then tune learning rate.</li>
     <li><strong>QLoRA</strong>: quantize base (e.g. 4-bit) + LoRA — consumer GPU friendly; watch quality/latency tradeoffs.</li>
     <li><strong>Prompt / prefix tuning</strong>: learn soft tokens; even smaller footprint; sometimes weaker than LoRA for complex tasks.</li>
     </ul>
@@ -115,7 +115,7 @@
     <ol>
     <li>Argue for RAG vs LoRA on a “company FAQ bot”.</li>
     <li>Name two evals that catch forgetting.</li>
-    <li>Explain rank <code>r</code> in one sentence.</li>
+    <li>Explain LoRA rank in one sentence (how big the two small matrices are).</li>
     </ol>
 
     <footer>

@@ -44,7 +44,7 @@
     <p>If two requests can touch the same row, design an atomic check-and-update — never check in Python and update later without a concurrency control.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>Lost update.</strong> Read balance 100, read balance 100, write 100−30, write 100−20 → final 80 instead of 50.</p>
+    <p><strong>Lost update.</strong> Read balance 100, read balance 100, write 100-30, write 100-20 -&gt; final 80 instead of 50.</p>
     <p><strong>Check-then-act.</strong> <code>if not exists: insert</code> races to unique violations or duplicates without a constraint.</p>
     <p><strong>Tools.</strong></p>
     <table>
@@ -58,11 +58,11 @@
           <td>Last line of defense for duplicates</td>
         </tr>
         <tr>
-          <td><code>UPDATE … WHERE</code> version/condition</td>
+          <td><code>UPDATE ... WHERE</code> version/condition</td>
           <td>Optimistic concurrency</td>
         </tr>
         <tr>
-          <td><code>SELECT … FOR UPDATE</code></td>
+          <td><code>SELECT ... FOR UPDATE</code></td>
           <td>Pessimistic row lock</td>
         </tr>
         <tr>
@@ -75,7 +75,7 @@
         </tr>
       </tbody>
     </table>
-    <p><strong>Optimistic vs pessimistic (preview).</strong> Optimistic: assume rare conflict; bump version; retry on conflict. Pessimistic: lock row while you decide. High contention → pessimistic or queue serialization; low contention → optimistic.</p>
+    <p><strong>Optimistic vs pessimistic (preview).</strong> Optimistic: assume rare conflict; bump version; retry on conflict. Pessimistic: lock row while you decide. High contention -&gt; pessimistic or queue serialization; low contention -&gt; optimistic.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 sequenceDiagram

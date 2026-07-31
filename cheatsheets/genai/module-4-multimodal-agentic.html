@@ -7,14 +7,14 @@
   <meta name="description" content="Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
-  <meta property="og:title" content="Module 4 · Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner">
+  <meta property="og:title" content="Module 4 - Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner">
   <meta property="og:description" content="Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
-  <title>Module 4 · Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner</title>
+  <title>Module 4 - Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner</title>
   <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,14 +39,14 @@
 <body class="cheatsheet-page" data-topic="genai" data-cheatsheet="genai/module-4-multimodal-agentic">
   <div class="wrapper">
     <nav><a href="../../index.html#cheatsheet">&larr; Cheat sheets</a></nav>
-    <h1>Module 4 · Multimodal &amp; agents revision</h1>
+    <h1>Module 4 - Multimodal &amp; agents revision</h1>
     <p class="cheat-banner">Revision guide · ~15 min · dense bullets, not full lessons</p>
 
     <p>Chapters <strong>4.1–4.2</strong> are shorter stubs. Use this for vocabulary; dive into <strong>2.9</strong> for agent depth.</p>
     <h2 id="41-vision-language-image-generation">4.1 Vision-language &amp; image generation</h2>
     <ul>
     <li><strong>VLM</strong>: joint model that maps images (and often text) into a shared space — caption, VQA, document understanding.</li>
-    <li>Typical pattern: vision encoder → projector → LLM decoder. Tokenize image patches / features like “soft tokens”.</li>
+    <li>Typical pattern: vision encoder -&gt; projector -&gt; LLM decoder. Tokenize image patches / features like “soft tokens”.</li>
     <li>Failure modes: OCR weakness, counting, spatial relations, hallucinated objects — evaluate on <em>your</em> image types.</li>
     <li><strong>Image generation</strong> (diffusion / related): iterative denoising from noise conditioned on text. Prompting = subject + style + constraints; safety filters matter in prod.</li>
     <li>Multimodal RAG: retrieve images + text; cite visual evidence carefully.</li>
@@ -56,7 +56,7 @@
     <li>Agent = LLM + tools + memory + control loop (not just a chat UI).</li>
     <li>Decompose tasks; verify with tools; escalate humans for high-risk actions.</li>
     <li>Orchestration: single agent with tools often beats premature multi-agent swarms.</li>
-    <li>For full patterns (HITL, reflection, memory tiers, multi-agent), revise <strong>Cheat sheet · Module 2</strong> section 2.9 and those lessons.</li>
+    <li>For full patterns (HITL, reflection, memory tiers, multi-agent), revise <strong>Cheat sheet - Module 2</strong> section 2.9 and those lessons.</li>
     </ul>
     <h2 id="15-minute-drill">15-minute drill</h2>
     <ol>

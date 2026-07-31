@@ -29,9 +29,9 @@ flowchart TB
 
 | Algorithm | Behavior | Use when |
 | --- | --- | --- |
-| Round-robin | Cycle S1, S2, S3, … | Stateless, similar cost |
+| Round-robin | Cycle S1, S2, S3, ... | Stateless, similar cost |
 | Least connections | Fewest active conns | Long or uneven requests |
-| Hash (IP, cookie, user id) | Same key → same server | Sticky sessions, local cache |
+| Hash (IP, cookie, user id) | Same key -> same server | Sticky sessions, local cache |
 | Weighted | Bias toward stronger nodes | Mixed capacity |
 
 **L4 vs L7.** L4 (TCP) balances connections without reading HTTP. L7 understands paths and headers — route `/api/payments` to a specialized pool, terminate TLS, add retries for idempotent GETs.
@@ -42,7 +42,7 @@ flowchart TB
 
 **Layers of balancing.** You often have more than one LB: a cloud load balancer in front of Kubernetes, then a Service/Ingress distributing to pods, then maybe a client-side library doing retries across upstreams. Keep retry policy in *one* place when possible — double retries at edge and mesh multiply load during outages.
 
-**Practical defaults.** Stateless FastAPI replicas → round-robin or least-conn. Need session stickiness temporarily → cookie affinity while you migrate sessions to Redis. Heterogeneous instance sizes → weighted targets. Always pair the algorithm with active health checks and a readiness endpoint so brand-new or dying pods stay out of rotation.
+**Practical defaults.** Stateless FastAPI replicas -> round-robin or least-conn. Need session stickiness temporarily -> cookie affinity while you migrate sessions to Redis. Heterogeneous instance sizes -> weighted targets. Always pair the algorithm with active health checks and a readiness endpoint so brand-new or dying pods stay out of rotation.
 
 ## In code
 

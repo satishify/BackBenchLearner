@@ -44,7 +44,7 @@
     <p>Design for at-least-once delivery and idempotent consumers; add stronger dedup where double side effects are unacceptable (payments).</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <p><strong>At-least-once path.</strong> Deliver → process → ack. If ack is lost, redeliver → process again.</p>
+    <p><strong>At-least-once path.</strong> Deliver -&gt; process -&gt; ack. If ack is lost, redeliver -&gt; process again.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 sequenceDiagram
@@ -152,7 +152,7 @@ async def charge_card(invoice_id: str, amount_cents: int):
     <li><strong>Ack before side effect</strong> — process crashes after ack; message lost (accidental at-most-once).</li>
     <li><strong>Side effect outside the dedupe transaction</strong> — duplicate sneaks in between check and write.</li>
     <li><strong>Weak keys</strong> — deduping on a random UUID generated each publish never collapses retries.</li>
-    <li><strong>Believing the broker brochure</strong> — “exactly-once” inside the log ≠ exactly-once money movement.</li>
+    <li><strong>Believing the broker brochure</strong> — “exactly-once” inside the log != exactly-once money movement.</li>
     <li><strong>No DLQ</strong> — poison messages retry forever, blocking the partition.</li>
     </ul>
     <aside class="callout callout-tip">
