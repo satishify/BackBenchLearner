@@ -1054,7 +1054,14 @@
     el.innerHTML = html;
   }
 
-  // ---- visitor admin (unchanged behaviour) ----
+  // ---- visitor admin ----
+  // countapi.xyz is dead; use the public CountAPI successor (no signup).
+  var VISITOR_COUNTER_KEY = 'backbenchlearner_com_site_visitors_v1';
+  var VISITOR_COUNTER_HIT =
+    'https://countapi.mileshilliard.com/api/v1/hit/' + VISITOR_COUNTER_KEY;
+  var VISITOR_COUNTER_GET =
+    'https://countapi.mileshilliard.com/api/v1/get/' + VISITOR_COUNTER_KEY;
+
   function formatLocation(data) {
     if (!data) return 'Unknown';
     var parts = [];
@@ -1064,17 +1071,35 @@
     return parts.length ? parts.join(', ') : 'Unknown';
   }
 
+  function parseCounterValue(data) {
+    if (!data || data.value == null) return null;
+    var n = Number(data.value);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  /** Count one visit per browser tab session (not on every admin panel open). */
+  function trackSiteVisit() {
+    try {
+      if (sessionStorage.getItem('bbl.visit-counted') === '1') return;
+      sessionStorage.setItem('bbl.visit-counted', '1');
+    } catch (e) { /* still attempt hit */ }
+    fetch(VISITOR_COUNTER_HIT, { method: 'GET', mode: 'cors', cache: 'no-store' }).catch(
+      function () { /* ignore */ }
+    );
+  }
+
   function loadVisitorInfo() {
     var countEl = document.getElementById('visitor-count');
     var locationEl = document.getElementById('visitor-location');
     if (countEl) {
-      fetch('https://api.countapi.xyz/hit/backbenchlearner.com/visitor-counter')
+      countEl.textContent = 'Loading…';
+      fetch(VISITOR_COUNTER_GET, { method: 'GET', mode: 'cors', cache: 'no-store' })
         .then(function (resp) {
           return resp.json();
         })
         .then(function (data) {
-          countEl.textContent =
-            data && typeof data.value === 'number' ? data.value.toLocaleString() : 'N/A';
+          var value = parseCounterValue(data);
+          countEl.textContent = value == null ? 'N/A' : value.toLocaleString();
         })
         .catch(function () {
           countEl.textContent = 'N/A';
@@ -1213,6 +1238,7 @@
   bindShellLessonRail();
   renderSeoLinks();
   syncUI();
+  trackSiteVisit();
 
   var unlockBtn = document.getElementById('visitor-unlock-btn');
   if (unlockBtn) {
