@@ -885,22 +885,22 @@
         flex-wrap: wrap;
         padding: 0.65rem 0.85rem;
       }
-      /* Thumb-friendly lessons control (Algomaster-style bottom-left) */
+      /* Compact thumb control — overlays content, does not shrink the reader */
       .sidebar-toggle {
         display: inline-flex;
         position: fixed;
-        left: 1rem;
-        bottom: 1rem;
+        left: 0.65rem;
+        bottom: 0.65rem;
         z-index: 115;
         margin: 0;
-        width: 3.35rem;
-        height: 3.35rem;
+        width: 2.55rem;
+        height: 2.55rem;
         padding: 0;
-        border-radius: 14px;
+        border-radius: 11px;
         border: 1px solid rgba(15, 118, 110, 0.28);
         background: #0f766e;
         color: #ecfdf5;
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.22);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
         font-size: 0;
       }
       .sidebar-toggle:hover {
@@ -923,13 +923,14 @@
         border: 0;
       }
       .sidebar-toggle-icon {
-        width: 1.35rem;
-        height: 1.35rem;
+        width: 1.15rem;
+        height: 1.15rem;
       }
-      .page-footer { padding-bottom: 4.5rem; }
-      #welcome,
-      .lesson-stage {
-        padding-bottom: 4.25rem;
+      /* Free vertical space for the lesson iframe */
+      .page-footer,
+      .visitor-unlock-btn,
+      .visitor-panel {
+        display: none !important;
       }
       .main-nav {
         width: 100%;
