@@ -139,6 +139,7 @@
   <script src="scripts/curriculum.js"></script>
   <script src="scripts/progress.js"></script>
   <script src="scripts/quizzes.js"></script>
+  <script src="scripts/pull-refresh.js?v=20260731i"></script>
   <script>
     (function () {
       'use strict';
@@ -153,6 +154,24 @@
       var chapter = topicId && chapterId ? BBL.Nav.chapter(topicId, chapterId) : null;
 
       if (window.self !== window.top) document.body.classList.add('in-iframe');
+
+      if (BBL.attachPullToRefresh) {
+        BBL.attachPullToRefresh({
+          target: document,
+          getScrollTop: function () {
+            return window.scrollY || document.documentElement.scrollTop || 0;
+          },
+          onRefresh: function () {
+            if (window.self !== window.top && window.parent) {
+              try {
+                window.parent.postMessage({ type: 'bbl-pull-refresh' }, '*');
+                return;
+              } catch (e) { /* fall through */ }
+            }
+            window.location.reload();
+          }
+        });
+      }
 
       function escapeHtml(text) {
         return String(text).replace(/[&<>"]/g, function (char) {

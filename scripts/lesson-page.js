@@ -461,6 +461,25 @@
   // Boot
   // ----------------------------------------------------------------------
 
+  function initPullToRefresh() {
+    if (!BBL.attachPullToRefresh) return;
+    BBL.attachPullToRefresh({
+      target: doc,
+      getScrollTop: function () {
+        return global.scrollY || doc.documentElement.scrollTop || doc.body.scrollTop || 0;
+      },
+      onRefresh: function () {
+        if (inFrame && global.parent && global.parent !== global) {
+          try {
+            global.parent.postMessage({ type: 'bbl-pull-refresh' }, '*');
+            return;
+          } catch (e) { /* fall through */ }
+        }
+        global.location.reload();
+      }
+    });
+  }
+
   function boot() {
     initCodeCopy();
     initLinkRouting();
@@ -468,6 +487,7 @@
     // TOC + scroll % must not depend on curriculum lookup succeeding.
     initSectionNav();
     initReadProgress();
+    initPullToRefresh();
     postToShell('bbl-lesson-outline');
 
     if (!Progress || !Nav || !topicId || !lessonHash) return;

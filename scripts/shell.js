@@ -1241,6 +1241,27 @@
   syncUI();
   trackSiteVisit();
 
+  // Nested scroll (body overflow:hidden) blocks native pull-to-refresh on phones.
+  if (BBL.attachPullToRefresh) {
+    var welcomeEl = document.getElementById('welcome');
+    if (welcomeEl) {
+      BBL.attachPullToRefresh({
+        target: welcomeEl,
+        getScrollTop: function () { return welcomeEl.scrollTop; },
+        isBlocked: function () {
+          var side = document.getElementById('sidebar');
+          return (side && side.classList.contains('open')) ||
+            !!document.querySelector('.nav-item.open');
+        },
+        onRefresh: function () { window.location.reload(); }
+      });
+    }
+    window.addEventListener('message', function (event) {
+      if (!event.data || event.data.type !== 'bbl-pull-refresh') return;
+      window.location.reload();
+    });
+  }
+
   var unlockBtn = document.getElementById('visitor-unlock-btn');
   if (unlockBtn) {
     unlockBtn.addEventListener('click', function () {

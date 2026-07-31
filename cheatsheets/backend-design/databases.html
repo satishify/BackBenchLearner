@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../styles/common.css">
+  <link rel="stylesheet" href="../../styles/common.css?v=20260731i">
   <style>
     .cheat-banner {
       font-family: 'JetBrains Mono', monospace;
@@ -107,8 +107,26 @@
       <a href="../../index.html#backend-design">Backend Systems lessons</a>
     </footer>
   </div>
+  <script src="../../scripts/pull-refresh.js?v=20260731i"></script>
   <script>
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
+    if (window.BBL && window.BBL.attachPullToRefresh) {
+      window.BBL.attachPullToRefresh({
+        target: document,
+        getScrollTop: function () {
+          return window.scrollY || document.documentElement.scrollTop || 0;
+        },
+        onRefresh: function () {
+          if (window.self !== window.top && window.parent) {
+            try {
+              window.parent.postMessage({ type: 'bbl-pull-refresh' }, '*');
+              return;
+            } catch (e) { /* fall through */ }
+          }
+          window.location.reload();
+        }
+      });
+    }
   </script>
 </body>
 </html>

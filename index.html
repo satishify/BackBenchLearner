@@ -487,7 +487,7 @@
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
-      overscroll-behavior: contain;
+      overscroll-behavior-y: auto;
       padding: 2rem 2.5rem;
       max-width: 880px;
     }
@@ -640,6 +640,27 @@
       font-size: 0.68rem;
       letter-spacing: 0.01em;
     }
+    .bbl-pull-refresh-hint {
+      position: fixed;
+      top: 0.35rem;
+      left: 50%;
+      z-index: 200;
+      transform: translate(-50%, -8px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.92);
+      color: #ecfdf5;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+      transition: opacity 0.12s ease;
+    }
+    .bbl-pull-refresh-hint.visible { opacity: 1; }
+    .bbl-pull-refresh-hint.ready { background: rgba(13, 148, 136, 0.96); }
     .visitor-unlock-btn {
       position: fixed;
       bottom: 1rem;
@@ -898,22 +919,22 @@
         flex-shrink: 0;
       }
       body.is-reading .header-inner {
-        padding: 0.35rem 0.65rem;
-        gap: 0.35rem;
+        padding: 0.25rem 0.55rem;
+        gap: 0.25rem;
       }
       body.is-reading .site-logo-mark {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
       }
       body.is-reading .site-logo-name {
-        font-size: 0.9rem;
+        font-size: 0.82rem;
       }
       body.is-reading .main-nav {
-        gap: 0.2rem;
+        gap: 0.15rem;
       }
       body.is-reading .nav-trigger {
-        padding: 0.35rem 0.3rem;
-        font-size: 0.75rem;
+        padding: 0.28rem 0.25rem;
+        font-size: 0.72rem;
       }
       body.is-reading .content-row {
         flex: 1 1 auto;
@@ -1165,11 +1186,12 @@
       <span class="label">location</span>
     </div>
   </div>
-  <script src="scripts/curriculum.js?v=20260731g"></script>
-  <script src="scripts/progress.js?v=20260731g"></script>
-  <script src="scripts/quizzes.js?v=20260731g"></script>
-  <script src="scripts/cheatsheets.js?v=20260731g"></script>
-  <script src="scripts/shell.js?v=20260731g"></script>
+  <script src="scripts/curriculum.js?v=20260731i"></script>
+  <script src="scripts/progress.js?v=20260731i"></script>
+  <script src="scripts/quizzes.js?v=20260731i"></script>
+  <script src="scripts/cheatsheets.js?v=20260731i"></script>
+  <script src="scripts/pull-refresh.js?v=20260731i"></script>
+  <script src="scripts/shell.js?v=20260731i"></script>
   <script>
     // Paint the conic progress ring from data-pct after the dashboard renders.
     (function () {
