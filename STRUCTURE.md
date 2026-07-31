@@ -21,7 +21,7 @@ content/
             └── 01-….md
 ```
 
-Published HTML lands in `backend-design/` and `genai/`. Redirect stubs keep the old `Backend & System Design/` and `Gen AI & Agentic AI/` URLs working.
+Published HTML lands in `backend-design/` and `genai/`. Redirect stubs keep the old `Backend & System Design/` folder paths and `Gen AI & Agentic AI/` URLs working.
 
 ## Authoring a lesson
 

@@ -5,16 +5,16 @@ window.BBL.CURRICULUM = {
   "backend-design": {
     "id": "backend-design",
     "basePath": "backend-design",
-    "navLabel": "Backend & System Design",
-    "title": "Backend & System Design Notes",
-    "welcomeTitle": "Backend & System Design Notes",
+    "navLabel": "Backend Systems",
+    "title": "Backend Systems",
+    "welcomeTitle": "Backend Systems",
     "welcomeTagline": "Core concepts, databases, caching, distributed systems, and reliability — with diagrams, worked examples, and Python.",
     "modules": [],
     "chapters": [
       {
         "id": "backend",
         "module": null,
-        "title": "Backend & System Design Core Concepts",
+        "title": "Backend Core Concepts",
         "quizId": "backend-design/backend",
         "hasQuiz": true,
         "minutes": 48,

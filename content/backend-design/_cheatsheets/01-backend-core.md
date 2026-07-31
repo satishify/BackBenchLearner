@@ -6,7 +6,7 @@ minutes: 25
 description: "APIs, HTTP, auth, sessions/JWT, OAuth2, rate limits, idempotency."
 ---
 
-Revision for the **Backend & System Design Core Concepts** chapter.
+Revision for the **Backend Core Concepts** chapter.
 
 ## APIs & styles
 - **API** = contract for clients to trigger behavior / fetch data without knowing internals.

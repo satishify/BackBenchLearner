@@ -1,6 +1,6 @@
 ---
 title: "What is caching and where to cache"
-description: "Learn what caching is and where to apply it in backend and system design."
+description: "Learn what caching is and where to apply it in backend systems."
 ---
 
 Your product page takes 80 ms from the database on a cold path. After lunch traffic, the same query runs thousands of times per minute with the same answer. **Caching** stores a copy of that answer in a faster or closer store so repeated requests skip recomputation and the primary source — cutting latency and shielding the database.

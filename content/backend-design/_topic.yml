@@ -1,13 +1,13 @@
 # Topic manifest. Chapter order here drives sidebar order.
 id: backend-design
 basePath: "backend-design"
-navLabel: "Backend & System Design"
-title: "Backend & System Design Notes"
-welcomeTitle: "Backend & System Design Notes"
+navLabel: "Backend Systems"
+title: "Backend Systems"
+welcomeTitle: "Backend Systems"
 welcomeTagline: "Core concepts, databases, caching, distributed systems, and reliability — with diagrams, worked examples, and Python."
 chapters:
   - id: backend
-    title: "Backend & System Design Core Concepts"
+    title: "Backend Core Concepts"
   - id: databases
     title: "Databases & Data Handling"
   - id: caching
