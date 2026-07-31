@@ -24,16 +24,17 @@
   <title>Microservices vs monoliths (trade-offs) | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../styles/common.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css">
 </head>
 <body data-topic="backend-design" data-lesson="distributed/microservices-vs-monoliths">
   <div class="read-progress" aria-hidden="true"><span id="read-progress-bar"></span></div>
-  <div class="wrapper">
-    <nav><a href="../../index.html">&larr; Home</a></nav>
-    <h1>Microservices vs monoliths (trade-offs)</h1>
-    <div class="lesson-meta" id="lesson-meta"></div>
+  <div class="lesson-layout">
+    <div class="wrapper">
+      <nav><a href="../../index.html">&larr; Home</a></nav>
+      <h1>Microservices vs monoliths (trade-offs)</h1>
+      <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>A <strong>monolith</strong> ships as one deployable unit: auth, orders, catalog, and billing in one codebase and process boundary. <strong>Microservices</strong> split those domains into separately deployable services talking over the network. Neither is morally superior — they optimize for different team sizes, scale shapes, and consistency needs. Choosing microservices too early is a common way to buy distributed-systems pain before you need the benefits.</p>
     <h2 id="intuition">Intuition</h2>
@@ -182,10 +183,26 @@ async def create_order(sku: str, qty: int, user_id: int):
     <li><strong>Distributed monolith</strong> — microservice topology without real independence</li>
     </ul>
 
-    <div class="lesson-actions" id="lesson-actions"></div>
-    <footer>
-      <a href="../../index.html">Home</a> &middot; <a href="../../index.html#backend-design">Backend &amp; System Design</a>
-    </footer>
+      <div class="lesson-actions" id="lesson-actions"></div>
+      <footer>
+        <a href="../../index.html">Home</a> &middot; <a href="../../index.html#backend-design">Backend &amp; System Design</a>
+      </footer>
+    </div>
+    <aside class="lesson-rail" aria-label="Reading progress">
+      <div class="reading-progress-card">
+        <div class="reading-progress-head">
+          <span class="reading-progress-label">Reading progress</span>
+          <span class="reading-progress-pct" id="rp-pct">0%</span>
+        </div>
+        <div class="reading-progress-track" aria-hidden="true">
+          <span id="rp-bar-fill"></span>
+        </div>
+        <nav class="on-this-page" aria-label="On this page">
+          <div class="on-this-page-label">On this page</div>
+          <ol class="on-this-page-list" id="otp-list"></ol>
+        </nav>
+      </div>
+    </aside>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
@@ -194,8 +211,8 @@ async def create_order(sku: str, qty: int, user_id: int):
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../scripts/curriculum.js"></script>
-  <script src="../../scripts/progress.js"></script>
-  <script src="../../scripts/lesson-page.js"></script>
+  <script src="../../scripts/curriculum.js?v=20260731d"></script>
+  <script src="../../scripts/progress.js?v=20260731d"></script>
+  <script src="../../scripts/lesson-page.js?v=20260731d"></script>
 </body>
 </html>

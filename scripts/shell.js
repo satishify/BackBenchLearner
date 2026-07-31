@@ -152,6 +152,118 @@
     return encodePath(sheet.path);
   }
 
+  function lessonStage() {
+    return document.getElementById('lesson-stage');
+  }
+
+  function shellRail() {
+    return document.getElementById('shell-lesson-rail');
+  }
+
+  function showLessonStage(show) {
+    var stage = lessonStage();
+    var frame = document.getElementById('content-frame');
+    if (stage) stage.classList.toggle('visible', !!show);
+    if (frame) frame.classList.toggle('visible', !!show);
+    if (!show) clearShellLessonRail();
+  }
+
+  function clearShellLessonRail() {
+    var rail = shellRail();
+    if (rail) rail.classList.remove('visible');
+    var list = document.getElementById('shell-otp-list');
+    if (list) list.innerHTML = '';
+    var empty = document.getElementById('shell-otp-empty');
+    if (empty) empty.remove();
+    var pct = document.getElementById('shell-rp-pct');
+    if (pct) pct.textContent = '0%';
+    var fill = document.getElementById('shell-rp-bar-fill');
+    if (fill) fill.style.width = '0%';
+  }
+
+  function renderShellLessonRail(payload) {
+    var rail = shellRail();
+    var list = document.getElementById('shell-otp-list');
+    var pct = document.getElementById('shell-rp-pct');
+    var fill = document.getElementById('shell-rp-bar-fill');
+    if (!rail || !list) return;
+
+    rail.classList.add('visible');
+    if (typeof payload.progress === 'number') {
+      var p = Math.max(0, Math.min(100, Math.round(payload.progress * 100)));
+      if (pct) pct.textContent = p + '%';
+      if (fill) fill.style.width = p + '%';
+    }
+
+    if (payload.replaceSections) {
+      var sections = payload.sections || [];
+      if (!sections.length) {
+        list.innerHTML = '';
+        list.insertAdjacentHTML(
+          'afterend',
+          '<p class="on-this-page-empty" id="shell-otp-empty">No section headings on this page.</p>'
+        );
+      } else {
+        var empty = document.getElementById('shell-otp-empty');
+        if (empty) empty.remove();
+        var html = '';
+        sections.forEach(function (section) {
+          html +=
+            '<li><a href="#" data-section-id="' +
+            escapeHtml(section.id) +
+            '"><span class="otp-num">' +
+            section.n +
+            '.</span>' +
+            escapeHtml(section.title) +
+            '</a></li>';
+        });
+        list.innerHTML = html;
+      }
+    }
+
+    var activeId = payload.activeId || '';
+    var links = list.querySelectorAll('a[data-section-id]');
+    for (var i = 0; i < links.length; i += 1) {
+      links[i].classList.toggle('active', links[i].getAttribute('data-section-id') === activeId);
+    }
+  }
+
+  function bindShellLessonRail() {
+    var rail = shellRail();
+    if (!rail || rail.getAttribute('data-bound') === '1') return;
+    rail.setAttribute('data-bound', '1');
+    rail.addEventListener('click', function (event) {
+      var anchor = event.target.closest('a[data-section-id]');
+      if (!anchor) return;
+      event.preventDefault();
+      var id = anchor.getAttribute('data-section-id');
+      var frame = document.getElementById('content-frame');
+      if (frame && frame.contentWindow) {
+        frame.contentWindow.postMessage({ type: 'bbl-scroll-to', id: id }, '*');
+      }
+    });
+
+    window.addEventListener('message', function (event) {
+      var data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'bbl-lesson-outline') {
+        renderShellLessonRail({
+          sections: data.sections || [],
+          progress: data.progress,
+          activeId: data.activeId,
+          replaceSections: true
+        });
+      } else if (data.type === 'bbl-lesson-progress') {
+        renderShellLessonRail({
+          sections: data.sections,
+          progress: data.progress,
+          activeId: data.activeId,
+          replaceSections: false
+        });
+      }
+    });
+  }
+
   function listModuleMocks(topicId) {
     var quizzes = BBL.QUIZZES || {};
     var prefix = topicId + '/mock/';
@@ -476,8 +588,13 @@
       '/' +
       stats.total +
       ' · ' +
-      Nav.formatMinutes(chapter.minutes) +
-      '</span>';
+      Nav.formatMinutes(chapter.minutes);
+    if (stats.quiz) {
+      html += ' · quiz ' + stats.quiz.best + '/' + stats.quiz.total;
+    } else if (chapter.hasQuiz) {
+      html += ' · quiz pending';
+    }
+    html += '</span>';
     html += progressBar(stats.percent);
     html += '</span>';
     html += '<span class="chapter-caret">▶</span></button>';
@@ -656,35 +773,8 @@
         '">Continue where you left off →</a></p>';
     }
 
-    html += '<div class="dash-chapters">';
-    topic.chapters.forEach(function (chapter) {
-      var ch = Nav.chapterStats(topicId, chapter);
-      html += '<div class="dash-chapter">';
-      html += '<div class="dash-chapter-head">';
-      html += '<strong>' + escapeHtml(chapter.title) + '</strong>';
-      html +=
-        '<span>' +
-        ch.done +
-        '/' +
-        ch.total +
-        ' · ' +
-        Nav.formatMinutes(chapter.minutes) +
-        '</span>';
-      html += '</div>';
-      html += progressBar(ch.percent);
-      if (ch.quiz) {
-        html +=
-          '<div class="dash-quiz-score">Quiz best: ' +
-          ch.quiz.best +
-          '/' +
-          ch.quiz.total +
-          '</div>';
-      } else if (chapter.hasQuiz) {
-        html += '<div class="dash-quiz-score muted">Quiz not taken yet</div>';
-      }
-      html += '</div>';
-    });
-    html += '</div>';
+    html +=
+      '<p class="dash-hint">Open any lesson from the <strong>left menu</strong> — chapter progress stays there so this page stays a clean home for the topic.</p>';
 
     html += '<div class="dash-tools">';
     html += '<button type="button" class="dash-btn" id="dash-export">Export progress</button>';
@@ -853,15 +943,16 @@
 
     if (parsed.kind === 'practice-hub') {
       frame.src = '';
-      frame.classList.remove('visible');
+      showLessonStage(false);
       renderPracticeHub();
       closeMenus();
       return;
     }
 
     if (parsed.kind === 'practice-mock') {
+      clearShellLessonRail();
       frame.src = practiceUrl(parsed.topicId, parsed.mockKey || '');
-      frame.classList.add('visible');
+      showLessonStage(true);
       welcome.style.display = 'none';
       setSidebarOpen(false);
       closeMenus();
@@ -870,7 +961,7 @@
 
     if (parsed.kind === 'cheatsheet-hub') {
       frame.src = '';
-      frame.classList.remove('visible');
+      showLessonStage(false);
       renderCheatHub();
       closeMenus();
       return;
@@ -881,12 +972,13 @@
       if (!sheet) {
         renderCheatHub();
         frame.src = '';
-        frame.classList.remove('visible');
+        showLessonStage(false);
         closeMenus();
         return;
       }
+      clearShellLessonRail();
       frame.src = cheatsheetUrl(sheet);
-      frame.classList.add('visible');
+      showLessonStage(true);
       welcome.style.display = 'none';
       setSidebarOpen(false);
       closeMenus();
@@ -908,21 +1000,22 @@
       if (!lesson) {
         renderDashboard(parsed.topicId);
         frame.src = '';
-        frame.classList.remove('visible');
+        showLessonStage(false);
         return;
       }
       frame.src = lessonUrl(parsed.topicId, lesson);
-      frame.classList.add('visible');
+      showLessonStage(true);
       welcome.style.display = 'none';
       setSidebarOpen(false);
     } else if (parsed.kind === 'quiz') {
+      clearShellLessonRail();
       frame.src = quizUrl(parsed.topicId, parsed.chapterId);
-      frame.classList.add('visible');
+      showLessonStage(true);
       welcome.style.display = 'none';
       setSidebarOpen(false);
     } else {
       frame.src = '';
-      frame.classList.remove('visible');
+      showLessonStage(false);
       renderDashboard(parsed.topicId);
     }
 
@@ -1116,6 +1209,7 @@
     if (parsed.kind === 'cheatsheet-hub') renderCheatHub();
   });
 
+  bindShellLessonRail();
   renderSeoLinks();
   syncUI();
 

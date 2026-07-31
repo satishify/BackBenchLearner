@@ -27,7 +27,163 @@ body.in-iframe nav,
 body.in-iframe footer {
   display: none !important;
 }
-.wrapper { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem; }
+.lesson-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+}
+.wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  width: 100%;
+}
+.lesson-rail {
+  display: none;
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  width: 240px;
+  max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.5rem 0 2rem;
+}
+.reading-progress-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.95rem 1rem 1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.reading-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+.reading-progress-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.reading-progress-pct {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+  line-height: 1.1;
+  flex-shrink: 0;
+}
+.reading-progress-track {
+  height: 5px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.reading-progress-track span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #0f766e;
+  border-radius: 999px;
+  transition: width 0.05s linear;
+}
+.on-this-page {
+  display: block;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+.on-this-page-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.15rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.on-this-page-empty {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0.35rem 0 0;
+}
+.on-this-page-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.05rem;
+}
+.on-this-page-list a {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  padding: 0.4rem 0.55rem 0.4rem 0.65rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.35;
+}
+.on-this-page-list a:hover {
+  color: var(--accent-strong);
+  text-decoration: none;
+  background: rgba(15, 118, 110, 0.05);
+}
+.on-this-page-list a.active {
+  color: #0f766e;
+  font-weight: 700;
+  border-left-color: #0f766e;
+  background: rgba(15, 118, 110, 0.07);
+}
+.on-this-page-list .otp-num {
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin-right: 0.2rem;
+}
+h2 .section-num {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.15rem;
+}
+/* Standalone lesson pages (opened outside the shell) keep an in-page rail. */
+@media (min-width: 780px) {
+  body:not(.in-iframe) .lesson-layout {
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 1rem;
+    padding: 0 0.75rem 0 0.25rem;
+  }
+  body:not(.in-iframe) .wrapper {
+    margin: 0;
+    max-width: none;
+  }
+  body:not(.in-iframe) .lesson-rail { display: block; }
+}
+/* Inside the study shell, the parent page owns the Algomaster-style rail. */
+body.in-iframe .lesson-rail { display: none !important; }
+body.in-iframe .lesson-layout {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 880px;
+}
+body.in-iframe .wrapper {
+  margin: 0 auto;
+  max-width: 820px;
+}
 nav {
   font-size: 0.9rem;
   margin-bottom: 1.5rem;

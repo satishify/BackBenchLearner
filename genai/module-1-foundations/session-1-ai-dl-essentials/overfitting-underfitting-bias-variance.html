@@ -24,16 +24,17 @@
   <title>Overfitting, Underfitting, and Bias-Variance Tradeoff | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../styles/common.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css">
 </head>
 <body data-topic="genai" data-lesson="module-1-foundations/session-1-ai-dl-essentials/overfitting-underfitting-bias-variance">
   <div class="read-progress" aria-hidden="true"><span id="read-progress-bar"></span></div>
-  <div class="wrapper">
-    <nav><a href="../../../index.html">&larr; Home</a></nav>
-    <h1>Overfitting, Underfitting, and Bias-Variance Tradeoff</h1>
-    <div class="lesson-meta" id="lesson-meta"></div>
+  <div class="lesson-layout">
+    <div class="wrapper">
+      <nav><a href="../../../index.html">&larr; Home</a></nav>
+      <h1>Overfitting, Underfitting, and Bias-Variance Tradeoff</h1>
+      <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>A model that aces the training set but fails on new users, new tickets, or next week’s traffic is not “smart” — it <strong>memorized</strong>. The whole point of learning is <strong>generalization</strong>: good predictions on data the model has never seen. <strong>Underfitting</strong> and <strong>overfitting</strong> are the two classic failure modes, and the <strong>bias–variance tradeoff</strong> is the language we use to reason about the capacity sweet spot between them. Every GenAI practitioner hits this when a fine-tune looks perfect on the demo set and collapses in production.</p>
     <h2 id="intuition">Intuition</h2>
@@ -158,10 +159,26 @@ for degree in [1, 3, 9, 15]:
     <li><strong>Validation set / early stopping:</strong> held-out data and halt rule used to detect and limit overfitting during training.</li>
     </ul>
 
-    <div class="lesson-actions" id="lesson-actions"></div>
-    <footer>
-      <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
-    </footer>
+      <div class="lesson-actions" id="lesson-actions"></div>
+      <footer>
+        <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
+      </footer>
+    </div>
+    <aside class="lesson-rail" aria-label="Reading progress">
+      <div class="reading-progress-card">
+        <div class="reading-progress-head">
+          <span class="reading-progress-label">Reading progress</span>
+          <span class="reading-progress-pct" id="rp-pct">0%</span>
+        </div>
+        <div class="reading-progress-track" aria-hidden="true">
+          <span id="rp-bar-fill"></span>
+        </div>
+        <nav class="on-this-page" aria-label="On this page">
+          <div class="on-this-page-label">On this page</div>
+          <ol class="on-this-page-list" id="otp-list"></ol>
+        </nav>
+      </div>
+    </aside>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
@@ -170,8 +187,8 @@ for degree in [1, 3, 9, 15]:
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js"></script>
-  <script src="../../../scripts/progress.js"></script>
-  <script src="../../../scripts/lesson-page.js"></script>
+  <script src="../../../scripts/curriculum.js?v=20260731d"></script>
+  <script src="../../../scripts/progress.js?v=20260731d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260731d"></script>
 </body>
 </html>

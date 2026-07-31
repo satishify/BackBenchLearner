@@ -24,16 +24,17 @@
   <title>Causal Masking and Cross-Attention | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../styles/common.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css">
 </head>
 <body data-topic="genai" data-lesson="module-1-foundations/transformers/decoder-masking-cross-attention">
   <div class="read-progress" aria-hidden="true"><span id="read-progress-bar"></span></div>
-  <div class="wrapper">
-    <nav><a href="../../../index.html">&larr; Home</a></nav>
-    <h1>Causal Masking and Cross-Attention</h1>
-    <div class="lesson-meta" id="lesson-meta"></div>
+  <div class="lesson-layout">
+    <div class="wrapper">
+      <nav><a href="../../../index.html">&larr; Home</a></nav>
+      <h1>Causal Masking and Cross-Attention</h1>
+      <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>Training a language model on “The cat sat on the ___” only works if the network cannot peek at the answer token while predicting it. <strong>Causal (look-ahead) masking</strong> enforces that rule inside decoder self-attention. In encoder–decoder models, a second mechanism — <strong>cross-attention</strong> — lets each target position read from the <em>source</em> sequence. Together they explain GPT-style stacks (mask only) and classic Transformer translation (mask + cross).</p>
     <h2 id="intuition">Intuition</h2>
@@ -158,10 +159,26 @@ print(&quot;cross-attn weights:\n&quot;, np.round(cross_w, 3))</code></pre>
     <li><strong>Decoder-only:</strong> single stack with causal self-attention (typical LLMs).</li>
     </ul>
 
-    <div class="lesson-actions" id="lesson-actions"></div>
-    <footer>
-      <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
-    </footer>
+      <div class="lesson-actions" id="lesson-actions"></div>
+      <footer>
+        <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
+      </footer>
+    </div>
+    <aside class="lesson-rail" aria-label="Reading progress">
+      <div class="reading-progress-card">
+        <div class="reading-progress-head">
+          <span class="reading-progress-label">Reading progress</span>
+          <span class="reading-progress-pct" id="rp-pct">0%</span>
+        </div>
+        <div class="reading-progress-track" aria-hidden="true">
+          <span id="rp-bar-fill"></span>
+        </div>
+        <nav class="on-this-page" aria-label="On this page">
+          <div class="on-this-page-label">On this page</div>
+          <ol class="on-this-page-list" id="otp-list"></ol>
+        </nav>
+      </div>
+    </aside>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
@@ -170,8 +187,8 @@ print(&quot;cross-attn weights:\n&quot;, np.round(cross_w, 3))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js"></script>
-  <script src="../../../scripts/progress.js"></script>
-  <script src="../../../scripts/lesson-page.js"></script>
+  <script src="../../../scripts/curriculum.js?v=20260731d"></script>
+  <script src="../../../scripts/progress.js?v=20260731d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260731d"></script>
 </body>
 </html>

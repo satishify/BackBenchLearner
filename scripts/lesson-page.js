@@ -21,19 +21,60 @@
   var inFrame = global.self !== global.top;
 
   // ----------------------------------------------------------------------
-  // Reading progress bar
+  // Reading progress bar + on-this-page TOC
   // ----------------------------------------------------------------------
+
+  function scrollRatio() {
+    var scrollable = doc.documentElement.scrollHeight - global.innerHeight;
+    if (scrollable <= 0) return 1;
+    return Math.max(0, Math.min(1, global.scrollY / scrollable));
+  }
+
+  function postToShell(type, extra) {
+    if (!inFrame || !global.parent || global.parent === global) return;
+    var active = null;
+    if (sectionIndex.length) {
+      var offset = 110;
+      active = sectionIndex[0];
+      for (var i = 0; i < sectionIndex.length; i += 1) {
+        var el = doc.getElementById(sectionIndex[i].id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= offset) active = sectionIndex[i];
+      }
+    }
+    var payload = {
+      type: type,
+      progress: scrollRatio(),
+      activeId: active ? active.id : '',
+      sections: sectionIndex.map(function (section) {
+        return { id: section.id, n: section.n, title: section.title };
+      })
+    };
+    if (extra) {
+      for (var key in extra) {
+        if (Object.prototype.hasOwnProperty.call(extra, key)) payload[key] = extra[key];
+      }
+    }
+    try {
+      global.parent.postMessage(payload, '*');
+    } catch (e) { /* ignore */ }
+  }
 
   function initReadProgress() {
     var bar = doc.getElementById('read-progress-bar');
-    if (!bar) return;
+    var fill = doc.getElementById('rp-bar-fill');
+    var pctEl = doc.getElementById('rp-pct');
     var pending = false;
 
     function paint() {
       pending = false;
-      var scrollable = doc.documentElement.scrollHeight - global.innerHeight;
-      var ratio = scrollable > 0 ? global.scrollY / scrollable : 1;
-      bar.style.width = Math.max(0, Math.min(1, ratio)) * 100 + '%';
+      var ratio = scrollRatio();
+      var pct = Math.round(ratio * 100);
+      if (bar) bar.style.width = pct + '%';
+      if (fill) fill.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = pct + '%';
+      paintActiveSection();
+      postToShell('bbl-lesson-progress');
       if (ratio > 0.9) markNearlyRead();
     }
 
@@ -46,7 +87,154 @@
       },
       { passive: true }
     );
+    global.addEventListener('resize', paint, { passive: true });
     paint();
+  }
+
+  function initShellBridge() {
+    if (!inFrame) return;
+    // Prefer the shell rail; keep in-page rail as a fallback for narrow shells.
+    global.addEventListener('message', function (event) {
+      var data = event.data;
+      if (!data || data.type !== 'bbl-scroll-to' || !data.id) return;
+      var target = doc.getElementById(data.id);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  var sectionIndex = [];
+
+  function collectSectionHeadings() {
+    // Prefer lesson body headings. Do not require them to stay inside .wrapper —
+    // broken markup (e.g. mermaid) can move nodes during HTML repair.
+    var nodes = doc.querySelectorAll('h2');
+    var out = [];
+    for (var i = 0; i < nodes.length; i += 1) {
+      var heading = nodes[i];
+      if (heading.closest('.lesson-rail, .on-this-page, .read-progress')) continue;
+      out.push(heading);
+    }
+    return out;
+  }
+
+  function ensureProgressCard() {
+    var card = doc.querySelector('.reading-progress-card');
+    if (card) return card;
+    var rail = doc.querySelector('.lesson-rail');
+    if (!rail) {
+      var layout = doc.querySelector('.lesson-layout') || doc.body;
+      rail = doc.createElement('aside');
+      rail.className = 'lesson-rail';
+      rail.setAttribute('aria-label', 'Reading progress');
+      layout.appendChild(rail);
+    }
+    card = doc.createElement('div');
+    card.className = 'reading-progress-card';
+    card.innerHTML =
+      '<div class="reading-progress-head">' +
+      '<span class="reading-progress-label">Reading progress</span>' +
+      '<span class="reading-progress-pct" id="rp-pct">0%</span>' +
+      '</div>' +
+      '<div class="reading-progress-track" aria-hidden="true"><span id="rp-bar-fill"></span></div>';
+    rail.appendChild(card);
+    return card;
+  }
+
+  /** Number h2 sections and build the full "On this page" list. */
+  function initSectionNav() {
+    var card = ensureProgressCard();
+    if (!card) return;
+
+    var legacy = doc.getElementById('rp-section');
+    if (legacy) legacy.remove();
+
+    var headings = collectSectionHeadings();
+    sectionIndex = [];
+
+    var nav = card.querySelector('.on-this-page');
+    if (!nav) {
+      nav = doc.createElement('nav');
+      nav.className = 'on-this-page';
+      nav.setAttribute('aria-label', 'On this page');
+      card.appendChild(nav);
+    }
+    nav.hidden = false;
+    nav.style.display = 'block';
+
+    if (!headings.length) {
+      nav.innerHTML =
+        '<div class="on-this-page-label">On this page</div>' +
+        '<p class="on-this-page-empty">No section headings on this page.</p>';
+      return;
+    }
+
+    var html = '<div class="on-this-page-label">On this page</div><ol class="on-this-page-list" id="otp-list">';
+    headings.forEach(function (heading, index) {
+      var n = index + 1;
+      if (!heading.id) heading.id = 'section-' + n;
+      var label = heading.textContent.replace(/^\d+\.\s*/, '').trim() || 'Section ' + n;
+      if (!heading.querySelector('.section-num')) {
+        heading.textContent = '';
+        var num = doc.createElement('span');
+        num.className = 'section-num';
+        num.textContent = n + '.';
+        heading.appendChild(num);
+        heading.appendChild(doc.createTextNode(' ' + label));
+      } else {
+        label = heading.textContent.replace(/^\d+\.\s*/, '').trim() || label;
+      }
+      sectionIndex.push({ id: heading.id, n: n, title: label });
+      html +=
+        '<li><a href="#' +
+        heading.id +
+        '" data-section-id="' +
+        heading.id +
+        '"><span class="otp-num">' +
+        n +
+        '.</span>' +
+        escapeHtml(label) +
+        '</a></li>';
+    });
+    html += '</ol>';
+    nav.innerHTML = html;
+
+    var list = doc.getElementById('otp-list');
+    if (list && list.getAttribute('data-bound') !== '1') {
+      list.setAttribute('data-bound', '1');
+      list.addEventListener('click', function (event) {
+        var anchor = event.target.closest('a[href^="#"]');
+        if (!anchor) return;
+        var id = anchor.getAttribute('href').slice(1);
+        var target = doc.getElementById(id);
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    postToShell('bbl-lesson-outline');
+  }
+
+  function paintActiveSection() {
+    if (!sectionIndex.length) return;
+
+    var offset = 110;
+    var active = sectionIndex[0];
+    for (var i = 0; i < sectionIndex.length; i += 1) {
+      var el = doc.getElementById(sectionIndex[i].id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top <= offset) active = sectionIndex[i];
+    }
+
+    var list = doc.getElementById('otp-list');
+    if (!list) return;
+    var links = list.querySelectorAll('a[data-section-id]');
+    for (var j = 0; j < links.length; j += 1) {
+      var on = links[j].getAttribute('data-section-id') === active.id;
+      links[j].classList.toggle('active', on);
+      if (on) links[j].setAttribute('aria-current', 'true');
+      else links[j].removeAttribute('aria-current');
+    }
   }
 
   var nudged = false;
@@ -276,6 +464,11 @@
   function boot() {
     initCodeCopy();
     initLinkRouting();
+    initShellBridge();
+    // TOC + scroll % must not depend on curriculum lookup succeeding.
+    initSectionNav();
+    initReadProgress();
+    postToShell('bbl-lesson-outline');
 
     if (!Progress || !Nav || !topicId || !lessonHash) return;
     var location = Nav.locate(topicId, lessonHash);
@@ -284,7 +477,6 @@
     Progress.markVisited(Nav.lessonId(topicId, lessonHash));
     renderMeta(location);
     renderActions(location);
-    initReadProgress();
 
     Progress.subscribe(function () {
       paintCompleteButton(Progress.isDone(Nav.lessonId(topicId, lessonHash)));

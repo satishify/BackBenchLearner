@@ -24,16 +24,17 @@
   <title>Exactly-once vs at-least-once processing | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../styles/common.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css">
 </head>
 <body data-topic="backend-design" data-lesson="reliability/exactly-once-vs-at-least-once">
   <div class="read-progress" aria-hidden="true"><span id="read-progress-bar"></span></div>
-  <div class="wrapper">
-    <nav><a href="../../index.html">&larr; Home</a></nav>
-    <h1>Exactly-once vs at-least-once processing</h1>
-    <div class="lesson-meta" id="lesson-meta"></div>
+  <div class="lesson-layout">
+    <div class="wrapper">
+      <nav><a href="../../index.html">&larr; Home</a></nav>
+      <h1>Exactly-once vs at-least-once processing</h1>
+      <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>Networks drop packets. Workers crash after doing work but before acknowledging. Brokers therefore <strong>redeliver</strong>. <strong>At-least-once</strong> means each message is processed one or more times — nothing silently lost if you retry until success. <strong>Exactly-once</strong> means side effects happen once — no duplicates, no drops. Pure exactly-once across independent systems is famously hard; practical systems usually deliver at-least-once and make handlers <strong>idempotent</strong> so duplicates are harmless.</p>
     <h2 id="intuition">Intuition</h2>
@@ -170,10 +171,26 @@ async def charge_card(invoice_id: str, amount_cents: int):
     <li><strong>Idempotency key</strong> — client-supplied key so retries reuse one server-side result</li>
     </ul>
 
-    <div class="lesson-actions" id="lesson-actions"></div>
-    <footer>
-      <a href="../../index.html">Home</a> &middot; <a href="../../index.html#backend-design">Backend &amp; System Design</a>
-    </footer>
+      <div class="lesson-actions" id="lesson-actions"></div>
+      <footer>
+        <a href="../../index.html">Home</a> &middot; <a href="../../index.html#backend-design">Backend &amp; System Design</a>
+      </footer>
+    </div>
+    <aside class="lesson-rail" aria-label="Reading progress">
+      <div class="reading-progress-card">
+        <div class="reading-progress-head">
+          <span class="reading-progress-label">Reading progress</span>
+          <span class="reading-progress-pct" id="rp-pct">0%</span>
+        </div>
+        <div class="reading-progress-track" aria-hidden="true">
+          <span id="rp-bar-fill"></span>
+        </div>
+        <nav class="on-this-page" aria-label="On this page">
+          <div class="on-this-page-label">On this page</div>
+          <ol class="on-this-page-list" id="otp-list"></ol>
+        </nav>
+      </div>
+    </aside>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
@@ -182,8 +199,8 @@ async def charge_card(invoice_id: str, amount_cents: int):
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../scripts/curriculum.js"></script>
-  <script src="../../scripts/progress.js"></script>
-  <script src="../../scripts/lesson-page.js"></script>
+  <script src="../../scripts/curriculum.js?v=20260731d"></script>
+  <script src="../../scripts/progress.js?v=20260731d"></script>
+  <script src="../../scripts/lesson-page.js?v=20260731d"></script>
 </body>
 </html>

@@ -24,16 +24,17 @@
   <title>System Prompts and Role Design | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../styles/common.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/styles/github.min.css">
 </head>
 <body data-topic="genai" data-lesson="module-2-prompting-rag/session-4-advanced-prompting/system-prompts-and-role-design">
   <div class="read-progress" aria-hidden="true"><span id="read-progress-bar"></span></div>
-  <div class="wrapper">
-    <nav><a href="../../../index.html">&larr; Home</a></nav>
-    <h1>System Prompts and Role Design</h1>
-    <div class="lesson-meta" id="lesson-meta"></div>
+  <div class="lesson-layout">
+    <div class="wrapper">
+      <nav><a href="../../../index.html">&larr; Home</a></nav>
+      <h1>System Prompts and Role Design</h1>
+      <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>In chat APIs, not every message is equal. The <strong>system</strong> (or developer) message is the constitution: long-lived rules for identity, tools, safety, and output style. <strong>User</strong> messages are the day’s petitions. <strong>Assistant</strong> messages are prior replies that keep the conversation coherent. Role design is how you turn a generic model into a product-specific agent without fine-tuning.</p>
     <h2 id="intuition">Intuition</h2>
@@ -129,10 +130,26 @@ print(msgs[1][&quot;content&quot;][:80], &quot;...&quot;)</code></pre>
     <li><strong>Recency bias:</strong> tendency for later tokens to influence behavior more; place critical rules carefully.</li>
     </ul>
 
-    <div class="lesson-actions" id="lesson-actions"></div>
-    <footer>
-      <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
-    </footer>
+      <div class="lesson-actions" id="lesson-actions"></div>
+      <footer>
+        <a href="../../../index.html">Home</a> &middot; <a href="../../../index.html#genai">Gen AI &amp; Agentic AI</a>
+      </footer>
+    </div>
+    <aside class="lesson-rail" aria-label="Reading progress">
+      <div class="reading-progress-card">
+        <div class="reading-progress-head">
+          <span class="reading-progress-label">Reading progress</span>
+          <span class="reading-progress-pct" id="rp-pct">0%</span>
+        </div>
+        <div class="reading-progress-track" aria-hidden="true">
+          <span id="rp-bar-fill"></span>
+        </div>
+        <nav class="on-this-page" aria-label="On this page">
+          <div class="on-this-page-label">On this page</div>
+          <ol class="on-this-page-list" id="otp-list"></ol>
+        </nav>
+      </div>
+    </aside>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11/highlight.min.js"></script>
@@ -141,8 +158,8 @@ print(msgs[1][&quot;content&quot;][:80], &quot;...&quot;)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js"></script>
-  <script src="../../../scripts/progress.js"></script>
-  <script src="../../../scripts/lesson-page.js"></script>
+  <script src="../../../scripts/curriculum.js?v=20260731d"></script>
+  <script src="../../../scripts/progress.js?v=20260731d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260731d"></script>
 </body>
 </html>
