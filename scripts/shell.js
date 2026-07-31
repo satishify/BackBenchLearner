@@ -310,6 +310,7 @@
     backdrop.classList.toggle('visible', open);
     backdrop.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close lessons menu' : 'Open lessons menu');
   }
 
   function closeMenus() {
