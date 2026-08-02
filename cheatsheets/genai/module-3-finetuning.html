@@ -61,7 +61,7 @@
     <li>Instruction format must match your serving chat template.</li>
     <li>Hold out eval that mirrors production; watch <strong>catastrophic forgetting</strong> (losing old skills after narrow training).</li>
     </ul>
-    <h2 id="32-data-prep-training-mechanisms-lecture-map">3.2 Data prep &amp; training mechanisms (lecture map)</h2>
+    <h2 id="32-data-prep-training-mechanisms">3.2 Data prep &amp; training mechanisms</h2>
     <ul>
     <li><strong>How LLMs learn</strong> — Tokenize → mini-batch → next-token guess → softmax → cross-entropy → small update. Stop when validation flattens.</li>
     <li><strong>Instability</strong> — Spikes / exploding gradients / divergence. Clip gradients, warmup, decay learning rate, prefer bf16, save checkpoints.</li>
@@ -71,35 +71,14 @@
     <li><strong>Data prep</strong> — Fix noise, bad labels, duplicates, messy formatting, stale facts; split honestly; watch domain shift.</li>
     <li><strong>Loss curves</strong> — Train and val falling together with a small gap = healthy. Stop at the validation minimum.</li>
     </ul>
-    <h2 id="33-peft-adapters-soft-prompts">3.3 PEFT, adapters, soft prompts</h2>
-    <h3>Why PEFT exists</h3>
+    <h2 id="33-peft-additive-and-soft-prompting">3.3 PEFT: additive and soft prompting</h2>
     <ul>
-    <li>Full fine-tuning updates every weight → expensive, huge artifacts, harder multi-tenant serving.</li>
-    <li><strong>PEFT (parameter-efficient fine-tuning)</strong> freezes the backbone and trains a tiny add-on instead.</li>
-    </ul>
-    <h3>Adapters and LoRA</h3>
-    <ul>
-    <li><strong>Adapters</strong> — Small trainable blocks inserted into the network; learn a task-specific tweak around frozen features.</li>
-    <li><strong>LoRA (Low-Rank Adaptation)</strong> — Express the weight update as two small matrices: weight update ~= B times A (low rank). Higher rank = more capacity and VRAM.</li>
-    <li><strong>QLoRA (Quantized LoRA)</strong> — Quantize the frozen base (e.g. 4-bit) + train LoRA adapters. Fits big models on smaller GPUs; always check quality.</li>
-    </ul>
-    <h3>Soft prompts</h3>
-    <ul>
-    <li><strong>Prompt tuning</strong> — Learn virtual token embeddings prepended to the input; backbone stays frozen.</li>
-    <li><strong>Prefix tuning</strong> — Learn prefixes injected into layer attention; more expressive than prompt tuning alone.</li>
-    <li>Smallest footprint, but may underfit hard generative tasks—escalate to LoRA when needed.</li>
-    </ul>
-    <h3>Training recipe (LoRA defaults)</h3>
-    <ul>
-    <li>Learning rate ~1e-4 to 3e-4 (higher than full FT).</li>
-    <li>Start rank 16, alpha 32 on attention projections.</li>
-    <li>One to two epochs on clean data; change one knob at a time.</li>
-    </ul>
-    <h3>Serving</h3>
-    <ul>
-    <li><strong>Merge</strong> LoRA into base → one simple checkpoint per skill.</li>
-    <li><strong>Keep separate</strong> → many small adapters on one base; hot-swap and cheap rollback.</li>
-    <li>Version base + adapter + tokenizer + chat template together.</li>
+    <li><strong>Why PEFT</strong> — Full fine-tuning is costly and can forget old skills. Train a tiny fraction of parameters (or a tiny prompt) instead. Families: selective, additive, re-parameterization (LoRA/QLoRA), soft prompting.</li>
+    <li><strong>Adapters (additive)</strong> — Small modules on a frozen backbone. Sequential (in the path) vs residual/parallel (add a correction). Freeze original weights; update only adapters. Modular multi-task swap.</li>
+    <li><strong>Soft prompting</strong> — Adapt in token space with learnable virtual tokens. Discrete prompt = real words; continuous prompt = trainable embeddings.</li>
+    <li><strong>Prefix vs prompt tuning</strong> — Both soft-prompt methods; prefix tuning emphasizes learned prefix context; prompt tuning learns prompt embeddings with a frozen model.</li>
+    <li><strong>Smarter prompts</strong> — SMoP (sparse mixture), APT (prefix length by layer), IDPG (prompt from the input), SPT (prompts only where needed).</li>
+    <li><strong>Choose by fit</strong> — Adapters for modular architecture-side adaptation; soft prompts for smallest frozen-backbone footprint; smarter variants when one blunt prompt is not enough.</li>
     </ul>
     <h2 id="decision-cheat">Decision cheat</h2>
     <table>

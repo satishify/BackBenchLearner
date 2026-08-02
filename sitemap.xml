@@ -141,11 +141,12 @@
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/preparing-the-data.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-2-data-training</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/lora-and-qlora.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/training-recipes-lr-rank-quantization.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/why-peft-exists.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/additive-peft-adapters.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/soft-prompting.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/smarter-soft-prompts.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-3-peft</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html</loc></url>

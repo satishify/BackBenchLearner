@@ -24,7 +24,7 @@ Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparame
 - Instruction format must match your serving chat template.
 - Hold out eval that mirrors production; watch **catastrophic forgetting** (losing old skills after narrow training).
 
-## 3.2 Data prep & training mechanisms (lecture map)
+## 3.2 Data prep & training mechanisms
 
 - **How LLMs learn** — Tokenize → mini-batch → next-token guess → softmax → cross-entropy → small update. Stop when validation flattens.
 - **Instability** — Spikes / exploding gradients / divergence. Clip gradients, warmup, decay learning rate, prefer bf16, save checkpoints.
@@ -34,31 +34,14 @@ Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparame
 - **Data prep** — Fix noise, bad labels, duplicates, messy formatting, stale facts; split honestly; watch domain shift.
 - **Loss curves** — Train and val falling together with a small gap = healthy. Stop at the validation minimum.
 
-## 3.3 PEFT, adapters, soft prompts
+## 3.3 PEFT: additive and soft prompting
 
-### Why PEFT exists
-- Full fine-tuning updates every weight → expensive, huge artifacts, harder multi-tenant serving.
-- **PEFT (parameter-efficient fine-tuning)** freezes the backbone and trains a tiny add-on instead.
-
-### Adapters and LoRA
-- **Adapters** — Small trainable blocks inserted into the network; learn a task-specific tweak around frozen features.
-- **LoRA (Low-Rank Adaptation)** — Express the weight update as two small matrices: weight update ~= B times A (low rank). Higher rank = more capacity and VRAM.
-- **QLoRA (Quantized LoRA)** — Quantize the frozen base (e.g. 4-bit) + train LoRA adapters. Fits big models on smaller GPUs; always check quality.
-
-### Soft prompts
-- **Prompt tuning** — Learn virtual token embeddings prepended to the input; backbone stays frozen.
-- **Prefix tuning** — Learn prefixes injected into layer attention; more expressive than prompt tuning alone.
-- Smallest footprint, but may underfit hard generative tasks—escalate to LoRA when needed.
-
-### Training recipe (LoRA defaults)
-- Learning rate ~1e-4 to 3e-4 (higher than full FT).
-- Start rank 16, alpha 32 on attention projections.
-- One to two epochs on clean data; change one knob at a time.
-
-### Serving
-- **Merge** LoRA into base → one simple checkpoint per skill.
-- **Keep separate** → many small adapters on one base; hot-swap and cheap rollback.
-- Version base + adapter + tokenizer + chat template together.
+- **Why PEFT** — Full fine-tuning is costly and can forget old skills. Train a tiny fraction of parameters (or a tiny prompt) instead. Families: selective, additive, re-parameterization (LoRA/QLoRA), soft prompting.
+- **Adapters (additive)** — Small modules on a frozen backbone. Sequential (in the path) vs residual/parallel (add a correction). Freeze original weights; update only adapters. Modular multi-task swap.
+- **Soft prompting** — Adapt in token space with learnable virtual tokens. Discrete prompt = real words; continuous prompt = trainable embeddings.
+- **Prefix vs prompt tuning** — Both soft-prompt methods; prefix tuning emphasizes learned prefix context; prompt tuning learns prompt embeddings with a frozen model.
+- **Smarter prompts** — SMoP (sparse mixture), APT (prefix length by layer), IDPG (prompt from the input), SPT (prompts only where needed).
+- **Choose by fit** — Adapters for modular architecture-side adaptation; soft prompts for smallest frozen-backbone footprint; smarter variants when one blunt prompt is not enough.
 
 ## Decision cheat
 

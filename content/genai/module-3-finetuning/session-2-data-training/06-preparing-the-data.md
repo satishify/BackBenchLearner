@@ -7,7 +7,7 @@ Clever schedules cannot fully rescue bad data. This chapter is about the data pr
 
 ## Intuition
 
-Slide-level agenda for today still holds: **important characteristics of data**, then **how to prepare it**. Five quality issues show up again and again.
+Two things matter most: **important characteristics of data**, then **how to prepare it**. Five quality issues show up again and again.
 
 | Problem | What goes wrong | Typical fix |
 | --- | --- | --- |

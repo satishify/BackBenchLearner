@@ -1973,7 +1973,7 @@ window.BBL.QUIZZES = {
         "why": "Those penalties keep weights closer to the pretrained starting point."
       },
       {
-        "q": "What is the strongest overall lesson of this session?",
+        "q": "What is the strongest overall takeaway about data prep and training?",
         "options": [
           "Data quality, schedule choice, and stability controls matter more than one magical hyperparameter",
           "The only thing that matters is the number of layers",
@@ -1990,114 +1990,169 @@ window.BBL.QUIZZES = {
     "title": "3.3 PEFT, Adapters & Soft Prompting",
     "questions": [
       {
-        "q": "What is the main idea behind parameter-efficient fine-tuning (PEFT)?",
+        "q": "Why is PEFT an attractive alternative to full fine-tuning?",
         "options": [
-          "Retrain the tokenizer only",
-          "Keep most of the pretrained model frozen and train only a small task-specific part",
-          "Delete the base model after every training run",
-          "Replace attention layers with hand-written rules"
+          "Because it updates fewer parameters and therefore reduces compute cost",
+          "Because it always improves every metric on every task",
+          "Because it eliminates the need for a pretrained backbone",
+          "Because it makes prompt writing unnecessary in all cases"
         ],
-        "answer": 1,
-        "why": "PEFT keeps the pretrained backbone and learns small adapters or soft prompts—far cheaper than updating every weight."
+        "answer": 0,
+        "why": "PEFT cuts compute by training far fewer parameters than full fine-tuning."
       },
       {
-        "q": "For a large d-by-d weight matrix, LoRA with rank r trains about how many parameters (A is r-by-d, B is d-by-r)?",
+        "q": "Which statement best describes an adapter?",
         "options": [
-          "Still d squared",
-          "About 2 times d times r — much less when r is small",
-          "Only r squared, no matter how big d is",
-          "d divided by r"
+          "A frozen prompt embedding that is prepended to every input",
+          "A small trainable module added to the network to adjust hidden states",
+          "A data-cleaning technique for removing duplicates",
+          "A decoding strategy used at inference time"
         ],
         "answer": 1,
-        "why": "LoRA stores A and B: r times d plus d times r equals 2dr. Example: d=4096, r=16 gives about 131k params vs about 16.8M for a full update."
+        "why": "Adapters are the small trainable add-on modules used to adapt hidden states."
       },
       {
-        "q": "What does QLoRA (Quantized LoRA) mainly help with?",
+        "q": "What is the strongest reason residual adapters are appealing for generative tasks?",
         "options": [
-          "Guaranteed higher accuracy than bf16 LoRA",
-          "Lower GPU memory by storing the frozen base in 4-bit while training LoRA adapters",
-          "Replacing the need for training data",
-          "Automatically deleting eval sets"
+          "They remove the need for layer normalization",
+          "They replace tokenization with embeddings",
+          "They keep the original flow intact while injecting task-specific behavior in parallel",
+          "They force the model to use only the bottom layer"
         ],
-        "answer": 1,
-        "why": "QLoRA keeps the base in 4-bit so large models fit on smaller GPUs. Quality still needs your own measurement."
+        "answer": 2,
+        "why": "Residual adapters preserve the base flow and add a task-specific correction in parallel."
       },
       {
-        "q": "What is the key difference between prompt tuning and LoRA?",
+        "q": "What does prefix tuning mainly add to the model?",
         "options": [
-          "They are the same method with different names",
-          "Prompt tuning learns continuous virtual prompts; LoRA learns low-rank weight updates",
-          "LoRA only trains the tokenizer",
-          "Prompt tuning updates every weight in the model"
+          "Virtual tokens that act as learnable context",
+          "Extra layers that are fully retrained",
+          "A second tokenizer",
+          "A larger vocabulary file"
         ],
-        "answer": 1,
-        "why": "Soft-prompt methods work in embedding or prefix space. LoRA patches selected weight matrices with a small low-rank update."
+        "answer": 0,
+        "why": "Prefix tuning adds virtual tokens that provide learnable context."
       },
       {
-        "q": "If you raise LoRA rank from 8 to 64, what happens most directly?",
+        "q": "Why can prompt tuning be sensitive to small changes?",
         "options": [
-          "Holdout scores always improve",
-          "Adapter capacity and trainable parameter count go up — overfitting risk rises on small data",
-          "GPU memory automatically halves",
-          "You no longer need a learning rate"
+          "Because the prompt embeddings are learned and the model is still frozen",
+          "Because it deletes the pretrained model’s language ability",
+          "Because it only works on classification tasks",
+          "Because it does not use any tokens"
         ],
-        "answer": 1,
-        "why": "Rank is a capacity knob. Bigger is not free—watch holdout and anchor metrics."
+        "answer": 0,
+        "why": "The prompt embeddings are optimized, so tiny changes can affect behavior."
       },
       {
-        "q": "When is keeping adapters separate better than merging them into the base?",
+        "q": "What is the main idea behind SMoP?",
         "options": [
-          "You need one fixed behavior forever and want the simplest possible serving path",
-          "Many tasks or tenants share one base and you want hot-swap or cheap rollback with small files",
-          "You want to use twice as much VRAM for no reason",
-          "Merging is impossible in any framework"
+          "Use one fixed prompt for every input and every layer",
+          "Use sparse mixture selection so only the useful prompts are activated",
+          "Train all model weights and ignore the prompts",
+          "Store prompts in the tokenizer vocabulary permanently"
         ],
         "answer": 1,
-        "why": "Separate adapters enable multi-skill routing and fast rollback. Merging is simpler when you have one stable skill."
+        "why": "SMoP sparsely selects among prompts rather than using all of them every time."
       },
       {
-        "q": "Which is a common PEFT training mistake?",
+        "q": "APT becomes useful when different layers need different amounts of prompt capacity because:",
         "options": [
-          "Using a modest rank with a LoRA-scale learning rate and one clean epoch",
-          "Copying a full fine-tuning learning rate onto LoRA and training too many epochs on noisy data",
-          "Logging trainable percentage and anchor metrics",
-          "Checking 4-bit quality against the same task metrics you serve"
+          "All layers are identical in what they represent",
+          "The output layer alone handles all semantics",
+          "Bottom layers tend to capture shallow phrase-level features and higher layers capture more semantics",
+          "Prompting only works in the last layer"
         ],
-        "answer": 1,
-        "why": "PEFT needs its own learning rate and epoch regime. Full-FT defaults plus messy data are a frequent failure mode."
+        "answer": 2,
+        "why": "APT allocates prompt capacity differently across layers because their representations differ."
       },
       {
-        "q": "Where does prefix tuning mainly add trainable parameters?",
+        "q": "What is the key message of IDPG?",
         "options": [
-          "Disk formatting tables",
-          "Per-layer attention key/value prefixes while the backbone stays frozen",
-          "The optimizer random seed only",
-          "The vector database schema"
+          "Soft prompts should always be shared across all tasks",
+          "The prompt should be generated from the input instance, not only from the task label",
+          "Adapters are always better than prompts",
+          "Prompt tuning has no trainable parameters"
         ],
         "answer": 1,
-        "why": "Prefixes give each layer extra context that attention can read—without updating full weight matrices."
+        "why": "IDPG generates prompts from the instance, not just from the task."
       },
       {
-        "q": "d=4096, r=8 LoRA on one matrix: trainable params are about 2 times 4096 times 8 = 65,536. What fraction of a full d-squared update is that?",
+        "q": "Why is SPT interesting?",
         "options": [
-          "About 50%",
-          "About 0.39% (65536 divided by 4096 squared)",
-          "100%",
-          "About 8%"
+          "It proves every layer needs the same prompt length",
+          "It deletes the need for a pretrained language model",
+          "It learns to insert prompts selectively instead of forcing prompts everywhere",
+          "It only works for image tasks"
         ],
-        "answer": 1,
-        "why": "4096 squared is 16,777,216. 65,536 divided by that is about 0.0039, or roughly 0.39% of a dense update."
+        "answer": 2,
+        "why": "SPT learns where prompts actually help instead of inserting them everywhere."
       },
       {
-        "q": "When is PEFT the wrong tool even with good adapters?",
+        "q": "Which statement best describes adapters versus soft prompts?",
         "options": [
-          "You need a stable tone on small clean data",
-          "You want the model to memorize a huge changing fact database — use RAG instead",
-          "You want smaller experiment files than full fine-tuning",
-          "You need multi-adapter routing on one base"
+          "Adapters add architectural elements; soft prompts adapt in token space",
+          "Adapters are only for inference; soft prompts are only for training data",
+          "Adapters and soft prompts are the same thing with different names",
+          "Soft prompts always change every model weight"
+        ],
+        "answer": 0,
+        "why": "That is the clean conceptual split: adapters change the network; soft prompts change the prompt."
+      },
+      {
+        "q": "Why can PEFT be preferable in multi-task settings?",
+        "options": [
+          "It makes catastrophic forgetting impossible in every case",
+          "It lets separate tasks reuse the same backbone while keeping task-specific changes small",
+          "It removes the need for validation data",
+          "It always trains faster because there are more labels"
         ],
         "answer": 1,
-        "why": "Adapter capacity is for behavior and format—not a substitute for retrieving large, changing fact stores."
+        "why": "PEFT keeps a shared backbone and uses small task-specific modules."
+      },
+      {
+        "q": "Which trade-off most naturally belongs to adapters?",
+        "options": [
+          "They add a little extra architecture instead of only learning prompt embeddings",
+          "They require all parameters to be updated",
+          "They cannot be swapped between tasks",
+          "They work only if the input is shorter than 10 tokens"
+        ],
+        "answer": 0,
+        "why": "Adapters add a bit of architecture rather than only embeddings."
+      },
+      {
+        "q": "Why are task-specific tokens useful with adapters?",
+        "options": [
+          "Because adapter-based systems often benefit from explicit task or segment structure",
+          "To prove that tokenization should never be used",
+          "To show that task labels are not needed at all",
+          "To replace the model with a rule-based system"
+        ],
+        "answer": 0,
+        "why": "Task-specific tokens help express structure such as QA segments."
+      },
+      {
+        "q": "What is the most accurate comparison between prefix tuning and prompt tuning?",
+        "options": [
+          "Both are soft-prompt methods, but prefix tuning emphasizes a learned prefix context",
+          "Prefix tuning changes only the vocabulary; prompt tuning changes only the optimizer",
+          "Prompt tuning updates every hidden layer; prefix tuning does not use tokens",
+          "They are unrelated techniques from different families"
+        ],
+        "answer": 0,
+        "why": "Both are soft-prompt methods; prefix tuning emphasizes a prefix context."
+      },
+      {
+        "q": "What is the best practical takeaway when picking a PEFT method?",
+        "options": [
+          "The best PEFT method is always the one with the most parameters",
+          "Soft prompts replace all other fine-tuning methods",
+          "Choose the method that matches cost, data shape, and the kind of adaptation you need",
+          "Adapters are obsolete because prompts exist"
+        ],
+        "answer": 2,
+        "why": "Pick by task needs and cost constraints, not by trendiness."
       }
     ]
   },

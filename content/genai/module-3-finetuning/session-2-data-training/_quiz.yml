@@ -126,7 +126,7 @@ questions:
     answer: 1
     why: "Those penalties keep weights closer to the pretrained starting point."
 
-  - q: "What is the strongest overall lesson of this session?"
+  - q: "What is the strongest overall takeaway about data prep and training?"
     options:
       - "Data quality, schedule choice, and stability controls matter more than one magical hyperparameter"
       - "The only thing that matters is the number of layers"

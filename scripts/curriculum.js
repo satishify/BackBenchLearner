@@ -1091,42 +1091,49 @@ window.BBL.CURRICULUM = {
         "title": "3.3 PEFT, Adapters & Soft Prompting",
         "quizId": "genai/module-3-finetuning/session-3-peft",
         "hasQuiz": true,
-        "minutes": 31,
+        "minutes": 18,
         "lessons": [
           {
-            "slug": "why-peft-adapters-intuition",
-            "hash": "module-3-finetuning/session-3-peft/why-peft-adapters-intuition",
-            "path": "module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html",
-            "label": "Why PEFT: Adapters Intuition",
-            "minutes": 7
+            "slug": "why-peft-exists",
+            "hash": "module-3-finetuning/session-3-peft/why-peft-exists",
+            "path": "module-3-finetuning/session-3-peft/why-peft-exists.html",
+            "label": "Why PEFT Exists",
+            "minutes": 3
           },
           {
-            "slug": "lora-and-qlora",
-            "hash": "module-3-finetuning/session-3-peft/lora-and-qlora",
-            "path": "module-3-finetuning/session-3-peft/lora-and-qlora.html",
-            "label": "LoRA and QLoRA",
-            "minutes": 5
+            "slug": "additive-peft-adapters",
+            "hash": "module-3-finetuning/session-3-peft/additive-peft-adapters",
+            "path": "module-3-finetuning/session-3-peft/additive-peft-adapters.html",
+            "label": "Additive PEFT: Adapters",
+            "minutes": 3
           },
           {
-            "slug": "prompt-tuning-prefix-tuning",
-            "hash": "module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning",
-            "path": "module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning.html",
-            "label": "Prompt Tuning and Prefix Tuning",
-            "minutes": 7
+            "slug": "soft-prompting",
+            "hash": "module-3-finetuning/session-3-peft/soft-prompting",
+            "path": "module-3-finetuning/session-3-peft/soft-prompting.html",
+            "label": "Soft Prompting",
+            "minutes": 3
           },
           {
-            "slug": "training-recipes-lr-rank-quantization",
-            "hash": "module-3-finetuning/session-3-peft/training-recipes-lr-rank-quantization",
-            "path": "module-3-finetuning/session-3-peft/training-recipes-lr-rank-quantization.html",
-            "label": "Training Recipes: LR, Rank, and Quantization",
-            "minutes": 6
+            "slug": "prefix-tuning-and-prompt-tuning",
+            "hash": "module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning",
+            "path": "module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning.html",
+            "label": "Prefix Tuning and Prompt Tuning",
+            "minutes": 3
           },
           {
-            "slug": "serving-merged-vs-adapter-weights",
-            "hash": "module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights",
-            "path": "module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html",
-            "label": "Serving Merged vs Adapter Weights",
-            "minutes": 6
+            "slug": "smarter-soft-prompts",
+            "hash": "module-3-finetuning/session-3-peft/smarter-soft-prompts",
+            "path": "module-3-finetuning/session-3-peft/smarter-soft-prompts.html",
+            "label": "Smarter Soft Prompts",
+            "minutes": 3
+          },
+          {
+            "slug": "choosing-a-peft-method",
+            "hash": "module-3-finetuning/session-3-peft/choosing-a-peft-method",
+            "path": "module-3-finetuning/session-3-peft/choosing-a-peft-method.html",
+            "label": "Choosing a PEFT Method",
+            "minutes": 3
           }
         ]
       },

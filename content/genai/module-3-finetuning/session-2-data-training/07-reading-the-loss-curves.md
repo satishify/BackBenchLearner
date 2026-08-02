@@ -3,7 +3,7 @@ title: "Reading the Loss Curves"
 description: "How training vs validation loss tells you underfitting, overfitting, no learning, or a healthy fine-tune — and when to stop."
 ---
 
-Your **ultimate guide** at the end of this lecture is the pair of curves: training loss and validation loss over steps. Read them together. They tell you which failure mode you are in — and when to stop.
+Your best guide is the pair of curves: training loss and validation loss over steps. Read them together. They tell you which failure mode you are in — and when to stop.
 
 ## Intuition
 
