@@ -133,12 +133,13 @@
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-1-fundamentals</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/module-3-review-checklist.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/how-llms-learn.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/training-instability.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/catastrophic-forgetting.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/learning-rate-scheduling.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/choosing-batch-size.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/preparing-the-data.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-2-data-training</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/lora-and-qlora.html</loc></url>

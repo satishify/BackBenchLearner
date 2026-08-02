@@ -275,13 +275,13 @@
 - from: genai/module-3-finetuning/finetuning-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
   to: genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/datasets-labels-and-instruction-format.html
-  to: genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html
+  to: genai/module-3-finetuning/session-2-data-training/preparing-the-data.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/sft-supervised-fine-tuning.html
   to: genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/full-finetune-vs-freeze-strategies.html
   to: genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/eval-catastrophic-forgetting-and-overfit.html
-  to: genai/module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html
+  to: genai/module-3-finetuning/session-2-data-training/catastrophic-forgetting.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/alignment-overview-rlhf-dpo.html
   to: genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html
 - from: genai/module-3-finetuning/peft/why-peft-adapters-intuition.html
@@ -295,10 +295,23 @@
 - from: genai/module-3-finetuning/peft/serving-merged-vs-adapter-weights.html
   to: genai/module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html
 - from: genai/module-3-finetuning/lab-sprint/lab-prep-and-baseline.html
-  to: genai/module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html
+  to: genai/module-3-finetuning/session-2-data-training/how-llms-learn.html
 - from: genai/module-3-finetuning/lab-sprint/lab-sft-or-lora-sprint.html
-  to: genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html
+  to: genai/module-3-finetuning/session-2-data-training/learning-rate-scheduling.html
 - from: genai/module-3-finetuning/lab-sprint/lab-eval-and-writeup.html
-  to: genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html
+  to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
 - from: genai/module-3-finetuning/lab-sprint/module-3-review-checklist.html
-  to: genai/module-3-finetuning/session-2-data-training/module-3-review-checklist.html
+  to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
+# Module 3 Session 2 chapter rename (lab-style pages -> lecture chapters)
+- from: genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html
+  to: genai/module-3-finetuning/session-2-data-training/preparing-the-data.html
+- from: genai/module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html
+  to: genai/module-3-finetuning/session-2-data-training/catastrophic-forgetting.html
+- from: genai/module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html
+  to: genai/module-3-finetuning/session-2-data-training/how-llms-learn.html
+- from: genai/module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html
+  to: genai/module-3-finetuning/session-2-data-training/learning-rate-scheduling.html
+- from: genai/module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html
+  to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
+- from: genai/module-3-finetuning/session-2-data-training/module-3-review-checklist.html
+  to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html

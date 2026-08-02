@@ -1032,49 +1032,56 @@ window.BBL.CURRICULUM = {
         "title": "3.2 Data Prep & Training Mechanisms",
         "quizId": "genai/module-3-finetuning/session-2-data-training",
         "hasQuiz": true,
-        "minutes": 44,
+        "minutes": 26,
         "lessons": [
           {
-            "slug": "datasets-labels-and-instruction-format",
-            "hash": "module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format",
-            "path": "module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html",
-            "label": "Datasets, Labels, and Instruction Format",
-            "minutes": 7
+            "slug": "how-llms-learn",
+            "hash": "module-3-finetuning/session-2-data-training/how-llms-learn",
+            "path": "module-3-finetuning/session-2-data-training/how-llms-learn.html",
+            "label": "How LLMs Learn",
+            "minutes": 4
           },
           {
-            "slug": "eval-catastrophic-forgetting-and-overfit",
-            "hash": "module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit",
-            "path": "module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html",
-            "label": "Eval, Catastrophic Forgetting, and Overfit",
-            "minutes": 8
+            "slug": "training-instability",
+            "hash": "module-3-finetuning/session-2-data-training/training-instability",
+            "path": "module-3-finetuning/session-2-data-training/training-instability.html",
+            "label": "Training Instability",
+            "minutes": 4
           },
           {
-            "slug": "lab-prep-and-baseline",
-            "hash": "module-3-finetuning/session-2-data-training/lab-prep-and-baseline",
-            "path": "module-3-finetuning/session-2-data-training/lab-prep-and-baseline.html",
-            "label": "Lab Prep and Baseline",
-            "minutes": 6
+            "slug": "catastrophic-forgetting",
+            "hash": "module-3-finetuning/session-2-data-training/catastrophic-forgetting",
+            "path": "module-3-finetuning/session-2-data-training/catastrophic-forgetting.html",
+            "label": "Catastrophic Forgetting",
+            "minutes": 5
           },
           {
-            "slug": "lab-sft-or-lora-sprint",
-            "hash": "module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint",
-            "path": "module-3-finetuning/session-2-data-training/lab-sft-or-lora-sprint.html",
-            "label": "Lab: SFT or LoRA Sprint",
-            "minutes": 11
+            "slug": "learning-rate-scheduling",
+            "hash": "module-3-finetuning/session-2-data-training/learning-rate-scheduling",
+            "path": "module-3-finetuning/session-2-data-training/learning-rate-scheduling.html",
+            "label": "Learning Rate Scheduling",
+            "minutes": 4
           },
           {
-            "slug": "lab-eval-and-writeup",
-            "hash": "module-3-finetuning/session-2-data-training/lab-eval-and-writeup",
-            "path": "module-3-finetuning/session-2-data-training/lab-eval-and-writeup.html",
-            "label": "Lab: Eval and Writeup",
-            "minutes": 6
+            "slug": "choosing-batch-size",
+            "hash": "module-3-finetuning/session-2-data-training/choosing-batch-size",
+            "path": "module-3-finetuning/session-2-data-training/choosing-batch-size.html",
+            "label": "Choosing Batch Size",
+            "minutes": 3
           },
           {
-            "slug": "module-3-review-checklist",
-            "hash": "module-3-finetuning/session-2-data-training/module-3-review-checklist",
-            "path": "module-3-finetuning/session-2-data-training/module-3-review-checklist.html",
-            "label": "Module 3 Review Checklist",
-            "minutes": 6
+            "slug": "preparing-the-data",
+            "hash": "module-3-finetuning/session-2-data-training/preparing-the-data",
+            "path": "module-3-finetuning/session-2-data-training/preparing-the-data.html",
+            "label": "Preparing the Data",
+            "minutes": 4
+          },
+          {
+            "slug": "reading-the-loss-curves",
+            "hash": "module-3-finetuning/session-2-data-training/reading-the-loss-curves",
+            "path": "module-3-finetuning/session-2-data-training/reading-the-loss-curves.html",
+            "label": "Reading the Loss Curves",
+            "minutes": 2
           }
         ]
       },

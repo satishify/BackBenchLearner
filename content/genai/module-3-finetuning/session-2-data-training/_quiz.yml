@@ -1,109 +1,136 @@
 title: "3.2 Data Prep & Training Mechanisms"
 questions:
-  - q: "A good SFT JSONL row should include..."
+  - q: "During training, the model sees fixed-length token windows. What is the main reason for that design?"
     options:
-      - "Only a free-form essay with no clear task"
-      - "A clear instruction or input plus the target assistant reply in a consistent chat format"
-      - "Raw HTML from a whole website"
-      - "Unlabeled embedding vectors"
-    answer: 1
-    why: "Consistent instruction format teaches the model the same pattern you will use at inference time."
+      - "It makes the text easier for humans to read"
+      - "It lets the model learn from only one document at a time"
+      - "It turns the data into a form the GPU can process efficiently"
+      - "It removes the need for tokenization"
+    answer: 2
+    why: "Fixed-length windows let the GPU batch work efficiently after tokenization."
 
-  - q: "Noisy or wrong labels on a small intent dataset most likely cause..."
+  - q: "A model produces raw scores, then turns them into probabilities, then scores how wrong those probabilities are. Which pair matches that story?"
     options:
-      - "Automatic perfect calibration"
-      - "A ceiling on accuracy — clean labels usually beat clever optimizers"
-      - "Faster convergence every time"
-      - "No need for a validation split"
-    answer: 1
-    why: "Bad supervision caps what the model can learn; fix the data before chasing hyperparameters."
+      - "Softmax, then cross-entropy"
+      - "Backpropagation, then Adam"
+      - "Cross-entropy, then softmax"
+      - "Mini-batching, then tokenization"
+    answer: 0
+    why: "Softmax turns logits into probabilities; cross-entropy measures how wrong they are."
 
-  - q: "Catastrophic forgetting after domain SFT shows up as..."
+  - q: "One batch causes a huge jump in loss, but later batches partly recover. What failure mode is that?"
     options:
-      - "Better scores on general instruction anchors"
-      - "The niche task improves but general or anchor tasks get worse"
-      - "Training loss stays low on every task forever"
-      - "The tokenizer shrinks"
-    answer: 1
-    why: "Heavy updates can erase older skills; track anchors and use replay, PEFT, or a lower learning rate."
+      - "No learning"
+      - "Underfitting"
+      - "Loss spike"
+      - "Catastrophic forgetting"
+    answer: 2
+    why: "A sudden one-batch jump that later recovers is a loss spike."
 
-  - q: "Why capture a prompt-only baseline before a LoRA or SFT sprint?"
+  - q: "Which intervention most directly stops one very large gradient from blowing up the update?"
     options:
-      - "Baselines are not allowed in experiments"
-      - "Without one you cannot tell if training helped or a better prompt would have"
-      - "Training always beats prompting by default"
-      - "GPUs need a baseline file to start"
+      - "Increase the number of epochs"
+      - "Use gradient clipping"
+      - "Remove warmup from the schedule"
+      - "Switch to a larger context length"
     answer: 1
-    why: "The lab freezes metrics first; adaptation must beat a measured control that did not update weights."
+    why: "Clipping caps the update size while keeping the direction."
 
-  - q: "During a LoRA sprint, trainable parameters report about 100%. What should you do?"
+  - q: "A legal-domain fine-tune improves legal accuracy but general reasoning and coding get worse. What is the best name for that problem?"
     options:
-      - "Celebrate maximum PEFT efficiency"
-      - "Stop — the adapter setup likely failed and you may be full-tuning by accident"
-      - "Double the learning rate right away"
-      - "Merge adapters into the tokenizer"
-    answer: 1
-    why: "Healthy LoRA trains a small fraction of weights; near 100% means the freeze or adapter wrap is wrong."
+      - "Data leakage"
+      - "Gradient explosion"
+      - "Domain shift"
+      - "Catastrophic forgetting"
+    answer: 3
+    why: "That is classic catastrophic forgetting."
 
-  - q: "Train loss keeps falling but holdout task score peaks at epoch 1 then gets worse. That suggests..."
+  - q: "You want the model to keep general ability while adapting to a narrow task, and you have some general instruction data. What is the most fitting mitigation?"
     options:
-      - "Keep training until train loss is zero"
-      - "Overfitting — early-stop near the holdout peak and/or use fewer epochs or a lower LR"
-      - "Underfitting that needs many more epochs"
-      - "Proof the labels were perfect"
-    answer: 1
-    why: "When train improves but holdout worsens, the model is memorizing; stop earlier or add cleaner data."
+      - "Rehearsal with mixed general data"
+      - "No warmup and a higher learning rate"
+      - "Remove validation and train longer"
+      - "Reduce the context length only"
+    answer: 0
+    why: "Rehearsal mixes a little general data into the fine-tune so old skills stay active."
 
-  - q: "A fine-tune writeup should compare..."
+  - q: "Which schedule usually gives productive steps early and very small steps at the end, with a smooth shape?"
     options:
-      - "Only one friend's informal opinion"
-      - "Baseline vs adapted model on task metrics plus anchor or regression checks"
-      - "Parameter count alone"
-      - "Git commit message length"
-    answer: 1
-    why: "The lab asks for measured deltas on the target task and proof that general behavior did not collapse."
+      - "Constant schedule"
+      - "Step decay"
+      - "Cosine decay"
+      - "No schedule at all"
+    answer: 2
+    why: "Cosine decay is smooth and leaves small steps near the end."
 
-  - q: "Mixing a small replay of general instruct data during domain SFT mainly helps prevent..."
-    options:
-      - "GPU underutilization only"
-      - "Catastrophic forgetting of broad skills"
-      - "The need for any domain data"
-      - "Tokenizer Unicode bugs"
-    answer: 1
-    why: "Replay keeps some gradient signal on general behaviors while the model specializes."
-
-  - q: "Fixed-length token windows in training mainly exist so that..."
-    options:
-      - "Humans can read the text more easily"
-      - "The GPU can batch and process tokenized data efficiently"
-      - "The model learns from only one document at a time"
-      - "Tokenization is no longer needed"
-    answer: 1
-    why: "Packed token windows let the GPU process many examples in parallel after tokenization."
-
-  - q: "Which step most directly stops one very large gradient from blowing up an update?"
-    options:
-      - "Training for more epochs"
-      - "Gradient clipping"
-      - "Removing warmup from the schedule"
-      - "Using a longer context length"
-    answer: 1
-    why: "Gradient clipping rescales oversized gradients while keeping their direction."
-
-  - q: "Micro-batch 2, gradient accumulation 8, and 4 GPUs give an effective batch size of..."
+  - q: "A micro-batch of 2, gradient accumulation of 8, and 4 GPUs are used. What is the effective batch size?"
     options:
       - "14"
       - "32"
       - "64"
       - "128"
     answer: 2
-    why: "Effective batch = 2 x 8 x 4 = 64 samples per optimizer update."
+    why: "2 x 8 x 4 = 64 examples influence one optimizer step."
 
-  - q: "Before claiming Module 3 complete, you should not skip..."
+  - q: "The loss curve jitters heavily from step to step and never settles. A sensible first fix is to:"
     options:
-      - "Checking that your lever choice (prompt, RAG, or fine-tune) matches the failure mode"
-      - "Deleting all failed runs from your notes"
-      - "Shipping without reading holdout errors"
-      - "Schema validation because demos looked fine"
+      - "Increase batch noise further"
+      - "Increase effective batch size or lower the learning rate"
+      - "Remove validation evaluation"
+      - "Add more duplicates to the dataset"
+    answer: 1
+    why: "Persistent jitter usually means the batch is too small or the learning rate is too high."
+
+  - q: "A model trained on many duplicate passages later regurgitates text word-for-word. Which data issue is most directly responsible?"
+    options:
+      - "Inconsistent formatting"
+      - "Outdated information"
+      - "Duplicates"
+      - "Class imbalance"
+    answer: 2
+    why: "Duplicates amplify memorization and can cause regurgitation."
+
+  - q: "In a time-series task, a random train/test split causes unrealistically good test scores. What went wrong?"
+    options:
+      - "The model underfit"
+      - "The split leaked future information"
+      - "The optimizer used Adam"
+      - "The batch size was too small"
+    answer: 1
+    why: "Random splits on temporal data leak the future into training."
+
+  - q: "Your training and validation losses are both high and flatten early. What diagnosis fits best?"
+    options:
+      - "Overfitting"
+      - "Underfitting"
+      - "Catastrophic forgetting"
+      - "Gradient explosion"
+    answer: 1
+    why: "High and flat losses indicate underfitting or a failure to learn."
+
+  - q: "The best reason to use a learning-rate warmup is that:"
+    options:
+      - "It helps the fragile beginning of training avoid large damaging updates"
+      - "It makes the model larger"
+      - "It removes the need for validation"
+      - "It guarantees zero forgetting"
     answer: 0
-    why: "The review gate starts with choosing the right lever and honest eval discipline — not just running a trainer."
+    why: "Warmup protects the fragile early phase with small initial updates."
+
+  - q: "You want to protect a pretrained model from drifting too far from its original solution. Which method explicitly penalizes that drift?"
+    options:
+      - "Stratified splitting"
+      - "L2-SP or EWC-style regularization"
+      - "Cosine restarts"
+      - "Gradient accumulation"
+    answer: 1
+    why: "Those penalties keep weights closer to the pretrained starting point."
+
+  - q: "What is the strongest overall lesson of this session?"
+    options:
+      - "Data quality, schedule choice, and stability controls matter more than one magical hyperparameter"
+      - "The only thing that matters is the number of layers"
+      - "Longer prompts always remove the need for fine-tuning"
+      - "Every model should be fine-tuned for every task"
+    answer: 0
+    why: "Good data, stable training, and sane hyperparameters beat one trick."

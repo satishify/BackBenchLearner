@@ -61,12 +61,15 @@
     <li>Instruction format must match your serving chat template.</li>
     <li>Hold out eval that mirrors production; watch <strong>catastrophic forgetting</strong> (losing old skills after narrow training).</li>
     </ul>
-    <h2 id="32-data-prep-training-mechanisms">3.2 Data prep &amp; training mechanisms</h2>
+    <h2 id="32-data-prep-training-mechanisms-lecture-map">3.2 Data prep &amp; training mechanisms (lecture map)</h2>
     <ul>
-    <li>Watch max length and truncation—do not chop away the assistant label.</li>
-    <li>Loss usually on assistant tokens only (mask user/system).</li>
-    <li>Overfit signs: train loss drops a lot, but val or prod quality drops, or the model regurgitates train examples.</li>
-    <li>Checkpoints and early stopping on a task metric—not loss alone.</li>
+    <li><strong>How LLMs learn</strong> — Tokenize → mini-batch → next-token guess → softmax → cross-entropy → small update. Stop when validation flattens.</li>
+    <li><strong>Instability</strong> — Spikes / exploding gradients / divergence. Clip gradients, warmup, decay learning rate, prefer bf16, save checkpoints.</li>
+    <li><strong>Catastrophic forgetting</strong> — Narrow fine-tune improves the task but hurts general skills. Measure canaries; use smaller updates, rehearsal, freeze layers, regularize, or weight averaging.</li>
+    <li><strong>Learning-rate schedule</strong> — Warmup + peak + decay (cosine is a common default). Peak learning rate is the big knob.</li>
+    <li><strong>Batch size</strong> — Care about effective batch = micro-batch × accumulation × GPUs. Too small → jitter; too large → too few updates.</li>
+    <li><strong>Data prep</strong> — Fix noise, bad labels, duplicates, messy formatting, stale facts; split honestly; watch domain shift.</li>
+    <li><strong>Loss curves</strong> — Train and val falling together with a small gap = healthy. Stop at the validation minimum.</li>
     </ul>
     <h2 id="33-peft-adapters-soft-prompts">3.3 PEFT, adapters, soft prompts</h2>
     <h3>Why PEFT exists</h3>

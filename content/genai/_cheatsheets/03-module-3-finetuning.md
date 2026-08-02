@@ -24,12 +24,15 @@ Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparame
 - Instruction format must match your serving chat template.
 - Hold out eval that mirrors production; watch **catastrophic forgetting** (losing old skills after narrow training).
 
-## 3.2 Data prep & training mechanisms
+## 3.2 Data prep & training mechanisms (lecture map)
 
-- Watch max length and truncation—do not chop away the assistant label.
-- Loss usually on assistant tokens only (mask user/system).
-- Overfit signs: train loss drops a lot, but val or prod quality drops, or the model regurgitates train examples.
-- Checkpoints and early stopping on a task metric—not loss alone.
+- **How LLMs learn** — Tokenize → mini-batch → next-token guess → softmax → cross-entropy → small update. Stop when validation flattens.
+- **Instability** — Spikes / exploding gradients / divergence. Clip gradients, warmup, decay learning rate, prefer bf16, save checkpoints.
+- **Catastrophic forgetting** — Narrow fine-tune improves the task but hurts general skills. Measure canaries; use smaller updates, rehearsal, freeze layers, regularize, or weight averaging.
+- **Learning-rate schedule** — Warmup + peak + decay (cosine is a common default). Peak learning rate is the big knob.
+- **Batch size** — Care about effective batch = micro-batch × accumulation × GPUs. Too small → jitter; too large → too few updates.
+- **Data prep** — Fix noise, bad labels, duplicates, messy formatting, stale facts; split honestly; watch domain shift.
+- **Loss curves** — Train and val falling together with a small gap = healthy. Stop at the validation minimum.
 
 ## 3.3 PEFT, adapters, soft prompts
 
