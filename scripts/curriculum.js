@@ -994,35 +994,56 @@ window.BBL.CURRICULUM = {
         "title": "3.1 Fine-Tuning Fundamentals",
         "quizId": "genai/module-3-finetuning/session-1-fundamentals",
         "hasQuiz": true,
-        "minutes": 28,
+        "minutes": 19,
         "lessons": [
           {
-            "slug": "when-to-finetune-vs-prompt-vs-rag",
-            "hash": "module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag",
-            "path": "module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html",
-            "label": "When to Fine-Tune vs Prompt vs RAG",
-            "minutes": 7
+            "slug": "llm-fundamentals-and-why-finetune",
+            "hash": "module-3-finetuning/session-1-fundamentals/llm-fundamentals-and-why-finetune",
+            "path": "module-3-finetuning/session-1-fundamentals/llm-fundamentals-and-why-finetune.html",
+            "label": "LLM Fundamentals and Why Fine-Tune",
+            "minutes": 3
           },
           {
-            "slug": "sft-supervised-fine-tuning",
-            "hash": "module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning",
-            "path": "module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html",
-            "label": "SFT: Supervised Fine-Tuning",
-            "minutes": 7
+            "slug": "prompt-vs-rag-vs-finetuning",
+            "hash": "module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning",
+            "path": "module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html",
+            "label": "Prompt vs RAG vs Fine-Tuning",
+            "minutes": 3
           },
           {
-            "slug": "full-finetune-vs-freeze-strategies",
-            "hash": "module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies",
-            "path": "module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html",
-            "label": "Full Fine-Tune vs Freeze Strategies",
-            "minutes": 8
+            "slug": "finetuning-approaches",
+            "hash": "module-3-finetuning/session-1-fundamentals/finetuning-approaches",
+            "path": "module-3-finetuning/session-1-fundamentals/finetuning-approaches.html",
+            "label": "Fine-Tuning Approaches",
+            "minutes": 3
           },
           {
-            "slug": "alignment-overview-rlhf-dpo",
-            "hash": "module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo",
-            "path": "module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html",
-            "label": "Alignment Overview: RLHF and DPO",
-            "minutes": 6
+            "slug": "supervised-and-instruction-finetuning",
+            "hash": "module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning",
+            "path": "module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning.html",
+            "label": "Supervised and Instruction Fine-Tuning",
+            "minutes": 3
+          },
+          {
+            "slug": "multitask-finetuning",
+            "hash": "module-3-finetuning/session-1-fundamentals/multitask-finetuning",
+            "path": "module-3-finetuning/session-1-fundamentals/multitask-finetuning.html",
+            "label": "Multi-Task Fine-Tuning",
+            "minutes": 2
+          },
+          {
+            "slug": "curriculum-finetuning",
+            "hash": "module-3-finetuning/session-1-fundamentals/curriculum-finetuning",
+            "path": "module-3-finetuning/session-1-fundamentals/curriculum-finetuning.html",
+            "label": "Curriculum Fine-Tuning",
+            "minutes": 2
+          },
+          {
+            "slug": "efficient-full-finetuning",
+            "hash": "module-3-finetuning/session-1-fundamentals/efficient-full-finetuning",
+            "path": "module-3-finetuning/session-1-fundamentals/efficient-full-finetuning.html",
+            "label": "Making Full Fine-Tuning Efficient",
+            "minutes": 3
           }
         ]
       },

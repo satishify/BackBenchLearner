@@ -10,19 +10,20 @@ Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparame
 
 ## 3.1 Fine-tuning fundamentals
 
-### When to fine-tune
-- Try prompting and RAG first. Fine-tune when you need a **stable habit**—tone, schema, domain phrasing—that clear instructions cannot fix.
-- Do not fine-tune to store facts. Use retrieval for knowledge that changes.
+### Decision framework
+- **Prompting** changes the instruction. **RAG** changes the context. **Fine-tuning** changes the model.
+- Changing facts → RAG. Stable style / format / domain habit → fine-tuning. Clear prompt already works → stay with prompting.
 
-### Flavors
-- **SFT (supervised fine-tuning)** — Train on instruction → ideal response pairs.
-- **Preference / RLHF / DPO-style** — Learn from ranked pairs (chosen vs rejected). Aligns tone and policy; needs careful data.
-- **Continued pretraining** — Domain corpus without instruction format (legal text, codebases).
+### Approaches
+- **Unsupervised / continued** — Domain text soak, few or no instruction labels.
+- **SFT** — Input → desired output pairs. **IFT** — Chat-style instruction → response.
+- **Safety / alignment** — Extra shaping for preferred, safer behavior.
+- **Full fine-tuning** vs **PEFT** — Update almost everything, or only a small part (adapters, LoRA, soft prompts).
 
-### Data
-- Quality beats quantity. Deduplicate, strip PII, balance tasks, fix label noise.
-- Instruction format must match your serving chat template.
-- Hold out eval that mirrors production; watch **catastrophic forgetting** (losing old skills after narrow training).
+### Training patterns
+- **Multi-task** — Related tasks share one backbone and regularize each other.
+- **Curriculum** — Easy examples first, harder later.
+- **Efficient full FT** — Freeze most layers; gradual unfreezing / block-wise opening. Small data + close base model → freeze more.
 
 ## 3.2 Data prep & training mechanisms
 

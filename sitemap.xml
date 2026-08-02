@@ -128,10 +128,13 @@
   <url><loc>https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/orchestration-workflow-control.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-2-prompting-rag/session-12-agentic</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html</loc></url>
-  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/llm-fundamentals-and-why-finetune.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/finetuning-approaches.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/multitask-finetuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/curriculum-finetuning.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-1-fundamentals/efficient-full-finetuning.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-1-fundamentals</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/how-llms-learn.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-2-data-training/training-instability.html</loc></url>

@@ -273,17 +273,26 @@
 - from: genai/module-4-multimodal-agentic/agentic-systems/langchain-llamaindex-autogen-crewai.html
   to: genai/module-2-prompting-rag/session-12-agentic/langchain-llamaindex-autogen-crewai.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
-  to: genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
+  to: genai/module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/datasets-labels-and-instruction-format.html
   to: genai/module-3-finetuning/session-2-data-training/preparing-the-data.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/sft-supervised-fine-tuning.html
-  to: genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html
+  to: genai/module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/full-finetune-vs-freeze-strategies.html
-  to: genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html
+  to: genai/module-3-finetuning/session-1-fundamentals/efficient-full-finetuning.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/eval-catastrophic-forgetting-and-overfit.html
   to: genai/module-3-finetuning/session-2-data-training/catastrophic-forgetting.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/alignment-overview-rlhf-dpo.html
-  to: genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html
+  to: genai/module-3-finetuning/session-1-fundamentals/finetuning-approaches.html
+# Module 3 Session 1 chapter rename (old fundamentals pages -> lecture chapters)
+- from: genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
+  to: genai/module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html
+- from: genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html
+  to: genai/module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning.html
+- from: genai/module-3-finetuning/session-1-fundamentals/full-finetune-vs-freeze-strategies.html
+  to: genai/module-3-finetuning/session-1-fundamentals/efficient-full-finetuning.html
+- from: genai/module-3-finetuning/session-1-fundamentals/alignment-overview-rlhf-dpo.html
+  to: genai/module-3-finetuning/session-1-fundamentals/finetuning-approaches.html
 - from: genai/module-3-finetuning/peft/why-peft-adapters-intuition.html
   to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
 - from: genai/module-3-finetuning/peft/lora-and-qlora.html

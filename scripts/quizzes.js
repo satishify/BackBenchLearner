@@ -1714,103 +1714,136 @@ window.BBL.QUIZZES = {
     "title": "3.1 Fine-Tuning Fundamentals",
     "questions": [
       {
-        "q": "Your policy documents change every week and answers must cite the latest text. What should you try first?",
+        "q": "A customer-support bot must answer from policy documents that change every month and must quote the current text accurately. What is the best first approach?",
         "options": [
-          "Full fine-tune every night on the whole PDF dump",
-          "RAG (retrieval-augmented generation) and prompting so knowledge stays outside the model weights",
-          "RLHF with no retrieval",
-          "Deleting the eval set"
-        ],
-        "answer": 1,
-        "why": "Facts that change often belong in retrieval, not in model weights. Fine-tuning is a poor substitute for a live document store."
-      },
-      {
-        "q": "Fine-tuning is a better fit than prompting alone when...",
-        "options": [
-          "You need a stable style, format, or domain habit that few-shot examples cannot reliably lock in",
-          "You have zero labeled examples and no eval set",
-          "Facts change hourly and must be cited from source documents",
-          "You only need a calculator tool"
+          "Use RAG so the bot can retrieve the latest policy text at runtime",
+          "Run full fine-tuning so the policy becomes part of the weights",
+          "Only rewrite the prompt and hope the model remembers the policy",
+          "Use curriculum learning because the knowledge is time-sensitive"
         ],
         "answer": 0,
-        "why": "Fine-tuning shines when you need consistent behavior patterns. Fresh facts still belong in RAG or tools."
+        "why": "RAG lets the bot fetch the latest policy text at answer time, which fits when facts change often."
       },
       {
-        "q": "Supervised fine-tuning (SFT) trains the model on...",
+        "q": "A team has a stable tone-of-voice requirement for all generated emails and enough labeled examples to teach it. Which choice is strongest?",
         "options": [
-          "Preference pairs only, using a reward model",
-          "Input-to-output demonstrations (instruction and response examples)",
-          "Random tokens with no labels",
-          "Only unlabeled raw web text forever"
+          "Use retrieval to pull tone examples from a document store",
+          "Use fine-tuning because the behavior should persist in the model",
+          "Keep prompting only, because style never benefits from training",
+          "Freeze the model completely and train no parameters at all"
         ],
         "answer": 1,
-        "why": "SFT teaches the model to imitate labeled completions. Preference methods like RLHF and DPO come after or beside that stage."
+        "why": "A stable style requirement with enough examples is a classic fine-tuning use case."
       },
       {
-        "q": "Full fine-tune vs freezing most layers — freezing helps mainly by...",
+        "q": "A model is trained on a small set of domain labels and starts to fit the training set too closely. What is the most sensible response?",
         "options": [
-          "Increasing catastrophic forgetting on purpose",
-          "Cutting trainable parameters and memory use, and often preserving general capabilities",
-          "Making the tokenizer larger",
-          "Removing the need for a learning rate (LR)"
+          "Add more RAG chunks to increase model capacity",
+          "Switch to curriculum learning even though the issue is overfitting",
+          "Freeze more of the model or reduce the number of trainable parameters",
+          "Increase the learning rate sharply so the model can escape memorization"
+        ],
+        "answer": 2,
+        "why": "If the model is overfitting, reduce trainable capacity or freeze more layers before making training more aggressive."
+      },
+      {
+        "q": "A training plan begins with obvious examples and then introduces edge cases only after the model is stable on easy data. What is this called?",
+        "options": [
+          "Multi-task learning",
+          "Retrieval augmentation",
+          "Full fine-tuning",
+          "Curriculum learning"
+        ],
+        "answer": 3,
+        "why": "Curriculum learning means moving from easy examples to harder ones in a planned order."
+      },
+      {
+        "q": "A shared encoder is being trained on intent classification, slot filling, and FAQ matching together. Why is this attractive?",
+        "options": [
+          "It removes the need for labels entirely",
+          "It forces the model to memorize one task at a time",
+          "It lets related tasks share features and regularize each other",
+          "It is the same thing as prompting with a longer instruction"
+        ],
+        "answer": 2,
+        "why": "Related tasks often benefit from shared representations, which is why multi-task learning is useful."
+      },
+      {
+        "q": "A team wants to adapt a base model while keeping most of its general knowledge intact and minimizing compute. Which method fits best?",
+        "options": [
+          "Full fine-tuning of every weight",
+          "Prompting only with no training",
+          "Retrieval only with no model updates",
+          "Parameter-efficient fine-tuning such as adapters or LoRA"
+        ],
+        "answer": 3,
+        "why": "PEFT methods adapt a model with far fewer trainable parameters than full fine-tuning."
+      },
+      {
+        "q": "A deep model first trains its classification head, then later allows the last transformer block to update. Which strategy is this?",
+        "options": [
+          "Curriculum learning",
+          "Gradual unfreezing",
+          "Knowledge distillation",
+          "Prompt chaining"
         ],
         "answer": 1,
-        "why": "Fewer updated weights mean cheaper training and less drift from the pretrained model — a path toward PEFT methods like LoRA."
+        "why": "Gradual unfreezing starts small and later opens more layers for training."
       },
       {
-        "q": "What makes RLHF (reinforcement learning from human feedback) different from plain SFT?",
+        "q": "A system needs fresh facts from internal documents, but the user also wants the answer to cite the source passage. What should you prefer?",
         "options": [
-          "A preference or reward signal that guides the policy beyond single gold demonstrations",
-          "Deleting the base model",
-          "Using only MSE on embeddings",
-          "Forbidding any human labels"
+          "Prompting alone",
+          "Full fine-tuning",
+          "RAG",
+          "Freezing every layer"
+        ],
+        "answer": 2,
+        "why": "RAG is the cleanest way to ground answers in fresh documents and cite them."
+      },
+      {
+        "q": "A pretrained model is already very close to the target behavior, and the task data is limited. Which choice is most reasonable?",
+        "options": [
+          "Tune as many layers as possible from the start",
+          "Replace retrieval with more prompt length",
+          "Use a random training order and hope for the best",
+          "Freeze most layers and adapt cautiously"
+        ],
+        "answer": 3,
+        "why": "When the base model is already close and the dataset is small, freezing most layers is a conservative choice."
+      },
+      {
+        "q": "When people frame a choice as 'fine-tuning or retrieval,' what is the main value of that framing?",
+        "options": [
+          "It helps choose where knowledge should live: inside weights or in an external store",
+          "It proves every LLM should always be fine-tuned",
+          "It shows retrieval is only useful for images",
+          "It replaces the need for all evaluation"
         ],
         "answer": 0,
-        "why": "RLHF optimizes against preference feedback through a reward model and an RL loop like PPO — not just imitation of one answer."
+        "why": "That framing helps decide whether knowledge belongs inside the model or in an external retrieval system."
       },
       {
-        "q": "DPO (direct preference optimization) is attractive in practice because it...",
+        "q": "A model forgets some of its older general skills after being tuned on one narrow task. What is this problem called?",
         "options": [
-          "Requires sampling a live reward model with PPO always",
-          "Optimizes directly on preference pairs without a separate RL training loop",
-          "Guarantees zero forgetting",
-          "Replaces all evaluation"
+          "Sparse activation",
+          "Catastrophic forgetting",
+          "Quantization drift",
+          "Retrieval collapse"
         ],
         "answer": 1,
-        "why": "DPO turns preference data into a supervised-style objective, which simplifies alignment compared to classic RLHF stacks."
+        "why": "Forgetting previously learned skills after narrow training is catastrophic forgetting."
       },
       {
-        "q": "A team fine-tunes to memorize 5,000 product SKUs instead of retrieving them. What is the likely failure?",
+        "q": "You want the model to answer from current facts for one workflow, but you also want a permanent style change for a different workflow. Which statement is best?",
         "options": [
-          "Perfect lifelong factual accuracy",
-          "Stale or wrong SKUs after catalog updates and brittle memorization",
-          "Lower latency than a hash map forever",
-          "Automatic access-control enforcement"
+          "Both workflows should always use the same solution: full fine-tuning",
+          "The current-facts workflow fits RAG, while the permanent style change fits fine-tuning",
+          "The current-facts workflow fits curriculum learning, and the style change fits retrieval",
+          "Both workflows are better handled by freezing every layer"
         ],
         "answer": 1,
-        "why": "Model weights are a bad product database. Catalogs need retrieval or tools tied to a source-of-truth system."
-      },
-      {
-        "q": "You have good prompts and RAG, but the model still breaks a strict internal tone or schema. What is a sensible next step?",
-        "options": [
-          "Ignore schema failures",
-          "Consider SFT or PEFT on schema-obedient demonstrations after measuring a prompt baseline",
-          "Raise temperature",
-          "Remove validators"
-        ],
-        "answer": 1,
-        "why": "When behavior — not facts — is the bottleneck, supervised adaptation on clean demonstrations is the usual next step."
-      },
-      {
-        "q": "Running alignment (RLHF or DPO) without a held-out preference or eval set is risky because...",
-        "options": [
-          "Preferences can never be wrong",
-          "You can overfit to annotator quirks or sycophancy and miss capability regressions",
-          "DPO mathematically forbids overfitting",
-          "SFT becomes illegal"
-        ],
-        "answer": 1,
-        "why": "Alignment data can teach unwanted patterns. Measure helpfulness, harmlessness, and anchor tasks on held-out data."
+        "why": "Fresh facts fit RAG, while a permanent style shift is better handled by fine-tuning."
       }
     ]
   },
