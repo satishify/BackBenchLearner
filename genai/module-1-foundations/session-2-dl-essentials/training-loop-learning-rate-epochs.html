@@ -175,7 +175,7 @@ print(&quot;epoch | train_mse | val_mse&quot;)
 for epoch, tr, va in history[::8]:
     print(f&quot;{epoch:5d} | {tr:9.4f} | {va:7.4f}&quot;)</code></pre>
     </div>
-    <p>Try <code>lr = 1.0</code> and watch loss explode. Try <code>lr = 1e-5</code> and notice almost no movement after many epochs.</p>
+    <p>Try <code>lr = 1.0</code> and watch loss explode. Try <code>lr = 1×10⁻⁵</code> and notice almost no movement after many epochs.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li><strong>Silent overfitting</strong> — Train loss looks great because you only plotted it. Always reserve a validation set and compare curves.</li>

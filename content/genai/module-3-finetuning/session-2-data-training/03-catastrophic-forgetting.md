@@ -47,7 +47,7 @@ Imagine a 7B model fully fine-tuned for a few epochs on legal contracts: contrac
 
 - **Rehearsal** — Interleave domain data with diverse general examples (instructions, code, math, other languages — whatever you fear losing). Target learning may slow a little; that is the trade.
 - **Regularize toward pretrained weights** — Gently pull weights back toward the starting point. Too strong a pull underfits the new task; too weak and you still forget. Tune against canary scores.
-- **Conservative knobs** — Full fine-tune learning rates around 1e-5–2e-5; often 1–2 epochs is enough. Train less than “feels safe” if canaries dip.
+- **Conservative knobs** — Full fine-tune learning rates around 1×10⁻⁵–2×10⁻⁵; often 1–2 epochs is enough. Train less than “feels safe” if canaries dip.
 - **Weight averaging** — Mix “base” and “fine-tuned” with a blend factor; sweep a few blends and pick the best trade-off between task score and general score.
 - **Freeze layers** — Keep embeddings and early blocks fixed; open only the top blocks. Tuning roughly the top quarter to half of blocks often captures most task gains with less forgetting.
 

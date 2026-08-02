@@ -47,7 +47,7 @@ A constant high learning rate for a long run often causes late spikes. Warmup (s
 | Schedule | cosine (or similar) decay | Late-run spikes |
 | Warmup | about 3% of steps | Blow-ups at step zero |
 | Precision | prefer bf16 over fragile fp16 when available | Inf / NaN cascades |
-| Peak learning rate | about 1e-5–2e-5 full fine-tune; about 1e-4–2e-4 for LoRA | Overshooting the valley |
+| Peak learning rate | about 1×10⁻⁵–2×10⁻⁵ full fine-tune; about 1×10⁻⁴–2×10⁻⁴ for LoRA | Overshooting the valley |
 | Monitoring | watch gradient size; alert if it is many times the usual | Catch explosion early |
 | Checkpoints | save often; keep the last few | Rescue the run if it diverges |
 

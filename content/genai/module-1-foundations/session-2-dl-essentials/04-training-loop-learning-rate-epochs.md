@@ -123,7 +123,7 @@ for epoch, tr, va in history[::8]:
     print(f"{epoch:5d} | {tr:9.4f} | {va:7.4f}")
 ```
 
-Try `lr = 1.0` and watch loss explode. Try `lr = 1e-5` and notice almost no movement after many epochs.
+Try `lr = 1.0` and watch loss explode. Try `lr = 1×10⁻⁵` and notice almost no movement after many epochs.
 
 ## What goes wrong
 

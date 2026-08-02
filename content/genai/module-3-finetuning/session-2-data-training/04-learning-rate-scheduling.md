@@ -31,7 +31,7 @@ Peak learning rate is often the single most important knob in fine-tuning. The s
 | Knob | Plain-English idea |
 | --- | --- |
 | **Warmup length** | How long the learning rate ramps from ~0 to the peak (often about 3% of steps; raise to 5–10% if the run is short or unstable) |
-| **Peak learning rate** | The maximum. Rough guide: about 1e-5–2e-5 for full fine-tuning; about 1e-4–2e-4 for LoRA |
+| **Peak learning rate** | The maximum. Rough guide: about 1×10⁻⁵–2×10⁻⁵ for full fine-tuning; about 1×10⁻⁴–2×10⁻⁴ for LoRA |
 | **Decay shape** | How you go down from the peak (linear, cosine, steps, restarts, …) |
 | **Floor (min learning rate)** | Where decay ends — zero, or a small floor if you want learning to stay slightly alive |
 
