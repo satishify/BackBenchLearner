@@ -43,7 +43,7 @@ If you fully fine-tune one shared model for task after task, later tasks can wip
 | **Re-parameterization** | Rewrite the weight update in a cheaper form | LoRA, QLoRA |
 | **Soft prompting** | Learn virtual prompt tokens instead of editing the backbone | Prefix tuning, prompt tuning, SMoP, APT, IDPG |
 
-The next lessons go deep on two tracks: **additive PEFT (adapters)** and **soft prompting**. LoRA-style methods sit in the taxonomy as another PEFT family.
+The next lessons go deep on two tracks: **additive PEFT (adapters)** and **soft prompting**. **LoRA / QLoRA** (re-parameterization PEFT) get their own deep dive in lesson 3.4.
 
 ## What goes wrong
 

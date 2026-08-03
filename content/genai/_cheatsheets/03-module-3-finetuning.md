@@ -6,7 +6,7 @@ minutes: 25
 description: "When to fine-tune, SFT vs preference, PEFT/LoRA recipes — interview-ready."
 ---
 
-Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparameter.
+Chapters **3.1–3.4**. Focus on when and why—not memorizing every hyperparameter.
 
 ## 3.1 Fine-tuning fundamentals
 
@@ -43,6 +43,15 @@ Chapters **3.1–3.3**. Focus on when and why—not memorizing every hyperparame
 - **Prefix vs prompt tuning** — Both soft-prompt methods; prefix tuning emphasizes learned prefix context; prompt tuning learns prompt embeddings with a frozen model.
 - **Smarter prompts** — SMoP (sparse mixture), APT (prefix length by layer), IDPG (prompt from the input), SPT (prompts only where needed).
 - **Choose by fit** — Adapters for modular architecture-side adaptation; soft prompts for smallest frozen-backbone footprint; smarter variants when one blunt prompt is not enough.
+
+## 3.4 Re-parameterization PEFT (LoRA & QLoRA)
+
+- **Why it exists** — Full fine-tuning stores weights + gradients + optimizer for every parameter. Too heavy for many clients or one tight GPU.
+- **Intrinsic dimension** — Useful adaptations often live in a smaller space than the full weight matrix.
+- **LoRA** — Freeze W; learn low-rank update `(α / r)BA`. For square d×d, about **2dr** trainable params (example: d=4096, r=8 → 65,536).
+- **Multi-tenant pattern** — One shared base + small adapter per client; hot-swap adapters at serve time.
+- **QLoRA** — 4-bit frozen backbone (often **NF4**) + LoRA. Add **double quantization** for scale metadata.
+- **Memory stack** — Checkpointing saves activations (extra compute); paged optimizer smooths optimizer spikes. Together with 4-bit + LoRA, large models become more realistic on fewer GPUs.
 
 ## Decision cheat
 

@@ -296,24 +296,24 @@
 - from: genai/module-3-finetuning/peft/why-peft-adapters-intuition.html
   to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
 - from: genai/module-3-finetuning/peft/lora-and-qlora.html
-  to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html
 - from: genai/module-3-finetuning/peft/prompt-tuning-prefix-tuning.html
   to: genai/module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning.html
 - from: genai/module-3-finetuning/peft/training-recipes-lr-rank-quantization.html
-  to: genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html
 - from: genai/module-3-finetuning/peft/serving-merged-vs-adapter-weights.html
-  to: genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html
 # Module 3 Session 3 chapter rename (old PEFT pages -> lecture chapters)
 - from: genai/module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html
   to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
 - from: genai/module-3-finetuning/session-3-peft/lora-and-qlora.html
-  to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html
 - from: genai/module-3-finetuning/session-3-peft/prompt-tuning-prefix-tuning.html
   to: genai/module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning.html
 - from: genai/module-3-finetuning/session-3-peft/training-recipes-lr-rank-quantization.html
-  to: genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html
 - from: genai/module-3-finetuning/session-3-peft/serving-merged-vs-adapter-weights.html
-  to: genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html
+  to: genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html
 - from: genai/module-3-finetuning/lab-sprint/lab-prep-and-baseline.html
   to: genai/module-3-finetuning/session-2-data-training/how-llms-learn.html
 - from: genai/module-3-finetuning/lab-sprint/lab-sft-or-lora-sprint.html

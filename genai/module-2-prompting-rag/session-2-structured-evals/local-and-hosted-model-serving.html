@@ -81,7 +81,7 @@
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3>Three practical ways to run open-source models</h3>
-    <p>The lecture covers three deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.</p>
+    <p>There are three practical deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.</p>
     <table>
       <thead><tr>
         <th>Approach</th>
@@ -121,7 +121,7 @@
     </ol>
     <p>Key mental model: the model is not running on your machine; your code is just making an HTTP call.</p>
     <h3>Ollama</h3>
-    <p>Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup. The lecture frames it as the simplest private option.</p>
+    <p>Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup — usually the simplest private option.</p>
     <h3>Reliability patterns (both)</h3>
     <ul>
     <li>Timeouts shorter than user patience; retry only on idempotent GETs / safe completions with jitter.</li>

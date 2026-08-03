@@ -39,7 +39,7 @@ flowchart TB
 
 The less you assume about the attacker, the more dangerous the situation usually is.
 
-### Advanced threats from the lecture
+### Advanced threats to watch for
 
 | Threat | Plain-English idea |
 | --- | --- |

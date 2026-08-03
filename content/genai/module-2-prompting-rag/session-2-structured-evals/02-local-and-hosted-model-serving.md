@@ -29,7 +29,7 @@ Pin a model ID and a serving mode in config. "Whatever the playground default is
 
 ### Three practical ways to run open-source models
 
-The lecture covers three deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.
+There are three practical deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.
 
 | Approach | Plain-English idea | Trade-off |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ Key mental model: the model is not running on your machine; your code is just ma
 
 ### Ollama
 
-Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup. The lecture frames it as the simplest private option.
+Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup — usually the simplest private option.
 
 ### Reliability patterns (both)
 

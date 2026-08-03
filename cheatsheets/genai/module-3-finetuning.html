@@ -42,7 +42,7 @@
     <h1>Module 3 - Fine-tuning revision</h1>
     <p class="cheat-banner">Revision guide · ~25 min · dense bullets, not full lessons</p>
 
-    <p>Chapters <strong>3.1–3.3</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
+    <p>Chapters <strong>3.1–3.4</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
     <h2 id="31-fine-tuning-fundamentals">3.1 Fine-tuning fundamentals</h2>
     <h3>Decision framework</h3>
     <ul>
@@ -80,6 +80,15 @@
     <li><strong>Prefix vs prompt tuning</strong> — Both soft-prompt methods; prefix tuning emphasizes learned prefix context; prompt tuning learns prompt embeddings with a frozen model.</li>
     <li><strong>Smarter prompts</strong> — SMoP (sparse mixture), APT (prefix length by layer), IDPG (prompt from the input), SPT (prompts only where needed).</li>
     <li><strong>Choose by fit</strong> — Adapters for modular architecture-side adaptation; soft prompts for smallest frozen-backbone footprint; smarter variants when one blunt prompt is not enough.</li>
+    </ul>
+    <h2 id="34-re-parameterization-peft-lora-qlora">3.4 Re-parameterization PEFT (LoRA &amp; QLoRA)</h2>
+    <ul>
+    <li><strong>Why it exists</strong> — Full fine-tuning stores weights + gradients + optimizer for every parameter. Too heavy for many clients or one tight GPU.</li>
+    <li><strong>Intrinsic dimension</strong> — Useful adaptations often live in a smaller space than the full weight matrix.</li>
+    <li><strong>LoRA</strong> — Freeze W; learn low-rank update <code>(α / r)BA</code>. For square d×d, about <strong>2dr</strong> trainable params (example: d=4096, r=8 → 65,536).</li>
+    <li><strong>Multi-tenant pattern</strong> — One shared base + small adapter per client; hot-swap adapters at serve time.</li>
+    <li><strong>QLoRA</strong> — 4-bit frozen backbone (often <strong>NF4</strong>) + LoRA. Add <strong>double quantization</strong> for scale metadata.</li>
+    <li><strong>Memory stack</strong> — Checkpointing saves activations (extra compute); paged optimizer smooths optimizer spikes. Together with 4-bit + LoRA, large models become more realistic on fewer GPUs.</li>
     </ul>
     <h2 id="decision-cheat">Decision cheat</h2>
     <table>

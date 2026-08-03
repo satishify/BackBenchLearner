@@ -1,0 +1,181 @@
+title: "3.4 Re-Parameterization PEFT (LoRA & QLoRA)"
+questions:
+  - q: "Why does full fine-tuning become impractical for many clients in a multi-tenant SaaS setup?"
+    options:
+      - "Because each client would need a separate large model copy plus heavy training and serving costs"
+      - "Because the model cannot answer any customer-support question at all"
+      - "Because tokenization stops working once the model is pretrained"
+      - "Because adapters can only be used for image models"
+    answer: 0
+    why: "Separate full models per client explode both storage and serving cost."
+
+  - q: "What is the main intuition behind re-parameterization-based PEFT?"
+    options:
+      - "Store the same large update twice so training becomes more stable"
+      - "Represent the useful weight change in a smaller parameter space"
+      - "Remove the pretrained model and train from scratch"
+      - "Increase the vocabulary size instead of changing the model"
+    answer: 1
+    why: "Re-parameterization compresses the adaptation into a smaller learnable space."
+
+  - q: "Which statement about intrinsic dimension fits best?"
+    options:
+      - "The model always needs the full parameter space to adapt properly"
+      - "Intrinsic dimension is unrelated to adaptation quality"
+      - "A task may be solvable in a smaller effective subspace than the full parameter count suggests"
+      - "Only the output layer has intrinsic dimension"
+    answer: 2
+    why: "Adaptation often lives in a lower-dimensional subspace than the raw parameter count."
+
+  - q: "A 4096×4096 projection is adapted with LoRA rank 8. About how many trainable parameters does that LoRA block add?"
+    options:
+      - "8,192"
+      - "32,768"
+      - "1,048,576"
+      - "65,536"
+    answer: 3
+    why: "For a square d×d matrix, LoRA adds 2dr parameters: 2×4096×8 = 65,536."
+
+  - q: "Why does LoRA often use a scaling factor like α / r?"
+    options:
+      - "To keep the update magnitude more stable when the rank changes"
+      - "To make the base model train from scratch"
+      - "To convert the weights into 4-bit form"
+      - "To eliminate the need for any adapter matrices"
+    answer: 0
+    why: "The scaling term keeps the update size well behaved as rank changes."
+
+  - q: "What is the practical advantage of LoRA adapters for many clients?"
+    options:
+      - "Each adapter is small enough to swap quickly while one base model stays resident"
+      - "Every client must still host a full copy of the model"
+      - "They remove the need to store any client-specific data"
+      - "They only work when the model is not quantized"
+    answer: 0
+    why: "Small adapters make hot-swapping practical while one base model stays loaded."
+
+  - q: "What does QLoRA add beyond plain LoRA?"
+    options:
+      - "It replaces the base model with a brand-new architecture"
+      - "It trains only the tokenizer and not the model"
+      - "It keeps the backbone in 4-bit form and combines it with LoRA adapters"
+      - "It uses no optimizer because the model is frozen"
+    answer: 2
+    why: "QLoRA combines 4-bit storage of the base model with LoRA adapters."
+
+  - q: "Why is NF4 a better match than a naive uniform quantizer for many LLM weights?"
+    options:
+      - "LLM weights are often roughly normal, so NF4 gives finer resolution where most values sit"
+      - "Uniform quantization always uses more memory than NF4"
+      - "NF4 removes the need for dequantization entirely"
+      - "NF4 only works on text labels, not weights"
+    answer: 0
+    why: "NF4 matches normal-like weight distributions better than evenly spaced bins."
+
+  - q: "What problem does chunking-based quantization mainly reduce?"
+    options:
+      - "The need for LoRA adapters"
+      - "The number of vocabulary tokens"
+      - "The cost of the input tokenizer"
+      - "Error from outliers by quantizing smaller blocks independently"
+    answer: 3
+    why: "Chunking reduces outlier damage by quantizing smaller blocks separately."
+
+  - q: "What does double quantization do?"
+    options:
+      - "It quantizes the raw text twice before tokenization"
+      - "It compresses the quantization constants themselves to save extra storage"
+      - "It doubles the number of trainable LoRA layers"
+      - "It removes the need for blockwise quantization"
+    answer: 1
+    why: "Double quantization compresses the scale/constant metadata too."
+
+  - q: "What is the main trade-off of gradient checkpointing?"
+    options:
+      - "More activation memory, less compute"
+      - "Less compute, less memory"
+      - "Less activation memory, but extra compute because activations are recomputed in backprop"
+      - "No trade-off at all; it reduces both compute and memory equally"
+    answer: 2
+    why: "Checkpointing saves activation memory but adds recomputation cost."
+
+  - q: "Why are checkpoints often placed about every √n layers?"
+    options:
+      - "So the entire forward pass has to be recomputed from the beginning every time"
+      - "So the backward pass can restart from a checkpoint instead of from layer 1"
+      - "So the model needs no gradients"
+      - "So quantization becomes unnecessary"
+    answer: 1
+    why: "Checkpoints let the backward pass resume from saved states rather than replaying the whole network."
+
+  - q: "What does the paged optimizer help most directly?"
+    options:
+      - "Sudden GPU memory spikes caused by optimizer state movement"
+      - "Tokenization errors in the dataset"
+      - "Loss curves that are already perfectly stable"
+      - "The number of labels in the training set"
+    answer: 0
+    why: "Paged optimizers smooth memory spikes from optimizer state movement."
+
+  - q: "Which combination best describes a practical one-GPU QLoRA-style strategy?"
+    options:
+      - "Full fine-tuning in FP32 with no additional tricks"
+      - "Only prompt tuning with no model update and no memory tricks"
+      - "4-bit weights, checkpointing, and paged optimization with LoRA adapters"
+      - "Training a separate full model for each client"
+    answer: 2
+    why: "The practical stack is 4-bit weights + LoRA + checkpointing + paged optimization."
+
+  - q: "In the multi-tenant example, why is adapter hot-swapping useful?"
+    options:
+      - "Because each request can use a small client-specific adapter without loading a full model copy"
+      - "Because it replaces the need for any base model"
+      - "Because it makes the adapter larger than the base model"
+      - "Because it prevents quantization from being used"
+    answer: 0
+    why: "Hot-swapping lets each request use the right small client-specific update."
+
+  - q: "Which statement best captures the role of quantization in this lesson?"
+    options:
+      - "It makes every training run perfectly accurate and faster"
+      - "It compresses model weights so memory drops enough for practical fine-tuning"
+      - "It is only a visualization trick and does not affect memory"
+      - "It is the same as gradient checkpointing"
+    answer: 1
+    why: "Quantization is a memory-saving compression method that makes large models manageable."
+
+  - q: "Why is full fine-tuning not the first choice when resources are limited?"
+    options:
+      - "It always produces worse results than PEFT"
+      - "It can never adapt to new tasks"
+      - "It only works for tiny models"
+      - "It uses too much memory and compute for many realistic settings"
+    answer: 3
+    why: "Full fine-tuning is often not the first choice when memory and compute are limited."
+
+  - q: "What is the clearest summary of LoRA?"
+    options:
+      - "Learn a small low-rank update while keeping the backbone frozen"
+      - "Quantize the text labels and leave the model untouched"
+      - "Train every parameter at full precision"
+      - "Replace the transformer with a rule-based system"
+    answer: 0
+    why: "That is the plain-language summary of LoRA."
+
+  - q: "What is the best reason to combine NF4, LoRA, checkpointing, and paged optimization?"
+    options:
+      - "Each technique solves the exact same problem in the exact same way"
+      - "Each one helps a different part of the memory budget, so together they make large-model training feasible"
+      - "They are only useful for inference, not training"
+      - "They eliminate the need to choose a rank for LoRA"
+    answer: 1
+    why: "The methods each reduce a different part of the memory budget, so they compose well."
+
+  - q: "If you want the smallest trainable footprint and the backbone must stay frozen, what is the best family to reach for?"
+    options:
+      - "Full fine-tuning"
+      - "Random initialization"
+      - "Reinforcement learning from scratch"
+      - "Re-parameterization PEFT, especially LoRA or QLoRA"
+    answer: 3
+    why: "If the backbone must stay frozen and the trainable budget must be tiny, re-parameterization PEFT methods are the natural fit."

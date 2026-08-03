@@ -151,6 +151,14 @@
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/smarter-soft-prompts.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-3-peft/choosing-a-peft-method.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-3-peft</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/why-reparameterization-peft.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/reparameterization-and-intrinsic-dimension.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/putting-qlora-together.html</loc></url>
+  <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-4-reparam-peft</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/image-generation-basics.html</loc></url>

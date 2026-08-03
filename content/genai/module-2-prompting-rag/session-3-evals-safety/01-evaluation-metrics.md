@@ -3,7 +3,7 @@ title: "Evaluation Metrics: How to Score LLM Outputs"
 description: "Learn what evaluation means, when humans still win, how overlap metrics work, and when to use a model as a judge."
 ---
 
-**Evaluation** means checking how good a model's answer is — in a repeatable way. Without it, you are guessing whether a new prompt, model, or setting actually helped. This lesson covers the main scoring tools from the lecture: human review, classic text metrics, and **LLM-as-a-Judge** (using one large language model to score another).
+**Evaluation** means checking how good a model's answer is — in a repeatable way. Without it, you are guessing whether a new prompt, model, or setting actually helped. This lesson covers the main scoring tools: human review, classic text metrics, and **LLM-as-a-Judge** (using one large language model to score another).
 
 ## Intuition
 

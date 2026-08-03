@@ -39,7 +39,7 @@ Related tasks can share features and regularize each other — that is the main 
 
 - Calling unrelated tasks “multi-task” and hoping they magically help.
 - Averaging metrics so a failing task hides behind a strong one.
-- Ignoring catastrophic forgetting when many tasks are trained in a harsh schedule (later sessions cover defenses).
+- Ignoring catastrophic forgetting when many tasks are trained in a harsh schedule (lesson 3.2 covers defenses).
 
 ## One-line summary
 

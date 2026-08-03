@@ -25,7 +25,7 @@ Chapters **4.1–4.2** are shorter stubs. Use this for vocabulary; dive into **2
 - **Task decomposition:** break goals into named, checkable steps; planner decides order, executor runs one step.
 - **Orchestration:** state machines / LangGraph when you need loops, branches, or approval checkpoints. Single agent with tools often beats premature multi-agent swarms.
 - **Provenance:** trace claims back to tool-call history—do not trust inline citations without verifying source IDs.
-- For full depth (HITL, reflection, multi-agent roles, LangChain vs LangGraph), revise **Cheat sheet - Module 2** section 2.9 and Session 12 lessons.
+- For full depth (HITL, reflection, multi-agent roles, LangChain vs LangGraph), revise **Cheat sheet - Module 2** section 2.9 and lesson 2.9.
 
 ## 15-minute drill
 1. Contrast captioning vs VQA vs “open-world chat about an image”.

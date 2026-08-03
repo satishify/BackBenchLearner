@@ -49,6 +49,8 @@ modules:
         title: "3.2 Data Prep & Training Mechanisms"
       - id: session-3-peft
         title: "3.3 PEFT, Adapters & Soft Prompting"
+      - id: session-4-reparam-peft
+        title: "3.4 Re-Parameterization PEFT (LoRA & QLoRA)"
   - id: module-4-multimodal-agentic
     title: "Module 4 - Multimodal & Agentic AI"
     blurb: "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."

@@ -24,7 +24,7 @@ If the base model is already close and your dataset is small, freeze most layers
 | --- | --- |
 | Small data; base model already understands the task well | Freeze more |
 | Strong domain/style shift; enough labeled data | Tune more |
-| You want a middle ground | PEFT (adapters / LoRA) — covered in Session 3 |
+| You want a middle ground | PEFT (adapters / LoRA) — covered in lessons 3.3–3.4 |
 
 ### Gradual unfreezing (layer-wise idea)
 

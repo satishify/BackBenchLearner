@@ -5,7 +5,7 @@ description: "Search over prompt candidates with model-generated instructions, s
 
 **Automatic Prompt Engineering (APE)** treats the prompt as something you can *search for*, not only hand-write. A proposal model suggests candidate instructions; you score each candidate on a fixed evaluation set; you keep the winner. Manual prompt work is local search in English — APE is the same loop with more candidates and a numeric score.
 
-The lecture also covers related automatic methods: **ProTeGi**, **evolutionary prompt optimization**, and **DSPy** (a framework for compiling tasks into optimized prompt programs).
+Related automatic methods include **ProTeGi**, **evolutionary prompt optimization**, and **DSPy** (a framework for compiling tasks into optimized prompt programs).
 
 ## Intuition
 

@@ -1159,6 +1159,65 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-3-finetuning/session-4-reparam-peft",
+        "module": "module-3-finetuning",
+        "title": "3.4 Re-Parameterization PEFT (LoRA & QLoRA)",
+        "quizId": "genai/module-3-finetuning/session-4-reparam-peft",
+        "hasQuiz": true,
+        "minutes": 22,
+        "lessons": [
+          {
+            "slug": "why-reparameterization-peft",
+            "hash": "module-3-finetuning/session-4-reparam-peft/why-reparameterization-peft",
+            "path": "module-3-finetuning/session-4-reparam-peft/why-reparameterization-peft.html",
+            "label": "Why Re-Parameterization PEFT Exists",
+            "minutes": 3
+          },
+          {
+            "slug": "reparameterization-and-intrinsic-dimension",
+            "hash": "module-3-finetuning/session-4-reparam-peft/reparameterization-and-intrinsic-dimension",
+            "path": "module-3-finetuning/session-4-reparam-peft/reparameterization-and-intrinsic-dimension.html",
+            "label": "Re-Parameterization and Intrinsic Dimension",
+            "minutes": 3
+          },
+          {
+            "slug": "lora-low-rank-adaptation",
+            "hash": "module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation",
+            "path": "module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html",
+            "label": "LoRA: Low-Rank Adaptation",
+            "minutes": 3
+          },
+          {
+            "slug": "multi-tenant-lora-serving",
+            "hash": "module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving",
+            "path": "module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html",
+            "label": "Multi-Tenant LoRA Serving",
+            "minutes": 3
+          },
+          {
+            "slug": "quantization-and-qlora",
+            "hash": "module-3-finetuning/session-4-reparam-peft/quantization-and-qlora",
+            "path": "module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html",
+            "label": "Quantization and QLoRA",
+            "minutes": 3
+          },
+          {
+            "slug": "gradient-checkpointing-and-paged-optimizer",
+            "hash": "module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer",
+            "path": "module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer.html",
+            "label": "Gradient Checkpointing and Paged Optimizer",
+            "minutes": 3
+          },
+          {
+            "slug": "putting-qlora-together",
+            "hash": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together",
+            "path": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together.html",
+            "label": "Putting QLoRA Together",
+            "minutes": 4
+          }
+        ]
+      },
+      {
         "id": "module-4-multimodal-agentic/vision-language",
         "module": "module-4-multimodal-agentic",
         "title": "4.1 Vision-Language Models & Image Generation",

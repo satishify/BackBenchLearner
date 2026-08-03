@@ -67,7 +67,7 @@ BERT is trained to understand text—not to rank documents for search. Better ap
 | **Bi-encoder** | Encode query and document separately; compare embeddings | Fast | Good for first-stage retrieval |
 | **Cross-encoder** | Encode query and document together; score relevance directly | Slow | Usually more accurate |
 
-Use bi-encoders for wide first-stage search. Use cross-encoders later to rerank a small candidate set (covered in session 7 lesson 4).
+Use bi-encoders for wide first-stage search. Use cross-encoders later to rerank a small candidate set (covered in lesson 2.7 on reranking).
 
 ### Choosing an embedding model
 

@@ -37,7 +37,7 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p><strong>Automatic Prompt Engineering (APE)</strong> treats the prompt as something you can <em>search for</em>, not only hand-write. A proposal model suggests candidate instructions; you score each candidate on a fixed evaluation set; you keep the winner. Manual prompt work is local search in English — APE is the same loop with more candidates and a numeric score.</p>
-    <p>The lecture also covers related automatic methods: <strong>ProTeGi</strong>, <strong>evolutionary prompt optimization</strong>, and <strong>DSPy</strong> (a framework for compiling tasks into optimized prompt programs).</p>
+    <p>Related automatic methods include <strong>ProTeGi</strong>, <strong>evolutionary prompt optimization</strong>, and <strong>DSPy</strong> (a framework for compiling tasks into optimized prompt programs).</p>
     <h2 id="intuition">Intuition</h2>
     <p>Classic APE-style pipelines ask a model to generate diverse instruction paraphrases, then rank those prompts by how well a <em>target</em> model performs on demonstration inputs.</p>
     <p>Analogy: hyperparameter search, but the &quot;hyperparameter&quot; is a paragraph. You still need a metric, a train/holdout split, and a refusal to deploy the first shiny winner.</p>

@@ -7,7 +7,7 @@ description: "Turn prompt writing into a repeatable loop — version, measure, r
 
 ## Intuition
 
-The lecture's workflow looks like this:
+A practical workflow looks like this:
 
 ```
 Draft -> Measure -> Revise -> Deploy -> Monitor -> Repeat
