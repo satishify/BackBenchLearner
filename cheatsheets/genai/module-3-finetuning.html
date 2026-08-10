@@ -42,7 +42,7 @@
     <h1>Module 3 - Fine-tuning revision</h1>
     <p class="cheat-banner">Revision guide · ~25 min · dense bullets, not full lessons</p>
 
-    <p>Chapters <strong>3.1–3.4</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
+    <p>Chapters <strong>3.1–3.5</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
     <h2 id="31-fine-tuning-fundamentals">3.1 Fine-tuning fundamentals</h2>
     <h3>Decision framework</h3>
     <ul>
@@ -90,6 +90,16 @@
     <li><strong>QLoRA</strong> — 4-bit frozen backbone (often <strong>NF4</strong>) + LoRA. Add <strong>double quantization</strong> for scale metadata.</li>
     <li><strong>Memory stack</strong> — Checkpointing saves activations (extra compute); paged optimizer smooths optimizer spikes. Together with 4-bit + LoRA, large models become more realistic on fewer GPUs.</li>
     </ul>
+    <h2 id="35-alignment-rlhf-dpo">3.5 Alignment: RLHF &amp; DPO</h2>
+    <ul>
+    <li><strong>HHH target</strong> — Helpful, Honest, Harmless. Balance all three; overdoing one breaks the others.</li>
+    <li><strong>RL view of an LLM</strong> — State = prompt + prefix; action = next token; trajectory = full generation; policy = next-token distribution.</li>
+    <li><strong>Policy gradient / advantage</strong> — Raise probability of choices that were better than expected; baseline/advantage reduce noise.</li>
+    <li><strong>PPO + KL</strong> — Sample answers, update carefully, keep near a reference model. <strong>Reward hacking</strong> = gaming the score without truly helping.</li>
+    <li><strong>Reward model</strong> — Learn from chosen/rejected pairs; Bradley-Terry pushes winner score above loser.</li>
+    <li><strong>RLHF path</strong> — Preferences → reward model → policy optimization (after SFT).</li>
+    <li><strong>DPO</strong> — Train policy directly on preferences + reference; skip separate reward-model-and-RL loop.</li>
+    </ul>
     <h2 id="decision-cheat">Decision cheat</h2>
     <table>
       <thead><tr>
@@ -125,6 +135,7 @@
     <li>Name two evals that catch forgetting.</li>
     <li>Explain LoRA rank in one sentence (how big the two small matrices are).</li>
     <li>When would you merge vs keep adapters separate?</li>
+    <li>Contrast RLHF vs DPO in one sentence each.</li>
     </ol>
 
     <footer>

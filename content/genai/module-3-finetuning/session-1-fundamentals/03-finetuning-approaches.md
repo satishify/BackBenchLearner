@@ -31,7 +31,7 @@ You provide clear examples: given this input, produce that output. This is the w
 
 ### Safety / alignment fine-tuning
 
-After (or alongside) capability training, you further shape the model so it is more helpful, honest, and policy-compliant. Methods vary (preference data, RL-style loops, and related recipes). For this fundamentals session, remember the **goal**: safer, more aligned behavior — not every algorithm detail.
+After (or alongside) capability training, you further shape the model so it is more helpful, honest, and policy-compliant. Methods vary (preference data, RL-style loops, and related recipes). For now, remember the **goal**: safer, more aligned behavior. Lesson **3.5** goes deep on RLHF and DPO.
 
 ### Full fine-tuning
 

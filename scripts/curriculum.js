@@ -1218,6 +1218,65 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-3-finetuning/session-5-alignment-rlhf-dpo",
+        "module": "module-3-finetuning",
+        "title": "3.5 Alignment: RLHF & DPO",
+        "quizId": "genai/module-3-finetuning/session-5-alignment-rlhf-dpo",
+        "hasQuiz": true,
+        "minutes": 18,
+        "lessons": [
+          {
+            "slug": "why-alignment-and-hhh",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/why-alignment-and-hhh",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/why-alignment-and-hhh.html",
+            "label": "Why Alignment Matters and the HHH Target",
+            "minutes": 3
+          },
+          {
+            "slug": "rl-for-language-models",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/rl-for-language-models",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/rl-for-language-models.html",
+            "label": "Why Reinforcement Learning for LLMs",
+            "minutes": 2
+          },
+          {
+            "slug": "policy-gradient-and-advantage",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage.html",
+            "label": "Policy Gradient and Advantage",
+            "minutes": 2
+          },
+          {
+            "slug": "ppo-kl-and-reward-hacking",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking.html",
+            "label": "PPO, KL Penalty, and Reward Hacking",
+            "minutes": 3
+          },
+          {
+            "slug": "reward-models",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models.html",
+            "label": "Reward Models from Human Preferences",
+            "minutes": 2
+          },
+          {
+            "slug": "rlhf-pipeline-and-instructgpt",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt.html",
+            "label": "The RLHF Pipeline and InstructGPT Story",
+            "minutes": 3
+          },
+          {
+            "slug": "direct-preference-optimization-dpo",
+            "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo",
+            "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo.html",
+            "label": "Direct Preference Optimization (DPO)",
+            "minutes": 3
+          }
+        ]
+      },
+      {
         "id": "module-4-multimodal-agentic/vision-language",
         "module": "module-4-multimodal-agentic",
         "title": "4.1 Vision-Language Models & Image Generation",

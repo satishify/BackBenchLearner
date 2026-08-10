@@ -159,6 +159,14 @@
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/putting-qlora-together.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-4-reparam-peft</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/why-alignment-and-hhh.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/rl-for-language-models.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo.html</loc></url>
+  <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-3-finetuning/session-5-alignment-rlhf-dpo</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/vision-language/image-generation-basics.html</loc></url>

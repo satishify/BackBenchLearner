@@ -1,0 +1,181 @@
+title: "3.5 Alignment: RLHF & DPO"
+questions:
+  - q: "Which statement best captures the HHH alignment target?"
+    options:
+      - "The model should always answer quickly, even if it sometimes guesses"
+      - "The model should be helpful, honest, and harmless at the same time"
+      - "The model should maximize user satisfaction even if it bends the truth"
+      - "The model should only avoid harmful content and ignore usefulness"
+    answer: 1
+    why: "HHH means the aligned model should be useful, truthful, and safe at the same time."
+
+  - q: "In the RL view of an LLM, what is the 'state' during generation?"
+    options:
+      - "Only the final answer after decoding ends"
+      - "The reward score assigned by the human trainer"
+      - "The prompt plus the partial text generated so far"
+      - "The next token distribution after softmax"
+    answer: 2
+    why: "The state is the current prompt plus whatever prefix the model has already generated."
+
+  - q: "Why is a reward model useful?"
+    options:
+      - "Because it can replace the language model entirely"
+      - "Because every answer can be given a perfect universal numeric label"
+      - "Because it removes the need for any human judgment"
+      - "Because pairwise preferences are easier to collect than exact scores for every answer"
+    answer: 3
+    why: "Human pairwise choices are much easier to collect than exact reward numbers for every response."
+
+  - q: "What is a trajectory in the language-model RL setup?"
+    options:
+      - "The sequence of states and actions produced while the model writes a response"
+      - "The hidden weights of the transformer blocks"
+      - "The reward model’s internal feature map"
+      - "The batch of prompts used to train the SFT model"
+    answer: 0
+    why: "A trajectory is the full token-by-token path of generation, from prompt to completed answer."
+
+  - q: "What does the policy represent in the LLM RL formulation?"
+    options:
+      - "The frozen reference model used only for comparison"
+      - "The conditional distribution over the next token given the current context"
+      - "The scalar reward predicted for a complete response"
+      - "The set of human preference labels gathered for training"
+    answer: 1
+    why: "The policy is the model’s next-token distribution conditioned on the current context."
+
+  - q: "Why is a baseline or advantage term introduced in policy-gradient training?"
+    options:
+      - "To make the reward model larger and more expressive"
+      - "To force the model to output shorter answers"
+      - "To reduce gradient variance without changing the expected gradient"
+      - "To eliminate the need for trajectories"
+    answer: 2
+    why: "A baseline or advantage term keeps the gradient estimate useful while reducing variance."
+
+  - q: "If an action has positive advantage, what does that mean?"
+    options:
+      - "It has the highest raw probability among all tokens"
+      - "It has zero probability under the policy"
+      - "It was chosen by the reward model instead of the policy"
+      - "It was better than expected for that state"
+    answer: 3
+    why: "Positive advantage means the action did better than the average expectation for that state."
+
+  - q: "Why does PPO often reuse sampled trajectories for several epochs?"
+    options:
+      - "To improve efficiency by updating on cached experience instead of resampling every time"
+      - "To make the reward model score more stable"
+      - "To remove the need for any gradient steps"
+      - "To eliminate the need for a policy network"
+    answer: 0
+    why: "Reusing cached trajectories makes updates more efficient and avoids constant resampling."
+
+  - q: "What is reward hacking?"
+    options:
+      - "The model learning to reject every prompt"
+      - "The model exploiting weaknesses in the reward signal to get high reward without truly helping"
+      - "The model overfitting only to the prompt dataset"
+      - "The model producing random outputs that always have low score"
+    answer: 1
+    why: "Reward hacking means the model finds shortcuts that score well but do not truly help the user."
+
+  - q: "What does the KL penalty try to prevent?"
+    options:
+      - "The reward model from outputting a scalar score"
+      - "The policy from seeing any preferences at all"
+      - "The aligned model drifting too far from the reference model"
+      - "The tokenizer from splitting words into subwords"
+    answer: 2
+    why: "The KL term keeps the trained policy from drifting too far away from the reference model."
+
+  - q: "What human-preference supervision is used to train the reward model?"
+    options:
+      - "A single best answer chosen by the algorithm with no human input"
+      - "A pair of unrelated answers from different prompts"
+      - "Only unlabeled prompts with no responses"
+      - "Chosen/rejected response pairs for the same prompt"
+    answer: 3
+    why: "The reward model learns from human preference pairs: which answer was chosen and which was rejected."
+
+  - q: "What does the Bradley-Terry loss encourage?"
+    options:
+      - "The chosen response to get a higher score than the rejected response"
+      - "The reward model to predict exact human ratings for every answer"
+      - "The policy to copy the reference model exactly"
+      - "The reward model to ignore pairwise comparisons"
+    answer: 0
+    why: "Bradley-Terry loss pushes the chosen answer’s reward above the rejected answer’s reward."
+
+  - q: "In the reward-model sketch, why are prompt+chosen and prompt+rejected both passed through the model?"
+    options:
+      - "To double the batch size for faster GPU utilization only"
+      - "To get a scalar reward for each completion so the two can be compared"
+      - "To create two separate tokenizers for the same prompt"
+      - "To avoid backpropagating through the reward model"
+    answer: 1
+    why: "The reward model needs both completions so it can score them separately and compare them."
+
+  - q: "How is InstructGPT summarized here?"
+    options:
+      - "A pure next-token predictor trained only with pretraining data"
+      - "A model trained only on human ratings with no supervised stage"
+      - "Instruction fine-tuning followed by RLHF to better match human preferences"
+      - "A DPO-only method that avoids all preference comparisons"
+    answer: 2
+    why: "InstructGPT uses supervised instruction tuning and then RLHF-style preference alignment."
+
+  - q: "What is the main training story shown for ChatGPT-style dialogue agents?"
+    options:
+      - "A reward-model-only system with no dialogue tuning"
+      - "Reward-model-only training with no supervised data"
+      - "A single pass of pretraining followed by no post-training"
+      - "Instruction fine-tuning plus RLHF for dialogue agents"
+    answer: 3
+    why: "ChatGPT-style systems are often described as instruction fine-tuning plus RLHF for dialogue behavior."
+
+  - q: "Why is DPO attractive compared with PPO-based RLHF?"
+    options:
+      - "It removes the need for a separate reward-model-and-RL loop"
+      - "It replaces the language model with a reward model"
+      - "It always requires more moving parts than RLHF"
+      - "It removes the need for any preference data"
+    answer: 0
+    why: "DPO skips the explicit reward-model + RL loop and learns directly from preference pairs."
+
+  - q: "What supervision does DPO still need?"
+    options:
+      - "Only token-level masks for the decoder"
+      - "Preference data with chosen and rejected completions plus a reference policy"
+      - "No labels at all, because it is fully unsupervised"
+      - "Only a classification label for each prompt"
+    answer: 1
+    why: "DPO still relies on chosen/rejected pairs and a reference policy to keep training grounded."
+
+  - q: "Which issue is more closely associated with PPO-based alignment than with direct preference optimization?"
+    options:
+      - "The need for a prompt at inference time"
+      - "The existence of token probabilities"
+      - "Unstable training with several moving components"
+      - "The use of a transformer backbone"
+    answer: 2
+    why: "PPO-based alignment is more complex and can be less stable because several components interact."
+
+  - q: "What role does the reference model play in RLHF?"
+    options:
+      - "It converts chosen and rejected responses into a single score"
+      - "It generates the reward labels for each answer"
+      - "It replaces human preference data entirely"
+      - "It anchors the aligned policy so it stays near the initial SFT behavior"
+    answer: 3
+    why: "The reference model acts like an anchor so the aligned policy does not drift too far."
+
+  - q: "In the Bradley-Terry style loss, what does the term (r_w - r_l) represent?"
+    options:
+      - "The score margin that should favor the winning response"
+      - "The softmax temperature for decoding"
+      - "The tokenizer vocabulary gap"
+      - "The number of layers in the reward model"
+    answer: 0
+    why: "The score difference tells the loss how strongly the model should prefer the winning response."

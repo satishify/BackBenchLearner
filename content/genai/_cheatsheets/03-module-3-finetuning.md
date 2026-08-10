@@ -6,7 +6,7 @@ minutes: 25
 description: "When to fine-tune, SFT vs preference, PEFT/LoRA recipes — interview-ready."
 ---
 
-Chapters **3.1–3.4**. Focus on when and why—not memorizing every hyperparameter.
+Chapters **3.1–3.5**. Focus on when and why—not memorizing every hyperparameter.
 
 ## 3.1 Fine-tuning fundamentals
 
@@ -53,6 +53,16 @@ Chapters **3.1–3.4**. Focus on when and why—not memorizing every hyperparame
 - **QLoRA** — 4-bit frozen backbone (often **NF4**) + LoRA. Add **double quantization** for scale metadata.
 - **Memory stack** — Checkpointing saves activations (extra compute); paged optimizer smooths optimizer spikes. Together with 4-bit + LoRA, large models become more realistic on fewer GPUs.
 
+## 3.5 Alignment: RLHF & DPO
+
+- **HHH target** — Helpful, Honest, Harmless. Balance all three; overdoing one breaks the others.
+- **RL view of an LLM** — State = prompt + prefix; action = next token; trajectory = full generation; policy = next-token distribution.
+- **Policy gradient / advantage** — Raise probability of choices that were better than expected; baseline/advantage reduce noise.
+- **PPO + KL** — Sample answers, update carefully, keep near a reference model. **Reward hacking** = gaming the score without truly helping.
+- **Reward model** — Learn from chosen/rejected pairs; Bradley-Terry pushes winner score above loser.
+- **RLHF path** — Preferences → reward model → policy optimization (after SFT).
+- **DPO** — Train policy directly on preferences + reference; skip separate reward-model-and-RL loop.
+
 ## Decision cheat
 
 | Plain-English idea | When to use it |
@@ -68,3 +78,4 @@ Chapters **3.1–3.4**. Focus on when and why—not memorizing every hyperparame
 2. Name two evals that catch forgetting.
 3. Explain LoRA rank in one sentence (how big the two small matrices are).
 4. When would you merge vs keep adapters separate?
+5. Contrast RLHF vs DPO in one sentence each.
