@@ -275,12 +275,19 @@
     importJson: function (text) {
       var parsed = JSON.parse(text);
       var incoming = normalise(parsed.progress || parsed);
+      return Progress.mergeState(incoming);
+    },
+
+    /** Union-merge another progress object into local storage (cloud sync / import). */
+    mergeState: function (incoming) {
       var state = read();
-      merge(state, incoming);
-      write(state);
-      notify();
-      broadcast(state);
-      return true;
+      var changed = merge(state, normalise(incoming));
+      if (changed) {
+        write(state);
+        notify();
+        broadcast(state);
+      }
+      return changed;
     }
   };
 

@@ -781,10 +781,20 @@
     html += '<div class="dash-tools">';
     html += '<button type="button" class="dash-btn" id="dash-export">Export progress</button>';
     html += '<button type="button" class="dash-btn" id="dash-import">Import progress</button>';
+    if (BBL.CloudSync) {
+      html +=
+        '<button type="button" class="dash-btn" id="dash-cloud">' +
+        (BBL.CloudSync.getUser && BBL.CloudSync.getUser()
+          ? 'Sync cloud now'
+          : 'Sign in to sync') +
+        '</button>';
+    }
     html +=
       '<button type="button" class="dash-btn dash-btn-danger" id="dash-reset">Reset my progress</button>';
     html += '<input type="file" id="dash-import-file" accept="application/json,.json" hidden>';
     html += '</div>';
+    html +=
+      '<p class="dash-hint">Tip: sign in (header) to keep progress across phones and PCs. Export/import still works offline.</p>';
 
     welcome.innerHTML = html;
     welcome.style.display = 'block';
@@ -829,6 +839,19 @@
         syncUI();
       }
     });
+
+    var cloudBtn = document.getElementById('dash-cloud');
+    if (cloudBtn && BBL.CloudSync) {
+      cloudBtn.addEventListener('click', function () {
+        if (BBL.CloudSync.getUser && BBL.CloudSync.getUser()) {
+          BBL.CloudSync.syncNow().then(function () {
+            syncUI();
+          });
+        } else {
+          BBL.CloudSync.openLogin();
+        }
+      });
+    }
   }
 
   function renderPracticeHub() {
@@ -1235,6 +1258,13 @@
     if (parsed.kind === 'practice-hub') renderPracticeHub();
     if (parsed.kind === 'cheatsheet-hub') renderCheatHub();
   });
+
+  if (BBL.CloudSync && BBL.CloudSync.subscribe) {
+    BBL.CloudSync.subscribe(function () {
+      var parsed = parseHash();
+      if (parsed.kind === 'welcome') renderDashboard(parsed.topicId);
+    });
+  }
 
   bindShellLessonRail();
   renderSeoLinks();
