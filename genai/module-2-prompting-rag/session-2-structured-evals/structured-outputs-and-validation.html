@@ -52,7 +52,7 @@
     <p>Schema in the prompt is documentation. Schema in the validator is enforcement. You need both.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>The reliability stack</h3>
+    <h3 id="the-reliability-stack">The reliability stack</h3>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -64,7 +64,7 @@ flowchart TB
     R -->|budget exceeded| F[Fail closed / fallback]
       </div>
     </div>
-    <h3>Model-side options</h3>
+    <h3 id="model-side-options">Model-side options</h3>
     <table>
       <thead><tr>
         <th>Technique</th>
@@ -95,7 +95,7 @@ flowchart TB
       </tbody>
     </table>
     <p>Always assume vendor features differ. Your app-side validator is the portable guarantee.</p>
-    <h3>App-side validation</h3>
+    <h3 id="app-side-validation">App-side validation</h3>
     <p>Libraries in the <strong>Pydantic</strong> family (or dataclasses + hand checks) give you:</p>
     <ul>
     <li>Required fields and types</li>
@@ -112,18 +112,18 @@ flowchart TB
   published_daterange: { start: date, end: date }
   domains_allow_list: list[string]</code></pre>
     </div>
-    <h3>Retry with feedback</h3>
+    <h3 id="retry-with-feedback">Retry with feedback</h3>
     <p>On validation failure, do not only &quot;try again colder.&quot; Send the error:</p>
     <p><code>Your previous output failed validation: published_daterange.end is before start. Reply with corrected JSON only.</code></p>
     <p>Cap retries (e.g. 2). Log failure rates per prompt version — a spike means schema or model drift.</p>
-    <h3>Designing schemas models can hit</h3>
+    <h3 id="designing-schemas-models-can-hit">Designing schemas models can hit</h3>
     <ul>
     <li>Prefer flat or shallow nesting; deep trees invite missing braces under token limits.</li>
     <li>Use enums for closed sets (<code>&quot;Positive&quot; | &quot;Neutral&quot; | &quot;Negative&quot;</code>) instead of free strings.</li>
     <li>Make rarely needed fields optional; required fields should be ones you always have evidence for.</li>
     <li>Include a first-class abstain path: <code>status: &quot;ok&quot; | &quot;unknown&quot;</code> beats forcing a fake value.</li>
     </ul>
-    <h3>Constrained generation note</h3>
+    <h3 id="constrained-generation-note">Constrained generation note</h3>
     <p>Constraints work on <strong>tokens</strong>, not characters. A single token may include a leading space or several characters, so a regex or allowlist must account for the tokenizer, not just the spelling of the output.</p>
     <p>Use token masking for simple surface constraints (digits-only, yes/no). Use structured decoding when you need grammar correctness, nested JSON, or something that must never become invalid mid-sequence.</p>
     <h2 id="in-code">In code</h2>
@@ -271,9 +271,9 @@ print(p.age)  # 10, as an int</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

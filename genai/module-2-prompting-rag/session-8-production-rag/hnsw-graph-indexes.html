@@ -62,7 +62,7 @@
     <p><strong>efSearch</strong> is the recall–speed dial for HNSW—similar in spirit to <strong>nprobe</strong> for IVF. Higher values improve recall and cost more latency.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Build: layers and neighbors</h3>
+    <h3 id="build-layers-and-neighbors">Build: layers and neighbors</h3>
     <p>Each vector gets a random maximum layer (few points on top layers). At every layer, the point connects to up to <strong>M</strong> nearest neighbors.</p>
     <table>
       <thead><tr>
@@ -80,7 +80,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Search: greedy then expand</h3>
+    <h3 id="search-greedy-then-expand">Search: greedy then expand</h3>
     <ol>
     <li>Enter at a fixed top-layer entry point.</li>
     <li>Greedily move to the neighbor closest to the query until no improvement.</li>
@@ -88,9 +88,9 @@
     <li>On the base layer, run best-first search bounded by <strong>efSearch</strong> (must be ≥ k).</li>
     </ol>
     <p><strong>efSearch</strong> is the primary runtime trade-off—change it without rebuilding the index.</p>
-    <h3>Why HNSW feels like log(N)</h3>
+    <h3 id="why-hnsw-feels-like-logn">Why HNSW feels like log(N)</h3>
     <p>Higher layers contain fewer nodes. Search jumps far at the top and pays local cost only near the bottom—logarithmic-style navigation instead of a linear scan.</p>
-    <h3>Compare to IVF nprobe</h3>
+    <h3 id="compare-to-ivf-nprobe">Compare to IVF nprobe</h3>
     <table>
       <thead><tr>
         <th></th>
@@ -213,9 +213,9 @@ print(&quot;landed near query at index&quot;, cur)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

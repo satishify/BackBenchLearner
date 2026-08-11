@@ -81,7 +81,7 @@ flowchart TD
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Where HITL pays off</h3>
+    <h3 id="where-hitl-pays-off">Where HITL pays off</h3>
     <ul>
     <li>Financial transactions and credit changes.</li>
     <li>Legal, medical, or compliance-facing text.</li>
@@ -90,7 +90,7 @@ flowchart TD
     <li>Irreversible deletes or production deploys.</li>
     <li>Novel cases outside the eval distribution.</li>
     </ul>
-    <h3>HITL patterns</h3>
+    <h3 id="hitl-patterns">HITL patterns</h3>
     <table>
       <thead><tr>
         <th>Pattern</th>
@@ -125,16 +125,16 @@ flowchart TD
         </tr>
       </tbody>
     </table>
-    <h3>Production guardrails beyond HITL</h3>
+    <h3 id="production-guardrails-beyond-hitl">Production guardrails beyond HITL</h3>
     <p>Three guardrails often work together:</p>
     <ol>
     <li><strong>HITL</strong> — a human approves a risky action before execution.</li>
     <li><strong>Recursion limit</strong> — stops infinite agent arguments and runaway token burn.</li>
     <li><strong>Summarize node</strong> — keeps message history small enough to stay usable (<strong>state bloat</strong> is when history gets too large and slows the system).</li>
     </ol>
-    <h3>Designing the queue</h3>
+    <h3 id="designing-the-queue">Designing the queue</h3>
     <p>Humans are a scarce resource. Rank the queue by risk and uncertainty, not first-in-first-out alone. Show the reviewer: goal, proposed action, evidence, policy citations, and blast radius. Capture the decision as structured feedback so you can train graders and tighten auto paths later.</p>
-    <h3>Autonomy schedule</h3>
+    <h3 id="autonomy-schedule">Autonomy schedule</h3>
     <ol>
     <li><strong>Shadow:</strong> agent proposes, human always acts.</li>
     <li><strong>Supervised:</strong> auto on allowlisted low-risk; HITL otherwise.</li>
@@ -245,9 +245,9 @@ print(run(Proposal(&quot;restart_pod&quot;, {&quot;name&quot;: &quot;api-7&quot;
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -39,7 +39,7 @@
     <p><strong>What this is:</strong> When an LLM resolves &quot;it&quot; in a sentence or latches onto a constraint in your system prompt, it is running <strong>self-attention</strong>. Each token builds a query (&quot;what do I need?&quot;), compares it to other tokens&#x27; keys (&quot;what do I offer?&quot;), and mixes their values (&quot;what content should flow?&quot;).</p>
     <p><strong>Why it matters:</strong> This block is the core compute inside almost every modern GenAI model. Master it and the rest of the Transformer stack becomes much clearer.</p>
     <h2 id="intuition">Intuition</h2>
-    <h3>The YouTube search analogy</h3>
+    <h3 id="the-youtube-search-analogy">The YouTube search analogy</h3>
     <table>
       <thead><tr>
         <th>Role</th>
@@ -65,7 +65,7 @@
       </tbody>
     </table>
     <p>The platform matches your query against all keys, turns match scores into a ranking (softmax), and returns a blend of video values weighted by relevance.</p>
-    <h3>A sentence example</h3>
+    <h3 id="a-sentence-example">A sentence example</h3>
     <p>Sentence: <em>&quot;The chef cooked the food because it was delicious.&quot;</em></p>
     <p>To figure out what <strong>&quot;it&quot;</strong> refers to:</p>
     <ul>
@@ -218,9 +218,9 @@ print(&quot;output shape&quot;, out.shape)  # (n, d_k)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

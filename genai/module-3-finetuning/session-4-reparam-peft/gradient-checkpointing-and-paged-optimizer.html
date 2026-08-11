@@ -49,7 +49,7 @@
     <p>Each trick attacks a different part of the memory budget. Together they make large-model training realistic.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Gradient checkpointing</h3>
+    <h3 id="gradient-checkpointing">Gradient checkpointing</h3>
     <p>During normal backpropagation, the model stores many <strong>activations</strong> so it can compute gradients later. That storage can be huge.</p>
     <p><strong>Gradient checkpointing</strong> discards some activations on purpose and <strong>recomputes</strong> them in the backward pass.</p>
     <table>
@@ -65,11 +65,11 @@
       </tbody>
     </table>
     <p>A common placement intuition: put checkpoints roughly every <strong>√n</strong> layers (for <strong>n</strong> layers). Then the backward pass can restart from a nearby checkpoint instead of replaying the whole network from layer 1 every time.</p>
-    <h3>Paged optimizer</h3>
+    <h3 id="paged-optimizer">Paged optimizer</h3>
     <p>Optimizer state (the extra numbers Adam-style methods keep) can cause sudden <strong>out-of-memory</strong> spikes — especially with long sequences or uneven batch sizes.</p>
     <p>A <strong>paged optimizer</strong> keeps that state more flexibly, often by paging data between GPU and CPU memory, so a spike is less likely to crash the run.</p>
     <p>It does not remove memory cost entirely. It <strong>smooths the spikes</strong> that cause failures.</p>
-    <h3>Where these fit in QLoRA</h3>
+    <h3 id="where-these-fit-in-qlora">Where these fit in QLoRA</h3>
     <table>
       <thead><tr>
         <th>Piece</th>
@@ -142,9 +142,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

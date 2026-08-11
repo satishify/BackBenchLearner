@@ -84,14 +84,14 @@ flowchart LR
     </div>
     <p><strong>Default:</strong> start single-agent. Move to multi-agent when specialization and parallelism clearly beat the orchestration tax.</p>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Single-agent</h3>
+    <h3 id="single-agent">Single-agent</h3>
     <ul>
     <li>One policy prompt, one tool set (possibly gated), one memory.</li>
     <li>Easier tracing: one timeline of thoughts and calls.</li>
     <li>Best for moderate workflows: &quot;triage + draft,&quot; &quot;report fetch + summarize.&quot;</li>
     <li>Risk: prompt and tool catalog grow into a swamp; the model juggles too many roles.</li>
     </ul>
-    <h3>Multi-agent — enterprise specialist roles</h3>
+    <h3 id="multi-agent-enterprise-specialist-roles">Multi-agent — enterprise specialist roles</h3>
     <table>
       <thead><tr>
         <th>Agent role</th>
@@ -122,7 +122,7 @@ flowchart LR
       </tbody>
     </table>
     <p>Each specialist gets a <strong>small, relevant toolset</strong>—not every API in the company.</p>
-    <h3>Collaboration patterns</h3>
+    <h3 id="collaboration-patterns">Collaboration patterns</h3>
     <table>
       <thead><tr>
         <th>Pattern</th>
@@ -152,9 +152,9 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Hierarchical ReAct (plain English)</h3>
+    <h3 id="hierarchical-react-plain-english">Hierarchical ReAct (plain English)</h3>
     <p>At enterprise scale, the <strong>triage agent</strong> becomes a meta-planner. Specialist agents become its &quot;tools.&quot; The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.</p>
-    <h3>Decision guide</h3>
+    <h3 id="decision-guide">Decision guide</h3>
     <p>Stay single-agent while:</p>
     <ul>
     <li>One person could do the job with a checklist.</li>
@@ -266,9 +266,9 @@ print(multi_pipeline(&quot;weekly support themes&quot;).verdict)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

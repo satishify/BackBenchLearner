@@ -51,7 +51,7 @@
     <p>The model suggests; your code decides. Never execute tool calls without authorization, validation, and allowlists.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Roles and instruction priority</h3>
+    <h3 id="roles-and-instruction-priority">Roles and instruction priority</h3>
     <table>
       <thead><tr>
         <th>Role</th>
@@ -82,7 +82,7 @@
       </tbody>
     </table>
     <p>Modern OpenAI-style APIs use a messages array. Newer documentation emphasizes separating developer instructions from user-specific content. The stable lesson is <strong>role separation</strong>, not a particular endpoint name.</p>
-    <h3>Tool-calling loop</h3>
+    <h3 id="tool-calling-loop">Tool-calling loop</h3>
     <div class="diagram-wrap">
       <div class="mermaid">
 sequenceDiagram
@@ -101,7 +101,7 @@ sequenceDiagram
       </div>
     </div>
     <p>Multi-tool turns are normal: search, then fetch, then answer. Cap the hop count so a confused model cannot loop forever.</p>
-    <h3>Schema design</h3>
+    <h3 id="schema-design">Schema design</h3>
     <p>Tools should be <strong>narrow, typed, and boring</strong>:</p>
     <div class="code-block" data-lang="json">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -119,9 +119,9 @@ sequenceDiagram
 }</code></pre>
     </div>
     <p>Descriptions are part of the prompt. Vague tool names (&quot;do_stuff&quot;) cause wrong calls. Overlapping tools cause thrash — prefer one clear verb per capability.</p>
-    <h3>Why this reduces hallucination</h3>
+    <h3 id="why-this-reduces-hallucination">Why this reduces hallucination</h3>
     <p>The model still might invent an argument, but the <strong>payload</strong> of truth comes from your tool. Grounded answers cite returned fields; empty tool results should produce an honest &quot;not found,&quot; not a fabricated row.</p>
-    <h3>Tool calling safety checklist</h3>
+    <h3 id="tool-calling-safety-checklist">Tool calling safety checklist</h3>
     <ul>
     <li>Validate all tool arguments before execution.</li>
     <li>Use allowlists for tools and APIs; never let the model construct arbitrary shell commands or SQL unchecked.</li>
@@ -130,7 +130,7 @@ sequenceDiagram
     <li>Log tool calls, arguments, results, and model versions for debugging.</li>
     <li>Treat retrieved web pages, PDFs, emails, and tool outputs as untrusted data, not instructions.</li>
     </ul>
-    <h3>Building a reliable LLM application</h3>
+    <h3 id="building-a-reliable-llm-application">Building a reliable LLM application</h3>
     <table>
       <thead><tr>
         <th>Problem</th>
@@ -288,9 +288,9 @@ print(run_tool_call(&quot;get_weather&quot;, &#x27;{&quot;location&quot;: &quot;
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

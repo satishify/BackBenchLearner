@@ -45,7 +45,7 @@
     <p>Tokens drive cost and context. Sampling knobs drive variance. Separate &quot;did it see the right evidence?&quot; from &quot;did we sample too wildly?&quot;</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Tokens</h3>
+    <h3 id="tokens">Tokens</h3>
     <p>Tokenization is model-specific. Rough patterns for English:</p>
     <ul>
     <li>Common words and punctuation often map to one token.</li>
@@ -53,7 +53,7 @@
     <li>Whitespace and formatting count.</li>
     </ul>
     <p>Rule-of-thumb for planning (not billing truth): ~4 characters per token for English prose, or ~100 tokens ~= 75 words. Always measure with the real tokenizer in CI for anything cost-sensitive.</p>
-    <h3>Context window</h3>
+    <h3 id="context-window">Context window</h3>
     <p>If the window is <code>W</code> tokens, everything the model can attend to in one call must fit in <code>W</code>. Overflow typically means:</p>
     <ul>
     <li>Silent truncation of the oldest or middle content</li>
@@ -74,7 +74,7 @@ flowchart TB
       </div>
     </div>
     <p>Long RAG dumps are the classic way to spend the whole budget on noise. Prefer ranked snippets, summaries, and hard caps per source.</p>
-    <h3>Temperature</h3>
+    <h3 id="temperature">Temperature</h3>
     <p>Let <code>z_i</code> be the <strong>logit</strong> (raw score) for vocabulary item <code>i</code>. Softmax turns logits into probabilities. Temperature <code>T &gt; 0</code> scales logits before softmax:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -101,7 +101,7 @@ flowchart TB
       </tbody>
     </table>
     <p>Temperature does not add knowledge. It only changes how aggressively you explore the model&#x27;s uncertainty.</p>
-    <h3>Top-p (nucleus sampling)</h3>
+    <h3 id="top-p-nucleus-sampling">Top-p (nucleus sampling)</h3>
     <p>Sort tokens by probability descending. Keep the smallest prefix whose cumulative probability is at least <code>p</code>. Sample only inside that nucleus.</p>
     <ul>
     <li><code>top_p = 0.1</code> → tiny, high-confidence set</li>
@@ -109,7 +109,7 @@ flowchart TB
     <li><code>top_p = 1.0</code> → effectively no nucleus cutoff</li>
     </ul>
     <p>Top-p adapts to the shape of the distribution: when the model is peaked, the nucleus is small; when it is flat, the nucleus grows.</p>
-    <h3>Practical presets</h3>
+    <h3 id="practical-presets">Practical presets</h3>
     <table>
       <thead><tr>
         <th>Task</th>
@@ -145,7 +145,7 @@ flowchart TB
       </tbody>
     </table>
     <p>Tune <strong>one</strong> primary diversity control first (often temperature <em>or</em> top-p), then the other.</p>
-    <h3>Cost and latency mental model</h3>
+    <h3 id="cost-and-latency-mental-model">Cost and latency mental model</h3>
     <p>Every call roughly costs <code>price_in * prompt_tokens + price_out * completion_tokens</code>. Output tokens are often more expensive and always more latency-sensitive because generation is sequential.</p>
     <h2 id="in-code">In code</h2>
     <p>Approximate English token count without a real tokenizer — good for budgeting demos, bad for invoices:</p>
@@ -270,9 +270,9 @@ print(nucleus(probs, 0.8))  # indices covering &gt;= 0.8 mass</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

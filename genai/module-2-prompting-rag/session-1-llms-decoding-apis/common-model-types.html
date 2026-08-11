@@ -84,7 +84,7 @@
     <p>Pick the modality that matches the <em>native</em> form of the user&#x27;s problem. Translation into text is a workaround, not always the best architecture.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Unimodal families (high level)</h3>
+    <h3 id="unimodal-families-high-level">Unimodal families (high level)</h3>
     <table>
       <thead><tr>
         <th>Family</th>
@@ -125,7 +125,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Multimodal in practice</h3>
+    <h3 id="multimodal-in-practice">Multimodal in practice</h3>
     <p>Multimodal systems usually:</p>
     <ol>
     <li><strong>Encode</strong> each modality into vectors (numeric representations).</li>
@@ -142,7 +142,7 @@ flowchart LR
       </div>
     </div>
     <p>You do not need one giant model for every demo. Many production stacks are <strong>pipelines</strong>: speech-to-text → LLM → text-to-speech, or image embedder → vector search → LLM for explanations. That is multimodal <em>as a system</em> even if each step is unimodal.</p>
-    <h3>Model families without the vendor brochure</h3>
+    <h3 id="model-families-without-the-vendor-brochure">Model families without the vendor brochure</h3>
     <p>Keep architecture shapes in mind, not slogans:</p>
     <table>
       <thead><tr>
@@ -172,7 +172,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>When to pick which pipeline</h3>
+    <h3 id="when-to-pick-which-pipeline">When to pick which pipeline</h3>
     <ol>
     <li><strong>Source of truth is text</strong> (tickets, policies, code) → text LLM plus optional retrieval.</li>
     <li><strong>User shows something visual</strong> (receipt, UI bug, shelf photo) → vision or multimodal understanding.</li>
@@ -298,9 +298,9 @@ print(choose_pipeline(Ticket(&quot;app crashes on save&quot;)))
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

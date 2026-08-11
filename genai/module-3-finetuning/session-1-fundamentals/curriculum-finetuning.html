@@ -49,13 +49,13 @@
     <p>Curriculum = planned easy → hard order, not “whatever the dataloader shuffles.”</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why curriculum can help LLMs</h3>
+    <h3 id="why-curriculum-can-help-llms">Why curriculum can help LLMs</h3>
     <ul>
     <li>Early training is fragile; easy wins stabilize the run</li>
     <li>Hard edge cases make more sense after the model has the basics</li>
     <li>Can reduce wasted steps on examples the model is not ready for</li>
     </ul>
-    <h3>Designing a curriculum: three key decisions</h3>
+    <h3 id="designing-a-curriculum-three-key-decisions">Designing a curriculum: three key decisions</h3>
     <table>
       <thead><tr>
         <th>Decision</th>
@@ -76,7 +76,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Scheduling strategies (simple view)</h3>
+    <h3 id="scheduling-strategies-simple-view">Scheduling strategies (simple view)</h3>
     <ul>
     <li><strong>Stages</strong> — Train on easy bucket, then medium, then hard</li>
     <li><strong>Blend</strong> — Slowly raise the fraction of hard examples over time</li>
@@ -126,9 +126,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

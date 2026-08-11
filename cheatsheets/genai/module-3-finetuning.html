@@ -44,19 +44,19 @@
 
     <p>Chapters <strong>3.1–3.5</strong>. Focus on when and why—not memorizing every hyperparameter.</p>
     <h2 id="31-fine-tuning-fundamentals">3.1 Fine-tuning fundamentals</h2>
-    <h3>Decision framework</h3>
+    <h3 id="decision-framework">Decision framework</h3>
     <ul>
     <li><strong>Prompting</strong> changes the instruction. <strong>RAG</strong> changes the context. <strong>Fine-tuning</strong> changes the model.</li>
     <li>Changing facts → RAG. Stable style / format / domain habit → fine-tuning. Clear prompt already works → stay with prompting.</li>
     </ul>
-    <h3>Approaches</h3>
+    <h3 id="approaches">Approaches</h3>
     <ul>
     <li><strong>Unsupervised / continued</strong> — Domain text soak, few or no instruction labels.</li>
     <li><strong>SFT</strong> — Input → desired output pairs. <strong>IFT</strong> — Chat-style instruction → response.</li>
     <li><strong>Safety / alignment</strong> — Extra shaping for preferred, safer behavior.</li>
     <li><strong>Full fine-tuning</strong> vs <strong>PEFT</strong> — Update almost everything, or only a small part (adapters, LoRA, soft prompts).</li>
     </ul>
-    <h3>Training patterns</h3>
+    <h3 id="training-patterns">Training patterns</h3>
     <ul>
     <li><strong>Multi-task</strong> — Related tasks share one backbone and regularize each other.</li>
     <li><strong>Curriculum</strong> — Easy examples first, harder later.</li>

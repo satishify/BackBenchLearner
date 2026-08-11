@@ -49,17 +49,17 @@
     <p>QLoRA = 4-bit frozen backbone + LoRA adapters. Quantization shrinks storage; LoRA still does the learning.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why quantization helps</h3>
+    <h3 id="why-quantization-helps">Why quantization helps</h3>
     <p>Quantization converts a fat number type (for example 32-bit float) into a thinner one (for example 8-bit or 4-bit). Goals:</p>
     <ul>
     <li>Less memory</li>
     <li>Better chance of fitting large models on fewer GPUs</li>
     </ul>
-    <h3>Uniform quantization (simple baseline)</h3>
+    <h3 id="uniform-quantization-simple-baseline">Uniform quantization (simple baseline)</h3>
     <p>Uniform quantization uses evenly spaced bins and a scale constant. It is easy to understand, but not ideal when weights are roughly <strong>bell-shaped</strong> (normal-like): most values sit near zero, and evenly spaced bins waste precision in the wrong places.</p>
-    <h3>Chunking-based quantization</h3>
+    <h3 id="chunking-based-quantization">Chunking-based quantization</h3>
     <p>Instead of quantizing a whole giant tensor with one global scale, quantize <strong>smaller blocks</strong> independently. That reduces damage from outliers (one extreme value no longer ruins the scale for everything).</p>
-    <h3>NF4 in simple language</h3>
+    <h3 id="nf4-in-simple-language">NF4 in simple language</h3>
     <p><strong>NF4</strong> means <strong>4-bit NormalFloat</strong>. It is designed for weights that are roughly normally distributed:</p>
     <ul>
     <li>Finer precision near zero (where most weights live)</li>
@@ -74,10 +74,10 @@
     <li>Pack two 4-bit codes into one byte</li>
     <li>Later dequantize by reversing the scale when needed for compute</li>
     </ol>
-    <h3>Double quantization</h3>
+    <h3 id="double-quantization">Double quantization</h3>
     <p>Block-wise quantization needs <strong>scale constants</strong> for each block. Those constants also take space. <strong>Double quantization</strong> compresses those constants too — quantize the quantization metadata.</p>
     <p>This matters more when blocks are small, because more blocks mean more scale metadata.</p>
-    <h3>QLoRA ingredients (first look)</h3>
+    <h3 id="qlora-ingredients-first-look">QLoRA ingredients (first look)</h3>
     <table>
       <thead><tr>
         <th>Ingredient</th>
@@ -151,9 +151,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

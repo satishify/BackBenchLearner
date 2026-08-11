@@ -76,10 +76,10 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why one-hot vectors fail</h3>
+    <h3 id="why-one-hot-vectors-fail">Why one-hot vectors fail</h3>
     <p>In a <strong>one-hot vector</strong>, every word is its own dimension. &quot;Cat&quot; and &quot;kitten&quot; are unrelated dimensions, so their dot product is zero even though the meaning is close.</p>
     <p><strong>Dense vectors</strong> spread meaning across dimensions. Similar sentences land near each other in vector space.</p>
-    <h3>Sentence embeddings</h3>
+    <h3 id="sentence-embeddings">Sentence embeddings</h3>
     <p>Modern systems embed whole sentences or paragraphs—not just single words.</p>
     <p><strong>BERT-style idea:</strong> the <strong>[CLS]</strong> token (a special token at the start) often acts as a summary of the whole input.</p>
     <p><strong>Cosine similarity</strong> compares the angle between two vectors:</p>
@@ -88,7 +88,7 @@ flowchart LR
       <pre><code class="language-text">cosine(a, b) = (a · b) / (||a|| × ||b||)</code></pre>
     </div>
     <p>Closer to 1 means more similar meaning. Near 0 means unrelated.</p>
-    <h3>Why plain BERT is not enough for retrieval</h3>
+    <h3 id="why-plain-bert-is-not-enough-for-retrieval">Why plain BERT is not enough for retrieval</h3>
     <p>BERT is trained to understand text—not to rank documents for search. Better approach: train the encoder so <strong>relevant query–document pairs are close</strong> and <strong>irrelevant pairs are far apart</strong>.</p>
     <table>
       <thead><tr>
@@ -114,7 +114,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Bi-encoder vs cross-encoder</h3>
+    <h3 id="bi-encoder-vs-cross-encoder">Bi-encoder vs cross-encoder</h3>
     <table>
       <thead><tr>
         <th>Model type</th>
@@ -138,7 +138,7 @@ flowchart LR
       </tbody>
     </table>
     <p>Use bi-encoders for wide first-stage search. Use cross-encoders later to rerank a small candidate set (covered in lesson 2.7 on reranking).</p>
-    <h3>Choosing an embedding model</h3>
+    <h3 id="choosing-an-embedding-model">Choosing an embedding model</h3>
     <p><strong>Key lesson:</strong> measure candidates on <strong>your own data</strong>, not only a public leaderboard.</p>
     <table>
       <thead><tr>
@@ -266,9 +266,9 @@ print(&quot;doc_b&quot;, cosine_sim(query_vec, doc_b))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

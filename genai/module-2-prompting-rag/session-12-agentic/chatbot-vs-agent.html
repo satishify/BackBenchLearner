@@ -85,7 +85,7 @@
       <p class="callout-title">Key idea</p>
     <p>A chatbot ends when it sends a reply. An agent ends when a checkable outcome happens—or when a human or budget stops it.</p>
     </aside>
-    <h3>Why linear RAG is not an agent</h3>
+    <h3 id="why-linear-rag-is-not-an-agent">Why linear RAG is not an agent</h3>
     <p>A simple RAG (retrieval-augmented generation) pipeline:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -99,7 +99,7 @@
     </div>
     <p><strong>DevOps example:</strong> A payment-gateway failure may need a code diff, log traces, and past incident notes. If the first retrieved chunk is incomplete, the system must search again—not blindly answer. That is agent territory, not static RAG.</p>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Chatbot shape</h3>
+    <h3 id="chatbot-shape">Chatbot shape</h3>
     <ol>
     <li>User message in.</li>
     <li>Optional retrieval for FAQs.</li>
@@ -107,7 +107,7 @@
     <li>Done.</li>
     </ol>
     <p>State is conversational. Side effects, if any, are rare and manually triggered by the user following instructions.</p>
-    <h3>Agent shape</h3>
+    <h3 id="agent-shape">Agent shape</h3>
     <ol>
     <li>User states a goal.</li>
     <li>System plans steps.</li>
@@ -116,9 +116,9 @@
     <li>Ends on success, escalation, or budget.</li>
     </ol>
     <p>State includes plan progress and external system status (&quot;ticket #442 closed&quot;).</p>
-    <h3>Hybrid products (most of reality)</h3>
+    <h3 id="hybrid-products-most-of-reality">Hybrid products (most of reality)</h3>
     <p>Many apps are chatbots with a few agentic buttons: &quot;Create the ticket for me.&quot; That is fine. Label autonomy honestly. When the UI promises &quot;I&#x27;ll handle it,&quot; you owe the user agent-grade controls: confirmations, receipts, and undo paths.</p>
-    <h3>When to choose which</h3>
+    <h3 id="when-to-choose-which">When to choose which</h3>
     <p>Choose a <strong>chatbot</strong> when:</p>
     <ul>
     <li>The user must learn or decide.</li>
@@ -132,7 +132,7 @@
     <li>Success is objectively checkable.</li>
     <li>You can afford human-in-the-loop (HITL) on the risky subset.</li>
     </ul>
-    <h3>Example contrast</h3>
+    <h3 id="example-contrast">Example contrast</h3>
     <p>Password reset again:</p>
     <ul>
     <li><strong>Chatbot:</strong> paste the help-center steps; user clicks around.</li>
@@ -221,9 +221,9 @@ print(agent_password_reset(&quot;u_123&quot;, verified=True))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

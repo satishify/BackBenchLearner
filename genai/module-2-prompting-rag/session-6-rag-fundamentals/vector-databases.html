@@ -70,13 +70,13 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Core API</h3>
+    <h3 id="core-api">Core API</h3>
     <ul>
     <li><strong>Upsert</strong> — Store <code>id → vector</code> plus metadata (<code>source</code>, <code>tenant</code>, <code>updated_at</code>).</li>
     <li><strong>Query</strong> — Vector + <code>top_k</code> + optional metadata filter (<code>tenant = acme AND lang = en</code>).</li>
     <li><strong>Delete</strong> — Remove outdated chunks when documents change.</li>
     </ul>
-    <h3>Index types (conceptual)</h3>
+    <h3 id="index-types-conceptual">Index types (conceptual)</h3>
     <table>
       <thead><tr>
         <th>Index</th>
@@ -106,11 +106,11 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <h3>Metadata filtering</h3>
+    <h3 id="metadata-filtering">Metadata filtering</h3>
     <p>Essential for multi-tenant apps and access control. Always enforce authorization in your app layer too—the index filter is necessary but not sufficient if misconfigured.</p>
-    <h3>Common systems</h3>
+    <h3 id="common-systems">Common systems</h3>
     <p>Pinecone, Weaviate, Milvus, Qdrant, Chroma (dev/light), pgvector. Choose based on ops model, filter strength, hybrid search, and cost at your scale.</p>
-    <h3>Operations</h3>
+    <h3 id="operations">Operations</h3>
     <p>A model change requires <strong>full re-embed</strong>. Track index build time, recall@k vs a flat baseline, p95 query latency, and how stale upserts are. Store canonical text elsewhere; the vector store is an index, not your CMS.</p>
     <h2 id="in-code">In code</h2>
     <p>A tiny in-memory vector store with cosine search and metadata filters.</p>
@@ -207,9 +207,9 @@ print([(score, r.id, r.meta[&quot;topic&quot;]) for score, r in hits])</code></p
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

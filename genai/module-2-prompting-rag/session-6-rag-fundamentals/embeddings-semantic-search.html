@@ -70,7 +70,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>From one-hot to dense vectors</h3>
+    <h3 id="from-one-hot-to-dense-vectors">From one-hot to dense vectors</h3>
     <p>A <strong>one-hot vector</strong> gives each word its own dimension with a single 1. Different words are always unrelated in that space—&quot;cat&quot; and &quot;kitten&quot; look as far apart as &quot;cat&quot; and &quot;refrigerator.&quot;</p>
     <p><strong>Dense embeddings</strong> spread meaning across a few hundred dimensions. Similar sentences land near each other.</p>
     <div class="code-block" data-lang="text">
@@ -83,20 +83,20 @@ dense(cat)    ~= [0.2, 0.8, ...]
 dense(kitten) ~= [0.3, 0.7, ...]
 cosine score  ~= high (similar meaning)</code></pre>
     </div>
-    <h3>Cosine similarity</h3>
+    <h3 id="cosine-similarity">Cosine similarity</h3>
     <p>For vectors <strong>A</strong> and <strong>B</strong>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">cos(A, B) = (A · B) / (||A|| × ||B||)</code></pre>
     </div>
     <p><strong>Plain English:</strong> cosine measures the angle between two vectors. Closer to 1 means more similar meaning. If vectors are normalized, cosine equals a simple dot product—many indexes use that shortcut.</p>
-    <h3>Top-k retrieval</h3>
+    <h3 id="top-k-retrieval">Top-k retrieval</h3>
     <ol>
     <li>Embed the query.</li>
     <li>Score every stored chunk (or use an <strong>ANN</strong>—approximate nearest neighbor—index at scale).</li>
     <li>Return the <strong>k</strong> highest scores.</li>
     </ol>
-    <h3>Chunking matters</h3>
+    <h3 id="chunking-matters">Chunking matters</h3>
     <p>Each chunk becomes one point in vector space. A chunk that mixes three topics blurs that point. A chunk that is too tiny loses context. Aim for one coherent idea per chunk, with modest <strong>overlap</strong> so facts near boundaries are not lost.</p>
     <h2 id="in-code">In code</h2>
     <p>A numpy toy: fake embeddings, cosine ranking, and a reminder that real models replace <code>embed()</code>.</p>
@@ -190,9 +190,9 @@ for text, score in search(&quot;how do I cut infra costs?&quot;):
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

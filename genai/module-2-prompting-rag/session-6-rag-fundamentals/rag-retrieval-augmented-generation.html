@@ -81,7 +81,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Core workflow</h3>
+    <h3 id="core-workflow">Core workflow</h3>
     <ol>
     <li><strong>Index</strong> documents so they can be searched.</li>
     <li><strong>Receive</strong> the user question.</li>
@@ -91,13 +91,13 @@ flowchart LR
     <li><strong>Generate</strong> an answer using only that prompt.</li>
     <li><strong>Evaluate</strong> whether the answer is supported by the evidence.</li>
     </ol>
-    <h3>Offline (ingest)</h3>
+    <h3 id="offline-ingest">Offline (ingest)</h3>
     <ol>
     <li>Collect documents (PDFs, HTML, tickets, markdown).</li>
     <li>Clean and split into <strong>chunks</strong> with overlap and metadata (source URL, updated date, access tags).</li>
     <li>Embed chunks and store them in a vector index (often plus a keyword index).</li>
     </ol>
-    <h3>Online (query)</h3>
+    <h3 id="online-query">Online (query)</h3>
     <ol>
     <li>Optionally rewrite the user question for search.</li>
     <li>Retrieve top-k chunks (dense, sparse, or hybrid).</li>
@@ -105,7 +105,7 @@ flowchart LR
     <li>Pack question + chunks into a prompt with clear labels and citation IDs.</li>
     <li>Generate; require citations or refusal when evidence is missing.</li>
     </ol>
-    <h3>Naive RAG vs advanced RAG</h3>
+    <h3 id="naive-rag-vs-advanced-rag">Naive RAG vs advanced RAG</h3>
     <table>
       <thead><tr>
         <th>Mode</th>
@@ -125,7 +125,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Retriever vs generator</h3>
+    <h3 id="retriever-vs-generator">Retriever vs generator</h3>
     <table>
       <thead><tr>
         <th>Role</th>
@@ -143,10 +143,10 @@ flowchart LR
       </tbody>
     </table>
     <p>The retriever decides what the model <strong>sees</strong>. The generator decides how that evidence is <strong>explained</strong>. If retrieval is weak, the answer will be weak too.</p>
-    <h3>Grounding</h3>
+    <h3 id="grounding">Grounding</h3>
     <p><strong>Grounding</strong> means tying the response to retrieved evidence instead of letting the model freewheel.</p>
     <p>Example: if the retrieved policy says &quot;leave requests must be filed 3 days in advance,&quot; the answer should repeat that rule—not invent a different one.</p>
-    <h3>Why not only fine-tune?</h3>
+    <h3 id="why-not-only-fine-tune">Why not only fine-tune?</h3>
     <p>Fine-tuning shapes style and behavior; it is a poor content management system. Policies change weekly; re-indexing beats re-training. Many production systems combine light fine-tuning with RAG for facts.</p>
     <h2 id="in-code">In code</h2>
     <p>A bare-metal RAG loop with toy retrieval and a prompt packer.</p>
@@ -192,19 +192,19 @@ hits = retrieve(&quot;How many casual leaves do I get?&quot;)
 print(pack_prompt(&quot;How many casual leaves do I get?&quot;, hits))</code></pre>
     </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
-    <h3>Retrieval failures</h3>
+    <h3 id="retrieval-failures">Retrieval failures</h3>
     <ul>
     <li><strong>Wrong chunk</strong> — Search matches related but incorrect text.</li>
     <li><strong>Incomplete retrieval</strong> — The answer needs facts from multiple docs, but only one comes back.</li>
     <li><strong>Stale knowledge base</strong> — Documents were not updated; outdated text is retrieved.</li>
     </ul>
-    <h3>Context failures</h3>
+    <h3 id="context-failures">Context failures</h3>
     <ul>
     <li><strong>Lost in the middle</strong> — LLMs may pay less attention to useful info in the middle of a long context.</li>
     <li><strong>Context overload</strong> — Too many chunks make it hard to focus on what matters.</li>
     <li><strong>Irrelevant context</strong> — Noisy chunks distract even when a good chunk is present.</li>
     </ul>
-    <h3>Generation failures</h3>
+    <h3 id="generation-failures">Generation failures</h3>
     <ul>
     <li><strong>Hallucination despite retrieval</strong> — The model still invents facts not in the retrieved text.</li>
     <li><strong>Knowledge conflict</strong> — Retrieved text says one thing; model memory pushes another.</li>
@@ -313,9 +313,9 @@ print(pack_prompt(&quot;How many casual leaves do I get?&quot;, hits))</code></p
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

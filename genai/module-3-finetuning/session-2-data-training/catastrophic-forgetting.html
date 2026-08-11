@@ -49,7 +49,7 @@
     <p>Always score a fixed general “canary” suite before and after every fine-tune — not only the target task.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why fine-tuning erases knowledge</h3>
+    <h3 id="why-fine-tuning-erases-knowledge">Why fine-tuning erases knowledge</h3>
     <table>
       <thead><tr>
         <th>Cause</th>
@@ -74,9 +74,9 @@
         </tr>
       </tbody>
     </table>
-    <h3>Measure before vs after</h3>
+    <h3 id="measure-before-vs-after">Measure before vs after</h3>
     <p>Imagine a 7B model fully fine-tuned for a few epochs on legal contracts: contract accuracy jumps, while general benchmarks drop. That pattern is the warning light. Keep one fixed general eval set and compare base vs fine-tune every time.</p>
-    <h3>Mitigation strategies</h3>
+    <h3 id="mitigation-strategies">Mitigation strategies</h3>
     <table>
       <thead><tr>
         <th>Strategy</th>
@@ -111,7 +111,7 @@
         </tr>
       </tbody>
     </table>
-    <h4>A bit more detail (still plain)</h4>
+    <h4 id="a-bit-more-detail-still-plain">A bit more detail (still plain)</h4>
     <ul>
     <li><strong>Rehearsal</strong> — Interleave domain data with diverse general examples (instructions, code, math, other languages — whatever you fear losing). Target learning may slow a little; that is the trade.</li>
     <li><strong>Regularize toward pretrained weights</strong> — Gently pull weights back toward the starting point. Too strong a pull underfits the new task; too weak and you still forget. Tune against canary scores.</li>
@@ -119,7 +119,7 @@
     <li><strong>Weight averaging</strong> — Mix “base” and “fine-tuned” with a blend factor; sweep a few blends and pick the best trade-off between task score and general score.</li>
     <li><strong>Freeze layers</strong> — Keep embeddings and early blocks fixed; open only the top blocks. Tuning roughly the top quarter to half of blocks often captures most task gains with less forgetting.</li>
     </ul>
-    <h3>Choosing a stack</h3>
+    <h3 id="choosing-a-stack">Choosing a stack</h3>
     <p>Start with conservative hyperparameters. Add rehearsal if you can. Use freezing when data or compute is tight. Reach for regularization or averaging when you must fully fine-tune and general skills are slipping.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
@@ -165,9 +165,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

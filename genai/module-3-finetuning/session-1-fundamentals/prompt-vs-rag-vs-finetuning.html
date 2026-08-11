@@ -77,7 +77,7 @@
     <p>If knowledge changes every week, start with RAG. If behavior must stay stable across many future prompts, consider fine-tuning. If a clear prompt already works, stay with prompting.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>A practical decision checklist</h3>
+    <h3 id="a-practical-decision-checklist">A practical decision checklist</h3>
     <ol>
     <li>Does the knowledge change often? → Prefer <strong>RAG</strong> first.</li>
     <li>Do you need a stable, reusable behavior (tone, schema, domain phrasing)? → <strong>Fine-tuning</strong> becomes attractive.</li>
@@ -85,14 +85,14 @@
     <li>Is this one task or many related tasks? Related tasks can share one multi-task fine-tune later.</li>
     <li>Is the base model already almost right? If yes, train less (freeze more / lighter methods).</li>
     </ol>
-    <h3>Split workflows are normal</h3>
+    <h3 id="split-workflows-are-normal">Split workflows are normal</h3>
     <p>One product can use <strong>both</strong>:</p>
     <ul>
     <li>Fresh policy facts → RAG (and cite the retrieved text)</li>
     <li>Permanent email tone → fine-tuning</li>
     </ul>
     <p>You do not have to force one tool for every workflow.</p>
-    <h3>Where knowledge should live</h3>
+    <h3 id="where-knowledge-should-live">Where knowledge should live</h3>
     <p>A useful framing is “fine-tuning or retrieval?”:</p>
     <ul>
     <li>Put <strong>changing facts</strong> in an external store and retrieve them.</li>
@@ -142,9 +142,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

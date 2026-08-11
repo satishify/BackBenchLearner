@@ -75,23 +75,23 @@
     <p>APE optimizes whatever you measure. If your score ignores safety and injection resistance, the search will happily discover prompts that score well and fail in production.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>APE-style instruction search</h3>
+    <h3 id="ape-style-instruction-search">APE-style instruction search</h3>
     <p><strong>What it is:</strong> Automatic Prompt Engineer (APE) is search-based — an LLM generates candidate instructions, scores them, and keeps the better ones.</p>
     <p><strong>Example:</strong> If the original prompt is &quot;Classify sentiment,&quot; APE may generate variants like &quot;Classify the review as Positive, Negative, or Neutral in one short label&quot; and test which works best.</p>
     <p><strong>Underlying concept:</strong> treat prompt writing like search over the instruction space, with the LLM acting as both prompt generator and candidate evaluator.</p>
-    <h3>ProTeGi-style gradient optimization</h3>
+    <h3 id="protegi-style-gradient-optimization">ProTeGi-style gradient optimization</h3>
     <p><strong>What it is:</strong> ProTeGi uses natural-language <strong>gradients</strong> — feedback describing what is wrong with the prompt — to iteratively revise the prompt.</p>
     <p><strong>Example:</strong> If a prompt causes short but unhelpful answers, the feedback may say &quot;add the missing constraint, ask for clarifying questions, and keep the tone polite,&quot; and the prompt is updated accordingly.</p>
     <p><strong>Underlying concept:</strong> imitate gradient descent in text form. The &quot;gradient&quot; is not a numeric derivative; it is a written critique that guides the next prompt version.</p>
-    <h3>Evolutionary prompt optimization</h3>
+    <h3 id="evolutionary-prompt-optimization">Evolutionary prompt optimization</h3>
     <p><strong>What it is:</strong> Keep a population of prompts, score them, mutate the winners, and replace weaker prompts with better variants.</p>
     <p><strong>Example:</strong> For summarization, one prompt emphasizes brevity, another emphasizes faithfulness, and a mutated child prompt may combine both strengths after evaluation.</p>
     <p><strong>Underlying concept:</strong> borrow natural selection — generate variation, evaluate fitness, keep winners, mutate into the next generation.</p>
-    <h3>DSPy</h3>
+    <h3 id="dspy">DSPy</h3>
     <p><strong>What it is:</strong> DSPy takes tasks, examples, and metrics, then automatically generates and optimizes prompts and examples for the job.</p>
     <p><strong>Example:</strong> Given a question-answering (QA) task and a metric for correctness, DSPy tries different instructions and few-shot examples, evaluates them, and keeps the setup that scores best.</p>
     <p><strong>Underlying concept:</strong> compile a task into an optimized prompt program using data and metrics, rather than treating prompt text as fixed and manual.</p>
-    <h3>Outer loop (all methods share this shape)</h3>
+    <h3 id="outer-loop-all-methods-share-this-shape">Outer loop (all methods share this shape)</h3>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
@@ -112,7 +112,7 @@ flowchart TB
     <li><strong>Select</strong> top-k; optionally mutate and repeat.</li>
     <li><strong>Confirm</strong> on holdout plus safety suite before shipping.</li>
     </ol>
-    <h3>Security posture</h3>
+    <h3 id="security-posture">Security posture</h3>
     <p>Search can amplify bad patterns:</p>
     <ul>
     <li>Candidates may instruct the model to &quot;be maximally helpful&quot; in ways that weaken refusal.</li>
@@ -228,9 +228,9 @@ print(&quot;train_score:&quot;, round(score(best, TRAIN, True), 3))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

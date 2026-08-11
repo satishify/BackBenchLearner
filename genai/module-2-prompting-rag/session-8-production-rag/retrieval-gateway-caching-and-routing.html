@@ -83,14 +83,14 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Auth before retrieval</h3>
+    <h3 id="auth-before-retrieval">Auth before retrieval</h3>
     <p>Order matters:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">authenticate → authorize (tenant, roles, doc ACL) → embed / cache / search → generate</code></pre>
     </div>
     <p><strong>Authorization (AuthZ)</strong> must happen <strong>before</strong> retrieval—not only after generation. Metadata filters in the vector DB are necessary; they are not a substitute for rejecting unauthenticated calls.</p>
-    <h3>Semantic cache</h3>
+    <h3 id="semantic-cache">Semantic cache</h3>
     <p>Embed the query; if <code>cosine(q, cached_q) &gt;= threshold</code> (same tenant, locale, surface), reuse the cached answer or chunks.</p>
     <table>
       <thead><tr>
@@ -109,7 +109,7 @@ flowchart TB
       </tbody>
     </table>
     <p>Tune for <strong>low false-hit rate</strong> first. Invalidate on corpus or policy change—not TTL alone.</p>
-    <h3>Query shaping (request shaping)</h3>
+    <h3 id="query-shaping-request-shaping">Query shaping (request shaping)</h3>
     <p>Before search:</p>
     <table>
       <thead><tr>
@@ -141,7 +141,7 @@ flowchart TB
       </tbody>
     </table>
     <p>Cap rewrite length; log both raw and shaped queries.</p>
-    <h3>Query routing</h3>
+    <h3 id="query-routing">Query routing</h3>
     <p>Not every query should hit the same dense search.</p>
     <table>
       <thead><tr>
@@ -178,7 +178,7 @@ flowchart TB
 elif embed_confidence OK:    route = embedding_route(query)
 else:                        route = llm_route(query)</code></pre>
     </div>
-    <h3>Gateway responsibilities</h3>
+    <h3 id="gateway-responsibilities">Gateway responsibilities</h3>
     <table>
       <thead><tr>
         <th>Responsibility</th>
@@ -276,9 +276,9 @@ def gateway(p, raw_query, embed_fn, search_fn, generate_fn):
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

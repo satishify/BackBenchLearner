@@ -82,7 +82,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Episodic memory (short-term / working)</h3>
+    <h3 id="episodic-memory-short-term-working">Episodic memory (short-term / working)</h3>
     <p>Holds what the loop needs right now:</p>
     <ul>
     <li>Conversation turns (often summarized as they age).</li>
@@ -91,7 +91,7 @@ flowchart LR
     <li>Scratch variables (&quot;selected_order_id&quot;).</li>
     </ul>
     <p>Stored in the <strong>thread state</strong>—in-process dict, Redis with session TTL, or the model context window itself. Always assume the window is smaller than your ambition—summarize and drop.</p>
-    <h3>Semantic memory (long-term)</h3>
+    <h3 id="semantic-memory-long-term">Semantic memory (long-term)</h3>
     <p>Holds durable facts and preferences:</p>
     <ul>
     <li>User or org settings.</li>
@@ -100,7 +100,7 @@ flowchart LR
     <li>Sometimes embeddings of past docs for retrieval (RAG-as-memory).</li>
     </ul>
     <p>Stored in a <strong>vector database (vector DB)</strong> or knowledge base (KB). Prefer structured fields over free-text blobs when you can query them reliably.</p>
-    <h3>Memory tools (example pattern)</h3>
+    <h3 id="memory-tools-example-pattern">Memory tools (example pattern)</h3>
     <p>Before planning, search semantic memory:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -111,7 +111,7 @@ flowchart LR
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">Save_To_Knowledge_Base(fact: str)</code></pre>
     </div>
-    <h3>Write policies</h3>
+    <h3 id="write-policies">Write policies</h3>
     <ul>
     <li><strong>Salience:</strong> store preferences and durable constraints; do not store every joke.</li>
     <li><strong>Consent &amp; PII (personally identifiable information):</strong> long-term personal data needs retention rules and deletion paths.</li>
@@ -119,12 +119,12 @@ flowchart LR
     <li><strong>Conflict:</strong> new explicit user instruction overrides old memory.</li>
     <li><strong>Scope:</strong> team memory vs user memory vs run memory—do not mix casually.</li>
     </ul>
-    <h3>Two cautionary notes</h3>
+    <h3 id="two-cautionary-notes">Two cautionary notes</h3>
     <ol>
     <li><strong>Contradictory memory</strong> can make the agent trust stale facts as if they are still current. Use timestamps and memory updates.</li>
     <li><strong>Too much memory</strong> can dilute attention. Good retrieval is <strong>selective</strong> retrieval—not &quot;return everything.&quot;</li>
     </ol>
-    <h3>Read policies</h3>
+    <h3 id="read-policies">Read policies</h3>
     <p>Retrieve top-k relevant memories, not the whole store. Inject them in a labeled section (&quot;MEMORY, may be outdated&quot;) so the model does not treat them as system law. For safety-critical settings (refund limits), prefer application config over model-readable memory.</p>
     <h2 id="in-code">In code</h2>
     <p>Two stores with TTL-style expiration for long-term notes.</p>
@@ -229,9 +229,9 @@ print(mem.prompt_block())</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

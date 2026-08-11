@@ -104,17 +104,98 @@
 
   var sectionIndex = [];
 
+  var BOILERPLATE_HEADINGS = {
+    intuition: true,
+    'how it works': true,
+    'what goes wrong': true,
+    'one-line summary': true,
+    'key terms': true
+  };
+
+  function normalizeHeadingLabel(text) {
+    return String(text || '')
+      .replace(/^\d+\.\s*/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function isBoilerplateHeading(text) {
+    return Boolean(BOILERPLATE_HEADINGS[normalizeHeadingLabel(text).toLowerCase()]);
+  }
+
+  function slugifyHeading(text) {
+    return normalizeHeadingLabel(text)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 64) || 'section';
+  }
+
+  function uniqueHeadingId(base) {
+    var id = base;
+    var n = 2;
+    while (doc.getElementById(id)) {
+      id = base + '-' + n;
+      n += 1;
+    }
+    return id;
+  }
+
+  /**
+   * Turn "How it works" bold lead-ins like <p><strong>Vertical.</strong> …</p>
+   * into real <h3> subtopics so the TOC can list lesson-specific names
+   * (Algomaster-style) even when authors used bold leads instead of ### headings.
+   */
+  function promoteBoldLeadSubtopics() {
+    var root = doc.querySelector('.wrapper') || doc.body;
+    var paragraphs = root.querySelectorAll('p');
+    for (var i = 0; i < paragraphs.length; i += 1) {
+      var p = paragraphs[i];
+      if (p.closest('aside, .callout, li, td, th, .lesson-rail, .on-this-page')) continue;
+      var strong = p.firstElementChild;
+      if (!strong || strong.tagName !== 'STRONG') continue;
+      if (p.firstChild !== strong) continue;
+      var raw = (strong.textContent || '').trim();
+      if (!/^[A-Z0-9].{0,55}\.$/.test(raw)) continue;
+      var label = raw.replace(/\.$/, '').trim();
+      if (!label || isBoilerplateHeading(label)) continue;
+      var rest = (p.textContent || '').slice(raw.length).trim();
+      if (rest.length < 12) continue;
+
+      var h3 = doc.createElement('h3');
+      h3.id = uniqueHeadingId(slugifyHeading(label));
+      h3.textContent = label;
+      p.parentNode.insertBefore(h3, p);
+      strong.parentNode.removeChild(strong);
+      p.innerHTML = p.innerHTML.replace(/^[\s.]*/, '');
+      if (!(p.textContent || '').trim()) p.parentNode.removeChild(p);
+    }
+  }
+
   function collectSectionHeadings() {
-    // Prefer lesson body headings. Do not require them to stay inside .wrapper —
-    // broken markup (e.g. mermaid) can move nodes during HTML repair.
-    var nodes = doc.querySelectorAll('h2');
-    var out = [];
+    promoteBoldLeadSubtopics();
+
+    // Lesson-specific subtopics: real h3/h4 + non-template h2 (e.g. "In code").
+    // Skip the shared lesson scaffold headings so every page is not the same TOC.
+    var nodes = doc.querySelectorAll('h2, h3, h4');
+    var topical = [];
+    var fallback = [];
     for (var i = 0; i < nodes.length; i += 1) {
       var heading = nodes[i];
-      if (heading.closest('.lesson-rail, .on-this-page, .read-progress')) continue;
-      out.push(heading);
+      if (heading.closest('.lesson-rail, .on-this-page, .read-progress, nav')) continue;
+      var label = normalizeHeadingLabel(heading.textContent);
+      if (!label) continue;
+      fallback.push(heading);
+      var tag = heading.tagName.toLowerCase();
+      if (tag === 'h2' && isBoilerplateHeading(label)) continue;
+      topical.push(heading);
     }
-    return out;
+    // Never fall back to the shared scaffold headings — that made every
+    // lesson show the same Intuition / How it works / … list.
+    if (topical.length) return topical;
+    return fallback.filter(function (heading) {
+      return !isBoilerplateHeading(heading.textContent);
+    });
   }
 
   function ensureProgressCard() {
@@ -140,7 +221,7 @@
     return card;
   }
 
-  /** Number h2 sections and build the full "On this page" list. */
+  /** Build the "On this page" list from this lesson's real subtopics. */
   function initSectionNav() {
     var card = ensureProgressCard();
     if (!card) return;
@@ -171,18 +252,8 @@
     var html = '<div class="on-this-page-label">On this page</div><ol class="on-this-page-list" id="otp-list">';
     headings.forEach(function (heading, index) {
       var n = index + 1;
-      if (!heading.id) heading.id = 'section-' + n;
-      var label = heading.textContent.replace(/^\d+\.\s*/, '').trim() || 'Section ' + n;
-      if (!heading.querySelector('.section-num')) {
-        heading.textContent = '';
-        var num = doc.createElement('span');
-        num.className = 'section-num';
-        num.textContent = n + '.';
-        heading.appendChild(num);
-        heading.appendChild(doc.createTextNode(' ' + label));
-      } else {
-        label = heading.textContent.replace(/^\d+\.\s*/, '').trim() || label;
-      }
+      var label = normalizeHeadingLabel(heading.textContent) || 'Section ' + n;
+      if (!heading.id) heading.id = uniqueHeadingId(slugifyHeading(label));
       sectionIndex.push({ id: heading.id, n: n, title: label });
       html +=
         '<li><a href="#' +

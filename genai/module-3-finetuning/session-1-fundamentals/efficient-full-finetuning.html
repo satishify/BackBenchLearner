@@ -48,7 +48,7 @@
     <p>If the base model is already close and your dataset is small, freeze most layers and adapt cautiously.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Freeze versus tune</h3>
+    <h3 id="freeze-versus-tune">Freeze versus tune</h3>
     <table>
       <thead><tr>
         <th>Situation</th>
@@ -69,7 +69,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Gradual unfreezing (layer-wise idea)</h3>
+    <h3 id="gradual-unfreezing-layer-wise-idea">Gradual unfreezing (layer-wise idea)</h3>
     <p>Start small, then open more of the network:</p>
     <ol>
     <li>Freeze almost everything; train only the task head (or top piece)</li>
@@ -77,11 +77,11 @@
     <li>Optionally unfreeze the next block, and so on</li>
     </ol>
     <p>This avoids shocking the entire pretrained network on day one.</p>
-    <h3>Block-wise fine-tuning</h3>
+    <h3 id="block-wise-fine-tuning">Block-wise fine-tuning</h3>
     <p>Instead of one layer at a time, open a <strong>block</strong> (a group of layers), train, then open the next block. Same spirit as gradual unfreezing; coarser steps.</p>
-    <h3>Progressive / layer-at-a-time variants</h3>
+    <h3 id="progressive-layer-at-a-time-variants">Progressive / layer-at-a-time variants</h3>
     <p>Some recipes fine-tune all layers eventually, but <strong>not all at once</strong> — for example, train one layer (or block) for a while, then move focus. The shared theme: control <strong>how much</strong> of the network is allowed to learn at each phase.</p>
-    <h3>Tiny code sketch (strategy, not library magic)</h3>
+    <h3 id="tiny-code-sketch-strategy-not-library-magic">Tiny code sketch (strategy, not library magic)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python"># 1) Freeze the pretrained body
@@ -141,9 +141,9 @@ for param in model.base_model.layers[-1].parameters():
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

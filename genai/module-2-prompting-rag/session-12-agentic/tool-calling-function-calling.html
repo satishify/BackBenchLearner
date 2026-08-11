@@ -88,7 +88,7 @@ sequenceDiagram
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Anatomy of one turn</h3>
+    <h3 id="anatomy-of-one-turn">Anatomy of one turn</h3>
     <p>The agent loop inside each tool call:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -106,7 +106,7 @@ sequenceDiagram
     <li><strong>What arguments</strong> it needs.</li>
     <li><strong>How to read</strong> the returned data.</li>
     </ul>
-    <h3>The contract</h3>
+    <h3 id="the-contract">The contract</h3>
     <ol>
     <li>You register tools with names, descriptions, and JSON schemas for arguments.</li>
     <li>The model chooses zero or more tools (or a plain answer).</li>
@@ -114,7 +114,7 @@ sequenceDiagram
     <li>The host executes allowed tools with real credentials.</li>
     <li>Results (truncated) return as tool messages; the model continues.</li>
     </ol>
-    <h3>Design tips for tools</h3>
+    <h3 id="design-tips-for-tools">Design tips for tools</h3>
     <ul>
     <li><strong>Narrow verbs:</strong> <code>get_order(order_id)</code> not <code>run_sql(query)</code>.</li>
     <li><strong>Descriptions matter:</strong> write crisp when-to-use / when-not-to-use text.</li>
@@ -123,7 +123,7 @@ sequenceDiagram
     <li><strong>Errors as data:</strong> structured <code>{ok: false, error: &quot;...&quot;}</code> so the model can recover.</li>
     <li><strong>Idempotency:</strong> pass keys for side-effecting tools.</li>
     </ul>
-    <h3>Safety checklist</h3>
+    <h3 id="safety-checklist">Safety checklist</h3>
     <ul>
     <li>Allowlist tools per agent role.</li>
     <li>Validate every argument server-side (never trust the model).</li>
@@ -247,9 +247,9 @@ print(handle_model_tool_payload(
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

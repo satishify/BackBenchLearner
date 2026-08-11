@@ -53,14 +53,14 @@
     <p>DPO: preference data in → aligned policy out, with fewer moving parts than classic RLHF.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Workflow</h3>
+    <h3 id="workflow">Workflow</h3>
     <ol>
     <li>Start with preference data: prompt + chosen + rejected</li>
     <li>Keep a reference model nearby</li>
     <li>Train the policy so the chosen answer becomes more likely than the rejected one <strong>relative to the reference</strong></li>
     <li>That relative comparison is what keeps training grounded</li>
     </ol>
-    <h3>Why people like it</h3>
+    <h3 id="why-people-like-it">Why people like it</h3>
     <table>
       <thead><tr>
         <th>Benefit</th>
@@ -81,7 +81,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Tiny pseudocode (concept only)</h3>
+    <h3 id="tiny-pseudocode-concept-only">Tiny pseudocode (concept only)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">for prompt, chosen, rejected in preference_batch:
@@ -91,7 +91,7 @@
     optimizer.zero_grad()</code></pre>
     </div>
     <p>Read this as the shape of the idea: compare chosen vs rejected under policy and reference, then update.</p>
-    <h3>Quick revision rules for this whole lesson group</h3>
+    <h3 id="quick-revision-rules-for-this-whole-lesson-group">Quick revision rules for this whole lesson group</h3>
     <ol>
     <li>Alignment makes the model answer the way humans prefer — not only how next-token prediction would go.</li>
     <li><strong>RLHF</strong> = preferences → reward model → policy optimization.</li>
@@ -142,9 +142,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

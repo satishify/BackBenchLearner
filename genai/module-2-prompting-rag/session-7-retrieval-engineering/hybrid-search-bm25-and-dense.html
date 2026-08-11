@@ -69,22 +69,22 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Sparse retrieval (keyword)</h3>
+    <h3 id="sparse-retrieval-keyword">Sparse retrieval (keyword)</h3>
     <p><strong>Plain English:</strong> match the exact words or terms that appear in the query and the document. Fast and strong when wording matters—names, IDs, codes, rare terms.</p>
-    <h3>TF-IDF (term frequency–inverse document frequency)</h3>
+    <h3 id="tf-idf-term-frequencyinverse-document-frequency">TF-IDF (term frequency–inverse document frequency)</h3>
     <p>Scores a term higher when it is <strong>common in one document</strong> but <strong>rare across the whole collection</strong>.</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">tf-idf(t, d) = tf(t, d) × log(N / df(t))</code></pre>
     </div>
     <p><strong>Plain English:</strong> a word matters if it appears often in one doc and not everywhere else.</p>
-    <h3>BM25</h3>
+    <h3 id="bm25">BM25</h3>
     <p><strong>BM25</strong> improves on TF-IDF by considering term frequency <strong>and</strong> document length.</p>
     <p><strong>Plain English:</strong> a term gets more credit if it appears a reasonable number of times, but very long documents are not unfairly rewarded.</p>
     <p>Example: two documents mention the query terms—BM25 prefers the one where those terms are concentrated and informative, not repeated endlessly in a huge article.</p>
-    <h3>Dense retrieval</h3>
+    <h3 id="dense-retrieval">Dense retrieval</h3>
     <p>Embed query and chunks; rank by cosine similarity or inner product. Captures synonyms and paraphrase; weaker on out-of-vocabulary codes the embedder never saw as atomic.</p>
-    <h3>Comparison table</h3>
+    <h3 id="comparison-table">Comparison table</h3>
     <table>
       <thead><tr>
         <th>Aspect</th>
@@ -109,7 +109,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Fusion methods</h3>
+    <h3 id="fusion-methods">Fusion methods</h3>
     <table>
       <thead><tr>
         <th>Method</th>
@@ -236,9 +236,9 @@ print(&quot;top:&quot;, docs[merged[0][0]])</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

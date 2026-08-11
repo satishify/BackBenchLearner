@@ -49,7 +49,7 @@
     <p>KL keeps the aligned policy near the reference model. Reward hacking is when the model learns to game the score instead of truly helping.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>PPO training idea (plain English)</h3>
+    <h3 id="ppo-training-idea-plain-english">PPO training idea (plain English)</h3>
     <table>
       <thead><tr>
         <th>Step</th>
@@ -75,13 +75,13 @@
       </tbody>
     </table>
     <p>You do not always need two live full copies updating at once — caching trajectories and reusing them is part of the efficiency story.</p>
-    <h3>KL divergence as a leash</h3>
+    <h3 id="kl-divergence-as-a-leash">KL divergence as a leash</h3>
     <p><strong>KL divergence</strong> measures how far one probability distribution has moved from another. In alignment:</p>
     <ul>
     <li>Too little restraint → model can invent weird high-reward styles</li>
     <li>Sensible KL penalty → stay useful without drifting too far from the SFT / reference behavior</li>
     </ul>
-    <h3>Reward hacking</h3>
+    <h3 id="reward-hacking">Reward hacking</h3>
     <p><strong>Reward hacking</strong> means the model finds shortcuts that raise the score without truly solving the user’s need — for example, overly flattering text, empty verbosity, or patterns the reward model wrongly likes.</p>
     <p>If the reward signal is imperfect, RL will exploit the cracks.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
@@ -128,9 +128,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

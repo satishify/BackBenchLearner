@@ -47,7 +47,7 @@
     <p>An LLM is a probability machine over text sequences. Smooth writing means the model learned language statistics well — not that it checked a verified fact table.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Tokens (high level)</h3>
+    <h3 id="tokens-high-level">Tokens (high level)</h3>
     <p>Before the model reads your text, a <strong>tokenizer</strong> splits it into <strong>tokens</strong> — vocabulary pieces the model actually processes.</p>
     <table>
       <thead><tr>
@@ -74,7 +74,7 @@
       </tbody>
     </table>
     <p>Exact tokenization depends on the model. For rough planning in English, think ~0.75 words per token — useful for estimating context limits, not for billing.</p>
-    <h3>Next-token prediction</h3>
+    <h3 id="next-token-prediction">Next-token prediction</h3>
     <p>During <strong>pretraining</strong> (learning from massive text), the model learns to assign high probability to the actual next token. At <strong>inference</strong> (when you call the model), you pick from that probability distribution — either the top choice (greedy) or a random sample.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -86,17 +86,17 @@ flowchart LR
     C --> M
       </div>
     </div>
-    <h3>Context window</h3>
+    <h3 id="context-window">Context window</h3>
     <p>The <strong>context window</strong> is the maximum number of tokens the model can consider at once (prompt + generated text, depending on the API). If you overflow it, earlier tokens fall out of view — the model literally cannot &quot;see&quot; them.</p>
     <p>Context is also where instructions live. System prompts, few-shot examples, retrieved snippets, and the user&#x27;s question all compete for the same budget. A 128k window sounds huge until you paste three PDFs and wonder why the model ignored the policy on page one.</p>
-    <h3>Decoding choices (preview)</h3>
+    <h3 id="decoding-choices-preview">Decoding choices (preview)</h3>
     <p>At each step the model emits a full distribution over the vocabulary. You then choose:</p>
     <ul>
     <li><strong>Greedy decoding</strong> — always take the highest-probability token (stable, sometimes dull or repetitive).</li>
     <li><strong>Sampling</strong> — draw randomly according to probabilities (more variety, more risk).</li>
     </ul>
     <p>Later lessons cover <strong>temperature</strong>, <strong>top-p</strong>, and <strong>top-k</strong> — knobs that reshape that distribution before you choose. For now, remember: &quot;the model said X&quot; always means &quot;given this context and this decoding policy, X was produced.&quot;</p>
-    <h3>Why they feel smart but are not databases</h3>
+    <h3 id="why-they-feel-smart-but-are-not-databases">Why they feel smart but are not databases</h3>
     <p>LLMs compress statistical regularities of training text into <strong>weights</strong> (learned numbers inside the network). That yields:</p>
     <ul>
     <li>Strong pattern completion and style matching.</li>
@@ -200,9 +200,9 @@ print(generate())
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

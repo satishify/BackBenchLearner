@@ -255,11 +255,27 @@
           replaceSections: true
         });
       } else if (data.type === 'bbl-lesson-progress') {
+        var incoming = data.sections || [];
+        var listEl = document.getElementById('shell-otp-list');
+        var currentIds = [];
+        if (listEl) {
+          listEl.querySelectorAll('a[data-section-id]').forEach(function (a) {
+            currentIds.push(a.getAttribute('data-section-id'));
+          });
+        }
+        var nextIds = incoming.map(function (section) {
+          return section.id;
+        });
+        var sectionsChanged =
+          nextIds.length !== currentIds.length ||
+          nextIds.some(function (id, index) {
+            return id !== currentIds[index];
+          });
         renderShellLessonRail({
-          sections: data.sections,
+          sections: incoming,
           progress: data.progress,
           activeId: data.activeId,
-          replaceSections: false
+          replaceSections: sectionsChanged
         });
       }
     });
@@ -1028,6 +1044,7 @@
         showLessonStage(false);
         return;
       }
+      clearShellLessonRail();
       frame.src = lessonUrl(parsed.topicId, lesson);
       showLessonStage(true);
       welcome.style.display = 'none';

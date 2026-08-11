@@ -61,7 +61,7 @@
     <p>IVF answers &quot;where should I look?&quot; PQ answers &quot;how little can I store?&quot; Tune both against a flat recall baseline, not blog defaults.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>IVF (inverted file index)</h3>
+    <h3 id="ivf-inverted-file-index">IVF (inverted file index)</h3>
     <ol>
     <li>Run <strong>k-means</strong> on vectors to learn <strong>nlist</strong> centroids (cluster centers). Typical start: <code>nlist ~= sqrt(N)</code>—for N = 1,000,000, about 1000 lists.</li>
     <li>Assign every vector to its nearest centroid. Each centroid owns an <strong>inverted list</strong>.</li>
@@ -94,11 +94,11 @@
         </tr>
       </tbody>
     </table>
-    <h3>PQ (product quantization)</h3>
+    <h3 id="pq-product-quantization">PQ (product quantization)</h3>
     <p>Split each vector into sub-vectors; replace each piece with a <strong>centroid ID</strong> from a small codebook.</p>
     <p><strong>Memory example:</strong> a 768-dim float32 vector = 768 × 4 = <strong>3072 bytes</strong>. An <strong>8-byte</strong> PQ code is about <strong>384× smaller</strong> (3072 ÷ 8).</p>
     <p><strong>ADC:</strong> the query stays full precision; stored vectors are compressed. Expensive work is done once per query, not once per database vector.</p>
-    <h3>IVF + PQ together (residuals)</h3>
+    <h3 id="ivf-pq-together-residuals">IVF + PQ together (residuals)</h3>
     <p>Production stacks usually quantize <strong>residuals</strong>, not raw vectors:</p>
     <ol>
     <li>Train IVF centroids with k-means.</li>
@@ -180,9 +180,9 @@ print(&quot;float32 bytes&quot;, D * 4, &quot;PQ bytes&quot;, 8,
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

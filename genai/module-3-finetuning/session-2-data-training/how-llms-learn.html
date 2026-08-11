@@ -52,9 +52,9 @@
     <p>One training step = one mini-batch → compute loss → update weights. An epoch = one full pass through the training set.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Text becomes numbers (tokenization)</h3>
+    <h3 id="text-becomes-numbers-tokenization">Text becomes numbers (tokenization)</h3>
     <p>The model never reads letters the way we do. A tokenizer turns text into a list of token IDs. Training packs those IDs into fixed-length windows (the context length) so the GPU can process many examples efficiently.</p>
-    <h3>Mini-batches (the sweet spot)</h3>
+    <h3 id="mini-batches-the-sweet-spot">Mini-batches (the sweet spot)</h3>
     <table>
       <thead><tr>
         <th>Approach</th>
@@ -79,16 +79,16 @@
         </tr>
       </tbody>
     </table>
-    <h3>Predict the next token everywhere</h3>
+    <h3 id="predict-the-next-token-everywhere">Predict the next token everywhere</h3>
     <p>During training, the model predicts the next token at <strong>every</strong> position in the window, not only once at the end. That gives many teaching signals from each sequence.</p>
-    <h3>From raw scores to “how wrong am I?”</h3>
+    <h3 id="from-raw-scores-to-how-wrong-am-i">From raw scores to “how wrong am I?”</h3>
     <ol>
     <li>The model outputs raw scores (logits).</li>
     <li>Softmax turns those scores into probabilities that sum to 1.</li>
     <li>Cross-entropy asks: “How much probability did you put on the correct next token?” Averaging that over the batch gives one loss number.</li>
     </ol>
     <p>Lower loss means the model is assigning higher probability to the real text.</p>
-    <h3>Backpropagation and the optimizer step</h3>
+    <h3 id="backpropagation-and-the-optimizer-step">Backpropagation and the optimizer step</h3>
     <p>Backpropagation figures out, for each trainable weight, which way to push it to reduce the loss. Then the optimizer takes a step:</p>
     <p><code>new_weights = old_weights - learning_rate * gradient</code></p>
     <ul>
@@ -96,7 +96,7 @@
     <li>In practice people use adaptive optimizers like <strong>Adam</strong> (not plain old SGD) for LLM fine-tuning.</li>
     <li>Then load the next mini-batch and repeat.</li>
     </ul>
-    <h3>Steps, epochs, and when to stop</h3>
+    <h3 id="steps-epochs-and-when-to-stop">Steps, epochs, and when to stop</h3>
     <table>
       <thead><tr>
         <th>Term</th>
@@ -165,9 +165,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

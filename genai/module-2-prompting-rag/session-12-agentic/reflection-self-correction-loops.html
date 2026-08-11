@@ -85,7 +85,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>What to check</h3>
+    <h3 id="what-to-check">What to check</h3>
     <ul>
     <li><strong>Factual consistency</strong> with tool results or retrieved docs.</li>
     <li><strong>Format compliance</strong> (JSON schema, required sections).</li>
@@ -94,7 +94,7 @@ flowchart LR
     <li><strong>Tool plan sanity</strong> (no missing dependency, no forbidden tool).</li>
     </ul>
     <p>Prefer programmatic checkers when possible. Use an LLM-as-judge for semantic properties, and calibrate it.</p>
-    <h3>Loop designs</h3>
+    <h3 id="loop-designs">Loop designs</h3>
     <table>
       <thead><tr>
         <th>Design</th>
@@ -129,9 +129,9 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Budgets</h3>
+    <h3 id="budgets">Budgets</h3>
     <p>Cap revisions (e.g., 2). Cap extra tokens. Cap wall-clock. If still failing, escalate to a human or return a partial with an explicit uncertainty note—do not silently loop.</p>
-    <h3>When reflection helps most</h3>
+    <h3 id="when-reflection-helps-most">When reflection helps most</h3>
     <ul>
     <li>Structured outputs that must parse.</li>
     <li>Grounded answers that must cite sources.</li>
@@ -139,7 +139,7 @@ flowchart LR
     <li>Tone-sensitive external messages.</li>
     </ul>
     <p>Skip heavy reflection for low-stakes chitchat; the latency is pure tax.</p>
-    <h3>Hierarchical ReAct at enterprise scale</h3>
+    <h3 id="hierarchical-react-at-enterprise-scale">Hierarchical ReAct at enterprise scale</h3>
     <p>The <strong>triage agent</strong> becomes a meta-planner. Specialist agents (infrastructure, codebase, policy) become its tools. The triage agent reasons at the strategy level and delegates the details—it does not call every API itself.</p>
     <h2 id="in-code">In code</h2>
     <p>Rule checks plus a single revision pass.</p>
@@ -238,9 +238,9 @@ print(reflect_loop(&quot;How long do I have to request a refund?&quot;))</code><
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

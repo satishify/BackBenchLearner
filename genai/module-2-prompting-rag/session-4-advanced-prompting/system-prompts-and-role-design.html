@@ -52,7 +52,7 @@ flowchart TB
   M --> R[Response under policy]
       </div>
     </div>
-    <h3>Meta prompting (plan before you answer)</h3>
+    <h3 id="meta-prompting-plan-before-you-answer">Meta prompting (plan before you answer)</h3>
     <p><strong>Meta prompting</strong> asks the model to think about the best strategy or structure for solving the task <em>before</em> answering it.</p>
     <table>
       <thead><tr>
@@ -80,7 +80,7 @@ flowchart TB
     <p>Put stable policy in the system role. Put task-specific data in the user role. Mixing them makes updates painful and invites users (or retrieved docs) to contradict your rules.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>What belongs in the system prompt</h3>
+    <h3 id="what-belongs-in-the-system-prompt">What belongs in the system prompt</h3>
     <ul>
     <li>Product identity and audience (&quot;BackbenchLearner tutor for backend interviews&quot;).</li>
     <li>Hard constraints (&quot;never invent library APIs; say when unsure&quot;).</li>
@@ -88,9 +88,9 @@ flowchart TB
     <li>Safety and privacy (&quot;do not request passwords; refuse illegal assistance&quot;).</li>
     <li>Default output style (markdown sections, citation format).</li>
     </ul>
-    <h3>What belongs in the user message</h3>
+    <h3 id="what-belongs-in-the-user-message">What belongs in the user message</h3>
     <p>The current question, uploaded text, and ephemeral context. Prefer injecting retrieval-augmented generation (RAG) snippets into a clearly labeled user or tool section, not into the system prompt, so documents cannot quietly rewrite the constitution.</p>
-    <h3>Role vs persona</h3>
+    <h3 id="role-vs-persona">Role vs persona</h3>
     <table>
       <thead><tr>
         <th>Concept</th>
@@ -108,10 +108,10 @@ flowchart TB
       </tbody>
     </table>
     <p>Prefer role plus thin persona over theatrical characters that fight your safety rules.</p>
-    <h3>Directional stimulus prompting (light steering)</h3>
+    <h3 id="directional-stimulus-prompting-light-steering">Directional stimulus prompting (light steering)</h3>
     <p><strong>Directional stimulus prompting</strong> adds hints or keywords that steer the model toward important parts of the answer — especially useful for summarization.</p>
     <p>Example: for a news article, include keywords such as names, events, and outcomes to cover in the summary. It is like highlighting key lines in a textbook before asking for a summary.</p>
-    <h3>Multi-agent roles</h3>
+    <h3 id="multi-agent-roles">Multi-agent roles</h3>
     <p>In agent systems, each specialist gets a narrow system prompt (researcher, critic, writer). Narrow roles reduce cross-talk and make failures easier to trace.</p>
     <h2 id="in-code">In code</h2>
     <p>Assemble system text from versioned fragments; keep user content separate.</p>
@@ -197,9 +197,9 @@ print(msgs[0][&quot;role&quot;], &quot;chars=&quot;, len(sys_text))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

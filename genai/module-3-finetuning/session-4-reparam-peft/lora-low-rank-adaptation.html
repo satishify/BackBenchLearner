@@ -51,7 +51,7 @@
     <p>LoRA = frozen backbone + tiny low-rank update. Higher rank = more flexibility and more parameters.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Symbols in plain English</h3>
+    <h3 id="symbols-in-plain-english">Symbols in plain English</h3>
     <table>
       <thead><tr>
         <th>Symbol</th>
@@ -84,7 +84,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Size of a LoRA adapter</h3>
+    <h3 id="size-of-a-lora-adapter">Size of a LoRA adapter</h3>
     <p>For a square <strong>d × d</strong> weight:</p>
     <table>
       <thead><tr>
@@ -107,13 +107,13 @@
       </tbody>
     </table>
     <p>That example is roughly <strong>256× smaller</strong> than training the full 4096×4096 matrix. That is why LoRA is attractive for task-specific or client-specific adapters.</p>
-    <h3>Rank and scaling choices</h3>
+    <h3 id="rank-and-scaling-choices">Rank and scaling choices</h3>
     <ul>
     <li><strong>Higher rank</strong> → more flexibility, more trainable parameters</li>
     <li><strong>Lower rank</strong> → cheaper, but may underfit a hard adaptation</li>
     <li><strong>α / r scaling</strong> → keeps update magnitude better behaved when rank changes</li>
     </ul>
-    <h3>LoRA as a generalization of full fine-tuning</h3>
+    <h3 id="lora-as-a-generalization-of-full-fine-tuning">LoRA as a generalization of full fine-tuning</h3>
     <p>If the rank is large enough, a low-rank update can approximate a dense update. In that sense, LoRA is a flexible middle ground: small rank for cheap PEFT, larger rank when you need more capacity — without opening every weight by default.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
@@ -159,9 +159,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

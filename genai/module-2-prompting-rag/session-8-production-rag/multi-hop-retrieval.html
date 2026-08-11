@@ -77,14 +77,14 @@ flowchart TD
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why single-shot RAG breaks</h3>
+    <h3 id="why-single-shot-rag-breaks">Why single-shot RAG breaks</h3>
     <p>Two bad assumptions:</p>
     <ol>
     <li>Perfect retrieval means one search is enough.</li>
     <li>Retrieved chunks already contain the final answer—not just a clue.</li>
     </ol>
     <p><strong>Example task:</strong> find the error in the payment container, check if it relates to yesterday&#x27;s auth commit, draft a Slack update for QA. One embedding pass gets confused; the system needs to <strong>search, inspect, decide what is missing, search again, then generate</strong>.</p>
-    <h3>Multi-hop patterns</h3>
+    <h3 id="multi-hop-patterns">Multi-hop patterns</h3>
     <table>
       <thead><tr>
         <th>Pattern</th>
@@ -105,7 +105,7 @@ flowchart TD
         </tr>
       </tbody>
     </table>
-    <h3>Agentic loop patterns</h3>
+    <h3 id="agentic-loop-patterns">Agentic loop patterns</h3>
     <table>
       <thead><tr>
         <th>Pattern</th>
@@ -126,7 +126,7 @@ flowchart TD
         </tr>
       </tbody>
     </table>
-    <h3>Budgets and memory</h3>
+    <h3 id="budgets-and-memory">Budgets and memory</h3>
     <ul>
     <li>Cap <strong>hops</strong> (e.g. 3), tokens, and wall time.</li>
     <li>Persist intermediate evidence with citations.</li>
@@ -207,9 +207,9 @@ print(&quot;hop2:&quot;, hop2)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

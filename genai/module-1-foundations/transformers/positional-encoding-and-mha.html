@@ -70,7 +70,7 @@
     <p>Attention moves information <strong>between</strong> tokens. The feed-forward network (FFN) processes information <strong>within</strong> a token. Residual connections and layer normalization (LN) keep both stable. A full encoder block = MHA + FFN + residual + LN — not attention alone.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Positional encoding</h3>
+    <h3 id="positional-encoding">Positional encoding</h3>
     <p>The classic Transformer adds a position vector to each token embedding:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -79,7 +79,7 @@
     <p><strong>Sinusoidal encodings</strong> use geometric wavelengths across dimensions (even dims sine, odd dims cosine). Different frequencies let the model infer relative offsets: the difference between positions <code>pos</code> and <code>pos+k</code> has a structured form in that basis.</p>
     <p><strong>Learned embeddings</strong> store a trainable vector per index <code>0..max_len-1</code>. Simple, but weak when you need to handle sequences longer than training.</p>
     <p><strong>Modern variants</strong> (RoPE, ALiBi, relative position biases) encode distance rather than absolute index. The product intuition stays the same: inject order because attention alone does not know left from right.</p>
-    <h3>Multi-head attention (MHA)</h3>
+    <h3 id="multi-head-attention-mha">Multi-head attention (MHA)</h3>
     <p>Split into <code>h</code> heads with smaller <code>d_k = d_model / h</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -107,7 +107,7 @@ MultiHead(X) = Concat(head_1, ..., head_h) * W_O</code></pre>
         </tr>
       </tbody>
     </table>
-    <h3>The complete encoder block pipeline</h3>
+    <h3 id="the-complete-encoder-block-pipeline">The complete encoder block pipeline</h3>
     <p>Inside each of the 6 stacked encoder blocks:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -229,9 +229,9 @@ print(&quot;head1 row0&quot;, np.round(weight_rows[1], 3))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

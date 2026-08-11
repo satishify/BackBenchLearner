@@ -54,7 +54,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Preprocessing checklist</h3>
+    <h3 id="preprocessing-checklist">Preprocessing checklist</h3>
     <ul>
     <li>Extract text carefully (PDF layout, headers/footers, two-column junk).</li>
     <li>Strip navigation chrome from HTML; keep headings.</li>
@@ -62,7 +62,7 @@ flowchart LR
     <li>Attach metadata: <code>source_id</code>, <code>title</code>, <code>url</code>, <code>updated_at</code>, <code>section_path</code>, access tags.</li>
     <li>Drop boilerplate repeated on every page (confidentiality banners).</li>
     </ul>
-    <h3>Document types and tools</h3>
+    <h3 id="document-types-and-tools">Document types and tools</h3>
     <table>
       <thead><tr>
         <th>Document type</th>
@@ -107,7 +107,7 @@ def pdf_has_text_layer(path, sample=3):
     reader = PdfReader(path)
     return any((p.extract_text() or &quot;&quot;).strip() for p in reader.pages[:sample])</code></pre>
     </div>
-    <h3>Chunking strategies</h3>
+    <h3 id="chunking-strategies">Chunking strategies</h3>
     <table>
       <thead><tr>
         <th>Strategy</th>
@@ -148,7 +148,7 @@ def pdf_has_text_layer(path, sample=3):
       </tbody>
     </table>
     <p><strong>Common starting point:</strong> about 512 tokens with 10–20% overlap. Match chunk size to the kind of answer you expect—small for FAQ facts, larger for narrative or code.</p>
-    <h3>When RAG may not be needed</h3>
+    <h3 id="when-rag-may-not-be-needed">When RAG may not be needed</h3>
     <p>If the knowledge base is tiny and already fits in the model&#x27;s context window, you may get a simpler result by putting the text directly in the prompt instead of building a retrieval system.</p>
     <h2 id="in-code">In code</h2>
     <p>Structure-aware splitting over Markdown headings with word-based overlap.</p>
@@ -246,9 +246,9 @@ def split_markdown(text: str, source: str, max_words: int = 80, overlap: int = 1
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

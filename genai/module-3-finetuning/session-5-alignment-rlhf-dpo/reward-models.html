@@ -48,21 +48,21 @@
     <p>Pairwise preferences are easier to collect than exact scores — that is why reward models train on chosen vs rejected pairs.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Preference data shape</h3>
+    <h3 id="preference-data-shape">Preference data shape</h3>
     <p>For one prompt:</p>
     <ul>
     <li>Response A (chosen / winner)</li>
     <li>Response B (rejected / loser)</li>
     </ul>
     <p>Humans (or careful raters) pick which is better. Many such pairs teach the shape of preference.</p>
-    <h3>Architecture (practical view)</h3>
+    <h3 id="architecture-practical-view">Architecture (practical view)</h3>
     <p>Usually:</p>
     <ol>
     <li>A language-model backbone</li>
     <li>A small linear head that maps the final hidden state to <strong>one scalar reward</strong></li>
     </ol>
     <p>That scalar is not the answer text — it is a quality score for the answer.</p>
-    <h3>Bradley-Terry style loss (idea)</h3>
+    <h3 id="bradley-terry-style-loss-idea">Bradley-Terry style loss (idea)</h3>
     <p>We want the winner’s score <code>r_w</code> above the loser’s score <code>r_l</code>.</p>
     <p>In words: push <code>r_w - r_l</code> in the right direction. A common loss looks like:</p>
     <p><code>loss = -log(sigmoid(r_w - r_l))</code></p>
@@ -70,7 +70,7 @@
     <li>If the winner already scores much higher, loss is small</li>
     <li>If the loser scores too high, loss grows and training separates them</li>
     </ul>
-    <h3>Tiny code sketch (concept only)</h3>
+    <h3 id="tiny-code-sketch-concept-only">Tiny code sketch (concept only)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">batch = tokenizer(
@@ -127,9 +127,9 @@ loss.backward()</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

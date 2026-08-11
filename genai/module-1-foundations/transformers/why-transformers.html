@@ -46,7 +46,7 @@
     <p>RNNs are great at <strong>state over time</strong>. Transformers are great at <strong>relations across a set</strong>, with word order injected separately. Modern large language models (LLMs) are mostly decoder-only Transformers because that mesh scales on GPUs and models rich context for next-token prediction.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Five fatal bottlenecks of classical networks</h3>
+    <h3 id="five-fatal-bottlenecks-of-classical-networks">Five fatal bottlenecks of classical networks</h3>
     <table>
       <thead><tr>
         <th>Problem</th>
@@ -75,7 +75,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Cross-attention vs self-attention</h3>
+    <h3 id="cross-attention-vs-self-attention">Cross-attention vs self-attention</h3>
     <table>
       <thead><tr>
         <th>Property</th>
@@ -134,7 +134,7 @@ flowchart TB
   RNN --> ATT --> TR
       </div>
     </div>
-    <h3>Why GenAI standardized on this</h3>
+    <h3 id="why-genai-standardized-on-this">Why GenAI standardized on this</h3>
     <p>Pre-training needs huge text corpora and huge batches. Parallelism over sequence length (and batch size) made <strong>scaling laws</strong> practical. The same block — attention + feed-forward network (FFN) + residual connection + layer normalization (LN) — stacks into GPT-style decoders and encoder–decoder models (T5, classic Transformer machine translation). When someone says &quot;the model attended to the system prompt,&quot; they mean this mechanism, not a metaphor.</p>
     <h2 id="in-code">In code</h2>
     <p>A tiny demo of the <strong>bottleneck</strong>: an RNN-like running average that overwrites early signal, versus a soft attention mix that can still emphasize the first token.</p>
@@ -213,9 +213,9 @@ print(&quot;attention context ~&quot;, np.round(ctx, 3))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

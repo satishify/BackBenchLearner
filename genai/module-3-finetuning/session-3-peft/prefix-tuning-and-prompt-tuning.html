@@ -63,19 +63,19 @@
     <p>Same family: soft prompts. Prefix tuning emphasizes learned prefix context; prompt tuning emphasizes optimizing prompt embeddings with a frozen backbone.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Prefix tuning</h3>
+    <h3 id="prefix-tuning">Prefix tuning</h3>
     <ul>
     <li>Adds virtual tokens that act like <strong>learnable context</strong> at the front (a prefix).</li>
     <li>Especially useful when the model must <strong>generate</strong> text for a task.</li>
     <li>It is especially aimed at continuous prefix optimization for generation.</li>
     </ul>
-    <h3>Prompt tuning</h3>
+    <h3 id="prompt-tuning">Prompt tuning</h3>
     <ul>
     <li>Optimizes prompt embeddings while the backbone stays frozen.</li>
     <li>Attractive because it is simple and tiny.</li>
     <li>A warning: quality can vary sharply with small prompt changes, and cost grows if you make the soft prompt very long.</li>
     </ul>
-    <h3>The cost of longer prompts</h3>
+    <h3 id="the-cost-of-longer-prompts">The cost of longer prompts</h3>
     <p>If you keep adding soft tokens:</p>
     <ul>
     <li>Sequence length grows → more compute</li>
@@ -130,9 +130,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

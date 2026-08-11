@@ -69,7 +69,7 @@
     <p>Decode for the contract: factual extraction wants a short leash; ideation wants room. Defaults are rarely optimal for either.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Core parameters</h3>
+    <h3 id="core-parameters">Core parameters</h3>
     <table>
       <thead><tr>
         <th>Parameter</th>
@@ -109,7 +109,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>How the pieces compose</h3>
+    <h3 id="how-the-pieces-compose">How the pieces compose</h3>
     <ol>
     <li>Model emits logits <code>z</code>.</li>
     <li>Optional penalties adjust logits for tokens already used.</li>
@@ -129,22 +129,22 @@ flowchart LR
     C --> L
       </div>
     </div>
-    <h3>Greedy decoding weakness</h3>
+    <h3 id="greedy-decoding-weakness">Greedy decoding weakness</h3>
     <p>Greedy decoding chooses the highest-probability token at each step. It is fast and deterministic, but locally best choices can block a globally better sequence.</p>
     <p>Worked example: at the first step, suppose &quot;yes&quot; has probability 0.5 and &quot;ok&quot; has probability 0.4. Greedy chooses &quot;yes.&quot; If the next best continuation after &quot;yes&quot; has probability 0.4, the sequence probability is 0.5 × 0.4 = 0.20. But the path &quot;ok ok&quot; may have probability 0.4 × 0.7 = 0.28, which is globally better. Greedy missed it because it committed too early.</p>
-    <h3>Beam search</h3>
+    <h3 id="beam-search">Beam search</h3>
     <p><strong>Beam search</strong> keeps the k best partial sequences at each step. It is a compromise between exhaustive search and greedy decoding.</p>
     <ul>
     <li>Beam width 1 is greedy decoding.</li>
     <li>Larger beam widths explore more alternatives but cost more compute.</li>
     <li>In open-ended chat, beam search can sound dull; sampling is often preferred for naturalness.</li>
     </ul>
-    <h3>Top-k vs top-p</h3>
+    <h3 id="top-k-vs-top-p">Top-k vs top-p</h3>
     <ul>
     <li><strong>Top-k = 40</strong> always keeps forty tokens even if thirty-nine are near-zero junk when the model is confident.</li>
     <li><strong>Top-p = 0.9</strong> grows/shrinks with uncertainty — usually the better default when you want one adaptive knob.</li>
     </ul>
-    <h3>Presets that ship</h3>
+    <h3 id="presets-that-ship">Presets that ship</h3>
     <table>
       <thead><tr>
         <th>Use case</th>
@@ -179,7 +179,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Hallucination note</h3>
+    <h3 id="hallucination-note">Hallucination note</h3>
     <p>Lower temperature can reduce random-looking hallucinations, but it does not give the model new facts. For factual reliability, combine clear prompts with retrieval, tool calls, citations, validation, and refusal behavior. Grounding is the real fix.</p>
     <h2 id="in-code">In code</h2>
     <p>Toy decode step with temperature + top-k:</p>
@@ -297,9 +297,9 @@ print(apply_stops(raw, [&quot;\n\nUser:&quot;, &quot;\n\n&quot;]))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

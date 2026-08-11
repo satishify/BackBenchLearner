@@ -78,19 +78,19 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Citation UX</h3>
+    <h3 id="citation-ux">Citation UX</h3>
     <ul>
     <li>Assign stable IDs at pack time (<code>[hr_1]</code>).</li>
     <li>Ask for inline citations per factual sentence.</li>
     <li>Render IDs as links to the source passage in the UI.</li>
     </ul>
-    <h3>Prompt contracts for grounding</h3>
+    <h3 id="prompt-contracts-for-grounding">Prompt contracts for grounding</h3>
     <ul>
     <li>&quot;Use only SOURCES. Cite every factual claim. If missing, say <code>Not in sources.</code>&quot;</li>
     <li>Forbid blending world knowledge with docs unless explicitly allowed.</li>
     <li>Lower temperature for factual modes.</li>
     </ul>
-    <h3>Automatic checks</h3>
+    <h3 id="automatic-checks">Automatic checks</h3>
     <table>
       <thead><tr>
         <th>Check</th>
@@ -115,12 +115,12 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Faithfulness example</h3>
+    <h3 id="faithfulness-example">Faithfulness example</h3>
     <p><strong>Question:</strong> Who wrote <em>Romeo and Juliet</em>?</p>
     <p><strong>Retrieved context:</strong> <em>Romeo and Juliet</em> is a tragedy by William Shakespeare.</p>
     <p><strong>Bad answer:</strong> William Shakespeare wrote <em>Romeo and Juliet</em> in 1597.</p>
     <p><strong>Why bad:</strong> &quot;in 1597&quot; is not in the retrieved context—partly unsupported even though the author is correct. <strong>Faithfulness</strong> catches this.</p>
-    <h3>When retrieval is weak</h3>
+    <h3 id="when-retrieval-is-weak">When retrieval is weak</h3>
     <p>Prefer abstention over guesswork. &quot;I don&#x27;t have that in the knowledge base&quot; is a successful grounded outcome.</p>
     <h2 id="in-code">In code</h2>
     <p>Validate citations and numeric claims.</p>
@@ -205,9 +205,9 @@ print(&quot;bad:&quot;, validate_answer(bad, sources))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

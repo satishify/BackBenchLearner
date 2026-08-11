@@ -90,10 +90,10 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Reasoning</h3>
+    <h3 id="reasoning">Reasoning</h3>
     <p>Interpret intent, constraints, and success conditions. Distinguish must-haves from nice-to-haves. Detect underspecified goals (&quot;optimize the funnel&quot;) and ask or assume explicitly.</p>
     <p>Reasoning here is not mystical chain-of-thought theater—it is producing a machine-checkable brief: inputs, outputs, limits, risk level.</p>
-    <h3>Planning</h3>
+    <h3 id="planning">Planning</h3>
     <p>Split the goal into ordered subtasks with dependencies. Good plans are short, named, and retryable. Prefer checkpoints (&quot;data fetched&quot;) over vague phases (&quot;analyze&quot;).</p>
     <p><strong>Planner vs executor (plain English):</strong></p>
     <table>
@@ -129,17 +129,17 @@ Executor:  Run github.get_commit_diff(...)
 Executor:  Run splunk.query_logs(...)</code></pre>
     </div>
     <p>Replan when observations invalidate assumptions (empty API response, schema changed). For many production workflows, a fixed playbook beats open-ended free planning.</p>
-    <h3>Tool use</h3>
+    <h3 id="tool-use">Tool use</h3>
     <p>Call APIs, search, run scripts, query databases, trigger automations. The model proposes; the <strong>host</strong> (your application code) validates and executes.</p>
     <p>Design tools as narrow verbs with typed arguments (<code>get_orders(start, end)</code>), not a single <code>do_anything(command)</code>. Return structured, truncated results so the context window stays usable.</p>
-    <h3>Memory</h3>
+    <h3 id="memory">Memory</h3>
     <p>Retain what future steps need:</p>
     <ul>
     <li><strong>Working memory (episodic):</strong> current plan, recent tool results—like RAM for this session.</li>
     <li><strong>Semantic memory:</strong> durable facts and lessons across sessions—like a hard drive or knowledge base.</li>
     </ul>
     <p>Write memory deliberately. Dumping full transcripts forever creates cost, privacy risk, and confusion.</p>
-    <h3>Example workflow</h3>
+    <h3 id="example-workflow">Example workflow</h3>
     <ol>
     <li>User asks for weekly sales report.</li>
     <li>Agent reasons: date range, currency, audience.</li>
@@ -147,7 +147,7 @@ Executor:  Run splunk.query_logs(...)</code></pre>
     <li>Calls BI and spreadsheet tools.</li>
     <li>Reads memory for preferred format; stores &quot;posted URL&quot; for next week.</li>
     </ol>
-    <h3>How the four fail together</h3>
+    <h3 id="how-the-four-fail-together">How the four fail together</h3>
     <table>
       <thead><tr>
         <th>Weak link</th>
@@ -284,9 +284,9 @@ print(run(&quot;weekly sales please&quot;))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -69,7 +69,7 @@
     <p>Write the grader before the prompt. If you cannot say what &quot;done&quot; means, the model will invent a meaning.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Summarization</h3>
+    <h3 id="summarization">Summarization</h3>
     <p><strong>Goal.</strong> Shorter artifact that preserves decisions, numbers, and owners the reader needs.</p>
     <p><strong>What the prompt should specify beyond the source text:</strong></p>
     <ul>
@@ -85,7 +85,7 @@
     <li>Structure: bullets or sections the UI already knows how to render.</li>
     </ol>
     <p><strong>Eval signals.</strong> Compression ratio band; presence of required entities from a checklist; hallucination spot-check (claim → span in source).</p>
-    <h3>Question answering</h3>
+    <h3 id="question-answering">Question answering</h3>
     <p><strong>Goal.</strong> Correct answer grounded in provided context (closed-book only when you truly want parametric knowledge).</p>
     <p><strong>Prompt pattern.</strong></p>
     <ol>
@@ -96,7 +96,7 @@
     </ol>
     <p><strong>Why &quot;answer only from context&quot; is safer:</strong> it grounds the model in supplied evidence and reduces hallucination outside the context. Uncertainty is the correct behavior when the answer is not in the provided text.</p>
     <p><strong>Eval signals.</strong> Exact match / token F1 against gold for short answers; faithfulness rubrics for long ones; refusal correctness on unanswerable items.</p>
-    <h3>Classification</h3>
+    <h3 id="classification">Classification</h3>
     <p><strong>Goal.</strong> Map input → label from a fixed taxonomy (plus optional confidence / secondary tags).</p>
     <p><strong>Prompt pattern.</strong></p>
     <ol>
@@ -106,7 +106,7 @@
     <li>Include an <code>other</code> / <code>needs_review</code> bucket so the model is not forced to lie.</li>
     </ol>
     <p><strong>Eval signals.</strong> Accuracy / macro-F1 on a labeled set; calibration of confidence; rate of invalid labels (should be ~0 with validation + repair).</p>
-    <h3>Reasoning and code (brief)</h3>
+    <h3 id="reasoning-and-code-brief">Reasoning and code (brief)</h3>
     <p>Reasoning tasks benefit from explicit intermediate steps. Code tasks benefit from precise language, input/output examples, and a request for clean, runnable code. For production systems, pair the generation with tests, not just a nice-looking answer.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -120,7 +120,7 @@ flowchart TB
   C --> V
       </div>
     </div>
-    <h3>Evaluation mindset</h3>
+    <h3 id="evaluation-mindset">Evaluation mindset</h3>
     <table>
       <thead><tr>
         <th>Evaluation style</th>
@@ -156,7 +156,7 @@ flowchart TB
       </tbody>
     </table>
     <p>For summarization, use ROUGE plus human review when the stakes are real. For QA, exact match or F1 can help, but context-bound correctness matters more than string overlap. For structured outputs, schema validation is often the first real metric.</p>
-    <h3>Shared discipline</h3>
+    <h3 id="shared-discipline">Shared discipline</h3>
     <ul>
     <li>One task per call when latency allows; chained pipelines beat mega-prompts.</li>
     <li>Pin examples that encode policy boundaries.</li>
@@ -284,9 +284,9 @@ print(parse_classify(&#x27;{&quot;label&quot;: &quot;billing&quot;, &quot;confid
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

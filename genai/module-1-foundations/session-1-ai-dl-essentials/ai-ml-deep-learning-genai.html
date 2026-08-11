@@ -71,7 +71,7 @@ flowchart TB
     <p>Accurate nesting: <strong>AI includes ML includes DL</strong>. GenAI <strong>overlaps</strong> those layers; it is not &quot;the innermost ring.&quot;</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Definitions that survive a whiteboard</h3>
+    <h3 id="definitions-that-survive-a-whiteboard">Definitions that survive a whiteboard</h3>
     <table>
       <thead><tr>
         <th>Plain-English idea</th>
@@ -96,14 +96,14 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <h3>What each layer buys you</h3>
+    <h3 id="what-each-layer-buys-you">What each layer buys you</h3>
     <ol>
     <li><strong>AI without ML</strong> — Expert systems, search, constraint solvers. Fast to explain, brittle outside the rule book.</li>
     <li><strong>ML without deep learning</strong> — Logistic regression, random forests, gradient boosting. Strong on tabular data; weaker when you must invent features for images or free text.</li>
     <li><strong>Deep learning</strong> — Learns features automatically when you have enough data and compute. Dominates vision, speech, and large language models.</li>
     <li><strong>GenAI</strong> — Shifts the product from &quot;predict a class&quot; to &quot;produce an artifact.&quot; Evaluation gets harder: there is rarely one correct paragraph.</li>
     </ol>
-    <h3>Decision guide: which term is accurate?</h3>
+    <h3 id="decision-guide-which-term-is-accurate">Decision guide: which term is accurate?</h3>
     <p>Ask these in order:</p>
     <ol>
     <li><strong>Is any intelligence claim involved?</strong> If yes -&gt; at least <strong>AI</strong>.</li>
@@ -115,7 +115,7 @@ flowchart TB
       <p class="callout-title">Tip</p>
     <p>In interviews, prefer the <em>most specific true</em> term. Calling a boosted tree &quot;AI&quot; is true but weak; calling a diffusion model &quot;ML&quot; is true but undersells what stakeholders care about.</p>
     </aside>
-    <h3>How teams actually talk (and how to translate)</h3>
+    <h3 id="how-teams-actually-talk-and-how-to-translate">How teams actually talk (and how to translate)</h3>
     <table>
       <thead><tr>
         <th>They say</th>
@@ -146,7 +146,7 @@ flowchart TB
       </tbody>
     </table>
     <p>If you cannot answer those clarifying questions, you do not yet know which circle on the diagram you are building in.</p>
-    <h3>Discriminative vs generative (quick cut)</h3>
+    <h3 id="discriminative-vs-generative-quick-cut">Discriminative vs generative (quick cut)</h3>
     <p>Inside ML you will also hear <strong>discriminative</strong> vs <strong>generative</strong> modeling. A discriminative spam filter outputs the probability of spam given an email. A generative system produces a new email that <em>looks like</em> support replies. GenAI products sit in the generative camp for <em>content</em>; many deep nets in production remain discriminative (detect, rank, classify). Confusing those two is how teams buy a chat API when they needed a calibrated score.</p>
     <h2 id="worked-example">Worked example</h2>
     <p>A payments team ships three features. Label them carefully:</p>
@@ -266,9 +266,9 @@ for name, learn, deep, gen in cases:
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -46,7 +46,7 @@
     <p>Fluency is not evidence. Design for verification, not for trust in tone.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why hallucinations happen</h3>
+    <h3 id="why-hallucinations-happen">Why hallucinations happen</h3>
     <table>
       <thead><tr>
         <th>Cause</th>
@@ -79,7 +79,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Taxonomy useful in products</h3>
+    <h3 id="taxonomy-useful-in-products">Taxonomy useful in products</h3>
     <table>
       <thead><tr>
         <th>Type</th>
@@ -124,7 +124,7 @@ flowchart TB
     U --> H[Human or fallback UX]
       </div>
     </div>
-    <h3>Broader limitations</h3>
+    <h3 id="broader-limitations">Broader limitations</h3>
     <ul>
     <li><strong>Prompt brittleness</strong> — paraphrase flips the answer; golden tests must cover paraphrases.</li>
     <li><strong>Long-horizon tasks</strong> — multi-step plans drift without decomposition and checks.</li>
@@ -133,7 +133,7 @@ flowchart TB
     <li><strong>Context dilution</strong> — policies in a giant prompt lose to the nearest noisy user text.</li>
     <li><strong>No true persistent memory</strong> — unless you build storage; &quot;remembering&quot; across sessions is your database, not magic.</li>
     </ul>
-    <h3>Mitigation playbook</h3>
+    <h3 id="mitigation-playbook">Mitigation playbook</h3>
     <ol>
     <li><strong>Ground</strong> — RAG, tools, SQL, calculators for anything that must be true.</li>
     <li><strong>Abstain</strong> — teach and test &quot;I don&#x27;t know&quot; / UNKNOWN paths.</li>
@@ -142,7 +142,7 @@ flowchart TB
     <li><strong>Evaluate</strong> — offline suites for hallucination and faithfulness; sample production traces.</li>
     <li><strong>Human-in-the-loop</strong> — mandatory for medical, legal, financial, and irreversible actions.</li>
     </ol>
-    <h3>Why low temperature is not enough</h3>
+    <h3 id="why-low-temperature-is-not-enough">Why low temperature is not enough</h3>
     <p>Lower temperature reduces randomness but does not add missing facts or verify truth. Factual reliability needs grounding through retrieval, tools, citations, validation, and uncertainty handling.</p>
     <h2 id="in-code">In code</h2>
     <p>Detect empty grounding before you let the model &quot;be helpful&quot;:</p>
@@ -250,9 +250,9 @@ def validate_grounded(raw: str) -&gt; dict:
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

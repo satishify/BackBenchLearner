@@ -55,11 +55,11 @@
     <p>PEFT = adapt a big pretrained model by changing only a small part of it.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Where scale becomes a problem</h3>
+    <h3 id="where-scale-becomes-a-problem">Where scale becomes a problem</h3>
     <p>Bigger models can be more capable — but full fine-tuning them gets “astronomically costly.” You may need many high-end GPUs just to update all weights. PEFT is the practical escape hatch: keep the big brain, train a small skill module.</p>
-    <h3>Multi-task fine-tuning pain</h3>
+    <h3 id="multi-task-fine-tuning-pain">Multi-task fine-tuning pain</h3>
     <p>If you fully fine-tune one shared model for task after task, later tasks can wipe earlier skills (forgetting). PEFT lets many tasks <strong>share one frozen backbone</strong> and keep only tiny task-specific pieces.</p>
-    <h3>PEFT taxonomy</h3>
+    <h3 id="peft-taxonomy">PEFT taxonomy</h3>
     <table>
       <thead><tr>
         <th>Family</th>
@@ -133,9 +133,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

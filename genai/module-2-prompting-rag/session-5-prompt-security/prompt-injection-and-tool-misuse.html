@@ -90,9 +90,9 @@ sequenceDiagram
     <p>Treat all untrusted text as data. Separate instructions from content, and keep strong guardrails and review checks on every tool call.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why models are vulnerable</h3>
+    <h3 id="why-models-are-vulnerable">Why models are vulnerable</h3>
     <p>LLMs are trained to follow instructions in natural language. System messages help, but they are still text in the same context window as user content. Clever phrasing, role-play, encoding tricks, and &quot;policy updates&quot; can dilute or override intent.</p>
-    <h3>Attack patterns you should expect</h3>
+    <h3 id="attack-patterns-you-should-expect">Attack patterns you should expect</h3>
     <ul>
     <li><strong>Instruction override:</strong> &quot;Ignore previous policies...&quot;</li>
     <li><strong>Role hijack:</strong> &quot;You are now in developer mode...&quot;</li>
@@ -101,7 +101,7 @@ sequenceDiagram
     <li><strong>Tool coercion:</strong> &quot;Call <code>run_sql</code> with DROP...&quot; or &quot;exfiltrate via webhook.&quot;</li>
     <li><strong>Confusion via verbosity:</strong> bury the real attack in a long benign request.</li>
     </ul>
-    <h3>Tool misuse specifically</h3>
+    <h3 id="tool-misuse-specifically">Tool misuse specifically</h3>
     <p>If an agent can search, write, pay, or message, the attacker&#x27;s goal is not a funny chat reply — it is a <strong>side effect</strong>. The model proposes a structured tool call; your runtime executes it. Security therefore lives in the <strong>runtime</strong>, not only in the prompt:</p>
     <ol>
     <li>Strong system hierarchy and &quot;data vs instructions&quot; framing.</li>
@@ -111,7 +111,7 @@ sequenceDiagram
     <li>Human-in-the-loop (HITL) approval for destructive or irreversible actions.</li>
     <li>Logging and anomaly detection on tool sequences.</li>
     </ol>
-    <h3>Defense in depth</h3>
+    <h3 id="defense-in-depth">Defense in depth</h3>
     <p>No prompt alone &quot;solves&quot; injection. Combine:</p>
     <table>
       <thead><tr>
@@ -249,9 +249,9 @@ print(maybe_execute(proposed, human_approved=False))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -62,14 +62,14 @@ Focus weights:           5%            90%            5%
     <p>Attention is not yet the full Transformer — RNNs still run step by step. But the core idea — <strong>soft lookup over a memory bank</strong> — is exactly what query/key/value (Q/K/V) self-attention does later.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>The encoder (no attention yet)</h3>
+    <h3 id="the-encoder-no-attention-yet">The encoder (no attention yet)</h3>
     <p>For source tokens <code>x_1 … x_S</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">h_t = EncoderRNN(h_{t-1}, x_t)     # h_t shape: (d,)</code></pre>
     </div>
     <p>Store the full list <code>H = [h_1, …, h_S]</code>. A <strong>bidirectional</strong> encoder runs forward and backward, then joins the two states so each <code>h_t</code> sees both left and right context.</p>
-    <h3>The decoder without attention (the bottleneck)</h3>
+    <h3 id="the-decoder-without-attention-the-bottleneck">The decoder without attention (the bottleneck)</h3>
     <p>Initialize from the final encoder state <code>h_S</code>. At step <code>t</code> with previous target token <code>y_{t-1}</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -77,7 +77,7 @@ Focus weights:           5%            90%            5%
 p_t = softmax(W_out @ s_t)         # probability over target vocabulary</code></pre>
     </div>
     <p>All source information must already live inside <code>s_0</code> / <code>h_S</code>. That single-vector squeeze is the <strong>context vector bottleneck</strong>.</p>
-    <h3>Bahdanau (additive) attention</h3>
+    <h3 id="bahdanau-additive-attention">Bahdanau (additive) attention</h3>
     <p>Given decoder state <code>s_{t-1}</code> and each encoder state <code>h_i</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -111,7 +111,7 @@ p_t = softmax(W_out @ [s_t; c_t])</code></pre>
         </tr>
       </tbody>
     </table>
-    <h3>Training note</h3>
+    <h3 id="training-note">Training note</h3>
     <p>During training, <strong>teacher forcing</strong> feeds the correct previous token as <code>y_{t-1}</code>. Loss is token-level cross-entropy. At inference, the model feeds its own previous prediction back in — which can cause <strong>exposure bias</strong> when train and test prefixes diverge.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -212,9 +212,9 @@ print(&quot;context norm:&quot;, np.linalg.norm(c))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

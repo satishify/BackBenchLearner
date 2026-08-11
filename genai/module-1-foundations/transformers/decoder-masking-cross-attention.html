@@ -39,12 +39,12 @@
     <p><strong>What this is:</strong> Training a language model on &quot;The cat sat on the ___&quot; only works if the network cannot peek at the answer while predicting it. <strong>Causal (look-ahead) masking</strong> enforces that rule. In encoder–decoder models, <strong>cross-attention</strong> lets each target position read from the <em>source</em> sequence.</p>
     <p><strong>Why it matters:</strong> Together they explain GPT-style stacks (mask only) and classic Transformer translation (mask + cross-attention).</p>
     <h2 id="intuition">Intuition</h2>
-    <h3>Causal masking — the anti-cheating rule</h3>
+    <h3 id="causal-masking-the-anti-cheating-rule">Causal masking — the anti-cheating rule</h3>
     <p>Think of writing a sentence on a strip of paper covered by a sliding sleeve: you may see everything up to the pen tip, never beyond it. That sleeve is the <strong>causal mask</strong>.</p>
     <p>During training we still process the whole target in parallel for speed, but illegal future links get score <code>-inf</code> before softmax so their weights become zero.</p>
     <p><strong>Example:</strong> Training sentence &quot;I love neural networks&quot;</p>
     <p>When the model runs on word 2 (&quot;love&quot;), the mask forces positions 3 (&quot;neural&quot;) and 4 (&quot;networks&quot;) to score <code>-inf</code>. After softmax, those weights are exactly 0. The model can only look at &quot;I&quot; and &quot;love&quot; to predict what comes next — it must learn language structure, not copy answers.</p>
-    <h3>Cross-attention — the second meeting room</h3>
+    <h3 id="cross-attention-the-second-meeting-room">Cross-attention — the second meeting room</h3>
     <p>The decoder brings <strong>questions</strong> (queries from the target side). The encoder brings a <strong>library of notes</strong> (keys and values from the source). Generating the French word for &quot;cat&quot; can attend strongly to the English token &quot;cat&quot; even though decoder self-attention on the French prefix knows nothing about English.</p>
     <table>
       <thead><tr>
@@ -67,7 +67,7 @@
     <p>Encoders should see <strong>both directions</strong> (full source). Decoders must <strong>not</strong> see the future (causal mask on target). Blurring that distinction confuses machine translation explanations.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Causal mask formula</h3>
+    <h3 id="causal-mask-formula">Causal mask formula</h3>
     <p>For length <code>n</code>, build an <code>n × n</code> mask matrix <code>M</code> where <code>M_ij = 0</code> if <code>j ≤ i</code> and <code>-inf</code> if <code>j &gt; i</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -79,7 +79,7 @@ output  = weights * V</code></pre>
     </div>
     <p>Position <code>i</code> may attend to keys <code>0..i</code> only. Training can still use <strong>teacher forcing</strong>: feed the full gold target, predict all next tokens in parallel under the mask — much faster than truly sequential loops.</p>
     <p>The mask is a <strong>lower triangular matrix</strong> — all spaces above the diagonal are blocked.</p>
-    <h3>Cross-attention</h3>
+    <h3 id="cross-attention">Cross-attention</h3>
     <p>Let <code>H_enc</code> be encoder outputs <code>(n_src, d)</code> and <code>H_dec</code> the current decoder states <code>(n_tgt, d)</code>:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -89,7 +89,7 @@ V = H_enc * W_V       # values from encoder
 CrossAttn = softmax(Q * K^T / sqrt(d_k)) * V</code></pre>
     </div>
     <p>No causal mask is needed across the source — the encoder already saw the full input. Masking still applies to <em>decoder self-attention</em> so the target side remains autoregressive.</p>
-    <h3>Self vs cross — cheat sheet</h3>
+    <h3 id="self-vs-cross-cheat-sheet">Self vs cross — cheat sheet</h3>
     <table>
       <thead><tr>
         <th>Mechanism</th>
@@ -217,9 +217,9 @@ print(&quot;cross-attn weights:\n&quot;, np.round(cross_w, 3))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -75,7 +75,7 @@
     <p>Temperature and nucleus settings change user-visible personality. RAG and tool calling still end in the same loop: retrieved text lands in the prompt, then decoding writes the answer. Log seed and policy when debugging — &quot;flaky model&quot; bugs are often flaky sampling.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>The autoregressive loop</h3>
+    <h3 id="the-autoregressive-loop">The autoregressive loop</h3>
     <ol>
     <li>Start with tokenized prompt (and optional beginning-of-sequence token).</li>
     <li>Forward the causal model → logits for the last position.</li>
@@ -93,7 +93,7 @@
       <pre><code class="language-text">P(x_1..x_L) = product_t P(x_t | x_1..x_{t-1})</code></pre>
     </div>
     <p>Each token depends only on everything before it — matching the causal mask from the previous lesson.</p>
-    <h3>Decoding policies compared</h3>
+    <h3 id="decoding-policies-compared">Decoding policies compared</h3>
     <table>
       <thead><tr>
         <th>Method</th>
@@ -123,9 +123,9 @@
         </tr>
       </tbody>
     </table>
-    <h3>KV cache (systems note)</h3>
+    <h3 id="kv-cache-systems-note">KV cache (systems note)</h3>
     <p>Naively recomputing attention over the full prefix every step is wasteful. Inference stacks cache prior keys and values so each new token only pays for the new row — critical for product latency, even though the <em>algorithm</em> is still left-to-right.</p>
-    <h3>Repetition controls</h3>
+    <h3 id="repetition-controls">Repetition controls</h3>
     <p>Frequency and presence penalties (API-side) down-weight tokens already used, fighting loops like &quot;Yes. Yes. Yes.&quot; They sit on the same logits the model just produced — product quality is model <em>plus</em> decoding policy.</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -229,9 +229,9 @@ print(&quot;top-p sample -&gt;&quot;, vocab[token], &quot;mass kept&quot;, nucle
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

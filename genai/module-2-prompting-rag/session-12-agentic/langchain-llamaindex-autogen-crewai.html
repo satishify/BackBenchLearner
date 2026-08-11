@@ -75,7 +75,7 @@
       </tbody>
     </table>
     <p>Think &quot;batteries,&quot; not &quot;brain.&quot; Your product still needs schemas, threat models, and CI gates.</p>
-    <h3>LangChain vs LangGraph</h3>
+    <h3 id="langchain-vs-langgraph">LangChain vs LangGraph</h3>
     <table>
       <thead><tr>
         <th></th>
@@ -110,10 +110,10 @@
     <p>LangChain helps you assemble prompts, tools, and models. LangGraph wires those pieces into a graph that can loop, branch, pause, and resume.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>LangChain</h3>
+    <h3 id="langchain">LangChain</h3>
     <p>Broad ecosystem: prompt templates, retrievers, tool wrappers, runnables, many vendor integrations. Good when you want one toolkit from prototype to agents.</p>
     <p>Risk: deep abstraction stacks that are hard to debug—keep traces on and avoid nesting magic.</p>
-    <h3>LangGraph</h3>
+    <h3 id="langgraph">LangGraph</h3>
     <p>Graph-based framework for <strong>looping, stateful agent workflows</strong>:</p>
     <ul>
     <li><strong>Nodes</strong> = agent steps or functions.</li>
@@ -132,13 +132,13 @@ graph.add_edge(&#x27;infra_agent&#x27;, &#x27;triage_agent&#x27;)
 app = graph.compile()</code></pre>
     </div>
     <p>Use LangGraph when the workflow needs loops, branches, human approval checkpoints, or recursion limits.</p>
-    <h3>LlamaIndex</h3>
+    <h3 id="llamaindex">LlamaIndex</h3>
     <p>Centered on connecting data → indexes → query engines. Strong default for RAG-heavy assistants (files, Notion, databases). You still own chunking strategy, evaluation, and citation policy.</p>
-    <h3>AutoGen</h3>
+    <h3 id="autogen">AutoGen</h3>
     <p>Patterns for multiple agents exchanging messages (assistant/user proxy, group chat). Useful when the problem naturally looks like a conversation among roles. Watch cost: chatty agents amplify tokens; impose turn limits and termination conditions.</p>
-    <h3>CrewAI</h3>
+    <h3 id="crewai">CrewAI</h3>
     <p>Role/goal/backstory style crews that divide labor on a task. Friendly mental model for &quot;researcher + writer + reviewer.&quot; Same multi-agent cautions: typed artifacts beat free-form chatter; measure whether the crew beats a single agent.</p>
-    <h3>How to choose</h3>
+    <h3 id="how-to-choose">How to choose</h3>
     <table>
       <thead><tr>
         <th>If your problem looks like...</th>
@@ -164,7 +164,7 @@ app = graph.compile()</code></pre>
       </tbody>
     </table>
     <p>Team constraints—observability, deploy story, license, who already knows the stack—often dominate micro-benchmarks.</p>
-    <h3>Portable core (keep yours)</h3>
+    <h3 id="portable-core-keep-yours">Portable core (keep yours)</h3>
     <p>Regardless of framework, own these in your code:</p>
     <ol>
     <li>Tool allowlists and argument validation.</li>
@@ -259,9 +259,9 @@ print(answer_with_rag(&quot;refund window?&quot;, fx))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

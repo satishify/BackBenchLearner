@@ -48,10 +48,10 @@
     <p>Positive advantage means “better than expected for this state.” Negative means “worse than expected.”</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>What we optimize</h3>
+    <h3 id="what-we-optimize">What we optimize</h3>
     <p>We care about <strong>expected total reward</strong> for a whole response, not only one token in isolation.</p>
     <p>In words: train the policy so good full answers become more probable.</p>
-    <h3>Why the raw signal is noisy</h3>
+    <h3 id="why-the-raw-signal-is-noisy">Why the raw signal is noisy</h3>
     <p>REINFORCE can be unbiased but <strong>high variance</strong> — the training signal jumps around. Helpers:</p>
     <table>
       <thead><tr>
@@ -74,7 +74,7 @@
     <li><strong>Positive advantage</strong> → that action was better than average for the situation → increase its probability</li>
     <li><strong>Negative advantage</strong> → worse than expected → decrease its probability</li>
     </ul>
-    <h3>Keep the math light</h3>
+    <h3 id="keep-the-math-light">Keep the math light</h3>
     <p>You do not need to memorize the formula to use the idea. The practical message is:</p>
     <ol>
     <li>Sample responses</li>
@@ -126,9 +126,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

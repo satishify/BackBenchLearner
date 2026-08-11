@@ -77,7 +77,7 @@
     <p>Different jobs need different prompt goals. If the objective is unclear, the prompt can drift in a direction that looks good but is wrong for the use case.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Prompt optimization objectives</h3>
+    <h3 id="prompt-optimization-objectives">Prompt optimization objectives</h3>
     <p>Before you tune wording, name what &quot;better&quot; means:</p>
     <table>
       <thead><tr>
@@ -120,7 +120,7 @@
       </tbody>
     </table>
     <p>A medical helper might prioritize correctness and faithfulness. A customer chatbot might care more about tone, speed, and brief answers.</p>
-    <h3>Manual prompt optimization</h3>
+    <h3 id="manual-prompt-optimization">Manual prompt optimization</h3>
     <p>Hands-on methods people use most often:</p>
     <ul>
     <li><strong>Instruction refinement</strong> — rewrite vague rules into concrete constraints.</li>
@@ -134,7 +134,7 @@
     <li>Before: &quot;Summarize this article.&quot;</li>
     <li>After: &quot;Summarize in five bullets, keep it under 120 words, mention risks and conclusions, and avoid speculation.&quot;</li>
     </ul>
-    <h3>Versioning, testing, and iteration</h3>
+    <h3 id="versioning-testing-and-iteration">Versioning, testing, and iteration</h3>
     <p>Treat prompts like code artifacts:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -143,7 +143,7 @@
     </div>
     <p>Use semantic versioning ideas (e.g., v1.1.0 for a feature addition, v1.1.1 for a typo fix) plus changelog notes about what changed and why.</p>
     <p>Keep the system prompt, few-shot examples, metrics, and reasoning for edits together so you can explain behavior changes after a revision.</p>
-    <h3>LLM evaluation for prompt changes</h3>
+    <h3 id="llm-evaluation-for-prompt-changes">LLM evaluation for prompt changes</h3>
     <p>Evaluation is how you know whether a prompt change helped or just <em>sounded</em> better.</p>
     <table>
       <thead><tr>
@@ -165,7 +165,7 @@
       </tbody>
     </table>
     <p>Also track: answer relevancy, task completion, hallucination rate, and tool correctness.</p>
-    <h3>Prompt compression</h3>
+    <h3 id="prompt-compression">Prompt compression</h3>
     <p>Long prompts raise cost, latency, and truncation risk. <strong>Prompt compression</strong> keeps the important bits and cuts the rest.</p>
     <table>
       <thead><tr>
@@ -189,10 +189,10 @@
     </table>
     <p>Example: &quot;Customer John reported unstable internet for 3 days with video call disruptions&quot; compresses to &quot;John: unstable internet, 3 days, video issues.&quot;</p>
     <p>Goal: not to remove everything — preserve the context that actually helps the model answer well.</p>
-    <h3>Verbalized sampling and mode collapse</h3>
+    <h3 id="verbalized-sampling-and-mode-collapse">Verbalized sampling and mode collapse</h3>
     <p><strong>Mode collapse</strong> means the model keeps producing overly similar or repetitive outputs even though many good answers exist — often after alignment tuning pushes toward a few safe, high-probability responses.</p>
     <p><strong>Verbalized sampling</strong> asks the model for several candidate responses and explicit probabilities, then samples from that verbalized distribution. Useful for creative writing, brainstorming, and synthetic data generation — but self-consistency helps less when every sampled path looks the same.</p>
-    <h3>Regression testing (the release gate)</h3>
+    <h3 id="regression-testing-the-release-gate">Regression testing (the release gate)</h3>
     <p>Build a <strong>golden set</strong> and run it on every prompt change:</p>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -298,9 +298,9 @@ assert pass_rate &gt;= 0.9, &quot;prompt regression&quot;</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

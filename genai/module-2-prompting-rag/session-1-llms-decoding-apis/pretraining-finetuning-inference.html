@@ -84,7 +84,7 @@ flowchart LR
     INF --> O[Outputs]
       </div>
     </div>
-    <h3>Cost and data at a glance</h3>
+    <h3 id="cost-and-data-at-a-glance">Cost and data at a glance</h3>
     <table>
       <thead><tr>
         <th>Stage</th>
@@ -113,14 +113,14 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>What each stage optimizes for</h3>
+    <h3 id="what-each-stage-optimizes-for">What each stage optimizes for</h3>
     <ul>
     <li><strong>Pretraining objective</strong> — Predict or reconstruct broad data so the model learns syntax, world regularities, and transferable features.</li>
     <li><strong>Fine-tuning objective</strong> — Make the model behave well on <em>your</em> distribution: correct JSON, preferred tone, domain abbreviations, refusal style.</li>
     <li><strong>Inference objective</strong> — Latency, cost per request, reliability, and safety filters under live load. No gradient updates — only serving.</li>
     </ul>
     <p>Those three scoreboards disagree. A model with great pretraining loss can still fail your support rubric; a fine-tune that nails the rubric can still be too slow in production.</p>
-    <h3>Prompt vs fine-tune (preview)</h3>
+    <h3 id="prompt-vs-fine-tune-preview">Prompt vs fine-tune (preview)</h3>
     <p>Prefer <strong>prompting (+ tools/RAG)</strong> when:</p>
     <ul>
     <li>The base model already can do the task with clear instructions.</li>
@@ -252,9 +252,9 @@ print(
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

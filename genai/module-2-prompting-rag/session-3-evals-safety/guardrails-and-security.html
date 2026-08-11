@@ -57,7 +57,7 @@ flowchart LR
       </div>
     </div>
     <p>If any layer is missing, attackers or accidents flow through the gap.</p>
-    <h3>The CIA triad (security basics)</h3>
+    <h3 id="the-cia-triad-security-basics">The CIA triad (security basics)</h3>
     <table>
       <thead><tr>
         <th>Letter</th>
@@ -89,7 +89,7 @@ flowchart LR
     <p>Prompt safety protects people from harmful model behavior. Prompt security protects the model and system from hostile actors. You need both.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Layer 1 — Input guardrails</h3>
+    <h3 id="layer-1-input-guardrails">Layer 1 — Input guardrails</h3>
     <p>Block or transform unsafe, out-of-scope, or malicious prompts before they dominate the context.</p>
     <ul>
     <li>Policy classifiers (toxicity, jailbreak patterns, credential fishing).</li>
@@ -97,7 +97,7 @@ flowchart LR
     <li>Separation of <strong>instructions</strong> (trusted system text) from <strong>data</strong> (user text, retrieved docs) with clear delimiters.</li>
     <li>For retrieval-augmented generation (RAG): treat retrieved chunks as untrusted data, never as higher-priority instructions.</li>
     </ul>
-    <h3>Layer 2 — Processing / tool guardrails</h3>
+    <h3 id="layer-2-processing-tool-guardrails">Layer 2 — Processing / tool guardrails</h3>
     <p>Restrict what the agent can touch while thinking and acting.</p>
     <ul>
     <li><strong>Least privilege:</strong> each tool gets minimum scopes (read vs write, test vs production).</li>
@@ -106,7 +106,7 @@ flowchart LR
     <li>Rate limits and budgets on tool calls and tokens.</li>
     <li>Isolation: sandbox code execution; never run model-suggested shell as root.</li>
     </ul>
-    <h3>Layer 3 — Output guardrails</h3>
+    <h3 id="layer-3-output-guardrails">Layer 3 — Output guardrails</h3>
     <p>Moderate and validate what leaves the system.</p>
     <ul>
     <li>Schema validation for structured outputs.</li>
@@ -115,7 +115,7 @@ flowchart LR
     <li>Grounding checks for RAG (&quot;is this claim supported by a citation?&quot;).</li>
     <li>Refusal templates that stay helpful without leaking internals.</li>
     </ul>
-    <h3>Attack families (what guardrails must handle)</h3>
+    <h3 id="attack-families-what-guardrails-must-handle">Attack families (what guardrails must handle)</h3>
     <table>
       <thead><tr>
         <th>Attack type</th>
@@ -147,7 +147,7 @@ flowchart LR
     <li><strong>Prompt leakage:</strong> the model reveals its hidden system prompt or internal rules.</li>
     </ul>
     <p><strong>Black-box examples:</strong> low-resource language jailbreaks, context contamination, DeepWordBug, PAIR (Prompt Automatic Iterative Refinement). Intuition: poke the model, watch the output, refine the prompt until it breaks.</p>
-    <h3>Red team vs blue team</h3>
+    <h3 id="red-team-vs-blue-team">Red team vs blue team</h3>
     <table>
       <thead><tr>
         <th>Role</th>
@@ -270,9 +270,9 @@ def handle_turn(user_text: str, proposed: ToolCall | None, draft: str) -&gt; str
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

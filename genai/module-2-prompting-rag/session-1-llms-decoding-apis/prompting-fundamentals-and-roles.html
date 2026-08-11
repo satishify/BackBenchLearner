@@ -46,7 +46,7 @@
     <p>Separate policy (system), task (user), and demonstration (few-shot turns). If everything lives in one user blob, every feature fights for attention.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Four prompt components</h3>
+    <h3 id="four-prompt-components">Four prompt components</h3>
     <table>
       <thead><tr>
         <th>Component</th>
@@ -88,7 +88,7 @@
 Input: &quot;The food was okay.&quot;
 Output: Sentiment:</code></pre>
     </div>
-    <h3>Chat roles</h3>
+    <h3 id="chat-roles">Chat roles</h3>
     <table>
       <thead><tr>
         <th>Role</th>
@@ -126,7 +126,7 @@ sequenceDiagram
     API-->>App: next assistant reply
       </div>
     </div>
-    <h3>Prompting patterns with examples</h3>
+    <h3 id="prompting-patterns-with-examples">Prompting patterns with examples</h3>
     <p><strong>Zero-shot</strong> — instruction + input only. Fast to maintain; fails when the label set or style is unusual.</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -155,7 +155,7 @@ Extract a customer support ticket into JSON with:
 - summary: &lt;= 20 words
 Ticket: I was charged twice this month and need this fixed today.</code></pre>
     </div>
-    <h3>Common prompting mistakes</h3>
+    <h3 id="common-prompting-mistakes">Common prompting mistakes</h3>
     <ul>
     <li><strong>Vague task</strong> — Ask &quot;summarize this for a technical manager in 5 bullets&quot; instead of just &quot;summarize.&quot;</li>
     <li><strong>Missing output contract</strong> — If downstream code expects JSON, ask for a schema or use structured outputs.</li>
@@ -163,7 +163,7 @@ Ticket: I was charged twice this month and need this fixed today.</code></pre>
     <li><strong>No grounding</strong> — For factual answers about private or changing data, provide context or use retrieval/tools.</li>
     <li><strong>Over-prompting</strong> — Long prompts can hide the actual task. Prefer clear sections and remove dead text.</li>
     </ul>
-    <h3>Production prompt hygiene</h3>
+    <h3 id="production-prompt-hygiene">Production prompt hygiene</h3>
     <p>Version prompts like code (<code>support_v3</code>). Keep a golden set of inputs with expected properties (label, JSON keys, refusal). On model upgrades, run the suite before you celebrate the new default.</p>
     <h2 id="in-code">In code</h2>
     <p>Represent messages as structured objects — never concatenate roles into one ambiguous string in production:</p>
@@ -278,9 +278,9 @@ print(build_sentiment_messages(&quot;I think the food was okay.&quot;)[1][&quot;
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

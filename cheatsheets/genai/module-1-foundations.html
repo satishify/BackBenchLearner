@@ -44,79 +44,79 @@
 
     <p>Plain-English bullets for chapters <strong>1.1–1.3</strong>. Open full lessons when a bullet feels fuzzy.</p>
     <h2 id="11-ai-deep-learning-essentials">1.1 AI &amp; Deep Learning Essentials</h2>
-    <h3>Stack of ideas</h3>
+    <h3 id="stack-of-ideas">Stack of ideas</h3>
     <ul>
     <li><strong>AI (Artificial Intelligence)</strong> — building machines that act smart enough for a task (observe -&gt; decide -&gt; succeed).</li>
     <li><strong>ML (Machine Learning)</strong> — learn patterns from data instead of hand-coding every rule.</li>
     <li><strong>Deep learning</strong> — ML with multi-layer neural nets that learn hierarchical features from raw inputs.</li>
     <li><strong>GenAI (Generative AI)</strong> — models that <em>create</em> new content (text, images, code) by sampling from a learned distribution.</li>
     </ul>
-    <h3>Classical vs learned</h3>
+    <h3 id="classical-vs-learned">Classical vs learned</h3>
     <ul>
     <li>Rules, search, and expert systems scale poorly in noisy high-dimensional worlds (vision, speech, open language).</li>
     <li>Supervised learning: labeled inputs plus answers. Unsupervised: find structure in unlabeled data. RL (Reinforcement Learning): learn from actions plus rewards.</li>
     </ul>
-    <h3>Representation</h3>
+    <h3 id="representation">Representation</h3>
     <ul>
     <li><strong>One-hot</strong> — sparse, no similarity between words. <strong>Embeddings</strong> — dense vectors; nearby = similar meaning.</li>
     <li>Word2Vec / GloVe intuition: &quot;you shall know a word by the company it keeps.&quot;</li>
     </ul>
-    <h3>Neuron to MLP</h3>
+    <h3 id="neuron-to-mlp">Neuron to MLP</h3>
     <ul>
     <li>Linear: <code>z = w*x + b</code>. Nonlinearity (ReLU, sigmoid, tanh) makes depth useful.</li>
     <li><strong>MLP (Multilayer Perceptron)</strong> = stacked linear + activation. Universal approximator in theory; practice needs data, regularization, right capacity.</li>
     <li><strong>Backpropagation</strong> = chain rule through the graph. <strong>Gradient descent</strong>: update weights by subtracting <code>learning_rate * gradient_of_loss</code>.</li>
     <li>Overfit vs underfit; bias-variance tradeoff. Fix overfit: more data, dropout, weight decay, early stop. Fix underfit: capacity / train longer / better features.</li>
     </ul>
-    <h3>Quick self-check</h3>
+    <h3 id="quick-self-check">Quick self-check</h3>
     <ul>
     <li>Can you place ChatGPT inside AI &gt; ML &gt; DL &gt; GenAI?</li>
     <li>Why does ReLU help vanishing gradients vs deep sigmoids?</li>
     </ul>
     <h2 id="12-deep-learning-essentials">1.2 Deep Learning Essentials</h2>
-    <h3>Training loop</h3>
+    <h3 id="training-loop">Training loop</h3>
     <ul>
     <li>Batch -&gt; forward -&gt; loss -&gt; backward -&gt; optimizer step. Epoch = one pass over data.</li>
     <li><strong>Learning rate</strong> too high -&gt; diverge; too low -&gt; crawl. Schedules and warmups matter for big models.</li>
     <li>Train / val / test split. Never tune on test.</li>
     </ul>
-    <h3>CNN (Convolutional Neural Network, vision intuition)</h3>
+    <h3 id="cnn-convolutional-neural-network-vision-intuition">CNN (Convolutional Neural Network, vision intuition)</h3>
     <ul>
     <li>Convolution shares filters spatially; translation equivariance; local receptive fields.</li>
     <li>Pooling / strides reduce spatial size. Depth stacks simple edges -&gt; parts -&gt; objects.</li>
     </ul>
-    <h3>RNN / LSTM (Recurrent Neural Network / Long Short-Term Memory, sequence intuition)</h3>
+    <h3 id="rnn-lstm-recurrent-neural-network-long-short-term-memory-sequence-intuition">RNN / LSTM (Recurrent Neural Network / Long Short-Term Memory, sequence intuition)</h3>
     <ul>
     <li>Hidden state carries past tokens. Vanilla RNNs struggle with long dependencies (vanishing/exploding gradients).</li>
     <li><strong>LSTM/GRU</strong> gates control what to keep/forget — still sequential -&gt; hard to parallelize -&gt; transformers win for most NLP.</li>
     </ul>
     <h2 id="13-transformer-architecture">1.3 Transformer Architecture</h2>
-    <h3>Why transformers</h3>
+    <h3 id="why-transformers">Why transformers</h3>
     <ul>
     <li>Parallel over sequence (vs RNN step-by-step). Attention = soft lookup of relevant context.</li>
     <li>Scales with data + compute; foundation of modern LLMs.</li>
     </ul>
-    <h3>Self-attention (Q, K, V)</h3>
+    <h3 id="self-attention-q-k-v">Self-attention (Q, K, V)</h3>
     <ul>
     <li>For each position: query asks &quot;what do I need?&quot;, keys answer &quot;what do I contain?&quot;, values carry content.</li>
     <li>Scores: <code>softmax(Q * K^T / sqrt(d_k)) * V</code>. Divide by <code>sqrt(d_k)</code> so softmax stays well-behaved as dimension grows.</li>
     <li><strong>Multi-head</strong>: several subspaces in parallel (syntax vs semantics, etc.).</li>
     </ul>
-    <h3>Positional encoding</h3>
+    <h3 id="positional-encoding">Positional encoding</h3>
     <ul>
     <li>Attention is permutation-invariant without positions. Add / inject position (sinusoidal, learned, RoPE in modern LLMs).</li>
     </ul>
-    <h3>Decoder stack (GPT-style)</h3>
+    <h3 id="decoder-stack-gpt-style">Decoder stack (GPT-style)</h3>
     <ul>
     <li><strong>Causal mask</strong> — position <code>i</code> cannot attend to later positions (autoregressive next-token training).</li>
     <li>Cross-attention (encoder-decoder MT models): decoder queries encoder keys/values. Decoder-only LLMs skip a separate encoder.</li>
     </ul>
-    <h3>Autoregressive decoding</h3>
+    <h3 id="autoregressive-decoding">Autoregressive decoding</h3>
     <ul>
     <li>Train: predict next token given left context. Infer: sample / greedy / beam / nucleus (<code>top-p</code>) / temperature.</li>
     <li>Higher temperature -&gt; flatter distribution (more random). <code>top-p</code> keeps the smallest set of tokens whose probabilities sum to at least <code>p</code>.</li>
     </ul>
-    <h3>Must-remember diagram in your head</h3>
+    <h3 id="must-remember-diagram-in-your-head">Must-remember diagram in your head</h3>
     <p><code>tokens -&gt; embed+pos -&gt; [N x (MHA + FFN + residual + LN)] -&gt; logits -&gt; next token</code></p>
     <h2 id="30-minute-drill">30-minute drill</h2>
     <ol>

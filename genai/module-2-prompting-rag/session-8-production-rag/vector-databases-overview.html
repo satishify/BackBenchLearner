@@ -69,7 +69,7 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>FAISS vs ChromaDB</h3>
+    <h3 id="faiss-vs-chromadb">FAISS vs ChromaDB</h3>
     <table>
       <thead><tr>
         <th>Tool</th>
@@ -89,7 +89,7 @@ flowchart TB
         </tr>
       </tbody>
     </table>
-    <h3>Which FAISS index to use?</h3>
+    <h3 id="which-faiss-index-to-use">Which FAISS index to use?</h3>
     <table>
       <thead><tr>
         <th>Index</th>
@@ -120,7 +120,7 @@ flowchart TB
       </tbody>
     </table>
     <p><strong>Decision rule:</strong> if you can afford exact search, use it. If not, move to IVF, HNSW, or IVF+PQ based on RAM, recall needs, and tuning appetite.</p>
-    <h3>Bi-encoder, cross-encoder, and ColBERT</h3>
+    <h3 id="bi-encoder-cross-encoder-and-colbert">Bi-encoder, cross-encoder, and ColBERT</h3>
     <p>Different ways to score query–document relevance—balancing speed, accuracy, and storage.</p>
     <table>
       <thead><tr>
@@ -157,7 +157,7 @@ flowchart TB
 2. Rerank top candidates with cross-encoder
 3. Pass best chunks to the generator</code></pre>
     </div>
-    <h3>Common silent failures</h3>
+    <h3 id="common-silent-failures">Common silent failures</h3>
     <table>
       <thead><tr>
         <th>Bug</th>
@@ -241,9 +241,9 @@ final_context = select_top(reranked, n=10)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

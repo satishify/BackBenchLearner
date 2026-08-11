@@ -80,7 +80,7 @@
     <p>Pin a model ID and a serving mode in config. &quot;Whatever the playground default is today&quot; is not a deployment strategy.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Three practical ways to run open-source models</h3>
+    <h3 id="three-practical-ways-to-run-open-source-models">Three practical ways to run open-source models</h3>
     <p>There are three practical deployment paths. The right one depends on privacy, latency, setup effort, and whether you have local hardware.</p>
     <table>
       <thead><tr>
@@ -106,23 +106,23 @@
         </tr>
       </tbody>
     </table>
-    <h3>Local Transformers flow</h3>
+    <h3 id="local-transformers-flow">Local Transformers flow</h3>
     <p>For local inference, the basic flow is always the same: load a tokenizer, load the model, move both to the same device, tokenize the prompt, generate, and decode.</p>
     <ul>
     <li><strong><code>mps</code></strong> (Metal Performance Shaders) on Apple Silicon uses the GPU and is much faster than CPU-only.</li>
     <li><strong><code>return_tensors=&#x27;pt&#x27;</code></strong> returns PyTorch tensors so the model can process the input directly.</li>
     <li><strong><code>generate()</code></strong> performs autoregressive token-by-token generation.</li>
     </ul>
-    <h3>Hosted stack (conceptual)</h3>
+    <h3 id="hosted-stack-conceptual">Hosted stack (conceptual)</h3>
     <ol>
     <li>Client sends authenticated requests with <code>model</code>, messages, decoding params.</li>
     <li>Provider handles autoscaling, multi-tenant isolation, and often safety filters.</li>
     <li>You receive usage meters (input/output tokens), rate limits, and regional endpoints.</li>
     </ol>
     <p>Key mental model: the model is not running on your machine; your code is just making an HTTP call.</p>
-    <h3>Ollama</h3>
+    <h3 id="ollama">Ollama</h3>
     <p>Ollama is the quick local route when you want to keep the model on your machine and avoid deep PyTorch setup — usually the simplest private option.</p>
-    <h3>Reliability patterns (both)</h3>
+    <h3 id="reliability-patterns-both">Reliability patterns (both)</h3>
     <ul>
     <li>Timeouts shorter than user patience; retry only on idempotent GETs / safe completions with jitter.</li>
     <li>Circuit breaker when error rate spikes; degrade to cached FAQ or &quot;try again.&quot;</li>
@@ -274,9 +274,9 @@ def get_backend():
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

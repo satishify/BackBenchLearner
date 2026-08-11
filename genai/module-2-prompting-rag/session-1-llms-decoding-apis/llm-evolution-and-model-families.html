@@ -74,13 +74,13 @@
     <p>Pick the architecture family for the job shape first; pick a vendor or checkpoint second. Marketing names change; encoder / decoder / encoder–decoder do not.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Pretrain, then specialize</h3>
+    <h3 id="pretrain-then-specialize">Pretrain, then specialize</h3>
     <p>Modern foundation models share a two-phase life:</p>
     <ul>
     <li><strong>Pretraining</strong> — optimize a self-supervised objective on massive corpora (masked tokens, next tokens, or denoising). This builds general representations and fluency.</li>
     <li><strong>Post-training</strong> — supervised instruction data, preference optimization (RLHF / DPO-style methods), safety filters, and sometimes tool-use or chain-of-thought traces. This turns a raw predictor into a product-shaped assistant.</li>
     </ul>
-    <h3>Milestone map (engineer view)</h3>
+    <h3 id="milestone-map-engineer-view">Milestone map (engineer view)</h3>
     <table>
       <thead><tr>
         <th>Era</th>
@@ -135,11 +135,11 @@ flowchart LR
     C --> T[Tools + RAG + multimodal]
       </div>
     </div>
-    <h3>Architecture families in detail</h3>
+    <h3 id="architecture-families-in-detail">Architecture families in detail</h3>
     <p><strong>Encoder-only (BERT-like).</strong> Bidirectional attention over the input. Great for classification, named entity recognition (NER), and dense embeddings. Not a chat generator by default — you usually attach a task head or use the embedding tower.</p>
     <p><strong>Decoder-only (GPT-like).</strong> Causal (left-to-right) attention. Autoregressive generation is native. Almost every modern chat and coding assistant sits here.</p>
     <p><strong>Encoder–decoder (T5/BART-like).</strong> Encode the full source, then decode the target. Natural for translation, structured rewrite, and some summarization setups.</p>
-    <h3>Alignment: InstructGPT and RLHF</h3>
+    <h3 id="alignment-instructgpt-and-rlhf">Alignment: InstructGPT and RLHF</h3>
     <p>A raw language model is trained to continue text, not necessarily to help a user. <strong>Instruction tuning</strong> and <strong>RLHF</strong> shift behavior toward answers people prefer:</p>
     <ol>
     <li><strong>Supervised fine-tuning (SFT)</strong> — train on human-written demonstrations of good responses.</li>
@@ -147,7 +147,7 @@ flowchart LR
     <li><strong>Policy optimization</strong> — update the assistant model to get higher reward while staying close to the supervised model.</li>
     </ol>
     <p>Why this matters: a smaller aligned model can feel more useful than a larger raw model because it follows instructions, refuses unsafe tasks more often, and formats answers the way users expect.</p>
-    <h3>Open-weight, multimodal, and reasoning models</h3>
+    <h3 id="open-weight-multimodal-and-reasoning-models">Open-weight, multimodal, and reasoning models</h3>
     <p>The recent ecosystem expanded in three directions:</p>
     <table>
       <thead><tr>
@@ -173,7 +173,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Choosing a family in practice</h3>
+    <h3 id="choosing-a-family-in-practice">Choosing a family in practice</h3>
     <ul>
     <li>Need search embeddings or a cheap classifier → encoder / embedding models.</li>
     <li>Need chat, agents, code → decoder chat models.</li>
@@ -285,9 +285,9 @@ assert lineage[-1].stage == &quot;preference&quot;
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -50,13 +50,13 @@
     <p>Prompt tuning should be selective, not wasteful.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>SMoP — Sparse Mixture of Prompts</h3>
+    <h3 id="smop-sparse-mixture-of-prompts">SMoP — Sparse Mixture of Prompts</h3>
     <p><strong>Plain-English idea:</strong> keep several prompt candidates, and <strong>activate only the useful ones</strong> for a given input (sparse mixture), instead of forcing one mega-prompt to do all the work.</p>
     <ul>
     <li>Good when the prompt budget is limited</li>
     <li>Uses a routing idea so not every prompt component fires every time</li>
     </ul>
-    <h3>APT — Adaptive Prefix Tuning</h3>
+    <h3 id="apt-adaptive-prefix-tuning">APT — Adaptive Prefix Tuning</h3>
     <p><strong>Plain-English idea:</strong> do <strong>not</strong> treat all layers equally. Change prefix length (prompt capacity) across layers.</p>
     <p>Why that matters:</p>
     <ul>
@@ -83,10 +83,10 @@
       </tbody>
     </table>
     <p>APT can also use gating so a layer only “keeps” the prefix tokens it needs.</p>
-    <h3>IDPG — Instance-Dependent Prompt Generation</h3>
+    <h3 id="idpg-instance-dependent-prompt-generation">IDPG — Instance-Dependent Prompt Generation</h3>
     <p><strong>Plain-English idea:</strong> the right soft prompt should depend on <strong>this input</strong>, not only on the task name.</p>
     <p>A small prompt-generator network builds prompt vectors from the input. Useful when one task has many subcases and a static prompt is too generic.</p>
-    <h3>SPT — Selective Prompt Tuning</h3>
+    <h3 id="spt-selective-prompt-tuning">SPT — Selective Prompt Tuning</h3>
     <p><strong>Plain-English idea:</strong> ask whether <strong>every</strong> layer needs soft prompting at all. Usually no. Learn to insert prompts <strong>only where they help</strong>.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
@@ -132,9 +132,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

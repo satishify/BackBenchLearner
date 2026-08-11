@@ -69,7 +69,7 @@
     <p>Use full fine-tuning only when you can afford it. Prefer LoRA for tiny trainable budgets. Prefer QLoRA when memory is tight.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Stack roles</h3>
+    <h3 id="stack-roles">Stack roles</h3>
     <table>
       <thead><tr>
         <th>Component</th>
@@ -98,7 +98,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Tiny code sketch (concept only)</h3>
+    <h3 id="tiny-code-sketch-concept-only">Tiny code sketch (concept only)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-python">from transformers import AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
@@ -137,7 +137,7 @@ args = TrainingArguments(
     <li><code>gradient_checkpointing_enable</code> → save activation memory</li>
     <li><code>paged_adamw_8bit</code> → soften optimizer spikes</li>
     </ul>
-    <h3>Quick revision rules</h3>
+    <h3 id="quick-revision-rules">Quick revision rules</h3>
     <ol>
     <li>Use <strong>full fine-tuning</strong> only when you can afford the compute and really need every weight to move.</li>
     <li>Use <strong>LoRA</strong> when you want most of the benefit with a tiny trainable parameter budget.</li>
@@ -188,9 +188,9 @@ args = TrainingArguments(
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

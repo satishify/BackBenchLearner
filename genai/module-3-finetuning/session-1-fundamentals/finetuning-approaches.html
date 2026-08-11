@@ -71,20 +71,20 @@
     <p>Full fine-tuning is the most powerful and most expensive. PEFT is often the middle ground between prompting and updating everything.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Unsupervised (continued) fine-tuning</h3>
+    <h3 id="unsupervised-continued-fine-tuning">Unsupervised (continued) fine-tuning</h3>
     <p>Feed lots of domain text (legal corpus, codebase, medical notes) so the model absorbs domain language. There may be no “instruction → answer” labels. Useful for domain familiarity; not the same as teaching a chat format.</p>
-    <h3>Supervised fine-tuning</h3>
+    <h3 id="supervised-fine-tuning">Supervised fine-tuning</h3>
     <p>You provide clear examples: given this input, produce that output. This is the workhorse for task adaptation and instruction-style models (next chapter goes deeper).</p>
-    <h3>Safety / alignment fine-tuning</h3>
+    <h3 id="safety-alignment-fine-tuning">Safety / alignment fine-tuning</h3>
     <p>After (or alongside) capability training, you further shape the model so it is more helpful, honest, and policy-compliant. Methods vary (preference data, RL-style loops, and related recipes). For now, remember the <strong>goal</strong>: safer, more aligned behavior. Lesson <strong>3.5</strong> goes deep on RLHF and DPO.</p>
-    <h3>Full fine-tuning</h3>
+    <h3 id="full-fine-tuning">Full fine-tuning</h3>
     <p>Every (or almost every) weight can move.</p>
     <ul>
     <li><strong>Good for:</strong> strong domain shift, high-value tasks, consistent formats when you have enough data</li>
     <li><strong>Risk:</strong> cost, overfitting on small data, forgetting general skills</li>
     <li><strong>Example:</strong> a legal drafting assistant that must internalize a house style</li>
     </ul>
-    <h3>PEFT (parameter-efficient fine-tuning)</h3>
+    <h3 id="peft-parameter-efficient-fine-tuning">PEFT (parameter-efficient fine-tuning)</h3>
     <p>Update only a small number of parameters (or add tiny modules / soft prompts).</p>
     <p>PEFT families you will meet later in Module 3:</p>
     <table>
@@ -156,9 +156,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

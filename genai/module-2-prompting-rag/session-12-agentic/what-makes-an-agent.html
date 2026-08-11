@@ -87,7 +87,7 @@ flowchart LR
     </div>
     <p>If there is no goal, no tools, and no loop, you have a single-turn completer. Useful—but not an agent.</p>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Core properties</h3>
+    <h3 id="core-properties">Core properties</h3>
     <p>Every agent needs at least these pieces:</p>
     <ol>
     <li><strong>Explicit goal</strong> — something checkable (&quot;report posted,&quot; &quot;ticket closed,&quot; &quot;tests green&quot;).</li>
@@ -97,7 +97,7 @@ flowchart LR
     <li><strong>Adjustment</strong> — retry, replan, ask a human, or stop.</li>
     </ol>
     <p>Not every property must be fancy. A narrow agent with two tools and a fixed checklist is still an agent if it loops on results. A free-chat LLM with no tools is not.</p>
-    <h3>The agent loop (ASCII)</h3>
+    <h3 id="the-agent-loop-ascii">The agent loop (ASCII)</h3>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">agent_loop(input):
@@ -109,7 +109,7 @@ flowchart LR
     return final_answer</code></pre>
     </div>
     <p><strong>Budgets matter:</strong> max steps, max tokens, max cost, max time. Without them, &quot;agency&quot; becomes an infinite bill.</p>
-    <h3>Degrees of autonomy</h3>
+    <h3 id="degrees-of-autonomy">Degrees of autonomy</h3>
     <table>
       <thead><tr>
         <th>Level</th>
@@ -135,7 +135,7 @@ flowchart LR
       </tbody>
     </table>
     <p>Ship the lowest level that delivers value. Autonomy is a product choice, not a badge.</p>
-    <h3>What is not required</h3>
+    <h3 id="what-is-not-required">What is not required</h3>
     <ul>
     <li>Multi-agent teams</li>
     <li>Fancy frameworks</li>
@@ -247,9 +247,9 @@ print(run_agent(Goal(&quot;weekly sales pack&quot;, &quot;posted&quot;)))</code>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

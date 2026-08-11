@@ -49,13 +49,13 @@
     <p>Freeze the original weights; update only the adapter. Often you touch roughly ~1–2% of the original parameter count.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Sequential adapters</h3>
+    <h3 id="sequential-adapters">Sequential adapters</h3>
     <p>The adapter sits <strong>in the main path</strong> (in the residual stream). Information flows through the adapter as part of the layer.</p>
     <ul>
     <li>Can reach similar accuracy while updating only about <strong>1%</strong> of original parameters.</li>
     <li>Trade-offs to remember: some <strong>inference latency</strong>, cost that scales with depth, harder to parallelize with existing compute, and multi-task serving can get expensive if you are not careful.</li>
     </ul>
-    <h3>Residual (parallel) adapters</h3>
+    <h3 id="residual-parallel-adapters">Residual (parallel) adapters</h3>
     <p>The adapter sits <strong>beside</strong> the main layer, then <strong>adds</strong> its output back to the original hidden state.</p>
     <p>Plain picture of a common bottleneck adapter:</p>
     <ol>
@@ -66,9 +66,9 @@
     </ol>
     <p>In words: <code>new_hidden = old_hidden + up(relu(down(old_hidden)))</code></p>
     <p>Why residual adapters are appealing for generation: they keep the original stream intact and inject task behavior more gently.</p>
-    <h3>Task structure helps</h3>
+    <h3 id="task-structure-helps">Task structure helps</h3>
     <p>Adapters often work better when the input clearly marks the task — for example special tokens for QA segments (<code>document</code>, <code>question</code>, <code>answer</code>), or similar markers for dialogue and summarization. That structure gives the small module clearer patterns to learn.</p>
-    <h3>Other ideas in the same family</h3>
+    <h3 id="other-ideas-in-the-same-family">Other ideas in the same family</h3>
     <table>
       <thead><tr>
         <th>Idea</th>
@@ -89,7 +89,7 @@
         </tr>
       </tbody>
     </table>
-    <h3>Why not just tune the last few layers?</h3>
+    <h3 id="why-not-just-tune-the-last-few-layers">Why not just tune the last few layers?</h3>
     <p>Tuning only the top layers can work, but adapters are more <strong>modular</strong>:</p>
     <ul>
     <li>One frozen backbone for many tasks</li>
@@ -140,9 +140,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

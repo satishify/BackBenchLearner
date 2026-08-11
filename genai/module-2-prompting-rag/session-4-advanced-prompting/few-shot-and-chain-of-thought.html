@@ -82,7 +82,7 @@ flowchart LR
       </tbody>
     </table>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Shot counts</h3>
+    <h3 id="shot-counts">Shot counts</h3>
     <table>
       <thead><tr>
         <th>Type</th>
@@ -108,7 +108,7 @@ flowchart LR
       </tbody>
     </table>
     <p>Pick examples that are <strong>diverse</strong> (cover classes and corner cases), <strong>correct</strong>, and <strong>format-identical</strong> to what you want at inference. Bad examples hurt more than missing ones.</p>
-    <h3>Chain-of-thought variants</h3>
+    <h3 id="chain-of-thought-variants">Chain-of-thought variants</h3>
     <table>
       <thead><tr>
         <th>Variant</th>
@@ -140,7 +140,7 @@ flowchart LR
     <p><strong>When CoT helps:</strong> multi-hop facts, counting, comparisons, policy application (&quot;does this refund qualify?&quot;).</p>
     <p><strong>When CoT hurts:</strong> pure extraction, tight latency budgets, or when you must not expose reasoning to end users.</p>
     <p><strong>Self-consistency intuition:</strong> ask the model many times (with some randomness), then majority-vote the final answer. Costly but strong on math-like tasks. If the model keeps giving the same bland answer (<strong>mode collapse</strong>), self-consistency helps less because every path looks alike.</p>
-    <h3>Few-shot + CoT together</h3>
+    <h3 id="few-shot-cot-together">Few-shot + CoT together</h3>
     <p>Show one or two examples that include short reasoning, then ask for the same pattern. Keep reasoning short in examples or the model will ramble.</p>
     <h2 id="in-code">In code</h2>
     <p>A tiny few-shot classifier and a chain-of-thought checker.</p>
@@ -226,9 +226,9 @@ print(&quot;final =&quot;, extract_final(reasoning))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

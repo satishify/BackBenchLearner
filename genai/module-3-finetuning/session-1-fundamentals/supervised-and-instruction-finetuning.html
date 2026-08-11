@@ -44,20 +44,20 @@
     <p>SFT teaches behavior from labeled pairs. Instruction fine-tuning specializes that idea for “user asks → assistant replies” chat format.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Supervised fine-tuning (SFT)</h3>
+    <h3 id="supervised-fine-tuning-sft">Supervised fine-tuning (SFT)</h3>
     <ul>
     <li>You need clear inputs and target outputs.</li>
     <li>Format must be consistent (same schema, same role tags if you use chat).</li>
     <li>Loss usually focuses on predicting the <strong>target</strong> tokens (the answer), not forcing the model to memorize the user’s question as if it wrote it.</li>
     </ul>
-    <h3>Instruction fine-tuning (IFT)</h3>
+    <h3 id="instruction-fine-tuning-ift">Instruction fine-tuning (IFT)</h3>
     <p>Instruction data often looks like:</p>
     <ul>
     <li>A user instruction (and maybe context)</li>
     <li>An ideal assistant response</li>
     </ul>
     <p>Training teaches the model: when someone asks in natural language, answer helpfully in the expected style.</p>
-    <h3>SFT vs IFT (practical view)</h3>
+    <h3 id="sft-vs-ift-practical-view">SFT vs IFT (practical view)</h3>
     <table>
       <thead><tr>
         <th></th>
@@ -83,7 +83,7 @@
       </tbody>
     </table>
     <p>Many people say “SFT” when they mean instruction tuning a chat model. That is fine — just know which data format you are using.</p>
-    <h3>Effect of instruction fine-tuning</h3>
+    <h3 id="effect-of-instruction-fine-tuning">Effect of instruction fine-tuning</h3>
     <p>After IFT, models usually become better at:</p>
     <ul>
     <li>Following directions</li>
@@ -134,9 +134,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

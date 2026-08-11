@@ -77,12 +77,12 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Human evaluation (still the gold standard)</h3>
+    <h3 id="human-evaluation-still-the-gold-standard">Human evaluation (still the gold standard)</h3>
     <p><strong>What it is:</strong> People read model outputs and score them using a rubric (a clear checklist of what &quot;good&quot; looks like).</p>
     <p><strong>Why it matters:</strong> Humans notice meaning, tone, safety, and usefulness better than a simple word-overlap score.</p>
     <p><strong>The catch — subjectivity:</strong> Two careful raters can disagree, especially on open-ended tasks or partly correct answers.</p>
     <p><strong>Agreement scores:</strong> Tools like <strong>Cohen&#x27;s kappa</strong> measure how much raters agree <em>beyond</em> random chance. Closer to 1 means stronger agreement. If raters often disagree, your rubric may be unclear — or the task may genuinely be hard to grade.</p>
-    <h3>Statistical and semantic metrics</h3>
+    <h3 id="statistical-and-semantic-metrics">Statistical and semantic metrics</h3>
     <p>These compare model output to a <strong>reference</strong> (the &quot;correct&quot; or expected text). Pick the metric that matches your task.</p>
     <table>
       <thead><tr>
@@ -124,7 +124,7 @@ Translation       -&gt; BLEU or METEOR
 Meaning-focused   -&gt; BERTScore
 Research practice -&gt; combine several metrics; do not trust just one number</code></pre>
     </div>
-    <h3>LLM-as-a-Judge (LaaJ)</h3>
+    <h3 id="llm-as-a-judge-laaj">LLM-as-a-Judge (LaaJ)</h3>
     <p><strong>What it is:</strong> One LLM scores or compares another model&#x27;s answer using a written rubric.</p>
     <p><strong>Main forms:</strong></p>
     <table>
@@ -149,7 +149,7 @@ Research practice -&gt; combine several metrics; do not trust just one number</c
     </table>
     <p><strong>When it helps:</strong> Human review is slow or expensive, but you still need quality checks at scale.</p>
     <p><strong>Caution:</strong> The judge model can inherit its own biases. Use clear instructions, calibrate against human labels sometimes, and pin the judge model version.</p>
-    <h3>Choosing graders for production</h3>
+    <h3 id="choosing-graders-for-production">Choosing graders for production</h3>
     <p>Match the grader to the job:</p>
     <ul>
     <li><strong>Exact / structural checks:</strong> JSON parses; required keys present; length bounds.</li>
@@ -255,9 +255,9 @@ assert pass_rate &gt;= 0.9 and not safety_fail, &quot;release gate failed&quot;<
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -84,7 +84,7 @@ flowchart TB
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Why decomposition matters</h3>
+    <h3 id="why-decomposition-matters">Why decomposition matters</h3>
     <ul>
     <li><strong>Reliability:</strong> smaller blast radius per failure.</li>
     <li><strong>Traceability:</strong> logs map to named steps.</li>
@@ -93,7 +93,7 @@ flowchart TB
     <li><strong>Parallelism:</strong> independent branches can run together.</li>
     <li><strong>Human review:</strong> insert HITL on specific steps only.</li>
     </ul>
-    <h3>Planner output (example)</h3>
+    <h3 id="planner-output-example">Planner output (example)</h3>
     <p>For a payment outage, a planner might output:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -103,7 +103,7 @@ flowchart TB
 4. Compare findings and synthesize answer</code></pre>
     </div>
     <p>The <strong>executor</strong> runs one line at a time—e.g., <code>github.get_commit_diff(...)</code>, then <code>splunk.query_logs(...)</code>.</p>
-    <h3>How to decompose well</h3>
+    <h3 id="how-to-decompose-well">How to decompose well</h3>
     <ol>
     <li>Start from the deliverable and walk backward (what must be true before we publish?).</li>
     <li>Name steps as verbs with clear outputs (<code>fetch_tickets</code> → <code>TicketList</code>).</li>
@@ -112,7 +112,7 @@ flowchart TB
     <li>Define a check for each step (row count &gt; 0, schema valid, tests green).</li>
     <li>Cap depth: if you need more than ~7–10 steps, introduce phases or a sub-agent.</li>
     </ol>
-    <h3>Example</h3>
+    <h3 id="example">Example</h3>
     <p>Goal: &quot;Create weekly support summary.&quot;</p>
     <ol>
     <li>Fetch tickets from CRM for the date range.</li>
@@ -122,7 +122,7 @@ flowchart TB
     <li>Format and share the final report.</li>
     </ol>
     <p>Each step can fail differently: CRM auth vs empty clusters vs tone policy on recommendations.</p>
-    <h3>Static vs dynamic plans</h3>
+    <h3 id="static-vs-dynamic-plans">Static vs dynamic plans</h3>
     <table>
       <thead><tr>
         <th>Type</th>
@@ -250,9 +250,9 @@ print(run_plan(STEPS).artifacts[&quot;summary&quot;])</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

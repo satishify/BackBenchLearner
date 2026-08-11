@@ -54,21 +54,21 @@
     <p>Keep one shared base model. Train a small LoRA adapter per client. Hot-swap the adapter per request.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Training side (often with QLoRA)</h3>
+    <h3 id="training-side-often-with-qlora">Training side (often with QLoRA)</h3>
     <ol>
     <li>Load the base model in <strong>4-bit</strong> (for example 13B drops from about 26 GB toward about 7 GB)</li>
     <li>Fine-tune a <strong>separate LoRA adapter</strong> on each client’s data</li>
     <li>Each adapter can be small (on the order of tens of MB in a typical example)</li>
     <li>With 4-bit loading and careful optimizers, this can fit on a single consumer-class GPU instead of a big multi-GPU cluster</li>
     </ol>
-    <h3>Serving side (LoRA hot-swap)</h3>
+    <h3 id="serving-side-lora-hot-swap">Serving side (LoRA hot-swap)</h3>
     <ol>
     <li>Keep <strong>one base model</strong> resident in GPU memory</li>
     <li>For each request, load the correct client adapter (hot-swap)</li>
     <li><strong>200 × ~50 MB adapters ≈ 10 GB</strong> total — versus terabytes of full model copies</li>
     </ol>
     <p>Systems designed for this pattern (for example LoRAX-style serving) exist so you can swap adapters without reloading a full model every time.</p>
-    <h3>Approach comparison</h3>
+    <h3 id="approach-comparison">Approach comparison</h3>
     <table>
       <thead><tr>
         <th>Approach</th>
@@ -132,9 +132,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

@@ -163,6 +163,11 @@ class _Renderer:
         if level == 2:
             self.stats.headings.append(text)
             self.out.append(f'<h2 id="{slugify(text)}">{render_inline(text)}</h2>')
+        elif level in (3, 4):
+            # Subtopic headings need ids so "On this page" can deep-link them.
+            self.out.append(
+                f'<h{level} id="{slugify(text)}">{render_inline(text)}</h{level}>'
+            )
         else:
             self.out.append(f"<h{level}>{render_inline(text)}</h{level}>")
         self.pos += 1

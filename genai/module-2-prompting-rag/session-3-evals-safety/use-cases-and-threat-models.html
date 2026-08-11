@@ -75,7 +75,7 @@ flowchart TB
   M --> Ship[Scoped pilot]
       </div>
     </div>
-    <h3>What a threat model asks</h3>
+    <h3 id="what-a-threat-model-asks">What a threat model asks</h3>
     <table>
       <thead><tr>
         <th>Question</th>
@@ -101,7 +101,7 @@ flowchart TB
       </tbody>
     </table>
     <p>The less you assume about the attacker, the more dangerous the situation usually is.</p>
-    <h3>Advanced threats to watch for</h3>
+    <h3 id="advanced-threats-to-watch-for">Advanced threats to watch for</h3>
     <table>
       <thead><tr>
         <th>Threat</th>
@@ -127,7 +127,7 @@ flowchart TB
       </tbody>
     </table>
     <p>These matter more for training and deployment teams. For prompt-based apps, focus first on injection, tool misuse, and data leakage.</p>
-    <h3>Jailbreak taxonomy (patterns attackers use)</h3>
+    <h3 id="jailbreak-taxonomy-patterns-attackers-use">Jailbreak taxonomy (patterns attackers use)</h3>
     <p>Attackers group tricks into patterns such as:</p>
     <ul>
     <li>One-shot or few-shot harmful examples</li>
@@ -139,27 +139,27 @@ flowchart TB
     </ul>
     <p>You do not need to memorize every name. The lesson is: attackers iterate on wording. Your eval set must include adversarial probes, not only friendly chat.</p>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Support bots</h3>
+    <h3 id="support-bots">Support bots</h3>
     <p><strong>Job:</strong> FAQs, ticket classification, draft replies grounded in policy.</p>
     <p><strong>Assets:</strong> customer PII, order data, refund authority, brand tone.</p>
     <p><strong>Typical threats:</strong> prompt injection in ticket text; model inventing policy; over-refunding; leaking other customers&#x27; data from RAG.</p>
     <p><strong>Controls:</strong> RAG grounded on approved policy; citation required; human-in-the-loop (HITL) for refunds above a threshold; output PII scanners; golden evals for &quot;should refuse / should escalate.&quot;</p>
-    <h3>Coding agents</h3>
+    <h3 id="coding-agents">Coding agents</h3>
     <p><strong>Job:</strong> search codebase, propose patches, run tests, explain fixes.</p>
     <p><strong>Assets:</strong> source code, secrets in environment variables, continuous integration (CI) credentials.</p>
     <p><strong>Typical threats:</strong> deleting files; committing secrets; running unchecked shell; following malicious comments in code.</p>
     <p><strong>Controls:</strong> sandbox; read-only by default; allowlisted commands; never auto-merge; secret scanning on diffs; human review for auth/payments code.</p>
-    <h3>Research agents</h3>
+    <h3 id="research-agents">Research agents</h3>
     <p><strong>Job:</strong> gather sources, summarize, produce structured notes.</p>
     <p><strong>Assets:</strong> proprietary briefs, unpublished data, reputation for accuracy.</p>
     <p><strong>Typical threats:</strong> hallucinated citations; poisoned web pages (indirect injection); exfiltrating private notes into public tools.</p>
     <p><strong>Controls:</strong> source allowlists; quote plus URL requirements; cross-check critical claims; faithfulness graders on eval sets.</p>
-    <h3>Automation agents</h3>
+    <h3 id="automation-agents">Automation agents</h3>
     <p><strong>Job:</strong> repetitive ops — reports, routing, customer relationship management (CRM) updates.</p>
     <p><strong>Assets:</strong> production databases, customer communications, money movement.</p>
     <p><strong>Typical threats:</strong> infinite retry loops; wrong-record updates; spam storms; privilege creep across integrations.</p>
     <p><strong>Controls:</strong> idempotency keys; dry-run mode; rate limits; circuit breakers; dual control for write tools.</p>
-    <h3>Decision guide for a first pilot</h3>
+    <h3 id="decision-guide-for-a-first-pilot">Decision guide for a first pilot</h3>
     <p>Prefer a use case that is:</p>
     <ol>
     <li><strong>Narrow</strong> — one workflow, clear success definition.</li>
@@ -299,9 +299,9 @@ assert support.ready_for_pilot()</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

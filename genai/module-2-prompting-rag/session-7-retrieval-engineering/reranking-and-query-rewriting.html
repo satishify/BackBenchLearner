@@ -73,7 +73,7 @@ flowchart LR
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Pre-retrieval and post-retrieval</h3>
+    <h3 id="pre-retrieval-and-post-retrieval">Pre-retrieval and post-retrieval</h3>
     <table>
       <thead><tr>
         <th>Phase</th>
@@ -91,7 +91,7 @@ flowchart LR
       </tbody>
     </table>
     <p>The raw user question is not always the best search query. The first chunks returned are not always the best evidence.</p>
-    <h3>Query rewriting patterns</h3>
+    <h3 id="query-rewriting-patterns">Query rewriting patterns</h3>
     <table>
       <thead><tr>
         <th>Method</th>
@@ -127,7 +127,7 @@ flowchart LR
       </tbody>
     </table>
     <p>Keep rewrites <strong>instrumented</strong>: log original vs rewritten and measure hit rates.</p>
-    <h3>Rerankers</h3>
+    <h3 id="rerankers">Rerankers</h3>
     <table>
       <thead><tr>
         <th>Type</th>
@@ -152,7 +152,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Typical cascade</h3>
+    <h3 id="typical-cascade">Typical cascade</h3>
     <p>Hybrid retrieve N=50 → cross-encode → keep k=5 → generate. Most quality gains per dollar sit here, not in doubling LLM size.</p>
     <h2 id="in-code">In code</h2>
     <p>Toy rewrite plus a stand-in cross-encoder (token overlap).</p>
@@ -241,9 +241,9 @@ for doc, score in sorted(
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

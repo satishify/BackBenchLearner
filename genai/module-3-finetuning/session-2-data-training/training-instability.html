@@ -47,7 +47,7 @@
     <li>Deep networks multiply small problems layer by layer.</li>
     </ul>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Three failure modes (easy to confuse)</h3>
+    <h3 id="three-failure-modes-easy-to-confuse">Three failure modes (easy to confuse)</h3>
     <table>
       <thead><tr>
         <th>Failure</th>
@@ -73,15 +73,15 @@
       </tbody>
     </table>
     <p>Spikes often cluster where the learning rate is highest (just after warmup).</p>
-    <h3>Fix 1: Gradient clipping</h3>
+    <h3 id="fix-1-gradient-clipping">Fix 1: Gradient clipping</h3>
     <p>Clipping says: “If the gradient is bigger than this cap, shrink it. Keep the direction, limit the size.”</p>
     <ul>
     <li>A common default for LLM fine-tuning is <code>max_grad_norm = 1.0</code>.</li>
     <li>Clipping is a seatbelt, not a steering wheel. If more than about 20% of steps hit the clip, your learning rate is probably too high.</li>
     </ul>
-    <h3>Fix 2: Learning-rate schedule (preview)</h3>
+    <h3 id="fix-2-learning-rate-schedule-preview">Fix 2: Learning-rate schedule (preview)</h3>
     <p>A constant high learning rate for a long run often causes late spikes. Warmup (start small) plus a decaying schedule (for example cosine) keeps early steps gentle and late steps careful. The next lesson goes deep on schedules; for stability, remember: <strong>warmup + decay beats “flat and aggressive.”</strong></p>
-    <h3>A stability checklist that compounds</h3>
+    <h3 id="a-stability-checklist-that-compounds">A stability checklist that compounds</h3>
     <table>
       <thead><tr>
         <th>Layer</th>
@@ -175,9 +175,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

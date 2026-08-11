@@ -76,7 +76,7 @@ flowchart LR
     <p>Do one small step at a time and pass the result forward. Complex tasks are easier to control when split into verified steps.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Structured outputs (output contracts)</h3>
+    <h3 id="structured-outputs-output-contracts">Structured outputs (output contracts)</h3>
     <p><strong>Specify the contract in three places:</strong></p>
     <ol>
     <li><strong>Prompt:</strong> show the exact JSON shape and a tiny valid example.</li>
@@ -86,7 +86,7 @@ flowchart LR
     <p><strong>Enums beat free text.</strong> Prefer <code>&quot;severity&quot;: &quot;low|medium|high&quot;</code> over open strings.</p>
     <p><strong>Repair loops:</strong> on validation failure, send the error back: &quot;Your JSON failed: missing key <code>severity</code>. Resend valid JSON only.&quot; Cap retries (usually 1–2).</p>
     <p><strong>Tool / function calling</strong> is structured prompting with a vendor schema: the model fills arguments that your code executes.</p>
-    <h3>Prompt chaining</h3>
+    <h3 id="prompt-chaining">Prompt chaining</h3>
     <p>Break one big task into a sequence of smaller calls.</p>
     <p>Example pipeline:</p>
     <div class="code-block" data-lang="text">
@@ -96,7 +96,7 @@ Step 2: extract key facts from the summary
 Step 3: turn facts into study notes</code></pre>
     </div>
     <p>Each step is easier to verify than one mega-prompt.</p>
-    <h3>ReAct (Reason + Act)</h3>
+    <h3 id="react-reason-act">ReAct (Reason + Act)</h3>
     <p>ReAct combines <strong>reasoning</strong> and <strong>acting</strong> in a loop:</p>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -104,7 +104,7 @@ Step 3: turn facts into study notes</code></pre>
     </div>
     <p><strong>Why it exists:</strong> some tasks need outside information, not only internal memory.</p>
     <p><strong>Example:</strong> the model searches for a fact, reads the result, then refines its answer — like checking references as you go instead of guessing from memory alone.</p>
-    <h3>Tree of Thoughts</h3>
+    <h3 id="tree-of-thoughts">Tree of Thoughts</h3>
     <p>For problems with several possible routes, the model:</p>
     <ol>
     <li>Explores multiple branches of reasoning.</li>
@@ -198,9 +198,9 @@ print(chain_summarize_then_extract(&quot;long article text...&quot;))</code></pr
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

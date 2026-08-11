@@ -56,7 +56,7 @@ flowchart LR
     <p>Always double-check dates, names, and facts before trusting the answer — especially when the model sounds very confident.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Recognizing and reducing hallucination</h3>
+    <h3 id="recognizing-and-reducing-hallucination">Recognizing and reducing hallucination</h3>
     <table>
       <thead><tr>
         <th>Signal</th>
@@ -85,7 +85,7 @@ flowchart LR
     <li>Human spot checks for high-risk domains.</li>
     </ul>
     <p>Never trust unvetted instructions inside copied text, emails, or web pages — they may be prompt injection attempts.</p>
-    <h3>Build a golden set</h3>
+    <h3 id="build-a-golden-set">Build a golden set</h3>
     <p>Start with 20–50 real or realistic examples spanning:</p>
     <ul>
     <li>Happy paths</li>
@@ -94,7 +94,7 @@ flowchart LR
     <li>Schema-stress cases (must return valid JSON)</li>
     </ul>
     <p>Store inputs, optional reference answers, and tags (<code>billing</code>, <code>safety</code>).</p>
-    <h3>Choose graders</h3>
+    <h3 id="choose-graders">Choose graders</h3>
     <table>
       <thead><tr>
         <th>Grader type</th>
@@ -129,9 +129,9 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <h3>Metrics to track</h3>
+    <h3 id="metrics-to-track">Metrics to track</h3>
     <p>Pass rate, repair-loop rate, citation presence, refusal correctness, latency, and cost per successful answer. <strong>Slice by tag</strong> so you see &quot;billing broke&quot; not just &quot;average dipped 2%.&quot;</p>
-    <h3>Regression in continuous integration (CI)</h3>
+    <h3 id="regression-in-continuous-integration-ci">Regression in continuous integration (CI)</h3>
     <ul>
     <li>Pin model version when possible.</li>
     <li>On every prompt pull request (PR), run the suite.</li>
@@ -240,9 +240,9 @@ assert pass_rate &gt;= 0.9 and not safety_fail, &quot;prompt regression&quot;</c
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>

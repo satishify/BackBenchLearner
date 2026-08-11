@@ -89,7 +89,7 @@ flowchart TD
       </div>
     </div>
     <h2 id="how-it-works">How it works</h2>
-    <h3>Core controls</h3>
+    <h3 id="core-controls">Core controls</h3>
     <ul>
     <li><strong>Sequencing &amp; dependencies:</strong> step B waits for artifact A.</li>
     <li><strong>Retry policy:</strong> how many times, with exponential backoff, on which errors.</li>
@@ -102,11 +102,11 @@ flowchart TD
     <li><strong>Idempotency:</strong> retries must not double-charge or double-email.</li>
     <li><strong>Budgets:</strong> max steps, tokens, and dollars.</li>
     </ul>
-    <h3>Provenance tracking</h3>
+    <h3 id="provenance-tracking">Provenance tracking</h3>
     <p>In multi-agent systems, track <strong>provenance</strong>—which specialist agent produced which observation. That makes auditing and debugging much easier: you can trace a claim back to the exact tool call or agent that produced it.</p>
-    <h3>Example failure path</h3>
+    <h3 id="example-failure-path">Example failure path</h3>
     <p>Primary search API fails twice → wait with backoff → failover to backup index → continue summarization → if backup also fails, return &quot;degraded: cached summary&quot; instead of hanging.</p>
-    <h3>Orchestration styles</h3>
+    <h3 id="orchestration-styles">Orchestration styles</h3>
     <table>
       <thead><tr>
         <th>Style</th>
@@ -136,7 +136,7 @@ flowchart TD
       </tbody>
     </table>
     <p>Prefer fixed skeletons for money and compliance paths; allow freer planning only inside sandboxes.</p>
-    <h3>LangGraph-style graph (ASCII sketch)</h3>
+    <h3 id="langgraph-style-graph-ascii-sketch">LangGraph-style graph (ASCII sketch)</h3>
     <div class="code-block" data-lang="text">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
       <pre><code class="language-text">graph = StateGraph(AgentState)
@@ -253,9 +253,9 @@ print(run_workflow(deadline=time.time() + 5))</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260731i"></script>
-  <script src="../../../scripts/progress.js?v=20260731i"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260731i"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260731i"></script>
+  <script src="../../../scripts/curriculum.js?v=20260811d"></script>
+  <script src="../../../scripts/progress.js?v=20260811d"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260811d"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260811d"></script>
 </body>
 </html>
