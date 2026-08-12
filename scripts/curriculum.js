@@ -1164,7 +1164,7 @@ window.BBL.CURRICULUM = {
         "title": "3.4 Re-Parameterization PEFT (LoRA & QLoRA)",
         "quizId": "genai/module-3-finetuning/session-4-reparam-peft",
         "hasQuiz": true,
-        "minutes": 22,
+        "minutes": 24,
         "lessons": [
           {
             "slug": "why-reparameterization-peft",
@@ -1185,7 +1185,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation",
             "path": "module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html",
             "label": "LoRA: Low-Rank Adaptation",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "multi-tenant-lora-serving",

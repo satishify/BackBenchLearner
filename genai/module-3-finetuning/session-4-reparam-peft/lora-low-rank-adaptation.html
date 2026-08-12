@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Freeze the base model and learn two small matrices that approximate the weight update.">
+  <meta name="description" content="Freeze the big model, train a tiny sticky-note correction with down-projection and up-projection matrices.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html">
   <meta property="og:title" content="LoRA: Low-Rank Adaptation | BackbenchLearner">
-  <meta property="og:description" content="Freeze the base model and learn two small matrices that approximate the weight update.">
+  <meta property="og:description" content="Freeze the big model, train a tiny sticky-note correction with down-projection and up-projection matrices.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/lora-low-rank-adaptation.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LoRA: Low-Rank Adaptation | BackbenchLearner">
-  <meta name="twitter:description" content="Freeze the base model and learn two small matrices that approximate the weight update.">
+  <meta name="twitter:description" content="Freeze the big model, train a tiny sticky-note correction with down-projection and up-projection matrices.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,60 +36,102 @@
       <h1>LoRA: Low-Rank Adaptation</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>LoRA</strong> (Low-Rank Adaptation) freezes the base model and learns two small matrices that together approximate the weight update. Instead of one huge dense update, you learn a <strong>down-projection</strong> and an <strong>up-projection</strong>.</p>
+    <p><strong>LoRA</strong> (Low-Rank Adaptation) is a cheap way to fine-tune a large model. You do <strong>not</strong> rewrite every weight. You keep the big model frozen and learn a <strong>small correction</strong> on top.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Think of the frozen weight matrix <strong>W</strong> as the pretrained skill. Fine-tuning wants a correction <strong>ΔW</strong>. LoRA says: do not learn every cell of ΔW. Learn a thin path through a small rank <strong>r</strong>.</p>
+    <p>Think of teaching a chef:</p>
+    <ul>
+    <li><strong>Full fine-tuning</strong> = retrain every cooking skill from scratch</li>
+    <li><strong>LoRA</strong> = keep the chef’s skills, add a small “restaurant style” notebook</li>
+    </ul>
+    <p>That notebook has two parts:</p>
+    <ul>
+    <li><strong>Down-projection (A)</strong> = notice only the important style differences (squeeze)</li>
+    <li><strong>Up-projection (B)</strong> = apply those differences back to full behavior (stretch)</li>
+    </ul>
+    <p>You do <strong>not</strong> write A and B by hand. Training fills them in from your examples.</p>
     <p>A common form:</p>
     <p><code>W&#x27; = W + (α / r) · B · A</code></p>
-    <ul>
-    <li><strong>W</strong> stays frozen (keeps pretrained knowledge)</li>
-    <li><strong>B · A</strong> is the low-rank correction</li>
-    <li><strong>α / r</strong> scales the update so its size stays stable when you change rank</li>
-    </ul>
-    <aside class="callout callout-key">
-      <p class="callout-title">Key idea</p>
-    <p>LoRA = frozen backbone + tiny low-rank update. Higher rank = more flexibility and more parameters.</p>
-    </aside>
-    <h2 id="how-it-works">How it works</h2>
-    <h3 id="symbols-in-plain-english">Symbols in plain English</h3>
     <table>
       <thead><tr>
         <th>Symbol</th>
-        <th>Meaning</th>
+        <th>Plain meaning</th>
       </tr></thead>
       <tbody>
         <tr>
           <td><strong>W</strong></td>
-          <td>Frozen base weight matrix</td>
+          <td>Original frozen weights (the pretrained brain)</td>
         </tr>
         <tr>
-          <td><strong>ΔW</strong></td>
-          <td>Weight update that should adapt the model</td>
+          <td><strong>W&#x27;</strong></td>
+          <td>Final behavior = original + correction</td>
         </tr>
         <tr>
           <td><strong>A</strong></td>
-          <td>Down-projection matrix with rank <strong>r</strong></td>
+          <td>Down-projection (wide → narrow)</td>
         </tr>
         <tr>
           <td><strong>B</strong></td>
-          <td>Up-projection matrix that maps back to model size</td>
+          <td>Up-projection (narrow → wide)</td>
         </tr>
         <tr>
           <td><strong>r</strong></td>
-          <td>Low rank used by the adapter</td>
+          <td>Rank — how wide the tiny middle path is</td>
         </tr>
         <tr>
           <td><strong>α</strong></td>
-          <td>Scaling factor that controls LoRA strength</td>
+          <td>How strong the LoRA correction is allowed to be</td>
         </tr>
       </tbody>
     </table>
-    <h3 id="size-of-a-lora-adapter">Size of a LoRA adapter</h3>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>LoRA = frozen base model + tiny trainable sticky-note update. A and B are learned automatically, not hand-picked.</p>
+    </aside>
+    <h2 id="how-it-works">How it works</h2>
+    <h3 id="the-formula-in-plain-words">The formula in plain words</h3>
+    <p><code>W&#x27;</code> (what the model uses) = <code>W</code> (frozen) + a small correction.</p>
+    <p>The correction is <code>B · A</code>, scaled by <code>α / r</code> so the push stays stable when you change rank.</p>
+    <h3 id="down-projection-and-up-projection">Down-projection and up-projection</h3>
+    <p>Imagine a wide highway of size <strong>d</strong> (for example 4096).</p>
+    <ol>
+    <li><strong>Down-projection (<code>A</code>)</strong></li>
+    </ol>
+    <p>Compresses the wide signal into a narrow lane of size <strong>r</strong> (for example 8). “Summarize the needed change into a small space.”</p>
+    <ol>
+    <li><strong>Up-projection (<code>B</code>)</strong></li>
+    </ol>
+    <p>Expands that narrow lane back to full width <strong>d</strong>. “Write the correction back into the original size.”</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    X[Input / wide signal] --> A[A: down-projection<br/>wide → tiny rank r]
+    A --> M[Tiny middle path<br/>cheap to train]
+    M --> B[B: up-projection<br/>tiny → wide again]
+    B --> C[Small correction]
+    W[Frozen base weights W] --> Y[Final behavior W']
+    C --> Y
+      </div>
+    </div>
+    <h3 id="you-do-not-choose-the-numbers-inside-a-and-b">You do not choose the numbers inside A and B</h3>
+    <p>Practically:</p>
+    <ol>
+    <li>Start A and B with small random values</li>
+    <li>Show many examples (“user asked this → good answer is that”)</li>
+    <li>Training slowly adjusts A and B</li>
+    <li>Keep <strong>W</strong> frozen the whole time</li>
+    </ol>
+    <p>What <strong>you</strong> choose are settings like:</p>
+    <ul>
+    <li><strong>r</strong> — how wide the tiny middle is (8 or 16 is a common start)</li>
+    <li><strong>α</strong> — how strong the adapter may be</li>
+    <li><strong>which layers</strong> get adapters (often attention parts like <code>q_proj</code>, <code>v_proj</code>)</li>
+    </ul>
+    <h3 id="why-this-helps">Why this helps</h3>
     <p>For a square <strong>d × d</strong> weight:</p>
     <table>
       <thead><tr>
         <th>Scenario</th>
-        <th>Trainable parameters</th>
+        <th>About how many trainable numbers</th>
       </tr></thead>
       <tbody>
         <tr>
@@ -106,29 +148,63 @@
         </tr>
       </tbody>
     </table>
-    <p>That example is roughly <strong>256× smaller</strong> than training the full 4096×4096 matrix. That is why LoRA is attractive for task-specific or client-specific adapters.</p>
-    <h3 id="rank-and-scaling-choices">Rank and scaling choices</h3>
+    <p>That LoRA example is roughly <strong>256× smaller</strong> than updating the full 4096×4096 matrix. So you get:</p>
     <ul>
-    <li><strong>Higher rank</strong> → more flexibility, more trainable parameters</li>
-    <li><strong>Lower rank</strong> → cheaper, but may underfit a hard adaptation</li>
-    <li><strong>α / r scaling</strong> → keeps update magnitude better behaved when rank changes</li>
+    <li>lower GPU cost</li>
+    <li>smaller adapter files to save/share</li>
+    <li>usually less forgetting of the original model</li>
     </ul>
-    <h3 id="lora-as-a-generalization-of-full-fine-tuning">LoRA as a generalization of full fine-tuning</h3>
-    <p>If the rank is large enough, a low-rank update can approximate a dense update. In that sense, LoRA is a flexible middle ground: small rank for cheap PEFT, larger rank when you need more capacity — without opening every weight by default.</p>
+    <h3 id="practically-how-it-is-done">Practically how it is done</h3>
+    <ol>
+    <li>Load a base model</li>
+    <li>Freeze its weights</li>
+    <li>Attach LoRA adapters (A and B) on chosen layers</li>
+    <li>Train only those adapters on your dataset</li>
+    <li>Save the small adapter (often MBs, not a full model copy)</li>
+    <li>Later: load base model + attach adapter (or merge them)</li>
+    </ol>
+    <p>Tiny PEFT-style sketch (concept only):</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">from peft import LoraConfig, get_peft_model
+
+lora = LoraConfig(
+    r=8,                 # tiny middle width
+    lora_alpha=16,       # strength (α)
+    target_modules=[&quot;q_proj&quot;, &quot;v_proj&quot;],
+    lora_dropout=0.05,
+    bias=&quot;none&quot;,
+    task_type=&quot;CAUSAL_LM&quot;,
+)
+
+model = get_peft_model(base_model, lora)
+# train model on your dataset
+# then: model.save_pretrained(&quot;my-lora-adapter&quot;)</code></pre>
+    </div>
+    <p>Libraries create the down/up matrices for you. Your job is good data + sensible <code>r</code> / <code>α</code> / target layers.</p>
+    <h3 id="rank-and-strength-choices">Rank and strength choices</h3>
+    <ul>
+    <li><strong>Higher r</strong> → more flexibility, more trainable parameters</li>
+    <li><strong>Lower r</strong> → cheaper, but may underfit a hard domain shift</li>
+    <li><strong>α / r</strong> → keeps update size better behaved when rank changes</li>
+    </ul>
+    <p>If rank is large enough, a low-rank update can approximate a full dense update. LoRA is the practical middle ground: small by default, richer when you need more capacity.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Picking a tiny rank for a big domain shift, then blaming LoRA.</li>
-    <li>Forgetting the scaling term and wondering why rank changes feel unstable.</li>
-    <li>Training LoRA but also unfreezing the whole backbone “just in case,” which defeats the memory win.</li>
+    <li>Thinking you must hand-design A and B — training learns them.</li>
+    <li>Unfreezing the whole backbone “just in case,” which removes the memory win.</li>
+    <li>Forgetting to use the same base model later when loading the adapter.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>LoRA learns a small low-rank update while keeping the backbone frozen — most of the adaptation benefit, far fewer trainable parameters.</p>
+    <p>LoRA freezes the big model and trains a small down→up sticky-note correction so fine-tuning stays cheap and effective.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
     <li><strong>LoRA</strong> — Low-Rank Adaptation with frozen base weights.</li>
-    <li><strong>Rank (r)</strong> — Size of the low-rank bottleneck.</li>
+    <li><strong>Down-projection (A)</strong> — Compresses the change into a tiny middle path.</li>
+    <li><strong>Up-projection (B)</strong> — Expands that tiny change back to full size.</li>
+    <li><strong>Rank (r)</strong> — Width of the tiny middle path.</li>
     <li><strong>α (alpha)</strong> — Strength / scaling of the LoRA update.</li>
-    <li><strong>Adapter size</strong> — Roughly <strong>2dr</strong> trainable parameters for a square <strong>d × d</strong> matrix.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
