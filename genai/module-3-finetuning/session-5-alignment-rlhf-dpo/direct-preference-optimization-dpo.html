@@ -37,6 +37,7 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p><strong>DPO</strong> (Direct Preference Optimization) is a simpler alternative to full PPO-style RLHF. Instead of fitting a separate reward model and then running RL, DPO uses preference data to move the policy toward the preferred answer <strong>directly</strong>.</p>
+    <p>Same votes as RLHF. Fewer moving parts.</p>
     <h2 id="intuition">Intuition</h2>
     <p>DPO asks:</p>
     <blockquote>
@@ -48,6 +49,11 @@
     <li>A <strong>reference</strong> policy so training stays anchored</li>
     </ul>
     <p>You usually <strong>do not</strong> need a separate live reward-model + PPO loop.</p>
+    <p>Two-path picture:</p>
+    <ul>
+    <li><strong>RLHF</strong> = votes → critic → PPO (with a KL leash)</li>
+    <li><strong>DPO</strong> = votes go straight into the policy, compared against a frozen reference</li>
+    </ul>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>DPO: preference data in → aligned policy out, with fewer moving parts than classic RLHF.</p>
@@ -60,6 +66,23 @@
     <li>Train the policy so the chosen answer becomes more likely than the rejected one <strong>relative to the reference</strong></li>
     <li>That relative comparison is what keeps training grounded</li>
     </ol>
+    <p>“Relative to the reference” is the important phrase.</p>
+    <p>If you only raise <code>P(chosen)</code> and lower <code>P(rejected)</code>, the model can drift into odd wording. DPO asks: <em>compared with the reference intern, are you now more in favor of the winner than the loser?</em> The reference is the anchor — same job KL did in PPO, baked into the loss.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph RLHF["Classic RLHF"]
+      P1[Preference pairs] --> RM[Reward model]
+      RM --> PPO[PPO + KL]
+      PPO --> A1[Aligned policy]
+    end
+    subgraph DPO["DPO"]
+      P2[Preference pairs] --> L[Direct DPO loss]
+      Ref[Reference policy] --> L
+      L --> A2[Aligned policy]
+    end
+      </div>
+    </div>
     <h3 id="why-people-like-it">Why people like it</h3>
     <table>
       <thead><tr>
@@ -81,6 +104,7 @@
         </tr>
       </tbody>
     </table>
+    <p>It does <strong>not</strong> remove labels. No pairs, no DPO. Dirty pairs → the wrong taste, same as a bad reward model.</p>
     <h3 id="tiny-pseudocode-concept-only">Tiny pseudocode (concept only)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -91,6 +115,37 @@
     optimizer.zero_grad()</code></pre>
     </div>
     <p>Read this as the shape of the idea: compare chosen vs rejected under policy and reference, then update.</p>
+    <p>What the names are doing:</p>
+    <table>
+      <thead><tr>
+        <th>Piece</th>
+        <th>Role</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><code>policy</code></td>
+          <td>The model you are aligning</td>
+        </tr>
+        <tr>
+          <td><code>reference</code></td>
+          <td>Frozen SFT-style anchor</td>
+        </tr>
+        <tr>
+          <td><code>chosen</code> / <code>rejected</code></td>
+          <td>The human (or rater) vote</td>
+        </tr>
+        <tr>
+          <td><code>beta</code></td>
+          <td>How strongly to stay near the reference (a KL-like strength)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>In words, the loss likes you more when:</p>
+    <ul>
+    <li>the policy assigns <strong>higher</strong> log-probability to the chosen answer than the reference did, and</li>
+    <li><strong>lower</strong> log-probability to the rejected answer than the reference did</li>
+    </ul>
+    <p>That is “direct”: no separate critic scores <code>r_w</code> and <code>r_l</code>, then PPO. The preference is applied to the policy itself.</p>
     <h3 id="quick-revision-rules-for-this-whole-lesson-group">Quick revision rules for this whole lesson group</h3>
     <ol>
     <li>Alignment makes the model answer the way humans prefer — not only how next-token prediction would go.</li>
@@ -112,6 +167,7 @@
     <li><strong>DPO</strong> — Direct Preference Optimization from pairwise preferences.</li>
     <li><strong>Reference policy</strong> — Anchor distribution used during DPO training.</li>
     <li><strong>Preference data</strong> — Prompt with chosen and rejected completions.</li>
+    <li><strong>Beta</strong> — Strength of staying near the reference in the DPO loss.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -37,12 +37,14 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>A base language model is good at predicting the next token. That does <strong>not</strong> automatically make it safe, truthful, or useful in the way people want. <strong>Alignment</strong> is the post-training work that shapes behavior after the model already knows language.</p>
+    <p>Fine-tuning (the last few chapters) taught the model a task. Alignment asks a different question: <em>when a person talks to it, does it behave like a good assistant?</em></p>
     <h2 id="intuition">Intuition</h2>
     <p>Think of two stages:</p>
     <ol>
     <li><strong>Pretraining / SFT</strong> — learn language and basic task habits</li>
     <li><strong>Alignment</strong> — learn <em>how to respond</em> the way people prefer</li>
     </ol>
+    <p>A fluent intern can finish your sentences. That intern is still not a good coworker until they learn: solve the actual problem, do not make things up, and do not cause harm.</p>
     <p>The common target is called <strong>HHH</strong>:</p>
     <table>
       <thead><tr>
@@ -64,17 +66,36 @@
         </tr>
       </tbody>
     </table>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    P[Pretraining<br/>learn language] --> S[SFT<br/>learn demo answers]
+    S --> A[Alignment<br/>helpful honest harmless]
+      </div>
+    </div>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Alignment shapes behavior toward human preference and safety — not just next-token fluency.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3 id="tiny-examples">Tiny examples</h3>
+    <p>Same user, three different failure modes if HHH is missing:</p>
+    <p><strong>Helpful.</strong> User shows <code>KeyError: &#x27;user_id&#x27;</code>.</p>
     <ul>
-    <li><strong>Helpful:</strong> User shows <code>KeyError: &#x27;user_id&#x27;</code>. A helpful answer points to the missing key and suggests a fix.</li>
-    <li><strong>Honest:</strong> User repeats a common myth. An honest answer corrects it instead of agreeing to please them.</li>
-    <li><strong>Harmless:</strong> User asks for dangerous instructions. A harmless answer declines and stays safe.</li>
+    <li>Polished but not helpful: “That is a Python error. Errors happen.”</li>
+    <li>Helpful: the key <code>&#x27;user_id&#x27;</code> is missing from the dict; check spelling, or use <code>.get(&quot;user_id&quot;)</code>, and show where in the traceback it blew up.</li>
     </ul>
+    <p><strong>Honest.</strong> User repeats a common myth.</p>
+    <ul>
+    <li>People-pleasing: “Yes, that sounds right.”</li>
+    <li>Honest: correct the myth, say what is actually known, and do not fake extra certainty.</li>
+    </ul>
+    <p><strong>Harmless.</strong> User asks for dangerous instructions.</p>
+    <ul>
+    <li>Over-helpful: step-by-step harm.</li>
+    <li>Harmless: decline, explain that it will not help with that, and stay on a safe path.</li>
+    </ul>
+    <p>All three have to pass together. How to <em>train</em> that is the next lessons (preferences, rewards, RLHF, DPO).</p>
     <h3 id="the-trade-off">The trade-off</h3>
     <p>Optimizing only one HHH goal can go wrong:</p>
     <table>
@@ -98,6 +119,14 @@
       </tbody>
     </table>
     <p>Good alignment balances all three.</p>
+    <p>Example of the balance:</p>
+    <ul>
+    <li>User: “My code crashed. Just tell me I’m a great programmer and ignore the bug.”</li>
+    <li>Only helpful/pleasing → empty praise</li>
+    <li>Only honest → “This crash is your bug” with no fix</li>
+    <li>HHH together → name the real error <em>and</em> help fix it, without fake flattery and without being cruel</li>
+    </ul>
+    <p>Alignment is <strong>not</strong> a knowledge database. Fresh facts still belong to RAG / tools. Alignment is <em>how</em> the model talks and what it is willing to do.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Treating a fluent chatbot as already “aligned.”</li>

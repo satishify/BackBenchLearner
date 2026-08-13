@@ -5,12 +5,16 @@ description: "A base model predicts tokens well, but alignment teaches it to ans
 
 A base language model is good at predicting the next token. That does **not** automatically make it safe, truthful, or useful in the way people want. **Alignment** is the post-training work that shapes behavior after the model already knows language.
 
+Fine-tuning (the last few chapters) taught the model a task. Alignment asks a different question: *when a person talks to it, does it behave like a good assistant?*
+
 ## Intuition
 
 Think of two stages:
 
 1. **Pretraining / SFT** — learn language and basic task habits
 2. **Alignment** — learn *how to respond* the way people prefer
+
+A fluent intern can finish your sentences. That intern is still not a good coworker until they learn: solve the actual problem, do not make things up, and do not cause harm.
 
 The common target is called **HHH**:
 
@@ -20,6 +24,12 @@ The common target is called **HHH**:
 | **Honest** | Stay truthful; do not invent facts or fake certainty |
 | **Harmless** | Refuse or redirect requests that could cause real harm |
 
+```mermaid
+flowchart LR
+    P[Pretraining<br/>learn language] --> S[SFT<br/>learn demo answers]
+    S --> A[Alignment<br/>helpful honest harmless]
+```
+
 :::key
 Alignment shapes behavior toward human preference and safety — not just next-token fluency.
 :::
@@ -28,9 +38,24 @@ Alignment shapes behavior toward human preference and safety — not just next-t
 
 ### Tiny examples
 
-- **Helpful:** User shows `KeyError: 'user_id'`. A helpful answer points to the missing key and suggests a fix.
-- **Honest:** User repeats a common myth. An honest answer corrects it instead of agreeing to please them.
-- **Harmless:** User asks for dangerous instructions. A harmless answer declines and stays safe.
+Same user, three different failure modes if HHH is missing:
+
+**Helpful.** User shows `KeyError: 'user_id'`.
+
+- Polished but not helpful: “That is a Python error. Errors happen.”
+- Helpful: the key `'user_id'` is missing from the dict; check spelling, or use `.get("user_id")`, and show where in the traceback it blew up.
+
+**Honest.** User repeats a common myth.
+
+- People-pleasing: “Yes, that sounds right.”
+- Honest: correct the myth, say what is actually known, and do not fake extra certainty.
+
+**Harmless.** User asks for dangerous instructions.
+
+- Over-helpful: step-by-step harm.
+- Harmless: decline, explain that it will not help with that, and stay on a safe path.
+
+All three have to pass together. How to *train* that is the next lessons (preferences, rewards, RLHF, DPO).
 
 ### The trade-off
 
@@ -43,6 +68,15 @@ Optimizing only one HHH goal can go wrong:
 | Only honesty | It may dump harsh facts in an unhelpful way |
 
 Good alignment balances all three.
+
+Example of the balance:
+
+- User: “My code crashed. Just tell me I’m a great programmer and ignore the bug.”
+- Only helpful/pleasing → empty praise
+- Only honest → “This crash is your bug” with no fix
+- HHH together → name the real error *and* help fix it, without fake flattery and without being cruel
+
+Alignment is **not** a knowledge database. Fresh facts still belong to RAG / tools. Alignment is *how* the model talks and what it is willing to do.
 
 ## What goes wrong
 

@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="One frozen base model plus many small client adapters — the SaaS pattern that makes LoRA practical at scale.">
+  <meta name="description" content="One shared base model plus many small client sticky-note adapters — how LoRA makes multi-customer AI practical.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html">
   <meta property="og:title" content="Multi-Tenant LoRA Serving | BackbenchLearner">
-  <meta property="og:description" content="One frozen base model plus many small client adapters — the SaaS pattern that makes LoRA practical at scale.">
+  <meta property="og:description" content="One shared base model plus many small client sticky-note adapters — how LoRA makes multi-customer AI practical.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Multi-Tenant LoRA Serving | BackbenchLearner">
-  <meta name="twitter:description" content="One frozen base model plus many small client adapters — the SaaS pattern that makes LoRA practical at scale.">
+  <meta name="twitter:description" content="One shared base model plus many small client sticky-note adapters — how LoRA makes multi-customer AI practical.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,72 +36,170 @@
       <h1>Multi-Tenant LoRA Serving</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A strong real-world use case for LoRA and QLoRA is <strong>multi-tenant</strong> customer support: one SaaS platform, many enterprise clients, each wanting its own tone and domain vocabulary.</p>
+    <p><strong>Multi-tenant</strong> means one product serves many customers (tenants), and each customer wants slightly different behavior.</p>
+    <p>This is one of the best real-world reasons LoRA (and QLoRA) matter.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Example:</p>
+    <p>Imagine you run a customer-support AI SaaS with <strong>200 companies</strong> on it.</p>
     <ul>
-    <li>A fintech client needs careful, compliance-aware answers</li>
-    <li>A gaming client wants a casual tone</li>
+    <li>A <strong>fintech</strong> client wants careful, compliance-aware answers</li>
+    <li>A <strong>gaming</strong> client wants a casual, fun tone</li>
     </ul>
-    <p>Full fine-tuning a separate 13B or 70B model for each client is a non-starter:</p>
+    <p>Same base “brain.” Different house styles.</p>
+    <p>If you fully fine-tune a separate big model for every client, costs explode:</p>
     <ul>
-    <li><strong>200 clients × ~26 GB</strong> for LLaMA-13B-style full copies ≈ <strong>5.2 TB</strong> of model storage</li>
-    <li>Each full fine-tune costs heavy GPU hours</li>
-    <li>Serving 200 separate large models means many GPUs sitting warm</li>
+    <li>One 13B-style model in 16-bit can take about <strong>26 GB</strong> just for weights</li>
+    <li><strong>200 clients × ~26 GB ≈ 5.2 TB</strong> of model storage</li>
+    <li>Each full fine-tune burns serious GPU time</li>
+    <li>Serving 200 full models means many GPUs sitting warm all day</li>
     </ul>
+    <p>That is why the LoRA pattern is so useful:</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Keep one shared base model. Train a small LoRA adapter per client. Hot-swap the adapter per request.</p>
+    <p>Keep <strong>one</strong> shared base model. Train a <strong>small LoRA sticky-note adapter per client</strong>. At answer time, hot-swap the right adapter.</p>
     </aside>
+    <p>Same idea as the previous lesson: the big textbook stays shared; each client only gets their own notebook.</p>
     <h2 id="how-it-works">How it works</h2>
+    <h3 id="the-problem-in-one-picture">The problem in one picture</h3>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph Bad["Full fine-tune per client"]
+      C1[Client A full model]
+      C2[Client B full model]
+      C3[Client C full model]
+    end
+    subgraph Good["LoRA multi-tenant"]
+      B[One shared base model]
+      A1[Adapter A]
+      A2[Adapter B]
+      A3[Adapter C]
+      B --- A1
+      B --- A2
+      B --- A3
+    end
+      </div>
+    </div>
+    <p>Left side = many giant copies. Right side = one brain + many tiny style packs.</p>
     <h3 id="training-side-often-with-qlora">Training side (often with QLoRA)</h3>
+    <p>How teams usually build the adapters:</p>
     <ol>
-    <li>Load the base model in <strong>4-bit</strong> (for example 13B drops from about 26 GB toward about 7 GB)</li>
-    <li>Fine-tune a <strong>separate LoRA adapter</strong> on each client’s data</li>
-    <li>Each adapter can be small (on the order of tens of MB in a typical example)</li>
-    <li>With 4-bit loading and careful optimizers, this can fit on a single consumer-class GPU instead of a big multi-GPU cluster</li>
+    <li>Load the <strong>same base model</strong> (often in <strong>4-bit</strong> with QLoRA so it fits better)
+    <ul>
+    <li>Example: a 13B model may drop from about <strong>26 GB</strong> toward about <strong>7 GB</strong></li>
+    </ul>
+    </li>
+    <li>Fine-tune a <strong>separate LoRA adapter</strong> on each client’s own examples</li>
+    <li>Each adapter stays small — often around <strong>tens of MB</strong> (example ballpark: ~50 MB)</li>
+    <li>Because the adapter is tiny and the base can be 4-bit, training one client adapter can fit on a <strong>single consumer-class GPU</strong>, instead of a big multi-GPU cluster</li>
     </ol>
-    <h3 id="serving-side-lora-hot-swap">Serving side (LoRA hot-swap)</h3>
+    <p>So client A’s data teaches adapter A. Client B’s data teaches adapter B. The shared base stays the common language engine.</p>
+    <h3 id="simple-math-behind-those-numbers">Simple math behind those numbers</h3>
+    <p>You do not need heavy formulas. Just count <strong>bits per number</strong>.</p>
+    <p><strong>1) Why ~26 GB for a 13B model in 16-bit?</strong></p>
+    <ul>
+    <li>“13B” means about <strong>13 billion</strong> weight numbers</li>
+    <li>16-bit means each number uses <strong>2 bytes</strong></li>
+    <li>Rough size ≈ <code>13e9 × 2 bytes ≈ 26e9 bytes ≈ 26 GB</code></li>
+    </ul>
+    <p>That is <strong>weights only</strong>. Training needs extra room for gradients/optimizer, so real training memory is higher. This 26 GB figure is the storage-size intuition for one full copy.</p>
+    <p><strong>2) Why ~7 GB in 4-bit?</strong></p>
+    <ul>
+    <li>4-bit means each weight uses <strong>0.5 bytes</strong> (4 bits = half a byte)</li>
+    <li>Rough size ≈ <code>13e9 × 0.5 ≈ 6.5 GB</code> → about <strong>7 GB</strong> with a little overhead</li>
+    </ul>
+    <p>So 16-bit → 4-bit is roughly a <strong>4× shrink</strong> for the frozen base:</p>
+    <p><code>26 GB / 4 ≈ 6.5 GB</code></p>
+    <p>That is why QLoRA helps training fit on fewer GPUs: the big textbook is packed smaller; you still train only the sticky-note adapter.</p>
+    <p><strong>3) Why is one LoRA adapter only tens of MB?</strong></p>
+    <p>From the previous lesson, for one square weight of size <code>d × d</code>, LoRA trains about:</p>
+    <p><code>2 × d × r</code></p>
+    <p>Example: <code>d = 4096</code>, <code>r = 8</code> → <code>65,536</code> numbers for <strong>that one matrix</strong>. Real models attach LoRA to several layers/modules, but still far fewer numbers than the full model. In 16-bit, tens of millions of adapter numbers stay in the <strong>tens of MB</strong> range (the lesson’s ~50 MB example is that ballpark, not an exact universal constant).</p>
+    <p><strong>4) Full copies vs adapters for 200 clients</strong></p>
+    <table>
+      <thead><tr>
+        <th>What you store</th>
+        <th>Rough math</th>
+        <th>Result</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>200 full 16-bit models</td>
+          <td><code>200 × 26 GB</code></td>
+          <td><strong>5,200 GB ≈ 5.2 TB</strong></td>
+        </tr>
+        <tr>
+          <td>200 LoRA adapters</td>
+          <td><code>200 × 50 MB</code></td>
+          <td><strong>10,000 MB ≈ 10 GB</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Same product idea (custom behavior per client). Huge difference in disk and serving cost.</p>
+    <h3 id="serving-side-hot-swap">Serving side (hot-swap)</h3>
+    <p>At runtime:</p>
     <ol>
-    <li>Keep <strong>one base model</strong> resident in GPU memory</li>
-    <li>For each request, load the correct client adapter (hot-swap)</li>
-    <li><strong>200 × ~50 MB adapters ≈ 10 GB</strong> total — versus terabytes of full model copies</li>
+    <li>Keep <strong>one base model</strong> loaded in GPU memory</li>
+    <li>When a request arrives, detect which client it is</li>
+    <li>Load that client’s small adapter (<strong>hot-swap</strong>)</li>
+    <li>Answer with: base model + that adapter</li>
+    <li>For the next request from another client, swap adapters again</li>
     </ol>
-    <p>Systems designed for this pattern (for example LoRAX-style serving) exist so you can swap adapters without reloading a full model every time.</p>
+    <p>So at serve time you mainly pay for:</p>
+    <ul>
+    <li><strong>1× base model</strong> in memory (optionally 4-bit), plus</li>
+    <li><strong>1 small adapter</strong> for the active client</li>
+    </ul>
+    <p>not 200 full models.</p>
+    <p>You are storing sticky notes, not reprinting the whole textbook 200 times.</p>
+    <p>Systems built for this pattern (for example LoRAX-style serving) exist so you can swap adapters quickly without reloading the full base model every time.</p>
     <h3 id="approach-comparison">Approach comparison</h3>
     <table>
       <thead><tr>
         <th>Approach</th>
+        <th>What it feels like</th>
         <th>Storage / compute story</th>
       </tr></thead>
       <tbody>
         <tr>
           <td>Full model per client</td>
-          <td>Huge storage; separate heavy GPU copy per client</td>
+          <td>One whole brain per customer</td>
+          <td>Huge storage; separate heavy GPU copy each</td>
         </tr>
         <tr>
           <td>LoRA adapter per client</td>
+          <td>Shared brain + sticky notes</td>
           <td>Small adapter files swapped on demand</td>
         </tr>
         <tr>
           <td>One 4-bit base + many adapters</td>
-          <td>Best fit for multi-tenant SaaS serving</td>
+          <td>Shared compressed brain + sticky notes</td>
+          <td>Best everyday fit for multi-tenant SaaS</td>
         </tr>
       </tbody>
     </table>
+    <h3 id="tiny-mental-checklist">Tiny mental checklist</h3>
+    <p>Before you ship multi-tenant LoRA, ask:</p>
+    <ol>
+    <li>Can I route each request to the <strong>correct client adapter</strong>?</li>
+    <li>Do I evaluate <strong>each adapter</strong> on that client’s tone/domain?</li>
+    <li>Is the base model shared and frozen, with only adapters changing?</li>
+    </ol>
+    <p>If routing is wrong, the gaming bot may start sounding like a bank.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li>Training one giant shared model for all clients and hoping tone differences vanish.</li>
-    <li>Shipping adapters with no routing — if you cannot pick the right adapter per tenant, modularity does not help.</li>
-    <li>Ignoring eval per client: one adapter can look fine while another regresses.</li>
+    <li>Training one giant shared model for all clients and hoping tone differences magically sort themselves out.</li>
+    <li>Building adapters but forgetting request routing — modular files do not help if you load the wrong one.</li>
+    <li>Checking quality on only one client; another adapter may silently get worse.</li>
+    <li>Treating adapters like a full knowledge database for facts that change weekly (use retrieval for that).</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>For many clients, one frozen base model plus many small LoRA adapters beats storing and serving a full fine-tuned copy for each tenant.</p>
+    <p>For many customers, one shared base model plus many small LoRA adapters beats storing and serving a full fine-tuned model for each tenant.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Multi-tenant serving</strong> — One base system serving many clients with different behavior.</li>
-    <li><strong>Hot-swap</strong> — Load the right small adapter for the current request without reloading the whole model.</li>
-    <li><strong>Adapter footprint</strong> — The small storage size of a client-specific LoRA file.</li>
+    <li><strong>Multi-tenant serving</strong> — One system serves many clients with different behavior.</li>
+    <li><strong>Hot-swap</strong> — Attach the right small adapter for this request without reloading the whole base model.</li>
+    <li><strong>Adapter footprint</strong> — How small each client-specific LoRA file is.</li>
+    <li><strong>Tenant</strong> — One customer/organization on the shared platform.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

@@ -37,6 +37,7 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>QLoRA is not only about 4-bit weights. It works because several memory-saving methods are stacked. Two big ones are <strong>gradient checkpointing</strong> and a <strong>paged optimizer</strong>.</p>
+    <p>The previous lessons packed the frozen textbook and kept the sticky note small. This lesson is about two other ways GPU memory still dies.</p>
     <h2 id="intuition">Intuition</h2>
     <p>GPU memory fails for different reasons:</p>
     <ul>
@@ -44,14 +45,21 @@
     <li>Activations too large → checkpointing helps</li>
     <li>Optimizer state spikes → paging helps</li>
     </ul>
+    <p>Think of training as cooking with a small counter:</p>
+    <ul>
+    <li><strong>Weights</strong> = the recipe books on the counter</li>
+    <li><strong>Activations</strong> = every chopped bowl you keep out “just in case”</li>
+    <li><strong>Optimizer state</strong> = extra notes Adam keeps for each ingredient</li>
+    </ul>
+    <p>QLoRA already shrinks the books. Checkpointing puts some bowls back in the fridge and recooks them when needed. Paging lets overflow notes sit on a side table instead of knocking the whole kitchen over.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Each trick attacks a different part of the memory budget. Together they make large-model training realistic.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3 id="gradient-checkpointing">Gradient checkpointing</h3>
-    <p>During normal backpropagation, the model stores many <strong>activations</strong> so it can compute gradients later. That storage can be huge.</p>
-    <p><strong>Gradient checkpointing</strong> discards some activations on purpose and <strong>recomputes</strong> them in the backward pass.</p>
+    <p>During normal backpropagation, the model walks <strong>forward</strong> through the layers and stores many <strong>activations</strong> (intermediate outputs) so the <strong>backward</strong> pass can compute gradients later. That storage can be huge — sometimes bigger than the weights.</p>
+    <p><strong>Gradient checkpointing</strong> discards some of those activations on purpose and <strong>recomputes</strong> them in the backward pass.</p>
     <table>
       <thead><tr>
         <th>Benefit</th>
@@ -64,10 +72,42 @@
         </tr>
       </tbody>
     </table>
+    <p>It is like keeping <strong>bookmarks</strong> instead of leaving every page open:</p>
+    <ul>
+    <li>Normal training = keep every layer’s output on the desk</li>
+    <li>Checkpointing = keep a bookmark every few layers</li>
+    <li>When backward needs a missing page, re-read from the last bookmark</li>
+    </ul>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    F[Forward pass] --> C{Keep this activation?}
+    C -->|Checkpoint layers| S[Save a bookmark]
+    C -->|Other layers| D[Discard / do not store]
+    S --> B[Backward pass]
+    D --> R[Recompute from nearest bookmark]
+    R --> B
+      </div>
+    </div>
+    <h3 id="placing-checkpoints-every-few-layers">Placing checkpoints every few layers</h3>
     <p>A common placement intuition: put checkpoints roughly every <strong>√n</strong> layers (for <strong>n</strong> layers). Then the backward pass can restart from a nearby checkpoint instead of replaying the whole network from layer 1 every time.</p>
+    <p>Tiny example:</p>
+    <ul>
+    <li>Model has <strong>36</strong> layers</li>
+    <li><code>√36 = 6</code></li>
+    <li>Save a bookmark about every <strong>6</strong> layers (layers 6, 12, 18, 24, 30, 36)</li>
+    </ul>
+    <p>If backward needs layer 20, it restarts from the bookmark at 18 — not from layer 1. Too few bookmarks → long recomputation. Too many → you are almost back to storing everything.</p>
+    <p>You do not need to hand-pick this every time. Libraries often place checkpoints for you once you turn the feature on. The √n picture is why “a few bookmarks, not all pages” is the usual design.</p>
     <h3 id="paged-optimizer">Paged optimizer</h3>
-    <p>Optimizer state (the extra numbers Adam-style methods keep) can cause sudden <strong>out-of-memory</strong> spikes — especially with long sequences or uneven batch sizes.</p>
+    <p>The optimizer is not free. Adam-style methods keep extra numbers per trainable parameter (running averages). That <strong>optimizer state</strong> can cause sudden <strong>out-of-memory</strong> spikes — especially with long sequences or uneven batch sizes.</p>
     <p>A <strong>paged optimizer</strong> keeps that state more flexibly, often by paging data between GPU and CPU memory, so a spike is less likely to crash the run.</p>
+    <p>Same idea as a computer swapping RAM to disk:</p>
+    <ul>
+    <li>GPU is the small fast desk</li>
+    <li>CPU RAM is the side table</li>
+    <li>When a spike arrives, spill some optimizer notes to the side table, then bring them back</li>
+    </ul>
     <p>It does not remove memory cost entirely. It <strong>smooths the spikes</strong> that cause failures.</p>
     <h3 id="where-these-fit-in-qlora">Where these fit in QLoRA</h3>
     <table>
@@ -98,6 +138,26 @@
         </tr>
       </tbody>
     </table>
+    <p>Tiny sketch (concept only):</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">from transformers import TrainingArguments
+
+model.gradient_checkpointing_enable()  # bookmarks, not every activation
+
+args = TrainingArguments(
+    optim=&quot;paged_adamw_8bit&quot;,          # smoother optimizer memory
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=16,    # keep the step small; accumulate
+)</code></pre>
+    </div>
+    <p>Read the names as the ideas above:</p>
+    <ul>
+    <li><code>gradient_checkpointing_enable()</code> → save activation memory, pay extra compute</li>
+    <li><code>paged_adamw_8bit</code> → Adam-style update that can page optimizer state</li>
+    <li>small micro-batch + accumulation → less activation pressure per step</li>
+    </ul>
+    <p>The next lesson puts these flags next to NF4 and LoRA in one stack.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Enabling checkpointing and then being surprised that steps get slower (that is the trade-off).</li>

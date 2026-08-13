@@ -1164,7 +1164,7 @@ window.BBL.CURRICULUM = {
         "title": "3.4 Re-Parameterization PEFT (LoRA & QLoRA)",
         "quizId": "genai/module-3-finetuning/session-4-reparam-peft",
         "hasQuiz": true,
-        "minutes": 24,
+        "minutes": 35,
         "lessons": [
           {
             "slug": "why-reparameterization-peft",
@@ -1192,28 +1192,28 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving",
             "path": "module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html",
             "label": "Multi-Tenant LoRA Serving",
-            "minutes": 3
+            "minutes": 6
           },
           {
             "slug": "quantization-and-qlora",
             "hash": "module-3-finetuning/session-4-reparam-peft/quantization-and-qlora",
             "path": "module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html",
             "label": "Quantization and QLoRA",
-            "minutes": 3
+            "minutes": 8
           },
           {
             "slug": "gradient-checkpointing-and-paged-optimizer",
             "hash": "module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer",
             "path": "module-3-finetuning/session-4-reparam-peft/gradient-checkpointing-and-paged-optimizer.html",
             "label": "Gradient Checkpointing and Paged Optimizer",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "putting-qlora-together",
             "hash": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together",
             "path": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together.html",
             "label": "Putting QLoRA Together",
-            "minutes": 4
+            "minutes": 5
           }
         ]
       },
@@ -1223,56 +1223,56 @@ window.BBL.CURRICULUM = {
         "title": "3.5 Alignment: RLHF & DPO",
         "quizId": "genai/module-3-finetuning/session-5-alignment-rlhf-dpo",
         "hasQuiz": true,
-        "minutes": 18,
+        "minutes": 28,
         "lessons": [
           {
             "slug": "why-alignment-and-hhh",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/why-alignment-and-hhh",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/why-alignment-and-hhh.html",
             "label": "Why Alignment Matters and the HHH Target",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "rl-for-language-models",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/rl-for-language-models",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/rl-for-language-models.html",
             "label": "Why Reinforcement Learning for LLMs",
-            "minutes": 2
+            "minutes": 4
           },
           {
             "slug": "policy-gradient-and-advantage",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage.html",
             "label": "Policy Gradient and Advantage",
-            "minutes": 2
+            "minutes": 4
           },
           {
             "slug": "ppo-kl-and-reward-hacking",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking.html",
             "label": "PPO, KL Penalty, and Reward Hacking",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "reward-models",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models.html",
             "label": "Reward Models from Human Preferences",
-            "minutes": 2
+            "minutes": 4
           },
           {
             "slug": "rlhf-pipeline-and-instructgpt",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt.html",
             "label": "The RLHF Pipeline and InstructGPT Story",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "direct-preference-optimization-dpo",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo.html",
             "label": "Direct Preference Optimization (DPO)",
-            "minutes": 3
+            "minutes": 4
           }
         ]
       },

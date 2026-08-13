@@ -5,6 +5,8 @@ description: "How 4-bit weights, LoRA, checkpointing, and a paged optimizer comb
 
 Single-GPU fine-tuning becomes realistic when you stack the right ingredients. Each piece shrinks a different part of the memory bill.
 
+This lesson does not add a new method. It shows how the last few lessons click together.
+
 ## Intuition
 
 Rough memory story for a **70B** model:
@@ -16,6 +18,14 @@ Rough memory story for a **70B** model:
 | QLoRA-style stack | About **5.2 bits/param** class budget in this sketch | Often **1×** data-center GPU class |
 
 The exact numbers depend on hardware and settings. The lesson is the composition: **4-bit weights + small adapters + controlled activations + controlled optimizer spikes**.
+
+What “about 5.2 bits/param” is trying to say:
+
+- Frozen base is stored near **4 bits** (NF4)
+- A little extra for quantization scales, LoRA, and training leftovers
+- Together the *storage sketch* is a bit above 4, not a full 16-bit copy of every weight
+
+It is a budget picture, not a promise that every run uses exactly 5.2.
 
 :::key
 Use full fine-tuning only when you can afford it. Prefer LoRA for tiny trainable budgets. Prefer QLoRA when memory is tight.
@@ -32,6 +42,21 @@ Use full fine-tuning only when you can afford it. Prefer LoRA for tiny trainable
 | **Double quantization** | Reduce metadata overhead |
 | **Gradient checkpointing** | Save activation memory |
 | **Paged optimization** | Reduce memory spikes |
+
+```mermaid
+flowchart TB
+    N[NF4 4-bit frozen base] --> S[Fits in GPU]
+    D[Double quantization] --> N
+    L[LoRA sticky-note adapters] --> T[Only adapters train]
+    C[Gradient checkpointing] --> A[Activation memory stays down]
+    P[Paged optimizer] --> O[Spikes get smoothed]
+    S --> R[One-GPU-class fine-tune]
+    T --> R
+    A --> R
+    O --> R
+```
+
+Each box attacks a different bill. Miss one, and a 70B-style run can still blow up — even if the others look “on.”
 
 ### Tiny code sketch (concept only)
 
@@ -68,10 +93,17 @@ args = TrainingArguments(
 
 Read this as a map of ideas, not a copy-paste production recipe:
 
-- `nf4` + double quant → compress the frozen backbone
-- `LoraConfig` → tiny trainable update
-- `gradient_checkpointing_enable` → save activation memory
-- `paged_adamw_8bit` → soften optimizer spikes
+| Line / flag | Plain meaning |
+| --- | --- |
+| `load_in_4bit` + `nf4` | Pack the frozen textbook in 4-bit NormalFloat |
+| `use_double_quant` | Also pack the per-block scale labels |
+| `compute_dtype=bfloat16` | Compute in a richer type after dequantizing |
+| `gradient_checkpointing_enable()` | Keep bookmarks, not every activation |
+| `LoraConfig(r=8, …)` | Train only the tiny sticky note |
+| `paged_adamw_8bit` | Smooth optimizer-state spikes |
+| `batch_size=1` and `accumulation=16` | Tiny step on GPU; **effective batch = 1 × 16 = 16** |
+
+**Effective batch** here means: how many samples feed one weight update. A micro-batch of 1 with 16 accumulation steps is one update from 16 examples, without holding all 16 in GPU memory at once.
 
 ### Quick revision rules
 
@@ -80,6 +112,8 @@ Read this as a map of ideas, not a copy-paste production recipe:
 3. Use **QLoRA** when memory is tight and you want the frozen backbone in 4-bit form.
 4. Use **gradient checkpointing** when activations, not just weights, are hurting GPU memory.
 5. Use **paged optimization** when optimizer spikes are what push you over the limit.
+
+After training, the multi-tenant idea still applies: save the small adapter, keep one shared base, swap adapters per client.
 
 ## What goes wrong
 

@@ -36,48 +36,144 @@
       <h1>Quantization and QLoRA</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Quantization</strong> stores numbers with fewer bits. <strong>QLoRA</strong> combines a 4-bit frozen backbone with LoRA adapters so you keep most of LoRA’s adaptation power while the base model takes much less memory.</p>
+    <p><strong>Quantization</strong> stores numbers with fewer bits. <strong>QLoRA</strong> is LoRA plus that idea: keep the big frozen model in <strong>4-bit</strong>, and still learn the task with a small LoRA adapter.</p>
+    <p>Same sticky-note story as before. The change is how you pack the textbook.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Plain LoRA still needs the base weights in higher precision in memory. Quantized PEFT asks: can the <em>frozen</em> backbone live in 4-bit form while the small adapter still learns the task?</p>
-    <p>That is QLoRA’s core move:</p>
+    <p>Plain LoRA still keeps the frozen base in a fatter number format (often 16-bit). That adapter is tiny, but the textbook itself is still bulky in GPU memory.</p>
+    <p>QLoRA asks a simpler question: if the base is <strong>frozen</strong>, do we need to store it in a fat format at all?</p>
     <ul>
     <li>Base model → compressed (often <strong>NF4</strong> 4-bit)</li>
     <li>Task change → still learned with <strong>LoRA</strong></li>
     </ul>
+    <p>Think of it as:</p>
+    <ul>
+    <li><strong>LoRA</strong> = keep the full-size textbook, add a sticky note</li>
+    <li><strong>QLoRA</strong> = pack the textbook thinner, still write the sticky note with a nicer pen</li>
+    </ul>
+    <p>The learning still happens in the adapter. Quantization is mostly a storage trick for the frozen part.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>QLoRA = 4-bit frozen backbone + LoRA adapters. Quantization shrinks storage; LoRA still does the learning.</p>
     </aside>
     <h2 id="how-it-works">How it works</h2>
     <h3 id="why-quantization-helps">Why quantization helps</h3>
-    <p>Quantization converts a fat number type (for example 32-bit float) into a thinner one (for example 8-bit or 4-bit). Goals:</p>
-    <ul>
-    <li>Less memory</li>
-    <li>Better chance of fitting large models on fewer GPUs</li>
-    </ul>
+    <p>A model weight is just a number. Fat number types use more bits:</p>
+    <table>
+      <thead><tr>
+        <th>Format</th>
+        <th>Bits per weight</th>
+        <th>Bytes per weight</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>32-bit float</td>
+          <td>32</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>16-bit</td>
+          <td>16</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>8-bit</td>
+          <td>8</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>4-bit</td>
+          <td>4</td>
+          <td><strong>0.5</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Fewer bits → less memory → a large model has a better chance of fitting on fewer GPUs.</p>
+    <p>From the previous lesson, a <strong>13B</strong> model in 16-bit is about:</p>
+    <p><code>13e9 × 2 bytes ≈ 26 GB</code></p>
+    <p>In 4-bit:</p>
+    <p><code>13e9 × 0.5 bytes ≈ 6.5 GB</code> → about <strong>7 GB</strong> with a little overhead</p>
+    <p>That is the same 4× shrink. QLoRA uses it so the frozen textbook fits; you still train only the sticky note.</p>
+    <p>Quantization is <strong>not</strong> “free accuracy.” It saves memory. You still check that answers stayed good.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    subgraph LoRA["Plain LoRA"]
+      B16[Frozen base in 16-bit]
+      A16[LoRA adapter]
+      B16 --- A16
+    end
+    subgraph QLoRA["QLoRA"]
+      B4[Frozen base in 4-bit]
+      A4[LoRA adapter]
+      B4 --- A4
+    end
+      </div>
+    </div>
+    <p>Left: small adapter, bulky base. Right: same small adapter, packed base.</p>
     <h3 id="uniform-quantization-simple-baseline">Uniform quantization (simple baseline)</h3>
-    <p>Uniform quantization uses evenly spaced bins and a scale constant. It is easy to understand, but not ideal when weights are roughly <strong>bell-shaped</strong> (normal-like): most values sit near zero, and evenly spaced bins waste precision in the wrong places.</p>
-    <h3 id="chunking-based-quantization">Chunking-based quantization</h3>
-    <p>Instead of quantizing a whole giant tensor with one global scale, quantize <strong>smaller blocks</strong> independently. That reduces damage from outliers (one extreme value no longer ruins the scale for everything).</p>
-    <h3 id="nf4-in-simple-language">NF4 in simple language</h3>
-    <p><strong>NF4</strong> means <strong>4-bit NormalFloat</strong>. It is designed for weights that are roughly normally distributed:</p>
+    <p>The simplest idea: cut the number line into <strong>evenly spaced bins</strong>, then store “which bin” plus one <strong>scale</strong> constant.</p>
+    <p>Easy to understand. Not a great match for real LLM weights.</p>
+    <p>Those weights are often roughly <strong>bell-shaped</strong> (normal-like):</p>
     <ul>
-    <li>Finer precision near zero (where most weights live)</li>
-    <li>Coarser precision in the tails</li>
+    <li>most values sit <strong>near zero</strong></li>
+    <li>a few live in the tails</li>
     </ul>
-    <p>Typical workflow:</p>
+    <p>Evenly spaced bins waste precision in the empty far-away regions, and give too little detail where most weights actually are.</p>
+    <p>Tiny picture: if almost every weight is between <code>-0.1</code> and <code>0.1</code>, but your bins stretch evenly from <code>-10</code> to <code>10</code>, many bins sit in unused space. The crowded middle gets treated too roughly.</p>
+    <p>That is why QLoRA does <strong>not</strong> stop at naive uniform quantization.</p>
+    <h3 id="chunking-based-quantization">Chunking-based quantization</h3>
+    <p>A second problem: one wild <strong>outlier</strong> can ruin a whole tensor.</p>
+    <p>If you pick one scale for a giant weight matrix, that one extreme value stretches the scale. Then ordinary near-zero weights get squeezed into fewer useful bins.</p>
+    <p><strong>Chunking</strong> (block-wise quantization) splits the tensor into <strong>smaller blocks</strong> and quantizes each block on its own scale.</p>
+    <p>So an outlier mostly hurts <strong>its own block</strong>, not the entire matrix.</p>
+    <p>Same idea as packing a suitcase by drawers instead of one giant bag: a bulky item in drawer 3 does not crush drawer 1.</p>
+    <h3 id="nf4-in-simple-language">NF4 in simple language</h3>
+    <p><strong>NF4</strong> means <strong>4-bit NormalFloat</strong>. It is a 4-bit codebook built for weights that are roughly normally distributed:</p>
+    <ul>
+    <li><strong>Finer</strong> precision near zero (where most weights live)</li>
+    <li><strong>Coarser</strong> precision in the tails (the rare large values)</li>
+    </ul>
+    <p>4 bits means only <strong>16</strong> possible codes (<code>2⁴ = 16</code>). NF4 spends more of those 16 slots near zero, instead of spacing them evenly.</p>
+    <p>Typical workflow, with what each step is doing:</p>
     <ol>
-    <li>Fetch the NF4 levels</li>
-    <li>Take the weight tensor</li>
-    <li>Normalize it (often by absmax)</li>
-    <li>Map normalized values to 4-bit codes</li>
-    <li>Pack two 4-bit codes into one byte</li>
-    <li>Later dequantize by reversing the scale when needed for compute</li>
+    <li><strong>Fetch the NF4 levels</strong></li>
     </ol>
+    <p>Load the 16 special bucket values designed for a bell curve.</p>
+    <ol>
+    <li><strong>Take the weight tensor</strong></li>
+    </ol>
+    <p>These are the frozen base numbers you want to pack.</p>
+    <ol>
+    <li><strong>Normalize it (often by absmax)</strong></li>
+    </ol>
+    <p>Divide by the biggest absolute value in the block so numbers sit in a standard range (roughly <code>-1</code> to <code>1</code>). That scale is saved so you can undo this later.</p>
+    <ol>
+    <li><strong>Map normalized values to 4-bit codes</strong></li>
+    </ol>
+    <p>For each weight, pick the nearest NF4 bucket and store the 4-bit index (0–15), not the original float.</p>
+    <ol>
+    <li><strong>Pack two 4-bit codes into one byte</strong></li>
+    </ol>
+    <p>One byte is 8 bits, so two compressed weights share one byte. That is the 0.5 bytes-per-weight story.</p>
+    <ol>
+    <li><strong>Later dequantize</strong></li>
+    </ol>
+    <p>When the GPU needs to compute, reverse the scale: look up the bucket value and multiply the saved scale back. Compute often happens in a richer type (for example bfloat16). Storage stays 4-bit.</p>
+    <p>So NF4 is not “the model now thinks in 4-bit forever.” It is <strong>store thin, compute richer when needed</strong>.</p>
     <h3 id="double-quantization">Double quantization</h3>
-    <p>Block-wise quantization needs <strong>scale constants</strong> for each block. Those constants also take space. <strong>Double quantization</strong> compresses those constants too — quantize the quantization metadata.</p>
-    <p>This matters more when blocks are small, because more blocks mean more scale metadata.</p>
+    <p>Block-wise quantization needs a <strong>scale constant</strong> for each block. Those constants are extra numbers. They also take space.</p>
+    <p><strong>Double quantization</strong> compresses those constants too — quantize the quantization metadata.</p>
+    <p>This matters more when blocks are <strong>small</strong>, because more blocks mean more scale numbers.</p>
+    <p>Rough feel for why:</p>
+    <ul>
+    <li>13B weights, block size 64 → about <code>13e9 / 64 ≈ 200 million</code> blocks</li>
+    <li>If each scale were a 4-byte float → <code>200e6 × 4 ≈ 800 MB</code> of metadata</li>
+    <li>That is not the whole model, but it is a real extra bill</li>
+    <li>Double quantization packs those scales so the metadata stays small</li>
+    </ul>
+    <p>You are compressing the packing labels, not just the packed textbook.</p>
     <h3 id="qlora-ingredients-first-look">QLoRA ingredients (first look)</h3>
+    <p>QLoRA is a stack. This lesson’s main pieces are the 4-bit storage tricks. Two more memory tricks show up in the next lessons.</p>
     <table>
       <thead><tr>
         <th>Ingredient</th>
@@ -107,11 +203,53 @@
         </tr>
       </tbody>
     </table>
+    <table>
+      <thead><tr>
+        <th>Approach</th>
+        <th>Frozen base in memory</th>
+        <th>What you train</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>LoRA</strong></td>
+          <td>Higher precision (often 16-bit)</td>
+          <td>Small adapter</td>
+        </tr>
+        <tr>
+          <td><strong>QLoRA</strong></td>
+          <td>4-bit (often NF4)</td>
+          <td>Same kind of small adapter</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Tiny PEFT-style sketch (concept only — the full stack is in a later lesson):</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">from transformers import BitsAndBytesConfig
+import torch
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type=&quot;nf4&quot;,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+# then load the base model with this config
+# then attach LoRA as in the previous lessons</code></pre>
+    </div>
+    <p>Read the names as the ideas above:</p>
+    <ul>
+    <li><code>nf4</code> → pack the frozen base for a bell-shaped weight distribution</li>
+    <li><code>use_double_quant</code> → also compress the per-block scales</li>
+    <li><code>compute_dtype</code> → compute in a richer type after dequantizing</li>
+    <li>LoRA → still the trainable sticky note</li>
+    </ul>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Treating quantization as “free accuracy” — it saves memory; quality still needs checking.</li>
     <li>Using naive uniform quantization on heavy-tailed weights and blaming the model.</li>
     <li>Forgetting that QLoRA still needs a sensible LoRA rank and clean data.</li>
+    <li>Mixing this up with checkpointing: 4-bit packing shrinks <strong>weights</strong>; checkpointing shrinks <strong>activations</strong> (next lesson).</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Quantization compresses frozen weights; QLoRA pairs 4-bit storage with LoRA so large models become trainable under tight memory.</p>
@@ -120,7 +258,9 @@
     <li><strong>Quantization</strong> — Storing values with fewer bits.</li>
     <li><strong>QLoRA</strong> — LoRA plus a 4-bit quantized frozen backbone.</li>
     <li><strong>NF4</strong> — 4-bit NormalFloat, tuned for roughly normal weight distributions.</li>
+    <li><strong>Chunking / block-wise quantization</strong> — Quantize smaller blocks on their own scales so one outlier cannot ruin everything.</li>
     <li><strong>Double quantization</strong> — Compressing the quantization scale metadata itself.</li>
+    <li><strong>Dequantize</strong> — Unpack a 4-bit code back to a richer number for compute.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>

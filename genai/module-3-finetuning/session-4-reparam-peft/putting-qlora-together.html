@@ -37,6 +37,7 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>Single-GPU fine-tuning becomes realistic when you stack the right ingredients. Each piece shrinks a different part of the memory bill.</p>
+    <p>This lesson does not add a new method. It shows how the last few lessons click together.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Rough memory story for a <strong>70B</strong> model:</p>
     <table>
@@ -64,6 +65,13 @@
       </tbody>
     </table>
     <p>The exact numbers depend on hardware and settings. The lesson is the composition: <strong>4-bit weights + small adapters + controlled activations + controlled optimizer spikes</strong>.</p>
+    <p>What “about 5.2 bits/param” is trying to say:</p>
+    <ul>
+    <li>Frozen base is stored near <strong>4 bits</strong> (NF4)</li>
+    <li>A little extra for quantization scales, LoRA, and training leftovers</li>
+    <li>Together the <em>storage sketch</em> is a bit above 4, not a full 16-bit copy of every weight</li>
+    </ul>
+    <p>It is a budget picture, not a promise that every run uses exactly 5.2.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Use full fine-tuning only when you can afford it. Prefer LoRA for tiny trainable budgets. Prefer QLoRA when memory is tight.</p>
@@ -98,6 +106,21 @@
         </tr>
       </tbody>
     </table>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    N[NF4 4-bit frozen base] --> S[Fits in GPU]
+    D[Double quantization] --> N
+    L[LoRA sticky-note adapters] --> T[Only adapters train]
+    C[Gradient checkpointing] --> A[Activation memory stays down]
+    P[Paged optimizer] --> O[Spikes get smoothed]
+    S --> R[One-GPU-class fine-tune]
+    T --> R
+    A --> R
+    O --> R
+      </div>
+    </div>
+    <p>Each box attacks a different bill. Miss one, and a 70B-style run can still blow up — even if the others look “on.”</p>
     <h3 id="tiny-code-sketch-concept-only">Tiny code sketch (concept only)</h3>
     <div class="code-block" data-lang="python">
       <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
@@ -131,12 +154,43 @@ args = TrainingArguments(
 )</code></pre>
     </div>
     <p>Read this as a map of ideas, not a copy-paste production recipe:</p>
-    <ul>
-    <li><code>nf4</code> + double quant → compress the frozen backbone</li>
-    <li><code>LoraConfig</code> → tiny trainable update</li>
-    <li><code>gradient_checkpointing_enable</code> → save activation memory</li>
-    <li><code>paged_adamw_8bit</code> → soften optimizer spikes</li>
-    </ul>
+    <table>
+      <thead><tr>
+        <th>Line / flag</th>
+        <th>Plain meaning</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><code>load_in_4bit</code> + <code>nf4</code></td>
+          <td>Pack the frozen textbook in 4-bit NormalFloat</td>
+        </tr>
+        <tr>
+          <td><code>use_double_quant</code></td>
+          <td>Also pack the per-block scale labels</td>
+        </tr>
+        <tr>
+          <td><code>compute_dtype=bfloat16</code></td>
+          <td>Compute in a richer type after dequantizing</td>
+        </tr>
+        <tr>
+          <td><code>gradient_checkpointing_enable()</code></td>
+          <td>Keep bookmarks, not every activation</td>
+        </tr>
+        <tr>
+          <td><code>LoraConfig(r=8, …)</code></td>
+          <td>Train only the tiny sticky note</td>
+        </tr>
+        <tr>
+          <td><code>paged_adamw_8bit</code></td>
+          <td>Smooth optimizer-state spikes</td>
+        </tr>
+        <tr>
+          <td><code>batch_size=1</code> and <code>accumulation=16</code></td>
+          <td>Tiny step on GPU; <strong>effective batch = 1 × 16 = 16</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Effective batch</strong> here means: how many samples feed one weight update. A micro-batch of 1 with 16 accumulation steps is one update from 16 examples, without holding all 16 in GPU memory at once.</p>
     <h3 id="quick-revision-rules">Quick revision rules</h3>
     <ol>
     <li>Use <strong>full fine-tuning</strong> only when you can afford the compute and really need every weight to move.</li>
@@ -145,6 +199,7 @@ args = TrainingArguments(
     <li>Use <strong>gradient checkpointing</strong> when activations, not just weights, are hurting GPU memory.</li>
     <li>Use <strong>paged optimization</strong> when optimizer spikes are what push you over the limit.</li>
     </ol>
+    <p>After training, the multi-tenant idea still applies: save the small adapter, keep one shared base, swap adapters per client.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Enabling every flag at once with no eval — you cannot tell which knob helped.</li>

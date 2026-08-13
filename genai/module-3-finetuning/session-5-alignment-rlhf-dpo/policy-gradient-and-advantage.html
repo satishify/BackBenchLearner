@@ -37,12 +37,14 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>The <strong>policy</strong> is the model’s probability distribution over the next token given the current context. In alignment with RL, we want to raise the chance of actions that lead to higher reward.</p>
+    <p>If the last lesson said “token = action,” this lesson says <em>how</em> those actions get better: push probability toward the paths that scored well.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Core idea in one sentence:</p>
     <blockquote>
     <p>If a token choice helped produce a better final response, make that choice more likely next time.</p>
     </blockquote>
     <p>That family of methods is called <strong>policy gradient</strong>. A classic sample-based version is <strong>REINFORCE</strong>: sample full answers (trajectories), score them, and update from those samples.</p>
+    <p>Classroom picture: the student writes a few essays, gets grades, then practices more of what worked — not by copying one gold essay, but by nudging the writing habits that led to good grades.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Positive advantage means “better than expected for this state.” Negative means “worse than expected.”</p>
@@ -51,8 +53,18 @@
     <h3 id="what-we-optimize">What we optimize</h3>
     <p>We care about <strong>expected total reward</strong> for a whole response, not only one token in isolation.</p>
     <p>In words: train the policy so good full answers become more probable.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    P[Policy samples an answer] --> R[Score the full answer]
+    R --> A[Advantage vs expected]
+    A -->|positive| U[Raise those token probabilities]
+    A -->|negative| D[Lower those token probabilities]
+      </div>
+    </div>
     <h3 id="why-the-raw-signal-is-noisy">Why the raw signal is noisy</h3>
-    <p>REINFORCE can be unbiased but <strong>high variance</strong> — the training signal jumps around. Helpers:</p>
+    <p>REINFORCE can be unbiased but <strong>high variance</strong> — the training signal jumps around. One lucky great answer, or one unlucky flop, can yank the update too hard.</p>
+    <p>Helpers:</p>
     <table>
       <thead><tr>
         <th>Idea</th>
@@ -74,6 +86,30 @@
     <li><strong>Positive advantage</strong> → that action was better than average for the situation → increase its probability</li>
     <li><strong>Negative advantage</strong> → worse than expected → decrease its probability</li>
     </ul>
+    <p>Tiny numbers for the same prompt “Where is Kolkata?”</p>
+    <table>
+      <thead><tr>
+        <th>Sampled answer</th>
+        <th>Reward</th>
+        <th>Expected for this prompt</th>
+        <th>Advantage</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Accurate, short, useful</td>
+          <td>9</td>
+          <td>6</td>
+          <td><strong>+3</strong> → push those tokens up</td>
+        </tr>
+        <tr>
+          <td>Vague ramble</td>
+          <td>2</td>
+          <td>6</td>
+          <td><strong>−4</strong> → push those tokens down</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Without a baseline, “reward = 9” and “reward = 2” are just raw scores. Advantage asks: <em>better or worse than usual for this state?</em> That is why the update is less noisy.</p>
     <h3 id="keep-the-math-light">Keep the math light</h3>
     <p>You do not need to memorize the formula to use the idea. The practical message is:</p>
     <ol>
@@ -82,6 +118,18 @@
     <li>Push probability up for better-than-expected choices</li>
     <li>Use advantage/baseline so the push is less noisy</li>
     </ol>
+    <p>Tiny sketch (concept only):</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">answer = policy.sample(prompt)          # one trajectory
+reward = score(answer)                  # whole-response score
+baseline = expected_score(prompt)       # typical quality for this state
+advantage = reward - baseline           # + means better than expected
+
+loss = -advantage * log_prob(policy, prompt, answer)
+loss.backward()                         # raise or lower those tokens</code></pre>
+    </div>
+    <p>If <code>advantage</code> is positive, this update makes the sampled tokens more likely. If negative, less likely. The baseline does not change the <em>direction of the average</em> idea; it mainly calms the jumps.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Updating from a few lucky samples and calling it “aligned.”</li>
@@ -96,6 +144,7 @@
     <li><strong>Policy gradient</strong> — Update rule that follows reward-weighted log-probabilities.</li>
     <li><strong>REINFORCE</strong> — Sample trajectories and estimate the gradient from them.</li>
     <li><strong>Advantage</strong> — How much better an action was than expected.</li>
+    <li><strong>Baseline</strong> — A reference score used so you learn from relative quality, not raw score alone.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
