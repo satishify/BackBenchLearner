@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.">
+  <meta name="description" content="Revision for CLIP, LLaVA, Qwen-VL, SAM, and how to compose them.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
-  <meta property="og:title" content="Module 4 - Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner">
-  <meta property="og:description" content="Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.">
+  <meta property="og:title" content="Module 4 - VLM architectures revision | Cheat Sheet | BackbenchLearner">
+  <meta property="og:description" content="Revision for CLIP, LLaVA, Qwen-VL, SAM, and how to compose them.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
-  <title>Module 4 - Multimodal &amp; agents revision | Cheat Sheet | BackbenchLearner</title>
+  <title>Module 4 - VLM architectures revision | Cheat Sheet | BackbenchLearner</title>
   <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,33 +39,75 @@
 <body class="cheatsheet-page" data-topic="genai" data-cheatsheet="genai/module-4-multimodal-agentic">
   <div class="wrapper">
     <nav><a href="../../index.html#cheatsheet">&larr; Cheat sheets</a></nav>
-    <h1>Module 4 - Multimodal &amp; agents revision</h1>
-    <p class="cheat-banner">Revision guide · ~15 min · dense bullets, not full lessons</p>
+    <h1>Module 4 - VLM architectures revision</h1>
+    <p class="cheat-banner">Revision guide · ~20 min · dense bullets, not full lessons</p>
 
-    <p>Chapters <strong>4.1–4.2</strong> are shorter stubs. Use this for vocabulary; dive into <strong>2.9</strong> for agent depth.</p>
-    <h2 id="41-vision-language-image-generation">4.1 Vision-language &amp; image generation</h2>
+    <p>Chapter <strong>4.1</strong> follows the lecture map: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.</p>
+    <h2 id="foundations">Foundations</h2>
     <ul>
-    <li><strong>VLM</strong>: joint model that maps images (and often text) into a shared space — caption, VQA, document understanding.</li>
-    <li>Typical pattern: vision encoder -&gt; projector -&gt; LLM decoder. Tokenize image patches / features like “soft tokens”.</li>
-    <li>Failure modes: OCR weakness, counting, spatial relations, hallucinated objects — evaluate on <em>your</em> image types.</li>
-    <li><strong>Image generation</strong> (diffusion / related): iterative denoising from noise conditioned on text. Prompting = subject + style + constraints; safety filters matter in prod.</li>
-    <li>Multimodal RAG: retrieve images + text; cite visual evidence carefully.</li>
+    <li><strong>VLM</strong> = pixels → vision encoder → connector → consumer → output (score, text, box, or mask).</li>
+    <li><strong>ViT</strong>: patchify image; <code>(H/P) × (W/P)</code> patch tokens; add position info. Example: 224×224, 16×16 patches → <strong>196</strong> tokens.</li>
+    <li>Four paradigms: <strong>contrastive</strong> (CLIP), <strong>generative</strong> (LLaVA), <strong>grounded generative</strong> (Qwen-VL), <strong>promptable segmentation</strong> (SAM).</li>
     </ul>
-    <h2 id="42-agentic-systems-recap">4.2 Agentic systems (recap)</h2>
+    <h2 id="clip">CLIP</h2>
     <ul>
-    <li><strong>Agent</strong> = large language model (LLM) wrapped with tools, memory, and planning—not just a chat user interface (UI).</li>
-    <li><strong>Loop:</strong> observe → think → act (tool) → observe → … until done, budget hit, or human-in-the-loop (HITL) escalation.</li>
-    <li><strong>ReAct (Reason + Act):</strong> think one step, run one tool, read the observation, then think again—ground reasoning in real data.</li>
-    <li><strong>Memory tiers:</strong> episodic (this session’s thread) vs semantic (long-term facts in a vector database). Do not dump all history into every prompt.</li>
-    <li><strong>Task decomposition:</strong> break goals into named, checkable steps; planner decides order, executor runs one step.</li>
-    <li><strong>Orchestration:</strong> state machines / LangGraph when you need loops, branches, or approval checkpoints. Single agent with tools often beats premature multi-agent swarms.</li>
-    <li><strong>Provenance:</strong> trace claims back to tool-call history—do not trust inline citations without verifying source IDs.</li>
-    <li>For full depth (HITL, reflection, multi-agent roles, LangChain vs LangGraph), revise <strong>Cheat sheet - Module 2</strong> section 2.9 and lesson 2.9.</li>
+    <li>Dual encoders; <strong>symmetric contrastive</strong> loss; diagonal of batch similarity matrix = correct pairs.</li>
+    <li><strong>Zero-shot</strong>: encode image once; compare to text templates like <code>a photo of a {label}</code>.</li>
+    <li>Pick CLIP for <strong>matching/retrieval</strong>; not for long explanations.</li>
     </ul>
+    <h2 id="llava">LLaVA</h2>
+    <ul>
+    <li>Frozen CLIP ViT → <strong>projector</strong> → visual tokens in LLM sequence.</li>
+    <li>Stage 1: train projector only. Stage 2: instruction tune projector + LLM.</li>
+    <li><strong>LLaVA-NeXT / AnyRes</strong>: high-res tiles + global view for OCR/charts (more tokens).</li>
+    </ul>
+    <h2 id="qwen-vl">Qwen-VL</h2>
+    <ul>
+    <li><strong>256 learned queries</strong> cross-attend over variable patches; <strong>2D position</strong> on keys.</li>
+    <li>Grounding via <code>&lt;ref&gt;</code>, <code>&lt;box&gt;</code> tokens; coordinates <strong>0–1000</strong> normalized, generated as text.</li>
+    <li>Fixed token budget = predictable cost; may lose fine detail.</li>
+    </ul>
+    <h2 id="sam">SAM</h2>
+    <ul>
+    <li><strong>Image encoder once</strong> (cache) → <strong>prompt encoder</strong> + <strong>mask decoder</strong> per click/box.</li>
+    <li><strong>Three candidate masks</strong> for ambiguous points; <strong>IoU</strong> scores quality.</li>
+    <li>Composes with grounding: box from VLM → SAM mask. SAM does not name the object.</li>
+    </ul>
+    <h2 id="synthesis">Synthesis</h2>
+    <table>
+      <thead><tr>
+        <th>Need</th>
+        <th>Start with</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Tag / retrieve</td>
+          <td>CLIP</td>
+        </tr>
+        <tr>
+          <td>Chat about image</td>
+          <td>LLaVA</td>
+        </tr>
+        <tr>
+          <td>OCR + boxes + multi-image</td>
+          <td>Qwen-VL</td>
+        </tr>
+        <tr>
+          <td>Pixel mask</td>
+          <td>SAM</td>
+        </tr>
+        <tr>
+          <td>Grasp / rotoscope pipeline</td>
+          <td>VLM + SAM</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="15-minute-drill">15-minute drill</h2>
     <ol>
-    <li>Contrast captioning vs VQA vs “open-world chat about an image”.</li>
-    <li>List three agent failure modes (looping, tool misuse, context overflow).</li>
+    <li>Walk through ViT patch count for 224×224 and 16×16 patches.</li>
+    <li>Explain why LLaVA needs a projector even when dimensions match.</li>
+    <li>Convert one normalized <code>&lt;box&gt;</code> to pixel coordinates for a given image size.</li>
+    <li>Sketch a two-step pipeline: Qwen-VL finds box → SAM segments.</li>
     </ol>
 
     <footer>

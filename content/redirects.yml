@@ -335,3 +335,10 @@
   to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
 - from: genai/module-3-finetuning/session-2-data-training/module-3-review-checklist.html
   to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
+# Module 4 Session 1 — replace 4.1 stubs with VLM architecture lessons
+- from: genai/module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html
+  to: genai/module-4-multimodal-agentic/vision-language/foundations-of-vlm.html
+- from: genai/module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html
+  to: genai/module-4-multimodal-agentic/vision-language/foundations-of-vlm.html
+- from: genai/module-4-multimodal-agentic/vision-language/image-generation-basics.html
+  to: genai/module-4-multimodal-agentic/vision-language/vlm-synthesis-compare-and-compose.html

@@ -2643,40 +2643,227 @@ window.BBL.QUIZZES = {
   },
   "genai/module-4-multimodal-agentic/vision-language": {
     "id": "genai/module-4-multimodal-agentic/vision-language",
-    "title": "4.1 Vision-Language Models & Image Generation",
+    "title": "4.1 Vision-Language Model Architectures",
     "questions": [
       {
-        "q": "What does multimodal AI primarily add beyond a text-only LLM?",
+        "q": "A product team needs to classify user-uploaded images into new categories every week, but it cannot collect labels and retrain a classifier each time. Which design is the most directly suited?",
         "options": [
-          "Faster CPUs",
-          "Ability to take in or produce more than one data type (e.g. images + text)",
-          "Removing the need for embeddings",
-          "Guaranteed zero hallucinations"
+          "A generative VLM that always produces a paragraph before classification.",
+          "CLIP zero-shot classification using text descriptions for the new categories.",
+          "SAM with three candidate masks and no semantic label head.",
+          "A frozen ViT whose [CLS] vector is compared only with pixel templates."
         ],
         "answer": 1,
-        "why": "Multimodal systems jointly handle modalities such as text and images in a shared or fused representation."
+        "why": "CLIP compares image embeddings with text embeddings for newly written category descriptions without training a new target classifier."
       },
       {
-        "q": "A VLM is best described as...",
+        "q": "A 224 × 224 image is patchified with 16 × 16 patches. Which statement is correct before adding a special [CLS] token?",
         "options": [
-          "A database of stock photos",
-          "A model that can consume images (and text) and produce language outputs about them",
-          "Only a GAN for faces",
-          "A load balancer for GPUs"
+          "There are 14 patch tokens because 224/16 = 14.",
+          "There are 256 patch tokens because the image has 256 pixels on one side after projection.",
+          "There are 196 patch tokens because the grid is 14 × 14.",
+          "There are 224 patch tokens because one token represents each image row."
         ],
-        "answer": 1,
-        "why": "Vision-language models connect visual encoders with language generation for captioning, VQA, and similar tasks."
+        "answer": 2,
+        "why": "224/16 = 14 patches along each dimension, so the grid has 14 × 14 = 196 patches."
       },
       {
-        "q": "In product terms, which risk is especially relevant to image generation?",
+        "q": "In a CLIP batch of N matched image-caption pairs, the image-to-text row for one image contains one positive and N−1 in-batch negatives. What would most directly increase the number of available negatives without changing the encoders?",
         "options": [
-          "SQL injection into Redis",
-          "Copyright, likeness, and unsafe imagery if filters are weak",
-          "TCP retransmission storms",
-          "CSS specificity wars"
+          "Replace cosine similarity with an MSE loss.",
+          "Remove the text encoder and classify from image features only.",
+          "Use a larger image resolution while keeping the batch fixed.",
+          "Increase the effective batch size, for example with distributed training or feature queues."
+        ],
+        "answer": 3,
+        "why": "More effective batch items provide more in-batch mismatches for contrastive learning."
+      },
+      {
+        "q": "A CLIP model gives a lower zero-shot score for 'dog' than for 'a photo of a dog', even though both refer to the same class. What is the best interpretation?",
+        "options": [
+          "The language prompt changes the text embedding, so prompt wording can affect the image-text similarity.",
+          "The image encoder has been replaced by a classifier head at inference time.",
+          "CLIP only supports labels that appeared literally in its training captions.",
+          "The model is performing supervised fine-tuning on the target dataset."
+        ],
+        "answer": 0,
+        "why": "The text string is encoded into a different text embedding, so prompt phrasing can change the similarity score."
+      },
+      {
+        "q": "A VLM engineer wants the model to answer 'What is unusual about this image?' in natural language. Why is a CLIP-only solution insufficient as the primary architecture?",
+        "options": [
+          "CLIP cannot process images at all without a CNN decoder.",
+          "CLIP always requires a bounding box prompt for every image.",
+          "CLIP mainly produces an embedding similarity, not an autoregressive explanation.",
+          "CLIP has no text tokenizer and therefore cannot compare text and images."
+        ],
+        "answer": 2,
+        "why": "CLIP's main product is a shared embedding and similarity score; LLaVA adds autoregressive language generation."
+      },
+      {
+        "q": "During LLaVA Stage 1, the loss is high even though the LLM can already write fluent text. Which change is most aligned with the purpose of that stage?",
+        "options": [
+          "Unfreeze every LLM layer and train on dialogue-only data.",
+          "Replace the CLIP tower with SAM's mask decoder.",
+          "Train a new classifier head over ImageNet labels.",
+          "Train the projector so CLIP visual features map into the LLM's existing embedding geometry while both large backbones remain frozen."
+        ],
+        "answer": 3,
+        "why": "Stage 1 is feature alignment: learn the projector while the pretrained language and vision spaces remain stable."
+      },
+      {
+        "q": "Two vectors have the same dimensionality, but an LLM ignores a visual vector passed directly into its token sequence. What is the likely issue?",
+        "options": [
+          "Equal dimensionality does not imply equal semantic geometry; a learned projector is needed to translate between the spaces.",
+          "The LLM can only consume RGB pixels, not vectors.",
+          "The visual vector must first be converted into a bounding box token.",
+          "Self-attention cannot operate on a sequence containing both text and image information."
+        ],
+        "answer": 0,
+        "why": "A projector is needed because two vector spaces can have different geometry even when their dimensions match."
+      },
+      {
+        "q": "A document VLM has poor OCR on small text at the original fixed resolution. Which LLaVA-NeXT idea targets this problem most directly?",
+        "options": [
+          "Use a smaller projector so fewer tokens enter the LLM.",
+          "Tile a high-resolution image, encode the tiles, and combine them with a global view.",
+          "Replace next-token loss with CLIP's symmetric contrastive loss at inference.",
+          "Freeze the tokenizer and remove patch-level features."
         ],
         "answer": 1,
-        "why": "Generated images raise rights and safety issues that text filters alone do not cover."
+        "why": "AnyRes preserves more small visual detail by encoding high-resolution tiles instead of forcing the whole image into one low-resolution view."
+      },
+      {
+        "q": "Qwen-VL receives a higher-resolution image that produces more ViT patch features. Why can its adapter still pass a fixed number of visual tokens to the LLM?",
+        "options": [
+          "The image is silently resized back to 224 × 224 before every task.",
+          "The LLM ignores all patches except the first 256 raw patches.",
+          "The adapter uses a learned classifier head that emits one label per image.",
+          "A fixed set of 256 learned queries cross-attends over the variable number of patch features."
+        ],
+        "answer": 3,
+        "why": "The fixed query set determines the output count; cross-attention lets each query summarize the variable patch sequence."
+      },
+      {
+        "q": "A grounding model outputs <box>(500,0),(1000,500)</box> for a 2000 × 1000 image. Which pixel rectangle does this normalized box represent?",
+        "options": [
+          "x from 1000 to 2000 and y from 0 to 500.",
+          "x from 500 to 1000 and y from 0 to 500.",
+          "x from 1000 to 2000 and y from 0 to 1000.",
+          "x from 250 to 500 and y from 0 to 250."
+        ],
+        "answer": 0,
+        "why": "x values 500 and 1000 map to 1000 and 2000 pixels for a 2000-wide image; y values 0 and 500 map to 0 and 500 pixels for a 1000-high image."
+      },
+      {
+        "q": "Why are 2D position encodings especially important inside Qwen-VL's compression adapter?",
+        "options": [
+          "They increase the LLM vocabulary so it can spell coordinates.",
+          "They tell the adapter where each patch came from, reducing the chance that compression destroys spatial layout.",
+          "They replace cross-attention with a convolution over text tokens.",
+          "They guarantee that all small text remains lossless after compression."
+        ],
+        "answer": 1,
+        "why": "Compression can otherwise mix nearby and distant patches without knowing their positions; 2D encodings preserve layout clues."
+      },
+      {
+        "q": "A system must compare two images in one conversation and then refer to 'the object in image 2'. Which capability is most essential to the architecture?",
+        "options": [
+          "Multiple image-token blocks and persistent dialogue context in the same sequence.",
+          "A separate LLM instance for every image with no shared context.",
+          "A single global embedding that discards image identity.",
+          "A segmentation mask decoder that cannot consume text history."
+        ],
+        "answer": 0,
+        "why": "Qwen-VL supports multiple image blocks and keeps them in dialogue context so the model can refer back to a specific image."
+      },
+      {
+        "q": "During Qwen-VL Stage 1, the LLM is frozen while the vision encoder and adapter train on weak pairs. What is the best reason?",
+        "options": [
+          "The LLM has no parameters that can be updated during pretraining.",
+          "Freezing the LLM makes bounding-box coordinates automatically correct.",
+          "The stage first aligns the visual side to an already capable language space before broader task training.",
+          "The LLM is only needed for video, not for images."
+        ],
+        "answer": 2,
+        "why": "The first stage aligns the visual representation to the LLM before the model is asked to learn a broader set of tasks."
+      },
+      {
+        "q": "A user clicks one point on a person's shirt, but the intended target could be the shirt, the whole person, or a button. What SAM behavior addresses this ambiguity?",
+        "options": [
+          "Return one mask and force the point to mean the smallest connected component.",
+          "Ask the user to provide an audio prompt instead of an image prompt.",
+          "Predict multiple candidate masks at different granularities and score their quality.",
+          "Run the heavy image encoder once for each interpretation."
+        ],
+        "answer": 2,
+        "why": "Multiple candidate masks reflect whole, part, and sub-part interpretations, with quality scores to help choose among them."
+      },
+      {
+        "q": "Why does SAM cache the image embedding during an interactive session?",
+        "options": [
+          "The image encoder is the expensive step, while the prompt encoder and mask decoder are comparatively cheap per prompt.",
+          "Caching prevents the mask decoder from using any new point information.",
+          "The prompt encoder cannot run more than once for a given image.",
+          "The cached embedding is a class label that replaces mask prediction."
+        ],
+        "answer": 0,
+        "why": "The expensive ViT image encoding is reusable; new prompts can be handled by the lighter prompt encoder and decoder."
+      },
+      {
+        "q": "A developer needs to create pixel-precise masks for regions that a grounding VLM has already named and localized with boxes. Which composition is most appropriate?",
+        "options": [
+          "Use CLIP alone and treat the similarity score as a mask.",
+          "Pass the detected boxes from the grounding model into SAM to obtain masks.",
+          "Use SAM to generate language descriptions and skip region prompts.",
+          "Use only an LLM because token probabilities directly represent pixels."
+        ],
+        "answer": 1,
+        "why": "Grounding supplies a region prompt and SAM supplies the pixel-level boundary, so the two models complement each other."
+      },
+      {
+        "q": "A medical application transfers SAM to a new scan type and sees errors on thin structures. Which conclusion is most defensible?",
+        "options": [
+          "Promptable zero-shot transfer guarantees perfect masks for every domain.",
+          "The problem proves that SAM's image encoder never uses a ViT.",
+          "The application may need domain-specific validation or fine-tuning, especially for structures known to be difficult.",
+          "The correct fix is to remove all prompts so the model can segment blindly."
+        ],
+        "answer": 2,
+        "why": "Zero-shot transfer is useful but not a guarantee; thin structures and domain shift are practical reasons to validate or adapt."
+      },
+      {
+        "q": "A designer wants predictable LLM cost across images of different sizes and also needs multi-image dialogue. Which Qwen-VL trade-off is relevant?",
+        "options": [
+          "Fixed 256-token compression controls sequence length, but it may lose fine spatial detail.",
+          "Fixed compression always preserves every patch exactly, so there is no trade-off.",
+          "Variable token counts are required for all Qwen-VL stages, so cost cannot be bounded.",
+          "The adapter removes the need for any visual encoder and therefore has zero image cost."
+        ],
+        "answer": 0,
+        "why": "A fixed visual token budget makes sequence length more predictable, but the compression can sacrifice fine spatial information."
+      },
+      {
+        "q": "Which statement best separates the main outputs of the four lecture models?",
+        "options": [
+          "CLIP emits masks, LLaVA emits only similarity scores, Qwen-VL emits no coordinates, and SAM writes essays.",
+          "All four use the same objective and differ only in image resolution.",
+          "CLIP matches, LLaVA generates language, Qwen-VL generates grounded language, and SAM predicts pixel masks.",
+          "SAM and CLIP both require an autoregressive LLM to perform their primary task."
+        ],
+        "answer": 2,
+        "why": "The models are distinguished by their consumers and outputs: match, generate, ground, and segment."
+      },
+      {
+        "q": "A robotics pipeline needs to identify an object, understand a language instruction, and then isolate its exact pixels for grasp planning. Which design uses the lecture's composition idea most directly?",
+        "options": [
+          "Use only CLIP because similarity scores contain the final pixel boundary.",
+          "Use only SAM because it assigns semantic names and follows multi-turn instructions by itself.",
+          "Use LLaVA or Qwen-VL for language-grounded understanding, then call SAM for the precise mask.",
+          "Use a text-only LLM and infer the mask from the generated description without visual processing."
+        ],
+        "answer": 2,
+        "why": "A language-capable VLM can understand the instruction and locate the object; SAM can then create the precise mask for downstream control."
       }
     ]
   },

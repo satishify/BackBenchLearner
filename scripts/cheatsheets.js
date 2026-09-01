@@ -79,9 +79,9 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-4-multimodal-agentic",
       "slug": "module-4-multimodal-agentic",
-      "title": "Module 4 - Multimodal & agents revision",
-      "description": "Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents.",
-      "minutes": 15,
+      "title": "Module 4 - VLM architectures revision",
+      "description": "Revision for CLIP, LLaVA, Qwen-VL, SAM, and how to compose them.",
+      "minutes": 20,
       "module": "Module 4",
       "path": "cheatsheets/genai/module-4-multimodal-agentic.html"
     }

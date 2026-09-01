@@ -369,7 +369,7 @@ window.BBL.CURRICULUM = {
       {
         "id": "module-4-multimodal-agentic",
         "title": "Module 4 - Multimodal & Agentic AI",
-        "blurb": "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
+        "blurb": "Vision-language architectures, image generation, and agentic systems."
       },
       {
         "id": "module-5-deployment-safety",
@@ -1279,31 +1279,52 @@ window.BBL.CURRICULUM = {
       {
         "id": "module-4-multimodal-agentic/vision-language",
         "module": "module-4-multimodal-agentic",
-        "title": "4.1 Vision-Language Models & Image Generation",
+        "title": "4.1 Vision-Language Model Architectures",
         "quizId": "genai/module-4-multimodal-agentic/vision-language",
         "hasQuiz": true,
-        "minutes": 5,
+        "minutes": 41,
         "lessons": [
           {
-            "slug": "multimodal-ai-overview",
-            "hash": "module-4-multimodal-agentic/vision-language/multimodal-ai-overview",
-            "path": "module-4-multimodal-agentic/vision-language/multimodal-ai-overview.html",
-            "label": "Multimodal AI Overview",
-            "minutes": 2
+            "slug": "foundations-of-vlm",
+            "hash": "module-4-multimodal-agentic/vision-language/foundations-of-vlm",
+            "path": "module-4-multimodal-agentic/vision-language/foundations-of-vlm.html",
+            "label": "Foundations of Vision-Language Models",
+            "minutes": 7
           },
           {
-            "slug": "vision-language-models-vlms",
-            "hash": "module-4-multimodal-agentic/vision-language/vision-language-models-vlms",
-            "path": "module-4-multimodal-agentic/vision-language/vision-language-models-vlms.html",
-            "label": "Vision-Language Models (VLMs)",
-            "minutes": 2
+            "slug": "clip-contrastive-pretraining",
+            "hash": "module-4-multimodal-agentic/vision-language/clip-contrastive-pretraining",
+            "path": "module-4-multimodal-agentic/vision-language/clip-contrastive-pretraining.html",
+            "label": "CLIP: Contrastive Language-Image Pretraining",
+            "minutes": 7
           },
           {
-            "slug": "image-generation-basics",
-            "hash": "module-4-multimodal-agentic/vision-language/image-generation-basics",
-            "path": "module-4-multimodal-agentic/vision-language/image-generation-basics.html",
-            "label": "Image Generation Basics",
-            "minutes": 1
+            "slug": "llava-language-and-vision-assistant",
+            "hash": "module-4-multimodal-agentic/vision-language/llava-language-and-vision-assistant",
+            "path": "module-4-multimodal-agentic/vision-language/llava-language-and-vision-assistant.html",
+            "label": "LLaVA: Large Language and Vision Assistant",
+            "minutes": 6
+          },
+          {
+            "slug": "qwen-vl-grounded-vlm",
+            "hash": "module-4-multimodal-agentic/vision-language/qwen-vl-grounded-vlm",
+            "path": "module-4-multimodal-agentic/vision-language/qwen-vl-grounded-vlm.html",
+            "label": "Qwen-VL: Grounded Vision-Language Model",
+            "minutes": 7
+          },
+          {
+            "slug": "sam-segment-anything",
+            "hash": "module-4-multimodal-agentic/vision-language/sam-segment-anything",
+            "path": "module-4-multimodal-agentic/vision-language/sam-segment-anything.html",
+            "label": "SAM: Segment Anything Model",
+            "minutes": 7
+          },
+          {
+            "slug": "vlm-synthesis-compare-and-compose",
+            "hash": "module-4-multimodal-agentic/vision-language/vlm-synthesis-compare-and-compose",
+            "path": "module-4-multimodal-agentic/vision-language/vlm-synthesis-compare-and-compose.html",
+            "label": "Synthesis: Compare and Compose VLMs",
+            "minutes": 7
           }
         ]
       },

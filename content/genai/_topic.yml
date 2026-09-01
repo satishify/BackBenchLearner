@@ -55,10 +55,10 @@ modules:
         title: "3.5 Alignment: RLHF & DPO"
   - id: module-4-multimodal-agentic
     title: "Module 4 - Multimodal & Agentic AI"
-    blurb: "Vision-language models, image generation, and agentic systems — stubs now, deepen as notes land."
+    blurb: "Vision-language architectures, image generation, and agentic systems."
     chapters:
       - id: vision-language
-        title: "4.1 Vision-Language Models & Image Generation"
+        title: "4.1 Vision-Language Model Architectures"
       - id: agentic-systems
         title: "4.2 Agentic AI Systems"
   - id: module-5-deployment-safety

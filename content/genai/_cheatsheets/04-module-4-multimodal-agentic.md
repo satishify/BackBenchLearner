@@ -1,32 +1,56 @@
 ---
-title: "Module 4 - Multimodal & agents revision"
+title: "Module 4 - VLM architectures revision"
 slug: module-4-multimodal-agentic
 module: "Module 4"
-minutes: 15
-description: "Stub-friendly revision for VLMs and agentic systems; deepen with Module 2.9 for agents."
+minutes: 20
+description: "Revision for CLIP, LLaVA, Qwen-VL, SAM, and how to compose them."
 ---
 
-Chapters **4.1–4.2** are shorter stubs. Use this for vocabulary; dive into **2.9** for agent depth.
+Chapter **4.1** follows the lecture map: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.
 
-## 4.1 Vision-language & image generation
+## Foundations
 
-- **VLM**: joint model that maps images (and often text) into a shared space — caption, VQA, document understanding.
-- Typical pattern: vision encoder -> projector -> LLM decoder. Tokenize image patches / features like “soft tokens”.
-- Failure modes: OCR weakness, counting, spatial relations, hallucinated objects — evaluate on *your* image types.
-- **Image generation** (diffusion / related): iterative denoising from noise conditioned on text. Prompting = subject + style + constraints; safety filters matter in prod.
-- Multimodal RAG: retrieve images + text; cite visual evidence carefully.
+- **VLM** = pixels → vision encoder → connector → consumer → output (score, text, box, or mask).
+- **ViT**: patchify image; `(H/P) × (W/P)` patch tokens; add position info. Example: 224×224, 16×16 patches → **196** tokens.
+- Four paradigms: **contrastive** (CLIP), **generative** (LLaVA), **grounded generative** (Qwen-VL), **promptable segmentation** (SAM).
 
-## 4.2 Agentic systems (recap)
+## CLIP
 
-- **Agent** = large language model (LLM) wrapped with tools, memory, and planning—not just a chat user interface (UI).
-- **Loop:** observe → think → act (tool) → observe → … until done, budget hit, or human-in-the-loop (HITL) escalation.
-- **ReAct (Reason + Act):** think one step, run one tool, read the observation, then think again—ground reasoning in real data.
-- **Memory tiers:** episodic (this session’s thread) vs semantic (long-term facts in a vector database). Do not dump all history into every prompt.
-- **Task decomposition:** break goals into named, checkable steps; planner decides order, executor runs one step.
-- **Orchestration:** state machines / LangGraph when you need loops, branches, or approval checkpoints. Single agent with tools often beats premature multi-agent swarms.
-- **Provenance:** trace claims back to tool-call history—do not trust inline citations without verifying source IDs.
-- For full depth (HITL, reflection, multi-agent roles, LangChain vs LangGraph), revise **Cheat sheet - Module 2** section 2.9 and lesson 2.9.
+- Dual encoders; **symmetric contrastive** loss; diagonal of batch similarity matrix = correct pairs.
+- **Zero-shot**: encode image once; compare to text templates like `a photo of a {label}`.
+- Pick CLIP for **matching/retrieval**; not for long explanations.
+
+## LLaVA
+
+- Frozen CLIP ViT → **projector** → visual tokens in LLM sequence.
+- Stage 1: train projector only. Stage 2: instruction tune projector + LLM.
+- **LLaVA-NeXT / AnyRes**: high-res tiles + global view for OCR/charts (more tokens).
+
+## Qwen-VL
+
+- **256 learned queries** cross-attend over variable patches; **2D position** on keys.
+- Grounding via `<ref>`, `<box>` tokens; coordinates **0–1000** normalized, generated as text.
+- Fixed token budget = predictable cost; may lose fine detail.
+
+## SAM
+
+- **Image encoder once** (cache) → **prompt encoder** + **mask decoder** per click/box.
+- **Three candidate masks** for ambiguous points; **IoU** scores quality.
+- Composes with grounding: box from VLM → SAM mask. SAM does not name the object.
+
+## Synthesis
+
+| Need | Start with |
+| --- | --- |
+| Tag / retrieve | CLIP |
+| Chat about image | LLaVA |
+| OCR + boxes + multi-image | Qwen-VL |
+| Pixel mask | SAM |
+| Grasp / rotoscope pipeline | VLM + SAM |
 
 ## 15-minute drill
-1. Contrast captioning vs VQA vs “open-world chat about an image”.
-2. List three agent failure modes (looping, tool misuse, context overflow).
+
+1. Walk through ViT patch count for 224×224 and 16×16 patches.
+2. Explain why LLaVA needs a projector even when dimensions match.
+3. Convert one normalized `<box>` to pixel coordinates for a given image size.
+4. Sketch a two-step pipeline: Qwen-VL finds box → SAM segments.
