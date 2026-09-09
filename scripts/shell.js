@@ -1096,12 +1096,20 @@
   }
 
   // ---- visitor admin ----
-  // countapi.xyz is dead; use the public CountAPI successor (no signup).
-  var VISITOR_COUNTER_KEY = 'backbenchlearner_com_site_visitors_v1';
+  // countapi.xyz and countapi.mileshilliard.com both broke (DNS / Cloudflare
+  // challenge). Abacus is a drop-in public counter with open CORS.
+  var VISITOR_COUNTER_NAMESPACE = 'backbenchlearner.com';
+  var VISITOR_COUNTER_KEY = 'site_visitors';
   var VISITOR_COUNTER_HIT =
-    'https://countapi.mileshilliard.com/api/v1/hit/' + VISITOR_COUNTER_KEY;
+    'https://abacus.jasoncameron.dev/hit/' +
+    VISITOR_COUNTER_NAMESPACE +
+    '/' +
+    VISITOR_COUNTER_KEY;
   var VISITOR_COUNTER_GET =
-    'https://countapi.mileshilliard.com/api/v1/get/' + VISITOR_COUNTER_KEY;
+    'https://abacus.jasoncameron.dev/get/' +
+    VISITOR_COUNTER_NAMESPACE +
+    '/' +
+    VISITOR_COUNTER_KEY;
 
   function formatLocation(data) {
     if (!data) return 'Unknown';
@@ -1136,6 +1144,7 @@
       countEl.textContent = 'Loading…';
       fetch(VISITOR_COUNTER_GET, { method: 'GET', mode: 'cors', cache: 'no-store' })
         .then(function (resp) {
+          if (!resp.ok) throw new Error('counter http ' + resp.status);
           return resp.json();
         })
         .then(function (data) {
