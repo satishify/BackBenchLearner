@@ -79,9 +79,9 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-4-multimodal-agentic",
       "slug": "module-4-multimodal-agentic",
-      "title": "Module 4 - VLM architectures revision",
-      "description": "Revision for CLIP, LLaVA, Qwen-VL, SAM, and how to compose them.",
-      "minutes": 20,
+      "title": "Module 4 - VLM architectures and applications revision",
+      "description": "Revision for VLM architectures, applications, and model composition.",
+      "minutes": 30,
       "module": "Module 4",
       "path": "cheatsheets/genai/module-4-multimodal-agentic.html"
     }

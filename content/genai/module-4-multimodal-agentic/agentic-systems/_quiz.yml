@@ -1,4 +1,4 @@
-title: "4.2 Agentic AI Systems"
+title: "4.3 Agentic AI Systems"
 questions:
   - q: "What is the main difference between a simple chatbot turn and an agent?"
     options:
@@ -16,7 +16,7 @@ questions:
       - " exclusively in Module 5 Capstone"
       - "There is no agent content yet"
     answer: 1
-    why: "Module 4.2 is a short stub; Module 2.9 already has the full agent track."
+    why: "Module 4.3 is a short stub; Module 2.9 already has the full agent track."
 
   - q: "A multimodal agent might..."
     options:

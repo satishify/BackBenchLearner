@@ -59,8 +59,10 @@ modules:
     chapters:
       - id: vision-language
         title: "4.1 Vision-Language Model Architectures"
+      - id: vlm-applications
+        title: "4.2 Applications of Vision-Language Models"
       - id: agentic-systems
-        title: "4.2 Agentic AI Systems"
+        title: "4.3 Agentic AI Systems"
   - id: module-5-deployment-safety
     title: "Module 5 - Deployment, Optimisation & AI Safety"
     blurb: "Turning a prototype into something you can operate."

@@ -1329,9 +1329,61 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-4-multimodal-agentic/vlm-applications",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.2 Applications of Vision-Language Models",
+        "quizId": "genai/module-4-multimodal-agentic/vlm-applications",
+        "hasQuiz": true,
+        "minutes": 41,
+        "lessons": [
+          {
+            "slug": "sam-recap-promptable-segmentation",
+            "hash": "module-4-multimodal-agentic/vlm-applications/sam-recap-promptable-segmentation",
+            "path": "module-4-multimodal-agentic/vlm-applications/sam-recap-promptable-segmentation.html",
+            "label": "SAM Recap: Promptable Segmentation",
+            "minutes": 7
+          },
+          {
+            "slug": "image-understanding-and-captioning",
+            "hash": "module-4-multimodal-agentic/vlm-applications/image-understanding-and-captioning",
+            "path": "module-4-multimodal-agentic/vlm-applications/image-understanding-and-captioning.html",
+            "label": "Image Understanding and Captioning",
+            "minutes": 7
+          },
+          {
+            "slug": "visual-question-answering",
+            "hash": "module-4-multimodal-agentic/vlm-applications/visual-question-answering",
+            "path": "module-4-multimodal-agentic/vlm-applications/visual-question-answering.html",
+            "label": "Visual Question Answering (VQA)",
+            "minutes": 6
+          },
+          {
+            "slug": "document-intelligence",
+            "hash": "module-4-multimodal-agentic/vlm-applications/document-intelligence",
+            "path": "module-4-multimodal-agentic/vlm-applications/document-intelligence.html",
+            "label": "Document Intelligence",
+            "minutes": 8
+          },
+          {
+            "slug": "visual-reasoning",
+            "hash": "module-4-multimodal-agentic/vlm-applications/visual-reasoning",
+            "path": "module-4-multimodal-agentic/vlm-applications/visual-reasoning.html",
+            "label": "Visual Reasoning",
+            "minutes": 6
+          },
+          {
+            "slug": "choosing-and-composing-vlm-applications",
+            "hash": "module-4-multimodal-agentic/vlm-applications/choosing-and-composing-vlm-applications",
+            "path": "module-4-multimodal-agentic/vlm-applications/choosing-and-composing-vlm-applications.html",
+            "label": "Synthesis: Choosing and Composing VLM Applications",
+            "minutes": 7
+          }
+        ]
+      },
+      {
         "id": "module-4-multimodal-agentic/agentic-systems",
         "module": "module-4-multimodal-agentic",
-        "title": "4.2 Agentic AI Systems",
+        "title": "4.3 Agentic AI Systems",
         "quizId": "genai/module-4-multimodal-agentic/agentic-systems",
         "hasQuiz": true,
         "minutes": 3,

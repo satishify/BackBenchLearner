@@ -1,0 +1,253 @@
+id: genai/mock/module-4
+title: "Module 4 Mock Exam"
+minutes: 90
+questions:
+  - q: "A retailer adds new product categories every week and needs fast image tags without training a new classifier head. What is the best starting point?"
+    section: "Model Selection"
+    options:
+      - "SAM with a point prompt"
+      - "CLIP zero-shot classification with text descriptions"
+      - "A text-only LLM"
+      - "A document OCR pipeline"
+    answer: 1
+    why: "CLIP compares image embeddings with new text-defined categories without target-dataset retraining."
+
+  - q: "A 336 × 336 image is split into 14 × 14 patches. How many patch tokens are produced before a [CLS] token?"
+    section: "VLM Foundations"
+    options:
+      - "24"
+      - "196"
+      - "336"
+      - "576"
+    answer: 3
+    why: "336/14 = 24 patches per side, and 24 × 24 = 576."
+
+  - q: "Why must a ViT add positional information to patch embeddings?"
+    section: "VLM Foundations"
+    options:
+      - "Self-attention does not inherently know where a patch came from in the image."
+      - "Position embeddings convert RGB pixels into audio."
+      - "They guarantee perfect OCR."
+      - "They reduce every image to one class label."
+    answer: 0
+    why: "Without position signals, attention cannot distinguish top-left patches from bottom-right patches."
+
+  - q: "In a CLIP batch with 8 matched image-caption pairs, how many wrong captions act as in-batch negatives for one image?"
+    section: "CLIP"
+    options:
+      - "1"
+      - "7"
+      - "8"
+      - "56"
+    answer: 1
+    why: "One caption is the positive match and the other 7 are negatives for that image row."
+
+  - q: "What does CLIP's symmetric contrastive loss train?"
+    section: "CLIP"
+    options:
+      - "Only image-to-text matching"
+      - "Only text-to-image matching"
+      - "Both image-to-text and text-to-image matching"
+      - "Pixel-level segmentation"
+    answer: 2
+    why: "The loss averages cross-entropy in both directions so the diagonal pair wins its row and column."
+
+  - q: "A CLIP classifier predicts 'dog' more reliably with 'a photo of a dog' than with the word 'dog'. What should the team conclude?"
+    section: "CLIP"
+    options:
+      - "Prompt wording changes text embeddings, so templates should be evaluated or ensembled."
+      - "CLIP has secretly fine-tuned on the target dataset."
+      - "The image encoder has stopped working."
+      - "Only single-word labels are valid."
+    answer: 0
+    why: "Different text templates produce different embeddings and therefore different similarity scores."
+
+  - q: "A model must answer open-ended questions about an image. Why is CLIP alone insufficient?"
+    section: "Model Selection"
+    options:
+      - "CLIP cannot encode images."
+      - "CLIP only accepts masks."
+      - "CLIP requires a detector for every category."
+      - "CLIP mainly returns embeddings/similarity, not autoregressive explanations."
+    answer: 3
+    why: "A generative VLM such as LLaVA adds an LLM path that can produce free-form language."
+
+  - q: "During LLaVA feature alignment, which component is primarily trained?"
+    section: "LLaVA"
+    options:
+      - "Every vision and LLM weight"
+      - "The projector between the frozen vision encoder and frozen LLM"
+      - "Only the tokenizer vocabulary"
+      - "SAM's mask decoder"
+    answer: 1
+    why: "Stage 1 teaches the projector to translate CLIP visual features into the LLM embedding space."
+
+  - q: "Two feature vectors have the same width, but the LLM ignores the visual vector. What is the likely problem?"
+    section: "LLaVA"
+    options:
+      - "The image needs fewer pixels."
+      - "Self-attention cannot mix token types."
+      - "Equal dimensions do not mean equal semantic spaces; a learned projector is needed."
+      - "The vector must be converted to an IoU score."
+    answer: 2
+    why: "The projector translates between visual and language embedding geometries, not merely dimensions."
+
+  - q: "A document's tiny text disappears when processed at low resolution. Which LLaVA-NeXT idea directly helps?"
+    section: "LLaVA"
+    options:
+      - "AnyRes: encode high-resolution tiles plus a global view"
+      - "Remove all patch tokens"
+      - "Use only a [CLS] label"
+      - "Replace the image with its filename"
+    answer: 0
+    why: "AnyRes preserves more detail by processing tiles, at the cost of more visual tokens and compute."
+
+  - q: "How can Qwen-VL pass exactly 256 visual tokens even when an image creates many more patch features?"
+    section: "Qwen-VL"
+    options:
+      - "It discards every patch after the first 256."
+      - "It always resizes every image to one pixel."
+      - "It turns patch count into a class label."
+      - "A fixed set of 256 learned queries cross-attends over the variable patch sequence."
+    answer: 3
+    why: "The learned query count fixes the adapter output length while cross-attention summarizes all patches."
+
+  - q: "What is the trade-off of Qwen-VL's fixed 256-token visual budget?"
+    section: "Qwen-VL"
+    options:
+      - "Unpredictable sequence length but perfect detail"
+      - "Predictable LLM cost but possible loss of fine spatial detail"
+      - "No OCR ability but free segmentation masks"
+      - "It requires a separate LLM per image"
+    answer: 1
+    why: "Compression controls sequence length but can discard small or precise visual information."
+
+  - q: "Qwen-VL outputs <box>(250,100),(750,900)</box> for a 2000 × 1000 image. What pixel x-range does this represent?"
+    section: "Qwen-VL"
+    options:
+      - "250 to 750"
+      - "100 to 900"
+      - "500 to 1500"
+      - "250 to 1500"
+    answer: 2
+    why: "Normalized x uses a 0–1000 scale: 250/1000×2000 = 500 and 750/1000×2000 = 1500."
+
+  - q: "A user clicks a shirt, but the point might mean a button, the shirt, or the whole person. How does SAM handle this?"
+    section: "SAM"
+    options:
+      - "It predicts several mask granularities and estimates their quality."
+      - "It always selects the smallest region."
+      - "It writes a paragraph asking the user to decide."
+      - "It retrains the image encoder for each interpretation."
+    answer: 0
+    why: "SAM's multi-mask output preserves whole/part/sub-part interpretations for ambiguous prompts."
+
+  - q: "Why is SAM's image embedding cached in an interactive editor?"
+    section: "SAM"
+    options:
+      - "The prompt encoder can run only once."
+      - "Caching adds semantic class names to masks."
+      - "The heavy image encoder can be reused while each new prompt uses the fast decoder."
+      - "It prevents users from adding correction clicks."
+    answer: 2
+    why: "Heavy-once and cheap-per-prompt is what makes interactive segmentation responsive."
+
+  - q: "What complementary problems do focal loss and Dice loss address in SAM mask training?"
+    section: "SAM"
+    options:
+      - "Focal handles hard/imbalanced pixels; Dice rewards whole-region overlap."
+      - "Focal generates captions; Dice reads OCR."
+      - "Both only predict IoU scores."
+      - "Both replace the image encoder."
+    answer: 0
+    why: "Focal reduces easy-background dominance while Dice directly rewards mask shape and overlap."
+
+  - q: "A catalog needs one short, factual caption per image. Which prompt is best?"
+    section: "Image Understanding"
+    options:
+      - "Be creative and tell an emotional story."
+      - "Write any amount of text you like."
+      - "Guess the product owner and future use."
+      - "Write one sentence under 125 characters using only visibly supported details."
+    answer: 3
+    why: "Scope and length constraints improve consistency and reduce unsupported details."
+
+  - q: "A caption describes background trees but misses the main product in the center. Which failure is this?"
+    section: "Image Understanding"
+    options:
+      - "Perfect grounding"
+      - "A salience error"
+      - "An IoU calculation"
+      - "A symmetric contrastive win"
+    answer: 1
+    why: "Salience is deciding which visible details matter; the caption focused on clutter rather than the subject."
+
+  - q: "A user asks 'What color is the cat?' but the image contains no cat. What should the VQA prompt allow?"
+    section: "Visual Q&A"
+    options:
+      - "A likely color based on training frequency"
+      - "The color of the nearest animal"
+      - "'Not present' after verifying whether a cat is visible"
+      - "A random answer with low temperature"
+    answer: 2
+    why: "Explicitly checking existence and allowing a null-style answer reduces presupposition hallucination."
+
+  - q: "How can an evaluator test whether a VQA answer really depends on the image?"
+    section: "Visual Q&A"
+    options:
+      - "Blur or perturb the image and check whether the answer changes."
+      - "Count only the number of words in the answer."
+      - "Remove the question but keep the answer."
+      - "Increase temperature until wording changes."
+    answer: 0
+    why: "A visual-dependence test changes visual evidence; unchanged answers may reveal reliance on language priors."
+
+  - q: "An invoice field is absent. Which extraction design most safely prevents an invented value?"
+    section: "Document Intelligence"
+    options:
+      - "Force every field to contain a string."
+      - "Ask for a paragraph instead of a schema."
+      - "Reduce image resolution."
+      - "Define the field as nullable and validate it before approval."
+    answer: 3
+    why: "Explicit missing-value handling and validation prevent plausible guesses from silently entering downstream systems."
+
+  - q: "When is a document VLM more justified than plain OCR?"
+    section: "Document Intelligence"
+    options:
+      - "When only clean text transcription is needed"
+      - "When layout and field relationships determine what extracted values mean"
+      - "When the file contains no text or layout"
+      - "When output must be a segmentation mask only"
+    answer: 1
+    why: "A document VLM adds spatial and semantic relationships beyond flat text recognition."
+
+  - q: "A parking VLM lists a sign incorrectly, then builds a logical conclusion from that mistake. What happened?"
+    section: "Visual Reasoning"
+    options:
+      - "Zero-shot classification succeeded."
+      - "The chain of thought guaranteed correctness."
+      - "An early visual error compounded through later reasoning."
+      - "The mask IoU became too high."
+    answer: 2
+    why: "A polished chain can still be wrong when its first observation is incorrect."
+
+  - q: "Which workflow is most appropriate for a warehouse robot that must understand 'the red box beside the pallet' and return exact object pixels?"
+    section: "Model Composition"
+    options:
+      - "Ground with a VLM, then pass the box to SAM for a precise mask."
+      - "Use CLIP similarity as the final pixel mask."
+      - "Use SAM alone to understand every language relation."
+      - "Use a text-only LLM to estimate coordinates."
+    answer: 0
+    why: "The VLM handles language and approximate localization; SAM handles pixel-precise segmentation."
+
+  - q: "A chart question asks for percentage growth between two years. What is the most reliable workflow?"
+    section: "Chart and Data QA"
+    options:
+      - "Ask the VLM for a final number without showing evidence."
+      - "Use SAM's mask confidence as the percentage."
+      - "Extract labels and values, validate units, calculate in code, and flag unreadable data."
+      - "Ignore the chart and use world knowledge."
+    answer: 2
+    why: "Separating visual extraction from deterministic arithmetic makes the evidence and calculation easier to verify."
