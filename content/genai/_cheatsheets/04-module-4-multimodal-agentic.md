@@ -1,9 +1,9 @@
 ---
-title: "Module 4 - VLM architectures and applications revision"
+title: "Module 4 - VLM architectures, applications, and multimodal RAG revision"
 slug: module-4-multimodal-agentic
 module: "Module 4"
 minutes: 30
-description: "Revision for VLM architectures, applications, and model composition."
+description: "Revision for VLM architectures, applications, multimodal retrieval, and model composition."
 ---
 
 Chapter **4.1** follows the lecture map: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.
@@ -65,6 +65,26 @@ Chapter **4.1** follows the lecture map: Foundations → CLIP → LLaVA → Qwen
 | Compounding reasoning error | Independent verifier |
 | Tiny/thin segmentation miss | Domain testing and prompt refinement |
 
+## 4.3 Multimodal RAG
+
+- **RAG** separates retrieval from generation: find evidence first, then answer from it.
+- **Text search**: BM25 protects exact words; dense embeddings match meaning; hybrid search combines both.
+- **Two-stage retrieval**: fast ANN search over the corpus, then careful reranking over a small candidate set.
+- **Image search**: CLIP-style shared space supports text-to-image and image-to-image retrieval.
+- **Document RAG**: parse then embed for clean text, or search complete page images when layout and charts matter.
+- **Late interaction**: each query token matches its best document token or image patch; sum the best scores.
+- **ColPali**: VLM-based page-image retrieval without OCR in its core representation.
+- **Trade-off**: patch vectors preserve detail but need a larger, more expensive index.
+- **Grounded generation**: answer only from retrieved pages, cite the exact evidence, and allow `not found`.
+- **Evaluate separately**: Recall@K/nDCG for retrieval; correctness, faithfulness, citations, and abstention for generation.
+
+| Data | Good starting point |
+| --- | --- |
+| Plain text | Text or hybrid RAG |
+| Products/photos | CLIP-style image search |
+| Reports/charts/forms | Multimodal document RAG |
+| High-stakes answers | Retrieval + claim citations + validation |
+
 ## 20-minute drill
 
 1. Walk through ViT patch count for 224×224 and 16×16 patches.
@@ -73,3 +93,7 @@ Chapter **4.1** follows the lecture map: Foundations → CLIP → LLaVA → Qwen
 4. Sketch a two-step pipeline: Qwen-VL finds box → SAM segments.
 5. Write a caption prompt with scope and length constraints.
 6. Write an invoice JSON schema that uses `null` for missing values.
+7. Compare BM25, dense, and hybrid search for an exact policy number.
+8. Sketch text query → page retrieval → VLM answer → page citation.
+9. Explain late interaction without using the formula.
+10. Diagnose separately: the right page was retrieved, but the answer invented a number.

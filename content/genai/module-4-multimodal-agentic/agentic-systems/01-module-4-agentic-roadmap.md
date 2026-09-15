@@ -1,15 +1,15 @@
 ---
 title: "Module 4 Agentic Roadmap"
-description: "What Module 4.3 covers and where the deeper agent lessons already live in Module 2.9."
+description: "What Module 4.4 covers and where the deeper agent lessons already live in Module 2.9."
 ---
 
-**Agentic AI** means systems that plan, call tools, observe results, and loop until a goal is met — not just answer once in chat. Module 4 Chapter 3 focuses on this track.
+**Agentic AI** means systems that plan, call tools, observe results, and loop until a goal is met — not just answer once in chat. Module 4 Chapter 4 focuses on this track.
 
 ## Where to study in depth today
 
 A full lesson path already exists under **Module 2.9 Agentic AI & Multi-Agent Orchestration** (tools, memory, multi-agent, orchestration). Use that for detailed reading and quizzes.
 
-This **4.3** chapter is a **short placeholder** so Module 4 matches the course outline. Swap these stubs for the matching session notes when they arrive.
+This **4.4** chapter is a **short placeholder** so Module 4 matches the course outline. Swap these stubs for the matching session notes when they arrive.
 
 ## Outline to fill later
 
@@ -24,7 +24,7 @@ Placeholder — deepen when the matching agentic-session material is available.
 
 ## One-line summary
 
-Module 4.3 is the course’s agentic chapter; study Module 2.9 for deep content until these stubs are expanded.
+Module 4.4 is the course’s agentic chapter; study Module 2.9 for deep content until these stubs are expanded.
 
 ## Key terms
 

@@ -1,0 +1,181 @@
+title: "4.3 Multimodal RAG"
+questions:
+  - q: "A support system must search 10 million policy passages. Which design gives a practical speed-quality balance?"
+    options:
+      - "Encode query and passages separately, use ANN search, then rerank a small candidate set."
+      - "Run a large cross-encoder over every passage for every request."
+      - "Ask the generator to memorise every policy and skip retrieval."
+      - "Render every clean text passage as an image."
+    answer: 0
+    why: "Separate encoding allows precomputed document vectors; fast ANN retrieval followed by limited reranking balances scale and precision."
+
+  - q: "Why can semantic search retrieve 'change your login credentials' for the query 'reset my password'?"
+    options:
+      - "It requires both sentences to use identical words."
+      - "Dense embeddings place similar meanings near each other even when wording differs."
+      - "It converts both passages into image masks."
+      - "It ranks only by document length."
+    answer: 1
+    why: "Dense search represents meaning, so synonyms and paraphrases can match without exact words."
+
+  - q: "A query says 'revenue did not grow', but the retriever returns 'revenue grew'. What is the best response?"
+    options:
+      - "Increase generator temperature."
+      - "Remove all keyword signals."
+      - "Use hybrid search, reranking, or explicit checks because embeddings can blur negation."
+      - "Accept it because both passages discuss revenue."
+    answer: 2
+    why: "Negation and numerical precision can be weak in dense embeddings; exact signals and careful reranking help."
+
+  - q: "What is a hard negative during retriever training?"
+    options:
+      - "A damaged vector index that cannot be searched."
+      - "A correct passage repeated many times."
+      - "A completely unrelated passage that is easy to reject."
+      - "A wrong passage that looks very similar to the correct one."
+    answer: 3
+    why: "Near-miss wrong passages teach the model distinctions that random unrelated negatives do not."
+
+  - q: "A product search needs exact SKU matching and visual similarity. Which design is strongest?"
+    options:
+      - "Combine metadata or keyword filters with CLIP-style similarity and reranking."
+      - "Use CLIP alone and ignore SKU values."
+      - "Discard identifiers and save only long image captions."
+      - "Use a text generator without an image encoder."
+    answer: 0
+    why: "Metadata protects exact identifiers while CLIP supplies visual similarity."
+
+  - q: "Why can a text query directly retrieve image vectors in a CLIP-style system?"
+    options:
+      - "Every image must first be manually tagged with the exact query."
+      - "Text and image encoders place both modalities in a shared vector space."
+      - "ANN indexes automatically translate images into sentences."
+      - "The image encoder is replaced by BM25."
+    answer: 1
+    why: "The shared space makes text and image vectors directly comparable."
+
+  - q: "What does Recall@5 measure in image or text retrieval?"
+    options:
+      - "How many total items are stored."
+      - "Whether the generator used five tokens."
+      - "Whether a correct result appears anywhere in the top five."
+      - "Whether all five results have the same score."
+    answer: 2
+    why: "Recall@K checks whether usable retrieval contains a correct item within the first K positions."
+
+  - q: "Why might CLIP struggle with 'the small red sedan facing left behind the blue truck'?"
+    options:
+      - "It cannot store vectors."
+      - "It supports image queries but not text queries."
+      - "It can represent only black-and-white images."
+      - "Several fine-grained attributes and spatial relations may not survive one shared embedding."
+    answer: 3
+    why: "Compositional and fine-grained constraints are a known weakness of pooled similarity representations."
+
+  - q: "A financial report contains the answer only in a chart. What is the main risk of text-only RAG?"
+    options:
+      - "Text extraction may discard the visual evidence before retrieval."
+      - "BM25 will always read chart axes correctly."
+      - "The model will return a segmentation mask."
+      - "Text passages cannot be indexed."
+    answer: 0
+    why: "If extraction loses the chart, the retriever never receives the evidence needed for the answer."
+
+  - q: "Why is vision-space page retrieval useful for messy forms and unusual layouts?"
+    options:
+      - "It guarantees perfect reading of tiny text."
+      - "It preserves the original page and avoids relying entirely on brittle OCR/layout parsing."
+      - "It removes the need for a query."
+      - "It always needs less storage than text retrieval."
+    answer: 1
+    why: "Searching page images directly can preserve charts, tables, and layout that parsing may lose."
+
+  - q: "What does late interaction do differently from one-vector-per-page retrieval?"
+    options:
+      - "It removes all local page information."
+      - "It generates the answer before retrieval."
+      - "It matches query-token vectors with the best local page-patch vectors."
+      - "It compares only document titles."
+    answer: 2
+    why: "Fine-grained token-to-patch matching preserves local details hidden by one pooled vector."
+
+  - q: "What is the main cost of a ColPali-style late-interaction index?"
+    options:
+      - "It cannot represent charts."
+      - "It needs OCR for its core page representation."
+      - "It prevents page-level citations."
+      - "Many vectors per page require more storage and search work."
+    answer: 3
+    why: "Preserving many patch vectors improves detail but makes the index larger and costlier."
+
+  - q: "A question needs evidence from pages 4 and 9, but top-k contains only page 4. What failed first?"
+    options:
+      - "Retrieval coverage; the generator was not given all required evidence."
+      - "Generation only; prompting can always recreate page 9."
+      - "Page-image encoding cannot handle multiple pages."
+      - "Citations made the index smaller."
+    answer: 0
+    why: "A generator cannot reliably use evidence that the retriever did not supply."
+
+  - q: "What does ViDoRe mainly evaluate?"
+    options:
+      - "Speech recognition from videos."
+      - "Page-level visual document retrieval across varied domains and layouts."
+      - "Text sentiment classification."
+      - "Pixel segmentation of natural objects."
+    answer: 1
+    why: "ViDoRe tests ranking of visually rich document pages for text queries."
+
+  - q: "The right page is retrieved, but the answer invents a number. What does this show?"
+    options:
+      - "Correct retrieval guarantees correct generation."
+      - "The vector index must be corrupt."
+      - "Retrieval quality and answer faithfulness must be evaluated separately."
+      - "The model should never cite pages."
+    answer: 2
+    why: "A generator can ignore or misread good evidence, so retrieval success is only one part of evaluation."
+
+  - q: "A response cites page 12, but its claim is not supported there. What is the safest conclusion?"
+    options:
+      - "The citation proves the claim."
+      - "Page numbers are enough without inspection."
+      - "Retrieval must have failed completely."
+      - "Citation presence does not guarantee faithfulness; verify the exact region."
+    answer: 3
+    why: "Citations can be decorative or only topically related; claims need evidence-level checking."
+
+  - q: "Which prompt best supports grounded document QA?"
+    options:
+      - "Use only retrieved evidence, cite each important claim, and say 'not found' when unsupported."
+      - "Always provide an answer, even when evidence is absent."
+      - "Use model memory whenever a retrieved page is unclear."
+      - "Avoid citations so the response sounds natural."
+    answer: 0
+    why: "Evidence constraints, citations, and explicit abstention reduce unsupported claims and expose uncertainty."
+
+  - q: "A plain text knowledge base has no meaningful visual layout. What is the best starting point?"
+    options:
+      - "Render every paragraph as an image for ColPali."
+      - "Use text or hybrid RAG because multimodal complexity adds little value."
+      - "Use video retrieval."
+      - "Store hundreds of image patches for every sentence."
+    answer: 1
+    why: "Choose the least complex method that preserves the evidence; plain text does not require visual retrieval."
+
+  - q: "How can training help a generator when top-k sometimes includes irrelevant pages?"
+    options:
+      - "Train only on perfect context."
+      - "Remove all negative examples."
+      - "Include noisy or irrelevant retrieved content so it learns to ignore distractors."
+      - "Increase answer length."
+    answer: 2
+    why: "Robustness training exposes the model to realistic retrieval noise."
+
+  - q: "Why is joint retriever-generator training sometimes described using a hidden or latent variable?"
+    options:
+      - "The generator cannot produce visible text."
+      - "Image colour channels are hidden from the retriever."
+      - "The retriever never scores documents."
+      - "The supporting document is often not directly labelled and must be inferred."
+    answer: 3
+    why: "Which document explains the answer can be an unobserved choice that training must infer."

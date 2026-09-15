@@ -1381,9 +1381,61 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-4-multimodal-agentic/multimodal-rag",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.3 Multimodal RAG",
+        "quizId": "genai/module-4-multimodal-agentic/multimodal-rag",
+        "hasQuiz": true,
+        "minutes": 31,
+        "lessons": [
+          {
+            "slug": "retrieval-before-generation",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/retrieval-before-generation",
+            "path": "module-4-multimodal-agentic/multimodal-rag/retrieval-before-generation.html",
+            "label": "Multimodal RAG: Retrieve Before You Answer",
+            "minutes": 4
+          },
+          {
+            "slug": "text-search",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/text-search",
+            "path": "module-4-multimodal-agentic/multimodal-rag/text-search.html",
+            "label": "Text Search: From Keywords to Meaning",
+            "minutes": 5
+          },
+          {
+            "slug": "image-search",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/image-search",
+            "path": "module-4-multimodal-agentic/multimodal-rag/image-search.html",
+            "label": "Image Search with a Shared Vector Space",
+            "minutes": 4
+          },
+          {
+            "slug": "multimodal-rag-for-documents",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/multimodal-rag-for-documents",
+            "path": "module-4-multimodal-agentic/multimodal-rag/multimodal-rag-for-documents.html",
+            "label": "Multimodal RAG for Real Documents",
+            "minutes": 5
+          },
+          {
+            "slug": "colpali-and-late-interaction",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/colpali-and-late-interaction",
+            "path": "module-4-multimodal-agentic/multimodal-rag/colpali-and-late-interaction.html",
+            "label": "ColPali and Late-Interaction Retrieval",
+            "minutes": 6
+          },
+          {
+            "slug": "design-evaluate-and-train",
+            "hash": "module-4-multimodal-agentic/multimodal-rag/design-evaluate-and-train",
+            "path": "module-4-multimodal-agentic/multimodal-rag/design-evaluate-and-train.html",
+            "label": "Designing, Evaluating, and Training Multimodal RAG",
+            "minutes": 7
+          }
+        ]
+      },
+      {
         "id": "module-4-multimodal-agentic/agentic-systems",
         "module": "module-4-multimodal-agentic",
-        "title": "4.3 Agentic AI Systems",
+        "title": "4.4 Agentic AI Systems",
         "quizId": "genai/module-4-multimodal-agentic/agentic-systems",
         "hasQuiz": true,
         "minutes": 3,

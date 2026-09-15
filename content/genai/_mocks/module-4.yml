@@ -1,6 +1,6 @@
 id: genai/mock/module-4
 title: "Module 4 Mock Exam"
-minutes: 90
+minutes: 120
 questions:
   - q: "A retailer adds new product categories every week and needs fast image tags without training a new classifier head. What is the best starting point?"
     section: "Model Selection"
@@ -251,3 +251,103 @@ questions:
       - "Ignore the chart and use world knowledge."
     answer: 2
     why: "Separating visual extraction from deterministic arithmetic makes the evidence and calculation easier to verify."
+
+  - q: "A policy search must match paraphrases but also protect exact account codes. What should it use?"
+    section: "Multimodal RAG - Text Search"
+    options:
+      - "Dense search only"
+      - "Hybrid keyword and dense search, followed by reranking where needed"
+      - "Image-to-image retrieval"
+      - "A generator with no retriever"
+    answer: 1
+    why: "Dense vectors cover meaning while keyword signals protect exact identifiers."
+
+  - q: "Why do large retrieval systems commonly use ANN search before a cross-encoder reranker?"
+    section: "Multimodal RAG - Text Search"
+    options:
+      - "ANN quickly narrows millions of items; the expensive reranker then sees only a small set."
+      - "Cross-encoders cannot read text."
+      - "ANN always finds mathematically exact neighbours."
+      - "Reranking converts images into masks."
+    answer: 0
+    why: "The two-stage design combines scalable candidate retrieval with careful final relevance scoring."
+
+  - q: "A product search supports the query 'waterproof black backpack' without prewritten captions. What makes this possible?"
+    section: "Multimodal RAG - Image Search"
+    options:
+      - "SAM converts the image into a product description."
+      - "BM25 reads every image pixel."
+      - "CLIP-style text and image encoders produce comparable vectors."
+      - "The generator memorises every product."
+    answer: 2
+    why: "A shared text-image space lets a text query search precomputed image vectors directly."
+
+  - q: "An annual report answer exists only in a bar chart. Which retrieval approach best preserves that evidence?"
+    section: "Multimodal RAG - Documents"
+    options:
+      - "Discard the page image and retain body text only."
+      - "Rank documents only by filename."
+      - "Use exact keyword matching on the chart colours."
+      - "Include vision-space page retrieval, optionally alongside text retrieval."
+    answer: 3
+    why: "Page-image retrieval preserves charts and layout that text extraction may lose."
+
+  - q: "In late-interaction retrieval, how is a page scored against a query?"
+    section: "Multimodal RAG - ColPali"
+    options:
+      - "Each query token takes its best page-patch match, and those scores are summed."
+      - "All pixels are averaged before the query is read."
+      - "Only the first query word is compared with the title."
+      - "The answer is generated before pages are ranked."
+    answer: 0
+    why: "Fine-grained max-per-token matching is the central late-interaction operation."
+
+  - q: "What is the main trade-off of storing many ColPali patch vectors for every page?"
+    section: "Multimodal RAG - ColPali"
+    options:
+      - "Lower detail and a smaller index"
+      - "More local detail but higher storage and search cost"
+      - "No support for tables or charts"
+      - "Mandatory OCR in the core representation"
+    answer: 1
+    why: "Many vectors preserve local page evidence but make the index larger than one-vector-per-page designs."
+
+  - q: "The correct page is in the top five, but the VLM invents a number. What should the team diagnose?"
+    section: "Multimodal RAG - Evaluation"
+    options:
+      - "Only index build speed"
+      - "Only the number of retrieved pages"
+      - "Generator reading and faithfulness, separately from retrieval recall"
+      - "Whether the answer sounds fluent"
+    answer: 2
+    why: "Successful retrieval does not guarantee that generation uses the evidence correctly."
+
+  - q: "Why does a page citation not by itself prove a multimodal RAG answer?"
+    section: "Multimodal RAG - Grounding"
+    options:
+      - "Pages cannot contain evidence."
+      - "Only document titles can be cited."
+      - "Citations always reduce retrieval recall."
+      - "The model may cite a related page while its claim is unsupported by the exact content."
+    answer: 3
+    why: "Faithfulness requires checking claim-level support, not merely the presence of a page number."
+
+  - q: "What should a grounded QA system do when no retrieved page supports the question?"
+    section: "Multimodal RAG - Grounding"
+    options:
+      - "Return an explicit 'not found' response or route the case for review."
+      - "Use memorised knowledge without telling the user."
+      - "Invent a citation from the top-ranked page."
+      - "Increase temperature until an answer appears."
+    answer: 0
+    why: "Explicit abstention avoids converting missing evidence into a confident claim."
+
+  - q: "A team has clean, native-text policies with no important visual layout. What is the simplest justified starting point?"
+    section: "Multimodal RAG - Design"
+    options:
+      - "Patch-level vision retrieval for every sentence"
+      - "Text or hybrid RAG"
+      - "Video-centric retrieval"
+      - "Image-to-image search"
+    answer: 1
+    why: "Multimodal complexity should be added only when visual evidence solves a real task failure."

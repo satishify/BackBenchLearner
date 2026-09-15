@@ -3093,9 +3093,235 @@ window.BBL.QUIZZES = {
       }
     ]
   },
+  "genai/module-4-multimodal-agentic/multimodal-rag": {
+    "id": "genai/module-4-multimodal-agentic/multimodal-rag",
+    "title": "4.3 Multimodal RAG",
+    "questions": [
+      {
+        "q": "A support system must search 10 million policy passages. Which design gives a practical speed-quality balance?",
+        "options": [
+          "Encode query and passages separately, use ANN search, then rerank a small candidate set.",
+          "Run a large cross-encoder over every passage for every request.",
+          "Ask the generator to memorise every policy and skip retrieval.",
+          "Render every clean text passage as an image."
+        ],
+        "answer": 0,
+        "why": "Separate encoding allows precomputed document vectors; fast ANN retrieval followed by limited reranking balances scale and precision."
+      },
+      {
+        "q": "Why can semantic search retrieve 'change your login credentials' for the query 'reset my password'?",
+        "options": [
+          "It requires both sentences to use identical words.",
+          "Dense embeddings place similar meanings near each other even when wording differs.",
+          "It converts both passages into image masks.",
+          "It ranks only by document length."
+        ],
+        "answer": 1,
+        "why": "Dense search represents meaning, so synonyms and paraphrases can match without exact words."
+      },
+      {
+        "q": "A query says 'revenue did not grow', but the retriever returns 'revenue grew'. What is the best response?",
+        "options": [
+          "Increase generator temperature.",
+          "Remove all keyword signals.",
+          "Use hybrid search, reranking, or explicit checks because embeddings can blur negation.",
+          "Accept it because both passages discuss revenue."
+        ],
+        "answer": 2,
+        "why": "Negation and numerical precision can be weak in dense embeddings; exact signals and careful reranking help."
+      },
+      {
+        "q": "What is a hard negative during retriever training?",
+        "options": [
+          "A damaged vector index that cannot be searched.",
+          "A correct passage repeated many times.",
+          "A completely unrelated passage that is easy to reject.",
+          "A wrong passage that looks very similar to the correct one."
+        ],
+        "answer": 3,
+        "why": "Near-miss wrong passages teach the model distinctions that random unrelated negatives do not."
+      },
+      {
+        "q": "A product search needs exact SKU matching and visual similarity. Which design is strongest?",
+        "options": [
+          "Combine metadata or keyword filters with CLIP-style similarity and reranking.",
+          "Use CLIP alone and ignore SKU values.",
+          "Discard identifiers and save only long image captions.",
+          "Use a text generator without an image encoder."
+        ],
+        "answer": 0,
+        "why": "Metadata protects exact identifiers while CLIP supplies visual similarity."
+      },
+      {
+        "q": "Why can a text query directly retrieve image vectors in a CLIP-style system?",
+        "options": [
+          "Every image must first be manually tagged with the exact query.",
+          "Text and image encoders place both modalities in a shared vector space.",
+          "ANN indexes automatically translate images into sentences.",
+          "The image encoder is replaced by BM25."
+        ],
+        "answer": 1,
+        "why": "The shared space makes text and image vectors directly comparable."
+      },
+      {
+        "q": "What does Recall@5 measure in image or text retrieval?",
+        "options": [
+          "How many total items are stored.",
+          "Whether the generator used five tokens.",
+          "Whether a correct result appears anywhere in the top five.",
+          "Whether all five results have the same score."
+        ],
+        "answer": 2,
+        "why": "Recall@K checks whether usable retrieval contains a correct item within the first K positions."
+      },
+      {
+        "q": "Why might CLIP struggle with 'the small red sedan facing left behind the blue truck'?",
+        "options": [
+          "It cannot store vectors.",
+          "It supports image queries but not text queries.",
+          "It can represent only black-and-white images.",
+          "Several fine-grained attributes and spatial relations may not survive one shared embedding."
+        ],
+        "answer": 3,
+        "why": "Compositional and fine-grained constraints are a known weakness of pooled similarity representations."
+      },
+      {
+        "q": "A financial report contains the answer only in a chart. What is the main risk of text-only RAG?",
+        "options": [
+          "Text extraction may discard the visual evidence before retrieval.",
+          "BM25 will always read chart axes correctly.",
+          "The model will return a segmentation mask.",
+          "Text passages cannot be indexed."
+        ],
+        "answer": 0,
+        "why": "If extraction loses the chart, the retriever never receives the evidence needed for the answer."
+      },
+      {
+        "q": "Why is vision-space page retrieval useful for messy forms and unusual layouts?",
+        "options": [
+          "It guarantees perfect reading of tiny text.",
+          "It preserves the original page and avoids relying entirely on brittle OCR/layout parsing.",
+          "It removes the need for a query.",
+          "It always needs less storage than text retrieval."
+        ],
+        "answer": 1,
+        "why": "Searching page images directly can preserve charts, tables, and layout that parsing may lose."
+      },
+      {
+        "q": "What does late interaction do differently from one-vector-per-page retrieval?",
+        "options": [
+          "It removes all local page information.",
+          "It generates the answer before retrieval.",
+          "It matches query-token vectors with the best local page-patch vectors.",
+          "It compares only document titles."
+        ],
+        "answer": 2,
+        "why": "Fine-grained token-to-patch matching preserves local details hidden by one pooled vector."
+      },
+      {
+        "q": "What is the main cost of a ColPali-style late-interaction index?",
+        "options": [
+          "It cannot represent charts.",
+          "It needs OCR for its core page representation.",
+          "It prevents page-level citations.",
+          "Many vectors per page require more storage and search work."
+        ],
+        "answer": 3,
+        "why": "Preserving many patch vectors improves detail but makes the index larger and costlier."
+      },
+      {
+        "q": "A question needs evidence from pages 4 and 9, but top-k contains only page 4. What failed first?",
+        "options": [
+          "Retrieval coverage; the generator was not given all required evidence.",
+          "Generation only; prompting can always recreate page 9.",
+          "Page-image encoding cannot handle multiple pages.",
+          "Citations made the index smaller."
+        ],
+        "answer": 0,
+        "why": "A generator cannot reliably use evidence that the retriever did not supply."
+      },
+      {
+        "q": "What does ViDoRe mainly evaluate?",
+        "options": [
+          "Speech recognition from videos.",
+          "Page-level visual document retrieval across varied domains and layouts.",
+          "Text sentiment classification.",
+          "Pixel segmentation of natural objects."
+        ],
+        "answer": 1,
+        "why": "ViDoRe tests ranking of visually rich document pages for text queries."
+      },
+      {
+        "q": "The right page is retrieved, but the answer invents a number. What does this show?",
+        "options": [
+          "Correct retrieval guarantees correct generation.",
+          "The vector index must be corrupt.",
+          "Retrieval quality and answer faithfulness must be evaluated separately.",
+          "The model should never cite pages."
+        ],
+        "answer": 2,
+        "why": "A generator can ignore or misread good evidence, so retrieval success is only one part of evaluation."
+      },
+      {
+        "q": "A response cites page 12, but its claim is not supported there. What is the safest conclusion?",
+        "options": [
+          "The citation proves the claim.",
+          "Page numbers are enough without inspection.",
+          "Retrieval must have failed completely.",
+          "Citation presence does not guarantee faithfulness; verify the exact region."
+        ],
+        "answer": 3,
+        "why": "Citations can be decorative or only topically related; claims need evidence-level checking."
+      },
+      {
+        "q": "Which prompt best supports grounded document QA?",
+        "options": [
+          "Use only retrieved evidence, cite each important claim, and say 'not found' when unsupported.",
+          "Always provide an answer, even when evidence is absent.",
+          "Use model memory whenever a retrieved page is unclear.",
+          "Avoid citations so the response sounds natural."
+        ],
+        "answer": 0,
+        "why": "Evidence constraints, citations, and explicit abstention reduce unsupported claims and expose uncertainty."
+      },
+      {
+        "q": "A plain text knowledge base has no meaningful visual layout. What is the best starting point?",
+        "options": [
+          "Render every paragraph as an image for ColPali.",
+          "Use text or hybrid RAG because multimodal complexity adds little value.",
+          "Use video retrieval.",
+          "Store hundreds of image patches for every sentence."
+        ],
+        "answer": 1,
+        "why": "Choose the least complex method that preserves the evidence; plain text does not require visual retrieval."
+      },
+      {
+        "q": "How can training help a generator when top-k sometimes includes irrelevant pages?",
+        "options": [
+          "Train only on perfect context.",
+          "Remove all negative examples.",
+          "Include noisy or irrelevant retrieved content so it learns to ignore distractors.",
+          "Increase answer length."
+        ],
+        "answer": 2,
+        "why": "Robustness training exposes the model to realistic retrieval noise."
+      },
+      {
+        "q": "Why is joint retriever-generator training sometimes described using a hidden or latent variable?",
+        "options": [
+          "The generator cannot produce visible text.",
+          "Image colour channels are hidden from the retriever.",
+          "The retriever never scores documents.",
+          "The supporting document is often not directly labelled and must be inferred."
+        ],
+        "answer": 3,
+        "why": "Which document explains the answer can be an unobserved choice that training must infer."
+      }
+    ]
+  },
   "genai/module-4-multimodal-agentic/agentic-systems": {
     "id": "genai/module-4-multimodal-agentic/agentic-systems",
-    "title": "4.3 Agentic AI Systems",
+    "title": "4.4 Agentic AI Systems",
     "questions": [
       {
         "q": "What is the main difference between a simple chatbot turn and an agent?",
@@ -3117,7 +3343,7 @@ window.BBL.QUIZZES = {
           "There is no agent content yet"
         ],
         "answer": 1,
-        "why": "Module 4.3 is a short stub; Module 2.9 already has the full agent track."
+        "why": "Module 4.4 is a short stub; Module 2.9 already has the full agent track."
       },
       {
         "q": "A multimodal agent might...",
@@ -4362,7 +4588,7 @@ window.BBL.QUIZZES = {
   "genai/mock/module-4": {
     "id": "genai/mock/module-4",
     "title": "Module 4 Mock Exam",
-    "minutes": 90,
+    "minutes": 120,
     "kind": "mock",
     "questions": [
       {
@@ -4664,6 +4890,126 @@ window.BBL.QUIZZES = {
         "answer": 2,
         "why": "Separating visual extraction from deterministic arithmetic makes the evidence and calculation easier to verify.",
         "section": "Chart and Data QA"
+      },
+      {
+        "q": "A policy search must match paraphrases but also protect exact account codes. What should it use?",
+        "options": [
+          "Dense search only",
+          "Hybrid keyword and dense search, followed by reranking where needed",
+          "Image-to-image retrieval",
+          "A generator with no retriever"
+        ],
+        "answer": 1,
+        "why": "Dense vectors cover meaning while keyword signals protect exact identifiers.",
+        "section": "Multimodal RAG - Text Search"
+      },
+      {
+        "q": "Why do large retrieval systems commonly use ANN search before a cross-encoder reranker?",
+        "options": [
+          "ANN quickly narrows millions of items; the expensive reranker then sees only a small set.",
+          "Cross-encoders cannot read text.",
+          "ANN always finds mathematically exact neighbours.",
+          "Reranking converts images into masks."
+        ],
+        "answer": 0,
+        "why": "The two-stage design combines scalable candidate retrieval with careful final relevance scoring.",
+        "section": "Multimodal RAG - Text Search"
+      },
+      {
+        "q": "A product search supports the query 'waterproof black backpack' without prewritten captions. What makes this possible?",
+        "options": [
+          "SAM converts the image into a product description.",
+          "BM25 reads every image pixel.",
+          "CLIP-style text and image encoders produce comparable vectors.",
+          "The generator memorises every product."
+        ],
+        "answer": 2,
+        "why": "A shared text-image space lets a text query search precomputed image vectors directly.",
+        "section": "Multimodal RAG - Image Search"
+      },
+      {
+        "q": "An annual report answer exists only in a bar chart. Which retrieval approach best preserves that evidence?",
+        "options": [
+          "Discard the page image and retain body text only.",
+          "Rank documents only by filename.",
+          "Use exact keyword matching on the chart colours.",
+          "Include vision-space page retrieval, optionally alongside text retrieval."
+        ],
+        "answer": 3,
+        "why": "Page-image retrieval preserves charts and layout that text extraction may lose.",
+        "section": "Multimodal RAG - Documents"
+      },
+      {
+        "q": "In late-interaction retrieval, how is a page scored against a query?",
+        "options": [
+          "Each query token takes its best page-patch match, and those scores are summed.",
+          "All pixels are averaged before the query is read.",
+          "Only the first query word is compared with the title.",
+          "The answer is generated before pages are ranked."
+        ],
+        "answer": 0,
+        "why": "Fine-grained max-per-token matching is the central late-interaction operation.",
+        "section": "Multimodal RAG - ColPali"
+      },
+      {
+        "q": "What is the main trade-off of storing many ColPali patch vectors for every page?",
+        "options": [
+          "Lower detail and a smaller index",
+          "More local detail but higher storage and search cost",
+          "No support for tables or charts",
+          "Mandatory OCR in the core representation"
+        ],
+        "answer": 1,
+        "why": "Many vectors preserve local page evidence but make the index larger than one-vector-per-page designs.",
+        "section": "Multimodal RAG - ColPali"
+      },
+      {
+        "q": "The correct page is in the top five, but the VLM invents a number. What should the team diagnose?",
+        "options": [
+          "Only index build speed",
+          "Only the number of retrieved pages",
+          "Generator reading and faithfulness, separately from retrieval recall",
+          "Whether the answer sounds fluent"
+        ],
+        "answer": 2,
+        "why": "Successful retrieval does not guarantee that generation uses the evidence correctly.",
+        "section": "Multimodal RAG - Evaluation"
+      },
+      {
+        "q": "Why does a page citation not by itself prove a multimodal RAG answer?",
+        "options": [
+          "Pages cannot contain evidence.",
+          "Only document titles can be cited.",
+          "Citations always reduce retrieval recall.",
+          "The model may cite a related page while its claim is unsupported by the exact content."
+        ],
+        "answer": 3,
+        "why": "Faithfulness requires checking claim-level support, not merely the presence of a page number.",
+        "section": "Multimodal RAG - Grounding"
+      },
+      {
+        "q": "What should a grounded QA system do when no retrieved page supports the question?",
+        "options": [
+          "Return an explicit 'not found' response or route the case for review.",
+          "Use memorised knowledge without telling the user.",
+          "Invent a citation from the top-ranked page.",
+          "Increase temperature until an answer appears."
+        ],
+        "answer": 0,
+        "why": "Explicit abstention avoids converting missing evidence into a confident claim.",
+        "section": "Multimodal RAG - Grounding"
+      },
+      {
+        "q": "A team has clean, native-text policies with no important visual layout. What is the simplest justified starting point?",
+        "options": [
+          "Patch-level vision retrieval for every sentence",
+          "Text or hybrid RAG",
+          "Video-centric retrieval",
+          "Image-to-image search"
+        ],
+        "answer": 1,
+        "why": "Multimodal complexity should be added only when visual evidence solves a real task failure.",
+        "section": "Multimodal RAG - Design"
       }
     ]
   }
