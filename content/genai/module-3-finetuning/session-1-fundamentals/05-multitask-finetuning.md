@@ -9,6 +9,26 @@ description: "Train one shared model on several related tasks so they share feat
 
 Example for a support assistant: train **intent classification**, **slot filling**, and **FAQ matching** together. All three need similar customer-language understanding, so sharing a backbone often helps.
 
+:::note Analogy
+Think of a medical student who studies anatomy, pharmacology, and diagnosis together rather than one subject in total isolation. Understanding how the heart works makes the heart medicines easier to remember, and both make chest-pain cases easier to diagnose.
+
+The subjects are different, but they lean on the same foundation — so learning them together is more efficient than learning each from scratch.
+
+Now imagine that same student studying medicine and classical music simultaneously. There is no shared foundation, so the hours simply compete. That is what unrelated multi-task training feels like to a model.
+:::
+
+Here is what those three related tasks look like on one customer message:
+
+```text
+Message: "My card was charged twice for order 5567 on Monday."
+
+Intent classification -> billing_dispute
+Slot filling          -> {order_id: 5567, issue: duplicate_charge, date: Monday}
+FAQ matching          -> "What to do about duplicate charges"
+```
+
+All three need the model to understand the same sentence. Training them together means that understanding is learned once and reused three times.
+
 :::key
 Related tasks can share features and regularize each other — that is the main attraction of multi-task training.
 :::
@@ -34,6 +54,29 @@ Related tasks can share features and regularize each other — that is the main 
 - Mix batches so no single task always wins
 - Watch metrics **per task**, not only one average score
 - If one task collapses, rebalance data or separate that task
+
+### Why balance matters so much
+
+Imagine this data mix:
+
+| Task | Examples | Share of training |
+| --- | --- | --- |
+| Intent classification | 90,000 | 90% |
+| Slot filling | 8,000 | 8% |
+| FAQ matching | 2,000 | 2% |
+
+The model quickly learns that getting intent right pays off far more than anything else, so it optimises for intent and lets FAQ matching drift. The average score still looks respectable — which is exactly the trap.
+
+A common fix is to **sample** rather than simply concatenate: draw roughly equal numbers of examples from each task per batch, even when the underlying datasets are very different sizes.
+
+Watching per-task scores makes the problem visible immediately:
+
+```text
+Epoch 3
+  intent_accuracy   0.94  (up)
+  slot_f1           0.81  (flat)
+  faq_accuracy      0.42  (down)  <- this task is being crushed
+```
 
 ## What goes wrong
 

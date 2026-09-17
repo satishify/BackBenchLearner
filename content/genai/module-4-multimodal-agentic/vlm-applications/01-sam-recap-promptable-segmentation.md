@@ -9,6 +9,16 @@ This is a short recap from lesson 4.1.5 because SAM is useful inside many vision
 
 ## Intuition
 
+### Why SAM appears again here
+
+Chapter 4.1 introduced SAM as an architecture. This chapter is about applications, and SAM shows up in almost all of them for one reason: it is the only model in the module that produces **exact pixels**.
+
+Every other model gives you something approximate. CLIP gives a score, LLaVA gives a sentence, Qwen-VL gives a rectangle. When an application needs to actually cut something out, measure its area, or overlay it precisely, none of those are sufficient — and SAM gets called in to finish the job.
+
+So treat this lesson as the reference page you will keep returning to as the later applications compose SAM with other models.
+
+### The mental model
+
 Think of selecting an object in a photo editor:
 
 1. Upload the image once.
@@ -16,7 +26,9 @@ Think of selecting an object in a photo editor:
 3. The system outlines the exact pixels.
 4. Add another click to correct the selection.
 
-Older segmentation models were often tied to one dataset or object type. SAM was trained as a **promptable foundation model**, so the prompt says what region matters.
+That interaction contains the whole design. Step 1 happens **once** and is expensive. Steps 2 to 4 happen **many times** and must feel instant. SAM's architecture is shaped around exactly that split, which is why the cost table below matters more than any other detail in this lesson.
+
+Older segmentation models were tied to one dataset or object type. SAM was trained as a **promptable foundation model**, so the prompt — not a fixed label list — decides which region matters.
 
 :::key
 SAM answers **“which pixels belong to this region?”** It does not reliably answer **“what is this object called?”**
@@ -106,6 +118,16 @@ SAM predicts **three candidate masks** instead of pretending one interpretation 
 ### Mask losses in simple language
 
 A mask contains many easy background pixels and relatively few object pixels. A plain pixel loss can therefore learn to say “background” too often.
+
+:::note Analogy
+Imagine an exam where 95 of the 100 questions are trivially easy. A student who answers only the easy ones scores 95% and looks excellent — while failing every question that actually mattered.
+
+Most pixels in an image are easy background, so plain pixel-counting rewards exactly that student. **Focal loss** fixes the marking scheme: easy questions are worth almost nothing, and the difficult boundary pixels carry the marks.
+
+**Dice loss** asks a different question entirely — not "how many pixels did you get right?" but "does your outline have the right shape?" A mask can score well on individual pixels and still have a ragged, unusable edge.
+
+The two together are why SAM's outlines look clean rather than merely statistically correct.
+:::
 
 SAM combines:
 

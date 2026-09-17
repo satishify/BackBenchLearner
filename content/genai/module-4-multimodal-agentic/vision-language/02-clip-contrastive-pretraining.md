@@ -18,6 +18,14 @@ Picture two separate encoders — one for images, one for text — meeting in a 
 
 That is **contrastive** learning: learn by comparison, not by memorizing one correct essay per image.
 
+:::note Analogy
+Imagine a party game. A batch of 32 photographs is spread on one table and 32 captions on another, shuffled. Your job is to match each photo to its caption.
+
+You are never told "this photo means *a dog on a beach*." You are only told which caption belongs with which picture. But playing that game thousands of times forces you to understand both sides deeply — you cannot match reliably without genuinely learning what the words and the images mean.
+
+CLIP learns exactly this way. And it explains CLIP's most useful property: because it learned to *match* rather than to pick from a fixed list of labels, you can invent a brand new label at test time by simply writing it as a sentence.
+:::
+
 :::key
 Choose CLIP when the main output is *which text matches this image?* Choose a generative VLM when you need an explanation or dialogue.
 :::

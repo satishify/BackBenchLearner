@@ -32,6 +32,30 @@ Same family: soft prompts. Prefix tuning emphasizes learned prefix context; prom
 - Attractive because it is simple and tiny.
 - A warning: quality can vary sharply with small prompt changes, and cost grows if you make the soft prompt very long.
 
+:::note Analogy
+Both methods brief the same expert, but at different moments.
+
+**Prompt tuning** is handing over a briefing note at the door. The expert reads it, then gets on with the work — and as the job goes on, that first note matters less and less.
+
+**Prefix tuning** is having the briefing available in every room, at every stage of the work. The guidance is present when the expert makes the opening decision and when they make the final one.
+
+That is why prefix tuning tends to hold up better on long generated answers: the influence does not fade as the output grows.
+:::
+
+Where each one lands in the model:
+
+```mermaid
+flowchart TB
+    subgraph PT[Prompt tuning]
+        P1[Learned vectors at the input only] --> P2[Layer 1] --> P3[Layer 2 ... Layer N]
+    end
+    subgraph PX[Prefix tuning]
+        X1[Layer 1 + its own prefix] --> X2[Layer 2 + its own prefix] --> X3[Layer N + its own prefix]
+    end
+```
+
+Prefix tuning therefore trains more parameters than prompt tuning — a prefix for every layer instead of one set at the front — but both remain far smaller than an adapter or a full fine-tune.
+
 ### The cost of longer prompts
 
 If you keep adding soft tokens:

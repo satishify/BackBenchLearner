@@ -5,13 +5,33 @@ description: "Choose a retrieval strategy, combine mixed evidence, test retrieva
 
 A good multimodal RAG system is not simply “a VLM plus a vector database.”
 
-You must decide:
+## Intuition
 
-- What evidence to retrieve
-- How to store and combine it
-- How the model should reason over it
-- How to train the components
-- How to detect failure
+### Why the pieces do not add up on their own
+
+The previous five lessons each gave you a working component: text search, image search, document retrieval, late interaction. It is reasonable to assume that assembling them produces a working system.
+
+It usually does not, and the reason is worth understanding before any of the design advice below makes sense.
+
+Each component is individually correct and individually blind. The text retriever returns good passages without knowing whether the answer was actually in a chart. The VLM writes a confident answer without knowing whether the page it was handed was the right one. Nothing in the pipeline is responsible for the thing you actually care about: **was this answer true, and did the evidence support it?**
+
+So the job of this lesson is the part no single component does — deciding what to retrieve, how to combine it, and how to find out when the whole thing is quietly wrong.
+
+### The five decisions
+
+| Decision | The question it answers |
+| --- | --- |
+| **What to retrieve** | Does the answer live in text, an image, a page, or a video frame? |
+| **How to combine** | When two retrievers disagree, which evidence wins? |
+| **How to reason** | Should the model answer in one step, or search, check, and then answer? |
+| **How to train** | Do the retriever and generator learn separately or together? |
+| **How to detect failure** | When the answer is wrong, which component caused it? |
+
+The last one is the one teams skip, and it is the one that determines whether you can improve the system at all. A pipeline you cannot diagnose is a pipeline you can only rebuild.
+
+:::key
+Retrieval and generation fail for different reasons and need different fixes. If you only measure the final answer, you cannot tell which one to repair.
+:::
 
 ## What can be retrieved?
 
@@ -136,6 +156,14 @@ Useful metrics: Recall@K and nDCG@K.
 - Does the system abstain when evidence is missing?
 - Can it combine multiple pages correctly?
 
+:::note Analogy
+Judging a RAG system by retrieval scores alone is like judging a restaurant by whether the right ingredients arrived.
+
+Good delivery is necessary — you cannot cook the dish without it. But nobody eats the ingredients. If the kitchen then burns them or serves the wrong plate, the delivery record still looks perfect while the customer is unhappy.
+
+So you measure twice: did the right evidence arrive, and did the answer actually use it. When quality drops, that split immediately tells you whether to fix the supplier or the kitchen.
+:::
+
 :::key
 High Recall@5 does not guarantee a faithful answer. A correct page can be retrieved and then misunderstood or ignored.
 :::
@@ -177,6 +205,15 @@ A reasonable design:
 7. Abstain or route to review if evidence conflicts.
 
 This design keeps both exact text and visual evidence instead of forcing one representation to do every job.
+
+## What goes wrong
+
+- **Measuring only the final answer.** When accuracy drops you will have no idea whether retrieval missed the page or the generator misread it, so every fix is guesswork.
+- **Building the most sophisticated pipeline available.** Vision-space retrieval and late interaction cost real money. If your documents are clean text, you are paying for detail that was never at risk.
+- **Trusting citations without checking them.** A model can cite page 7 while making a claim page 7 does not support. Citations look like evidence and are not, until someone verifies a sample.
+- **Never letting the system say "not found".** Forcing an answer on every question guarantees confident fabrication on the questions your corpus cannot answer.
+- **Doing arithmetic in free text.** If the answer involves a calculation, extract the numbers and compute them in code. Models are good at reading the chart and unreliable at the maths that follows.
+- **Evaluating only on tidy documents.** Real corpora contain scans, rotations, multiple languages, and pages that answer nothing. A test set without them predicts nothing about production.
 
 ## Final recap
 

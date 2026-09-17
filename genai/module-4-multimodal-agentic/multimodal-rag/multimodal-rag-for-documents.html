@@ -36,14 +36,30 @@
       <h1>Multimodal RAG for Real Documents</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A real document is more than a bag of words.</p>
+    <p>The last two lessons searched passages and photographs. This lesson tackles the messier thing most organisations actually need to search: <strong>real documents</strong> — reports, forms, manuals, invoices.</p>
+    <h2 id="intuition">Intuition</h2>
+    <h3 id="a-document-is-not-a-bag-of-words">A document is not a bag of words</h3>
+    <p>Open any annual report and look at what carries the meaning:</p>
     <ul>
-    <li>A financial answer may live in a chart.</li>
-    <li>A table depends on row and column positions.</li>
-    <li>A technical manual may explain a connection with a diagram.</li>
-    <li>A form uses boxes and nearby labels to show which value means what.</li>
+    <li>A financial answer may live only in a <strong>chart</strong>, never written out in a sentence.</li>
+    <li>A <strong>table</strong> means what it means because of which row and column a number sits in.</li>
+    <li>A technical manual may explain a connection with a <strong>diagram</strong> and nothing else.</li>
+    <li>A <strong>form</strong> uses boxes and nearby labels to show which value belongs to which field.</li>
     </ul>
-    <p>Text-only extraction can discard these relationships before retrieval even begins.</p>
+    <p>Every one of those depends on <strong>position</strong>. Move the number out of its cell and it stops meaning anything.</p>
+    <h3 id="where-the-traditional-pipeline-loses">Where the traditional pipeline loses</h3>
+    <p>The standard approach is to run OCR, pull the text out, and search that text. The trouble is what OCR produces: a stream of words with the layout stripped off.</p>
+    <p>The number <code>73</code> was in the Q3 column of a revenue table. After extraction it is just <code>73</code>, floating in a list beside dozens of other numbers. The fact that made it an <em>answer</em> — its position — is gone.</p>
+    <p>This happens silently, during indexing, long before anyone asks a question. By the time retrieval runs, the evidence has already been destroyed and nothing downstream can tell.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Imagine photocopying an annual report with a machine that prints only the words and drops every chart, table border, and column break.</p>
+    <p>Technically the text survived. But &quot;Q3&quot; and &quot;73&quot; now sit in a list somewhere with no indication that they belonged to the same bar, and the diagram that explained the process is simply gone. Anyone reading that photocopy would struggle to answer questions the original answered easily.</p>
+    <p>That is what a traditional text-extraction pipeline does to a visually rich document — and it happens silently, before the retriever ever gets a chance.</p>
+    </aside>
+    <h3 id="the-alternative">The alternative</h3>
+    <p>The other option is to stop extracting altogether: keep each page <strong>as an image</strong>, and let a vision-language model encode it directly. Charts, tables, and layout stay intact because nothing was pulled apart.</p>
+    <p>Neither approach wins everywhere, which is why the rest of this lesson is about choosing between them.</p>
     <h2 id="retriever-plus-generator">Retriever plus generator</h2>
     <p>A multimodal document QA system has two main components:</p>
     <div class="diagram-wrap">
@@ -227,9 +243,9 @@ growth_percent = (q3 - q2) / q2 * 100  # 46%</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

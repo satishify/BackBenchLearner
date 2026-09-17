@@ -3,14 +3,42 @@ title: "Multimodal RAG for Real Documents"
 description: "Build question answering over reports, forms, charts, and diagrams by retrieving the right pages before a VLM answers."
 ---
 
-A real document is more than a bag of words.
+The last two lessons searched passages and photographs. This lesson tackles the messier thing most organisations actually need to search: **real documents** — reports, forms, manuals, invoices.
 
-- A financial answer may live in a chart.
-- A table depends on row and column positions.
-- A technical manual may explain a connection with a diagram.
-- A form uses boxes and nearby labels to show which value means what.
+## Intuition
 
-Text-only extraction can discard these relationships before retrieval even begins.
+### A document is not a bag of words
+
+Open any annual report and look at what carries the meaning:
+
+- A financial answer may live only in a **chart**, never written out in a sentence.
+- A **table** means what it means because of which row and column a number sits in.
+- A technical manual may explain a connection with a **diagram** and nothing else.
+- A **form** uses boxes and nearby labels to show which value belongs to which field.
+
+Every one of those depends on **position**. Move the number out of its cell and it stops meaning anything.
+
+### Where the traditional pipeline loses
+
+The standard approach is to run OCR, pull the text out, and search that text. The trouble is what OCR produces: a stream of words with the layout stripped off.
+
+The number `73` was in the Q3 column of a revenue table. After extraction it is just `73`, floating in a list beside dozens of other numbers. The fact that made it an *answer* — its position — is gone.
+
+This happens silently, during indexing, long before anyone asks a question. By the time retrieval runs, the evidence has already been destroyed and nothing downstream can tell.
+
+:::note Analogy
+Imagine photocopying an annual report with a machine that prints only the words and drops every chart, table border, and column break.
+
+Technically the text survived. But "Q3" and "73" now sit in a list somewhere with no indication that they belonged to the same bar, and the diagram that explained the process is simply gone. Anyone reading that photocopy would struggle to answer questions the original answered easily.
+
+That is what a traditional text-extraction pipeline does to a visually rich document — and it happens silently, before the retriever ever gets a chance.
+:::
+
+### The alternative
+
+The other option is to stop extracting altogether: keep each page **as an image**, and let a vision-language model encode it directly. Charts, tables, and layout stay intact because nothing was pulled apart.
+
+Neither approach wins everywhere, which is why the rest of this lesson is about choosing between them.
 
 ## Retriever plus generator
 

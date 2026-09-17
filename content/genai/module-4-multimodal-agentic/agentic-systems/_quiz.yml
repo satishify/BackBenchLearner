@@ -13,10 +13,10 @@ questions:
     options:
       - "Only in Backend HTTP methods"
       - "Module 2.9 Agentic AI & Multi-Agent Orchestration"
-      - " exclusively in Module 5 Capstone"
+      - "Exclusively in Module 5 Capstone"
       - "There is no agent content yet"
     answer: 1
-    why: "Module 4.4 is a short stub; Module 2.9 already has the full agent track."
+    why: "Module 4.4 connects agents to vision and retrieval; Module 2.9 holds the full agent track."
 
   - q: "A multimodal agent might..."
     options:
@@ -26,3 +26,84 @@ questions:
       - "Refuse any API call by definition"
     answer: 1
     why: "Combining VLMs with tools is the Module 4 bridge between vision and agency."
+
+  - q: "What are the four steps of the agent loop?"
+    options:
+      - "Compress, quantize, decode, serve"
+      - "Perceive, reason, act, observe"
+      - "Tokenize, embed, rank, answer"
+      - "Train, validate, test, deploy"
+    answer: 1
+    why: "The loop takes in the goal, decides a step, runs a tool, reads the result, then repeats or stops."
+
+  - q: "When the model requests a tool call, who actually executes it?"
+    options:
+      - "The model runs the code inside its own weights"
+      - "Your surrounding code runs the action and returns the result to the model"
+      - "The tokenizer executes it during encoding"
+      - "Nothing executes; the call is only descriptive"
+    answer: 1
+    why: "The model only requests a structured action. That separation is what makes an agent controllable."
+
+  - q: "Which task genuinely needs an agent rather than a chatbot?"
+    options:
+      - "Summarising a paragraph that is already in the prompt"
+      - "Looking up whether a specific customer order has shipped"
+      - "Rewriting supplied text in a friendlier tone"
+      - "Answering an FAQ covered by the system prompt"
+    answer: 1
+    why: "The answer lives in a live system the model cannot reach without a tool call."
+
+  - q: "Why is adding more text to a chatbot's prompt not a substitute for an agent?"
+    options:
+      - "Prompts are always too expensive to extend"
+      - "The problem is reach into live systems, not missing knowledge"
+      - "Chatbots ignore anything after the first sentence"
+      - "Longer prompts disable tool calling"
+    answer: 1
+    why: "No amount of manual content answers a question whose answer sits in a database."
+
+  - q: "What new category of failure do agents have that chatbots do not?"
+    options:
+      - "Slower token generation"
+      - "Confidently wrong actions with real side effects"
+      - "Higher embedding dimensionality"
+      - "Inability to produce fluent text"
+    answer: 1
+    why: "A chatbot can give wrong information; an agent can issue a wrong refund."
+
+  - q: "In the screenshot-to-runbook example, which capability handles the first step?"
+    options:
+      - "A text-only LLM reading the ticket body"
+      - "A VLM reading the error code out of the image"
+      - "A reward model scoring the ticket"
+      - "A quantized base model"
+    answer: 1
+    why: "The first piece of information is pixels, so a text-only agent cannot start the task at all."
+
+  - q: "Why is a misread image especially dangerous in a multimodal agent?"
+    options:
+      - "It doubles GPU memory use"
+      - "The wrong observation compounds into a wrong action, not just a wrong sentence"
+      - "It corrupts the vision encoder weights"
+      - "It prevents the loop from ever terminating"
+    answer: 1
+    why: "Every later step inherits the bad read, and the chain ends in something being changed."
+
+  - q: "What is the cheapest practical safeguard against a bad visual read?"
+    options: 
+      - "Retrain the vision encoder after each ticket"
+      - "Have the agent state what it saw before acting on it"
+      - "Disable retrieval entirely"
+      - "Increase the temperature setting"
+    answer: 1
+    why: "Exposing the observation costs nothing and makes the one failure that matters reviewable."
+
+  - q: "Why should an agent retrieve internal documentation instead of recalling it?"
+    options:
+      - "Retrieval is always faster than generation"
+      - "Documentation changes, and retrieved content can be cited and checked"
+      - "Models cannot store any facts at all"
+      - "Retrieval removes the need for tool permissions"
+    answer: 1
+    why: "This is the same argument as Module 4.3 — volatile knowledge belongs in retrieval, not weights."

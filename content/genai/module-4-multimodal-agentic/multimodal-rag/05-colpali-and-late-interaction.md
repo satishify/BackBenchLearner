@@ -3,9 +3,57 @@ title: "ColPali and Late-Interaction Retrieval"
 description: "See how fine-grained query-token-to-page-patch matching preserves details that one page vector can hide."
 ---
 
-Compressing a complete document page into one vector is fast, but it can hide a tiny number in a table or a small label beside a chart.
+In the previous lesson, each document page was turned into **one vector** and stored in a search index. That works, it is cheap, and for most pages it is enough.
 
-**Late interaction** keeps many small vectors and delays detailed matching until search time.
+This lesson is about the cases where it is not enough — and about the technique, **late interaction**, that fixes them.
+
+## Intuition
+
+### The problem, with a real page in front of you
+
+Picture a single page from an annual report. It contains a heading, two paragraphs, a bar chart with quarterly figures, and a small table of regional totals in the corner.
+
+Now that whole page gets compressed into one vector — say 768 numbers that represent "what this page is about."
+
+Those 768 numbers have to describe everything on the page at once. Inevitably they end up describing the page's **main themes**: revenue, quarterly performance, this company, this year. The small table in the corner contributes almost nothing to the result, because it is a tiny part of a busy page.
+
+So when a user asks:
+
+> What was the regional total for the South in Q3?
+
+the page that genuinely holds the answer does not stand out. Its one vector says "this page is about quarterly revenue," which is true of forty other pages in the report. The evidence is on the page; the *summary* of the page lost it.
+
+:::note Analogy
+Summarising a page into one vector is like describing a 300-page book with a single sentence. "A novel about family and money in 19th-century Russia" is accurate, and it is hopeless for finding the paragraph where a specific character signs a specific contract.
+
+Late interaction keeps the equivalent of a sentence-level index. When someone asks about that contract, the search can go straight to the paragraph rather than judging the whole book by its one-line summary.
+
+The cost is exactly what you would expect: a detailed index takes far more room than a one-line summary.
+:::
+
+### The fix: stop summarising so early
+
+**Late interaction** takes a different approach. Instead of one vector per page, it keeps **many** — roughly one for each small patch of the page image. The corner table gets its own vectors, and they are not averaged away into the page's general theme.
+
+The query is broken up in the same way: one vector per query token rather than one for the whole question.
+
+Matching then happens between those small pieces, at search time.
+
+### Why it is called "late"
+
+The name describes **when** the query and the document are allowed to interact.
+
+| Approach | When query and page meet | Consequence |
+| --- | --- | --- |
+| **Early interaction** | The model reads query and page *together* before scoring | Very accurate, far too slow to run over a million pages |
+| **No interaction** (single vector) | Never — each side is summarised alone, then two vectors are compared | Very fast, loses local detail |
+| **Late interaction** | Each side is encoded alone, then the *pieces* are matched at search time | Keeps detail, still fast enough to index |
+
+Late interaction is the middle path. The encoders still run separately, so you can index every page in advance — but the detailed comparison is postponed until you know the query, instead of being thrown away during indexing.
+
+:::key
+One vector per page summarises the page before it knows the question. Late interaction keeps the page in pieces so the question can pick out the piece that matters.
+:::
 
 ## One vector versus many
 
@@ -168,14 +216,13 @@ Reported comparisons in the ColPali work show the direction:
 
 Treat paper results as benchmark evidence, not a guarantee for every private document collection.
 
-## What remains difficult
+## What goes wrong
 
-- Large late-interaction indexes
-- Tiny or blurry page content
-- Messy documents outside training data
-- Questions needing several pages or documents
-- Faithfulness of the final generated answer
-- Standard evaluation of claim-level evidence
+- **Reaching for ColPali by default.** It earns its cost on visually rich pages. On a clean text document, single-vector retrieval is cheaper and usually just as good — the extra detail has nothing to preserve.
+- **Underestimating the index.** Hundreds of vectors per page instead of one is a hundredfold difference in storage. Estimate it against your real corpus size before committing, not after.
+- **Assuming no OCR is needed anywhere.** ColPali removes OCR from the *retrieval* path. You may still want it for exact term filtering, for displaying the text, or for verifying a number after the page is found.
+- **Expecting it to rescue unreadable pages.** If a figure is too small or blurry for a person to read, patch vectors will not recover it either.
+- **Stopping at retrieval.** Finding the right page is not answering the question. The generator can still misread the chart it was handed, and multi-page questions remain hard.
 
 ## One-line summary
 

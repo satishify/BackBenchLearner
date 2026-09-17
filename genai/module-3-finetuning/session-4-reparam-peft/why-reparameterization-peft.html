@@ -45,6 +45,13 @@
     <li>Training and serving those full copies means huge GPU bills.</li>
     </ul>
     <p><strong>PEFT</strong> (parameter-efficient fine-tuning) keeps the base model frozen and changes only a small part. <strong>Re-parameterization PEFT</strong> goes one step further: it rewrites the <em>update itself</em> into a cheaper form (LoRA and QLoRA are the main examples in this lesson).</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of a 500-page textbook that you want to adapt for a particular class.</p>
+    <p>The full fine-tuning approach is to reprint the entire book with your corrections baked in. Do that for 200 different classes and you need a warehouse.</p>
+    <p>The re-parameterization approach is to keep <strong>one</strong> printed book and write a short errata sheet for each class — &quot;on page 34, read X instead of Y.&quot; The book never changes, the errata are a few pages each, and a reader gets the adapted version by reading both together.</p>
+    <p>That is the whole trick: store the <em>difference</em>, not another copy of everything.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Full fine-tuning touches almost everything. Re-parameterization PEFT learns a small update instead of a huge dense one.</p>
@@ -127,9 +134,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

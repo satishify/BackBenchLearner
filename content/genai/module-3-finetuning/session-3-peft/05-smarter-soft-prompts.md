@@ -14,6 +14,14 @@ Different layers do different jobs. Different inputs need different hints. So we
 - Ignore the specific input instance
 - Force prompts into every layer
 
+:::note Analogy
+Picture a hospital help desk that greets every single visitor with the same three-minute speech covering parking, visiting hours, pharmacy rules, and insurance paperwork.
+
+It is not wrong, but it is wasteful — and for the patient who only needed the pharmacy, most of it was noise. A better desk asks who you are and gives you the part that applies to you.
+
+Each method in this lesson is a different way of asking that question: SMoP picks which briefing to use, APT decides how much briefing each stage needs, IDPG writes a briefing for this specific visitor, and SPT asks whether a briefing was needed at all.
+:::
+
 :::key
 Prompt tuning should be selective, not wasteful.
 :::
@@ -48,6 +56,16 @@ APT can also use gating so a layer only “keeps” the prefix tokens it needs.
 **Plain-English idea:** the right soft prompt should depend on **this input**, not only on the task name.
 
 A small prompt-generator network builds prompt vectors from the input. Useful when one task has many subcases and a static prompt is too generic.
+
+Why a static prompt struggles here — all three of these are "customer support," yet they need different handling:
+
+```text
+"My payment failed twice."            -> needs billing care and caution
+"How do I change my profile photo?"   -> needs short how-to steps
+"This is the fourth time I've asked!" -> needs de-escalation first
+```
+
+One fixed soft prompt must average across all three and serves none of them especially well. IDPG generates a prompt shaped by the message itself, so an angry message and a simple how-to question are not briefed identically.
 
 ### SPT — Selective Prompt Tuning
 

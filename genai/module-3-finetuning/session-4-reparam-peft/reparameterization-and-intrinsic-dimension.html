@@ -40,6 +40,19 @@
     <h2 id="intuition">Intuition</h2>
     <p>Imagine you need to nudge a huge weight matrix. You could learn every entry. Or you could learn a compressed version that still captures the useful change.</p>
     <p>Research and practice both point to this: many learning problems can be solved in a much <strong>lower-dimensional subspace</strong> than the raw parameter count suggests. That smaller effective size is called the <strong>intrinsic dimension</strong>.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A mixing desk in a recording studio has hundreds of knobs. In principle, adapting a track means any of them could move.</p>
+    <p>But if the only problem is &quot;the vocals are too quiet for this room,&quot; the actual fix is one direction: vocals up, everything else roughly as it was. You could describe the change with two numbers instead of three hundred.</p>
+    <p>Intrinsic dimension is the claim that most task adaptations look like that. The model has billions of knobs, but the specific change your task needs points in a surprisingly simple direction — so it is worth learning that direction directly instead of learning every knob independently.</p>
+    </aside>
+    <p>You can see the saving in the arithmetic. Take one 4,096 × 4,096 weight matrix:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Full dense update  : 4096 x 4096              = 16,777,216 numbers
+Low-rank update r=8: (4096 x 8) + (8 x 4096)  =     65,536 numbers</code></pre>
+    </div>
+    <p>That is about 0.4% of the parameters. The bet you are making is that the useful part of the change fits inside that thinner description — and for most fine-tuning tasks it does.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>If the useful weight change has low intrinsic rank, a low-rank factorization can capture most of the adaptation.</p>
@@ -120,9 +133,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

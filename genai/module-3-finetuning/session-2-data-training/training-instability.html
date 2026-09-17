@@ -79,6 +79,18 @@
     <li>A common default for LLM fine-tuning is <code>max_grad_norm = 1.0</code>.</li>
     <li>Clipping is a seatbelt, not a steering wheel. If more than about 20% of steps hit the clip, your learning rate is probably too high.</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Clipping is a speed limiter on a delivery van. The driver still chooses the route — you are not changing where the van goes, only how fast it is allowed to travel. On a normal street the limiter never engages. On a steep downhill it stops the van from running away.</p>
+    <p>That is exactly the behaviour you want: invisible most of the time, decisive on the one batch that would have wrecked the run.</p>
+    </aside>
+    <p>What that looks like numerically:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Typical step:  gradient norm = 0.6  -&gt; unchanged (under the cap)
+Bad batch:     gradient norm = 47.0 -&gt; scaled down to 1.0, same direction</code></pre>
+    </div>
+    <p>Without the cap, that single step of size 47 would have thrown the weights far outside the useful region — and the next batch would then produce an even larger gradient, which is how one bad batch becomes a dead run.</p>
     <h3 id="fix-2-learning-rate-schedule-preview">Fix 2: Learning-rate schedule (preview)</h3>
     <p>A constant high learning rate for a long run often causes late spikes. Warmup (start small) plus a decaying schedule (for example cosine) keeps early steps gentle and late steps careful. The next lesson goes deep on schedules; for stability, remember: <strong>warmup + decay beats “flat and aggressive.”</strong></p>
     <h3 id="a-stability-checklist-that-compounds">A stability checklist that compounds</h3>
@@ -175,9 +187,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

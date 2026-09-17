@@ -25,6 +25,16 @@ Two-path picture:
 - **RLHF** = votes → critic → PPO (with a KL leash)
 - **DPO** = votes go straight into the policy, compared against a frozen reference
 
+:::note Analogy
+Imagine training a new writer using reader feedback.
+
+**RLHF** is the elaborate route: you first hire a critic, train the critic to predict what readers like, and then have the writer work under the critic's supervision. It works, but now you have two people to manage — and if the critic develops odd opinions, the writer faithfully learns those odd opinions.
+
+**DPO** is the direct route: you show the writer the two drafts readers compared and say "they preferred this one." No critic, no supervision loop, same underlying feedback.
+
+Fewer moving parts means fewer things to tune and fewer places to go wrong — which is the main reason DPO became popular.
+:::
+
 :::key
 DPO: preference data in → aligned policy out, with fewer moving parts than classic RLHF.
 :::

@@ -26,6 +26,14 @@ flowchart TB
     VERIFY --> PIPE[Deploy or compose pipeline]
 ```
 
+:::note Analogy
+This is the difference between hiring for a job and hiring someone impressive.
+
+If you need a wall built, you write down "a wall, two metres, load-bearing" and then find the person who builds walls. You do not start by hiring the most celebrated craftsman in town and then ask what they feel like making.
+
+Teams often do the second thing with models — pick the one they have read about, then shape the task around it. Writing the output contract first ("a JSON object with these four fields, or `null`") makes the choice obvious and makes failure measurable.
+:::
+
 :::key
 Choose the output contract first. Then choose the model and verification plan — not the other way around.
 :::

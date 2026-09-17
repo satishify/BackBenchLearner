@@ -58,10 +58,29 @@
       </tbody>
     </table>
     <p>The big idea: <strong>good context can steer the language model without changing its weights.</strong></p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Imagine briefing a skilled contractor. You can write instructions in English — “be concise, use formal language, always list risks last.” That is a discrete prompt, and it works, but you are limited to words, and small rewordings change the result.</p>
+    <p>A soft prompt is like being able to hand over a <em>feeling</em> directly instead of a paragraph — a compressed briefing tuned over hundreds of previous jobs, which does not correspond to any sentence you could write down. The contractor is unchanged; only the briefing improved.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Discrete prompt = real words you type. Continuous (soft) prompt = trainable “virtual tokens” the model learns.</p>
     </aside>
+    <h3 id="what-a-soft-prompt-really-is">What a soft prompt really is</h3>
+    <p>Every word you type is converted into a vector before the model sees it. A soft prompt skips the word stage and learns the vectors directly:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Discrete: &quot;Summarise formally:&quot;  -&gt; tokenizer -&gt; [15, 892, 41] -&gt; embeddings
+Soft:     (no text at all)                                     -&gt; 20 learned vectors</code></pre>
+    </div>
+    <p>Those 20 vectors are prepended to your real input. They occupy prompt positions like ordinary tokens, but they do not spell anything — if you tried to decode them back into words, you would get nonsense. They exist purely because training found them effective.</p>
+    <p>The trainable footprint is tiny:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">20 virtual tokens x 4096 dimensions ≈ 82,000 parameters</code></pre>
+    </div>
+    <p>Compare that with millions for adapters, or billions for full fine-tuning.</p>
     <h2 id="how-it-works">How it works</h2>
     <h3 id="discrete-vs-continuous-prompts">Discrete vs continuous prompts</h3>
     <table>
@@ -141,9 +160,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

@@ -54,6 +54,13 @@
     <h2 id="how-it-works">How it works</h2>
     <h3 id="text-becomes-numbers-tokenization">Text becomes numbers (tokenization)</h3>
     <p>The model never reads letters the way we do. A tokenizer turns text into a list of token IDs. Training packs those IDs into fixed-length windows (the context length) so the GPU can process many examples efficiently.</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">&quot;fine-tuning is useful&quot;
+   -&gt; [&quot;fine&quot;, &quot;-&quot;, &quot;tun&quot;, &quot;ing&quot;, &quot; is&quot;, &quot; useful&quot;]
+   -&gt; [3145, 12, 8823, 278, 374, 5505]</code></pre>
+    </div>
+    <p>Notice that <code>tuning</code> was split into two pieces. Tokens are not words — they are common chunks of characters. A rough rule for English is that 1 token is about 4 characters, so 1,000 words is roughly 1,300 tokens. This is why your cost and context limits are counted in tokens, not words.</p>
     <h3 id="mini-batches-the-sweet-spot">Mini-batches (the sweet spot)</h3>
     <table>
       <thead><tr>
@@ -88,6 +95,37 @@
     <li>Cross-entropy asks: “How much probability did you put on the correct next token?” Averaging that over the batch gives one loss number.</li>
     </ol>
     <p>Lower loss means the model is assigning higher probability to the real text.</p>
+    <p>Seeing the numbers helps. Suppose the correct next token is <code>mat</code>:</p>
+    <table>
+      <thead><tr>
+        <th>The model said</th>
+        <th>Probability on <code>mat</code></th>
+        <th>Loss for this token</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Very confident and right</td>
+          <td>0.90</td>
+          <td>0.11</td>
+        </tr>
+        <tr>
+          <td>Unsure</td>
+          <td>0.50</td>
+          <td>0.69</td>
+        </tr>
+        <tr>
+          <td>Confident and wrong</td>
+          <td>0.05</td>
+          <td>3.00</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Two things stand out. Being right earns a small reward, but being <strong>confidently wrong</strong> is punished hard — that steep penalty is what drags the model away from bad habits. And the loss is never exactly zero, because the model can only ever get close to certainty.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Cross-entropy behaves like a strict exam marker who cares about your confidence, not just your answer. Say “I&#x27;m 90% sure it&#x27;s the mat” and be right — barely any penalty. Say “I&#x27;m 95% sure it&#x27;s the roof” and be wrong — heavy penalty. Say “I&#x27;m not sure, maybe mat, maybe sofa” — a middling penalty either way.</p>
+    <p>Over thousands of questions, the fastest way to score well is to be genuinely confident only when you actually know.</p>
+    </aside>
     <h3 id="backpropagation-and-the-optimizer-step">Backpropagation and the optimizer step</h3>
     <p>Backpropagation figures out, for each trainable weight, which way to push it to reduce the loss. Then the optimizer takes a step:</p>
     <p><code>new_weights = old_weights - learning_rate * gradient</code></p>
@@ -96,6 +134,21 @@
     <li>In practice people use adaptive optimizers like <strong>Adam</strong> (not plain old SGD) for LLM fine-tuning.</li>
     <li>Then load the next mini-batch and repeat.</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Picture yourself on a foggy hillside trying to reach the valley. You cannot see the bottom, but you can feel which way the ground slopes under your feet — that slope is the gradient. So you take a step downhill, feel again, step again.</p>
+    <p>The learning rate is your stride length. Tiny steps are safe but you will still be walking at sunset. Enormous leaps might carry you straight over the valley and up the opposite slope — which is exactly what a loss spike looks like on the chart.</p>
+    </aside>
+    <p>A concrete step, with real numbers:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">weight          = 0.400
+gradient        = 0.020   (loss increases when this weight increases)
+learning rate   = 0.001
+
+new weight = 0.400 - (0.001 x 0.020) = 0.39998</code></pre>
+    </div>
+    <p>That change is almost invisible. But a fine-tune runs this for billions of weights across thousands of steps, and those tiny nudges accumulate into genuinely new behaviour.</p>
     <h3 id="steps-epochs-and-when-to-stop">Steps, epochs, and when to stop</h3>
     <table>
       <thead><tr>
@@ -165,9 +218,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

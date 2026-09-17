@@ -7,6 +7,32 @@ description: "Understand text-to-image and image-to-image search, how CLIP enabl
 
 It is useful for product catalogs, stock-photo libraries, reverse image search, and content moderation.
 
+## Intuition
+
+### The obvious approach, and why it is not used
+
+Suppose you have 200,000 product photos and a shopper types "black waterproof hiking backpack."
+
+The instinctive solution is to write a caption for every photo, then run ordinary text search over the captions. That does work, and for years it was how image search was built. It has two stubborn problems.
+
+First, the caption is written **before anyone asks anything**. Whoever wrote it decided which details mattered. If the caption says "black backpack" and the shopper cares about side pockets, that information was thrown away at indexing time and no amount of clever searching recovers it.
+
+Second, it puts a translation step between the question and the evidence. Every mistake in the caption becomes a permanent, invisible error in the index.
+
+### The better idea: skip the words
+
+Modern image search does not translate pictures into text at all. It converts **both** the photo and the query into vectors, and places them in the same space — so they can be compared directly, without either becoming words first.
+
+That is the entire trick, and everything else in this lesson follows from it. A CLIP-style model is what makes it possible, because it was trained specifically so that a picture and its caption land in the same region.
+
+:::note Analogy
+Think of a shared vector space as a giant map where everything is placed by meaning rather than by type.
+
+Photographs of mountains at sunset land in one region of the map. The *phrase* "snow-capped mountains at sunset" lands in that same region, because CLIP was trained to put matching pictures and words in the same place.
+
+Searching then becomes a geography question: drop a pin where the query lands, and return whatever is nearby. The system never has to translate the picture into words — both were already placed on the same map.
+:::
+
 ## Two directions
 
 ### Text-to-image

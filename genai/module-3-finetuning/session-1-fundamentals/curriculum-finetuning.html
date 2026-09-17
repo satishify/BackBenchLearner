@@ -44,6 +44,37 @@
     <li>First: obvious positive and negative reviews</li>
     <li>Later: sarcasm, mixed sentiment, very short texts</li>
     </ol>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Nobody teaches a child to swim by dropping them in the deep end on day one. They start in shallow water, then a float, then the shallow lane, and only later the deep end. Each stage is only safe because the previous one worked.</p>
+    <p>Training a model on your hardest adversarial examples from step one is the deep end. It may thrash around, learn something unstable, and never build the basics it needed first.</p>
+    </aside>
+    <p>The difference in practice, on review data:</p>
+    <table>
+      <thead><tr>
+        <th>Stage</th>
+        <th>Example</th>
+        <th>Why it belongs here</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Easy</td>
+          <td>“Absolutely loved it. Best purchase this year.”</td>
+          <td>Clear words, clear label</td>
+        </tr>
+        <tr>
+          <td>Medium</td>
+          <td>“Good product, slow delivery.”</td>
+          <td>Two sentiments in one sentence</td>
+        </tr>
+        <tr>
+          <td>Hard</td>
+          <td>“Well, that was <em>exactly</em> what I needed. 🙄”</td>
+          <td>Sarcasm — the words say positive, the meaning is negative</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>If the model has not yet learned that “loved it” is positive, the sarcastic example teaches it nothing useful. It just adds noise.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Curriculum = planned easy → hard order, not “whatever the dataloader shuffles.”</p>
@@ -83,6 +114,45 @@
     <li><strong>Competence-based</strong> — Move on when validation on the current bucket looks healthy</li>
     </ul>
     <p>There is no single magic schedule. Start simple: two or three difficulty buckets and a clear promotion rule.</p>
+    <p>A blended schedule is often the safest, because the easy examples never fully disappear:</p>
+    <table>
+      <thead><tr>
+        <th>Training phase</th>
+        <th>Easy</th>
+        <th>Medium</th>
+        <th>Hard</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Phase 1</td>
+          <td>80%</td>
+          <td>20%</td>
+          <td>0%</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td>40%</td>
+          <td>40%</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td>Phase 3</td>
+          <td>20%</td>
+          <td>40%</td>
+          <td>40%</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>That small share of easy data in the last phase is <strong>rehearsal</strong> — it keeps the basics fresh while the hard cases are being learned, much like a musician still playing scales while preparing a difficult piece.</p>
+    <h3 id="how-do-you-decide-what-is-hard">How do you decide what is &quot;hard&quot;?</h3>
+    <p>You rarely have a difficulty label, so teams use a stand-in signal:</p>
+    <ul>
+    <li><strong>Length</strong> — longer documents are usually harder</li>
+    <li><strong>Model loss</strong> — examples the current model gets most wrong</li>
+    <li><strong>Human disagreement</strong> — if two annotators disagreed, it is genuinely hard</li>
+    <li><strong>Rule of thumb for the task</strong> — sarcasm, negation, mixed sentiment, rare formats</li>
+    </ul>
+    <p>The signal does not need to be perfect. Even a rough easy/hard split is better than pure shuffle when training is unstable.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Calling random shuffle a “curriculum.”</li>
@@ -126,9 +196,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

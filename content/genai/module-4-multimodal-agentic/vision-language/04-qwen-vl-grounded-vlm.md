@@ -17,6 +17,14 @@ Qwen-VL’s adapter always outputs **256 visual tokens** per image. Think of it 
 
 The **2D position encodings** are the “where on the poster” labels on those bullets.
 
+:::note Analogy
+Grounding is the difference between an assistant who says "yes, there's a coffee cup in the photo" and one who points at it.
+
+For a person asking a casual question, naming it is enough. For a robot arm, a moderation queue, or an inspection report, "where exactly" is the entire point — you cannot pick up, blur, or flag something you have only named.
+
+The clever part of Qwen-VL is that it points using words. A box is written out as text like any other answer, so the same model that describes the scene can locate things in it without bolting on a separate detector.
+:::
+
 :::key
 Grounding coordinates are generated as **text tokens** (like words), not from a separate floating-point regression head.
 :::

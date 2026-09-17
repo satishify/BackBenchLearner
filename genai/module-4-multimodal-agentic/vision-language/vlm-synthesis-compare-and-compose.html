@@ -55,6 +55,17 @@ flowchart TB
     M -->|Understand + exact pixels| COMP[Compose VLM then SAM]
       </div>
     </div>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of these four models as specialists in a hospital.</p>
+    <ul>
+    <li><strong>CLIP</strong> is triage at the front desk — fast, sorts things into the right category, does not explain much.</li>
+    <li><strong>LLaVA</strong> is the doctor who talks with you and describes what is going on in plain language.</li>
+    <li><strong>Qwen-VL</strong> is the radiologist who points at the exact place on the scan and reads the small print on it.</li>
+    <li><strong>SAM</strong> is the surgeon who works to precise boundaries but does not diagnose anything.</li>
+    </ul>
+    <p>Nobody asks the surgeon what the illness is called, and nobody asks the triage desk for an operation. Real systems work the same way: you route the job to the specialist whose output shape matches the need, and you combine them when a task genuinely needs two.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Real pipelines often compose models: a language-capable VLM for understanding and location, then SAM for the exact mask.</p>
@@ -321,9 +332,9 @@ mask = sam.segment(image_emb, prompt=pixel_box)
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

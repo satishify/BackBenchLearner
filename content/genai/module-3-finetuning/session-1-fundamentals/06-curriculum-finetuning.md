@@ -14,6 +14,22 @@ Example: sentiment classification —
 1. First: obvious positive and negative reviews
 2. Later: sarcasm, mixed sentiment, very short texts
 
+:::note Analogy
+Nobody teaches a child to swim by dropping them in the deep end on day one. They start in shallow water, then a float, then the shallow lane, and only later the deep end. Each stage is only safe because the previous one worked.
+
+Training a model on your hardest adversarial examples from step one is the deep end. It may thrash around, learn something unstable, and never build the basics it needed first.
+:::
+
+The difference in practice, on review data:
+
+| Stage | Example | Why it belongs here |
+| --- | --- | --- |
+| Easy | “Absolutely loved it. Best purchase this year.” | Clear words, clear label |
+| Medium | “Good product, slow delivery.” | Two sentiments in one sentence |
+| Hard | “Well, that was *exactly* what I needed. 🙄” | Sarcasm — the words say positive, the meaning is negative |
+
+If the model has not yet learned that “loved it” is positive, the sarcastic example teaches it nothing useful. It just adds noise.
+
 :::key
 Curriculum = planned easy → hard order, not “whatever the dataloader shuffles.”
 :::
@@ -41,6 +57,27 @@ Curriculum = planned easy → hard order, not “whatever the dataloader shuffle
 - **Competence-based** — Move on when validation on the current bucket looks healthy
 
 There is no single magic schedule. Start simple: two or three difficulty buckets and a clear promotion rule.
+
+A blended schedule is often the safest, because the easy examples never fully disappear:
+
+| Training phase | Easy | Medium | Hard |
+| --- | --- | --- | --- |
+| Phase 1 | 80% | 20% | 0% |
+| Phase 2 | 40% | 40% | 20% |
+| Phase 3 | 20% | 40% | 40% |
+
+That small share of easy data in the last phase is **rehearsal** — it keeps the basics fresh while the hard cases are being learned, much like a musician still playing scales while preparing a difficult piece.
+
+### How do you decide what is "hard"?
+
+You rarely have a difficulty label, so teams use a stand-in signal:
+
+- **Length** — longer documents are usually harder
+- **Model loss** — examples the current model gets most wrong
+- **Human disagreement** — if two annotators disagreed, it is genuinely hard
+- **Rule of thumb for the task** — sarcasm, negation, mixed sentiment, rare formats
+
+The signal does not need to be perfect. Even a rough easy/hard split is better than pure shuffle when training is unstable.
 
 ## What goes wrong
 

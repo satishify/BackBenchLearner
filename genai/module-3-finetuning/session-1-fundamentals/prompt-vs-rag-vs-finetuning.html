@@ -44,6 +44,16 @@
     </ul>
     <p>Pick the lever that matches the bug.</p>
     <h2 id="intuition">Intuition</h2>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Imagine a capable new employee who joined last week.</p>
+    <ul>
+    <li><strong>Prompting</strong> is leaving a sticky note on their desk: “reply in three bullet points, keep it polite.” Instant, free, but you must write it every time — and if the note is vague, the work drifts.</li>
+    <li><strong>RAG</strong> is handing them the company handbook and saying “look it up before answering.” They do not need to memorise anything, and when the handbook is updated, their answers update too.</li>
+    <li><strong>Fine-tuning</strong> is sending them on a three-week training course. Expensive and slow, but afterwards the behaviour is simply <em>how they work</em> — no sticky note required.</li>
+    </ul>
+    <p>Nobody sends an employee on a training course to learn today&#x27;s cafeteria menu. That belongs on the noticeboard (RAG). But you do train them on how your company writes to customers, because that should never change from one email to the next.</p>
+    </aside>
     <table>
       <thead><tr>
         <th>Method</th>
@@ -85,6 +95,75 @@
     <li>Is this one task or many related tasks? Related tasks can share one multi-task fine-tune later.</li>
     <li>Is the base model already almost right? If yes, train less (freeze more / lighter methods).</li>
     </ol>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    START[The model is not doing what I want] --> Q1{Is the problem<br/>missing facts?}
+    Q1 -->|Yes| RAG[Use RAG<br/>retrieve the documents]
+    Q1 -->|No| Q2{Is the problem<br/>unclear instructions?}
+    Q2 -->|Yes| PROMPT[Fix the prompt first]
+    Q2 -->|No| Q3{Is the behaviour<br/>needed every time?}
+    Q3 -->|No| PROMPT
+    Q3 -->|Yes| FT[Fine-tune]
+      </div>
+    </div>
+    <h3 id="three-ways-the-same-bug-looks">Three ways the same bug looks</h3>
+    <p>Suppose a banking assistant gives a bad answer. The cause decides the cure:</p>
+    <table>
+      <thead><tr>
+        <th>What actually went wrong</th>
+        <th>Symptom</th>
+        <th>Right fix</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>It did not know the new overdraft fee</td>
+          <td>Confidently quotes last year&#x27;s fee</td>
+          <td><strong>RAG</strong> — the fee lives in a document, not in the weights</td>
+        </tr>
+        <tr>
+          <td>It answered in a paragraph when you needed JSON</td>
+          <td>Correct facts, unusable format</td>
+          <td><strong>Prompting</strong> — say the format explicitly</td>
+        </tr>
+        <tr>
+          <td>It writes JSON correctly 9 times out of 10</td>
+          <td>Occasional format break at scale</td>
+          <td><strong>Fine-tuning</strong> — make the format a habit</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Notice that only the third row needs training. The first two are cheaper and faster to fix, which is why they come first.</p>
+    <h3 id="cost-and-speed-roughly">Cost and speed, roughly</h3>
+    <table>
+      <thead><tr>
+        <th>Method</th>
+        <th>Setup time</th>
+        <th>Cost per change</th>
+        <th>How fast you can undo it</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Prompting</td>
+          <td>Minutes</td>
+          <td>Nearly zero</td>
+          <td>Instantly</td>
+        </tr>
+        <tr>
+          <td>RAG</td>
+          <td>Days</td>
+          <td>Low</td>
+          <td>Update the documents</td>
+        </tr>
+        <tr>
+          <td>Fine-tuning</td>
+          <td>Days to weeks</td>
+          <td>High (GPU time + data work)</td>
+          <td>Retrain or roll back the model</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>This is the honest reason prompting and RAG are tried first: when you are wrong, you find out cheaply.</p>
     <h3 id="split-workflows-are-normal">Split workflows are normal</h3>
     <p>One product can use <strong>both</strong>:</p>
     <ul>
@@ -92,6 +171,7 @@
     <li>Permanent email tone → fine-tuning</li>
     </ul>
     <p>You do not have to force one tool for every workflow.</p>
+    <p>A support assistant might combine all three in a single reply: a <strong>prompt</strong> sets the tone and the answer format, <strong>RAG</strong> pulls today&#x27;s refund policy, and a <strong>fine-tuned</strong> model makes sure the reply always ends with a structured summary block for the ticketing system.</p>
     <h3 id="where-knowledge-should-live">Where knowledge should live</h3>
     <p>A useful framing is “fine-tuning or retrieval?”:</p>
     <ul>
@@ -142,9 +222,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

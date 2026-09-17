@@ -45,6 +45,12 @@
     <li>Ignore the specific input instance</li>
     <li>Force prompts into every layer</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Picture a hospital help desk that greets every single visitor with the same three-minute speech covering parking, visiting hours, pharmacy rules, and insurance paperwork.</p>
+    <p>It is not wrong, but it is wasteful — and for the patient who only needed the pharmacy, most of it was noise. A better desk asks who you are and gives you the part that applies to you.</p>
+    <p>Each method in this lesson is a different way of asking that question: SMoP picks which briefing to use, APT decides how much briefing each stage needs, IDPG writes a briefing for this specific visitor, and SPT asks whether a briefing was needed at all.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Prompt tuning should be selective, not wasteful.</p>
@@ -86,6 +92,14 @@
     <h3 id="idpg-instance-dependent-prompt-generation">IDPG — Instance-Dependent Prompt Generation</h3>
     <p><strong>Plain-English idea:</strong> the right soft prompt should depend on <strong>this input</strong>, not only on the task name.</p>
     <p>A small prompt-generator network builds prompt vectors from the input. Useful when one task has many subcases and a static prompt is too generic.</p>
+    <p>Why a static prompt struggles here — all three of these are &quot;customer support,&quot; yet they need different handling:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">&quot;My payment failed twice.&quot;            -&gt; needs billing care and caution
+&quot;How do I change my profile photo?&quot;   -&gt; needs short how-to steps
+&quot;This is the fourth time I&#x27;ve asked!&quot; -&gt; needs de-escalation first</code></pre>
+    </div>
+    <p>One fixed soft prompt must average across all three and serves none of them especially well. IDPG generates a prompt shaped by the message itself, so an angry message and a simple how-to question are not briefed identically.</p>
     <h3 id="spt-selective-prompt-tuning">SPT — Selective Prompt Tuning</h3>
     <p><strong>Plain-English idea:</strong> ask whether <strong>every</strong> layer needs soft prompting at all. Usually no. Learn to insert prompts <strong>only where they help</strong>.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
@@ -132,9 +146,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

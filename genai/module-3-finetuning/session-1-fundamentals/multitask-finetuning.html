@@ -39,6 +39,22 @@
     <p><strong>Multi-task fine-tuning</strong> trains one model on several related tasks at the same time. A shared backbone learns reusable language patterns; the tasks can support each other instead of fighting in separate silos.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Example for a support assistant: train <strong>intent classification</strong>, <strong>slot filling</strong>, and <strong>FAQ matching</strong> together. All three need similar customer-language understanding, so sharing a backbone often helps.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of a medical student who studies anatomy, pharmacology, and diagnosis together rather than one subject in total isolation. Understanding how the heart works makes the heart medicines easier to remember, and both make chest-pain cases easier to diagnose.</p>
+    <p>The subjects are different, but they lean on the same foundation — so learning them together is more efficient than learning each from scratch.</p>
+    <p>Now imagine that same student studying medicine and classical music simultaneously. There is no shared foundation, so the hours simply compete. That is what unrelated multi-task training feels like to a model.</p>
+    </aside>
+    <p>Here is what those three related tasks look like on one customer message:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Message: &quot;My card was charged twice for order 5567 on Monday.&quot;
+
+Intent classification -&gt; billing_dispute
+Slot filling          -&gt; {order_id: 5567, issue: duplicate_charge, date: Monday}
+FAQ matching          -&gt; &quot;What to do about duplicate charges&quot;</code></pre>
+    </div>
+    <p>All three need the model to understand the same sentence. Training them together means that understanding is learned once and reused three times.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Related tasks can share features and regularize each other — that is the main attraction of multi-task training.</p>
@@ -77,6 +93,42 @@
     <li>Watch metrics <strong>per task</strong>, not only one average score</li>
     <li>If one task collapses, rebalance data or separate that task</li>
     </ul>
+    <h3 id="why-balance-matters-so-much">Why balance matters so much</h3>
+    <p>Imagine this data mix:</p>
+    <table>
+      <thead><tr>
+        <th>Task</th>
+        <th>Examples</th>
+        <th>Share of training</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Intent classification</td>
+          <td>90,000</td>
+          <td>90%</td>
+        </tr>
+        <tr>
+          <td>Slot filling</td>
+          <td>8,000</td>
+          <td>8%</td>
+        </tr>
+        <tr>
+          <td>FAQ matching</td>
+          <td>2,000</td>
+          <td>2%</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The model quickly learns that getting intent right pays off far more than anything else, so it optimises for intent and lets FAQ matching drift. The average score still looks respectable — which is exactly the trap.</p>
+    <p>A common fix is to <strong>sample</strong> rather than simply concatenate: draw roughly equal numbers of examples from each task per batch, even when the underlying datasets are very different sizes.</p>
+    <p>Watching per-task scores makes the problem visible immediately:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">Epoch 3
+  intent_accuracy   0.94  (up)
+  slot_f1           0.81  (flat)
+  faq_accuracy      0.42  (down)  &lt;- this task is being crushed</code></pre>
+    </div>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Calling unrelated tasks “multi-task” and hoping they magically help.</li>
@@ -120,9 +172,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

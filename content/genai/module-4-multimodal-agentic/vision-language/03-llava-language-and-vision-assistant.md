@@ -9,6 +9,24 @@ CLIP can say an image matches a caption. LLaVA can **answer open-ended questions
 
 ## Intuition
 
+### The problem LLaVA is solving
+
+By the end of the last lesson, CLIP could tell you that a photo matches the caption "a dog on a beach." Ask it *"why does the dog look nervous?"* and it has nothing to offer — it produces similarity scores, not sentences. It cannot write.
+
+Meanwhile you already have a model that writes superbly: an LLM. It just cannot see.
+
+So the obvious question is: **why not connect them?** Take CLIP's understanding of the image, hand it to the LLM, and let the LLM do the talking.
+
+### Why connecting them is harder than it sounds
+
+The tempting shortcut is to pass CLIP's output vectors straight into the LLM. If the dimensions happen to match, the code even runs.
+
+It produces nonsense, and the reason matters. The two models were trained separately and never agreed on what their numbers mean. CLIP's vectors live in a space organised around image-caption similarity. The LLM's input space is organised around word meanings. A vector that means "beach photograph" to CLIP means nothing in particular to the LLM — same length, different language.
+
+What is missing is a **translator**: something that converts CLIP's representation into the form the LLM already understands. That translator is the projector, and training it is most of what LLaVA is.
+
+### The three parts
+
 Reuse two pretrained parts:
 
 - A **frozen CLIP ViT** (eyes)
@@ -37,6 +55,16 @@ The projector maps visual features into language space. The LLM’s ordinary sel
 | **LLM** | Self-attention over **visual + text tokens** in one sequence |
 
 Same vector size is **not** enough — the spaces mean different things. Passing a CLIP vector directly into the LLM is like handing someone a word in a language they do not speak, even if the sentence is the same length.
+
+:::note Analogy
+Picture an expert photographer and an expert novelist who do not share a language.
+
+The photographer sees everything in the picture perfectly. The novelist can write beautifully about anything they are told. Put them in a room together and nothing happens — not because either lacks skill, but because there is no shared vocabulary between them.
+
+The projector is the interpreter you hire. It is a small role compared with either expert, and it produces none of the final writing itself. But without it, the two talents cannot be combined at all.
+
+This is also why LLaVA trains the interpreter first (stage 1) before letting the novelist adjust their own style (stage 2). You get the translation working before you start changing the writer.
+:::
 
 ```mermaid
 flowchart LR

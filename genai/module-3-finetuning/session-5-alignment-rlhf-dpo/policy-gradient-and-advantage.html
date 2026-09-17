@@ -110,6 +110,13 @@ flowchart LR
       </tbody>
     </table>
     <p>Without a baseline, “reward = 9” and “reward = 2” are just raw scores. Advantage asks: <em>better or worse than usual for this state?</em> That is why the update is less noisy.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Advantage is the difference between a raw score and a <em>meaningful</em> score.</p>
+    <p>If a student gets 70%, is that good? You cannot say. On an exam where the class average was 45%, it is excellent. On one where the average was 85%, it is a warning sign. The raw number alone tells you almost nothing.</p>
+    <p>The baseline is that class average. Subtracting it converts &quot;you scored 70&quot; into &quot;you did 25 points better than expected here&quot; — which is the only version that tells you whether to do more of the same.</p>
+    <p>Without it, the model gets praised for easy prompts and punished for hard ones, regardless of how well it actually handled them.</p>
+    </aside>
     <h3 id="keep-the-math-light">Keep the math light</h3>
     <p>You do not need to memorize the formula to use the idea. The practical message is:</p>
     <ol>
@@ -175,9 +182,9 @@ loss.backward()                         # raise or lower those tokens</code></pr
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

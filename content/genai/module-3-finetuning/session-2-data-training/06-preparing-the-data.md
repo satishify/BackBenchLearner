@@ -17,9 +17,34 @@ Two things matter most: **important characteristics of data**, then **how to pre
 | **Inconsistent formatting** | HTML, Markdown, PDF text, and LaTeX mixed badly | Normalize structure before training |
 | **Outdated information** | Old APIs, old policies, old officeholders stated as current | Refresh corpus; track cutoffs |
 
+:::note Analogy
+A model learns from your data the way a child learns manners — by copying what it sees, without judging whether it should.
+
+If 3% of your training answers are rude, the model concludes that rudeness is occasionally the correct response and will produce it occasionally. It cannot tell that those rows were mistakes. Every flaw you leave in the file is a flaw you are actively teaching.
+
+This is why data cleaning is not preparation work before the real work. It *is* the real work.
+:::
+
 :::key
 Good fine-tuning starts with good data. Fix the rows before you chase fancy training tricks.
 :::
+
+### What a bad row actually looks like
+
+These are easy to miss when you are scrolling through thousands of lines:
+
+```json
+{"input": "Reset my password", "output": "Sure! I can help with that."}
+```
+
+The answer is polite and grammatical, and teaches the model to be useless — no steps, no link, no outcome. Train on a few hundred of these and you get an assistant that acknowledges requests without resolving them.
+
+```json
+{"input": "What is our refund window?", "output": "14 days."}
+{"input": "How long do I have to return an item?", "output": "30 days."}
+```
+
+Both rows look fine alone. Together they teach the model that the answer is unpredictable, so at serving time it picks one at random. Contradictions inside your dataset are among the most damaging and least visible problems.
 
 ## How it works
 
@@ -44,6 +69,21 @@ A common honest split is roughly **70% train / 15% validation / 15% test** (adju
 - Near-duplicates sitting in both train and test.
 - Random splits on time-series data (the model “sees the future”).
 - Same user or patient in both train and test.
+
+:::note Analogy
+Leakage is letting the student see the exam paper during revision. Their score tells you nothing about whether they learned the subject — only that they saw those exact questions before.
+
+And the cruel part is that the number looks *better*, not worse. Leakage never announces itself with a failure; it announces itself with a suspiciously good result that collapses in production.
+:::
+
+Near-duplicate leakage is the sneaky version, because deduplicating exact strings does not catch it:
+
+```text
+In training: "How do I reset my password?"
+In test:     "How can I reset my password?"
+```
+
+Not identical, so an exact-match dedupe keeps both. But the model has effectively already been given the answer, and your test score is now partly fiction. Comparing embeddings and dropping very-close pairs across splits catches this.
 
 **Better habits:**
 

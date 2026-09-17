@@ -45,6 +45,12 @@
     <p>Summarize a big, detailed poster into <strong>256 bullet points</strong> that still remember <em>where</em> each bullet came from.</p>
     </blockquote>
     <p>The <strong>2D position encodings</strong> are the “where on the poster” labels on those bullets.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Grounding is the difference between an assistant who says &quot;yes, there&#x27;s a coffee cup in the photo&quot; and one who points at it.</p>
+    <p>For a person asking a casual question, naming it is enough. For a robot arm, a moderation queue, or an inspection report, &quot;where exactly&quot; is the entire point — you cannot pick up, blur, or flag something you have only named.</p>
+    <p>The clever part of Qwen-VL is that it points using words. A box is written out as text like any other answer, so the same model that describes the scene can locate things in it without bolting on a separate detector.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Grounding coordinates are generated as <strong>text tokens</strong> (like words), not from a separate floating-point regression head.</p>
@@ -281,9 +287,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

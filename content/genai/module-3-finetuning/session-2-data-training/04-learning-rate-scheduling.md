@@ -14,6 +14,12 @@ The dilemma in one sentence:
 
 You want both stories in one run: bigger steps early, smaller steps later.
 
+:::note Analogy
+Think of parking a car. You approach the space at a reasonable speed, because crawling from the end of the street wastes everyone's time. As you get close, you slow down. In the last few centimetres you move almost imperceptibly, because now precision matters more than progress.
+
+Trying to park at full speed means overshooting repeatedly. Approaching the whole street at parking speed means you never arrive. A learning-rate schedule is simply doing what any driver does: fast when far away, slow when close.
+:::
+
 Training also has phases:
 
 1. **Fragile start** — New data shocks the pretrained weights. Full-size steps here cause instant spikes → use **warmup** (rise from near zero).
@@ -51,6 +57,26 @@ Peak learning rate is often the single most important knob in fine-tuning. The s
 - Prefer **cosine + warmup** as a default for full fine-tunes.
 - Use **constant + warmup** only when the run is short and you are watching carefully.
 - If late spikes appear on a flat learning rate, try cosine with the **same peak** — often the late spikes disappear.
+
+### A worked schedule
+
+A 1,000-step LoRA fine-tune with warmup and cosine decay:
+
+| Step | Learning rate | What is happening |
+| --- | --- | --- |
+| 0 | 0 | Run begins; no shock to the weights |
+| 30 | 1×10⁻⁴ | Warmup finished, now at peak |
+| 300 | 9×10⁻⁵ | Cosine keeps it near the peak while most learning happens |
+| 700 | 4×10⁻⁵ | Steps shrinking as the model settles |
+| 1000 | ~0 | Final gentle polish |
+
+Warmup here is 30 steps, roughly 3% of the run. The cosine shape is doing something clever: it lingers near the peak (steps 30-400) where the learning is most productive, then falls away smoothly instead of dropping off a cliff.
+
+### Why skipping warmup hurts
+
+At step 0, your fine-tuning data looks nothing like what the model saw in pretraining, so the very first gradients are large and badly aimed. Taking a full-size step on that first bad signal can knock the weights into a state training never recovers from.
+
+You see it on the chart as a loss that jumps in the first few steps and then plateaus high. Warmup exists to make those first few steps almost harmless.
 
 ## What goes wrong
 

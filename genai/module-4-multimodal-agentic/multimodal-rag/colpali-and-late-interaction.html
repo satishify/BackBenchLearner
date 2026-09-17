@@ -36,8 +36,59 @@
       <h1>ColPali and Late-Interaction Retrieval</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Compressing a complete document page into one vector is fast, but it can hide a tiny number in a table or a small label beside a chart.</p>
-    <p><strong>Late interaction</strong> keeps many small vectors and delays detailed matching until search time.</p>
+    <p>In the previous lesson, each document page was turned into <strong>one vector</strong> and stored in a search index. That works, it is cheap, and for most pages it is enough.</p>
+    <p>This lesson is about the cases where it is not enough — and about the technique, <strong>late interaction</strong>, that fixes them.</p>
+    <h2 id="intuition">Intuition</h2>
+    <h3 id="the-problem-with-a-real-page-in-front-of-you">The problem, with a real page in front of you</h3>
+    <p>Picture a single page from an annual report. It contains a heading, two paragraphs, a bar chart with quarterly figures, and a small table of regional totals in the corner.</p>
+    <p>Now that whole page gets compressed into one vector — say 768 numbers that represent &quot;what this page is about.&quot;</p>
+    <p>Those 768 numbers have to describe everything on the page at once. Inevitably they end up describing the page&#x27;s <strong>main themes</strong>: revenue, quarterly performance, this company, this year. The small table in the corner contributes almost nothing to the result, because it is a tiny part of a busy page.</p>
+    <p>So when a user asks:</p>
+    <blockquote>
+    <p>What was the regional total for the South in Q3?</p>
+    </blockquote>
+    <p>the page that genuinely holds the answer does not stand out. Its one vector says &quot;this page is about quarterly revenue,&quot; which is true of forty other pages in the report. The evidence is on the page; the <em>summary</em> of the page lost it.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Summarising a page into one vector is like describing a 300-page book with a single sentence. &quot;A novel about family and money in 19th-century Russia&quot; is accurate, and it is hopeless for finding the paragraph where a specific character signs a specific contract.</p>
+    <p>Late interaction keeps the equivalent of a sentence-level index. When someone asks about that contract, the search can go straight to the paragraph rather than judging the whole book by its one-line summary.</p>
+    <p>The cost is exactly what you would expect: a detailed index takes far more room than a one-line summary.</p>
+    </aside>
+    <h3 id="the-fix-stop-summarising-so-early">The fix: stop summarising so early</h3>
+    <p><strong>Late interaction</strong> takes a different approach. Instead of one vector per page, it keeps <strong>many</strong> — roughly one for each small patch of the page image. The corner table gets its own vectors, and they are not averaged away into the page&#x27;s general theme.</p>
+    <p>The query is broken up in the same way: one vector per query token rather than one for the whole question.</p>
+    <p>Matching then happens between those small pieces, at search time.</p>
+    <h3 id="why-it-is-called-late">Why it is called &quot;late&quot;</h3>
+    <p>The name describes <strong>when</strong> the query and the document are allowed to interact.</p>
+    <table>
+      <thead><tr>
+        <th>Approach</th>
+        <th>When query and page meet</th>
+        <th>Consequence</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Early interaction</strong></td>
+          <td>The model reads query and page <em>together</em> before scoring</td>
+          <td>Very accurate, far too slow to run over a million pages</td>
+        </tr>
+        <tr>
+          <td><strong>No interaction</strong> (single vector)</td>
+          <td>Never — each side is summarised alone, then two vectors are compared</td>
+          <td>Very fast, loses local detail</td>
+        </tr>
+        <tr>
+          <td><strong>Late interaction</strong></td>
+          <td>Each side is encoded alone, then the <em>pieces</em> are matched at search time</td>
+          <td>Keeps detail, still fast enough to index</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Late interaction is the middle path. The encoders still run separately, so you can index every page in advance — but the detailed comparison is postponed until you know the query, instead of being thrown away during indexing.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>One vector per page summarises the page before it knows the question. Late interaction keeps the page in pieces so the question can pick out the piece that matters.</p>
+    </aside>
     <h2 id="one-vector-versus-many">One vector versus many</h2>
     <div class="diagram-wrap">
       <div class="mermaid">
@@ -195,14 +246,13 @@ flowchart LR
     <li>ColPali-style vision-space retrieval performs strongly on visually rich pages.</li>
     </ol>
     <p>Treat paper results as benchmark evidence, not a guarantee for every private document collection.</p>
-    <h2 id="what-remains-difficult">What remains difficult</h2>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li>Large late-interaction indexes</li>
-    <li>Tiny or blurry page content</li>
-    <li>Messy documents outside training data</li>
-    <li>Questions needing several pages or documents</li>
-    <li>Faithfulness of the final generated answer</li>
-    <li>Standard evaluation of claim-level evidence</li>
+    <li><strong>Reaching for ColPali by default.</strong> It earns its cost on visually rich pages. On a clean text document, single-vector retrieval is cheaper and usually just as good — the extra detail has nothing to preserve.</li>
+    <li><strong>Underestimating the index.</strong> Hundreds of vectors per page instead of one is a hundredfold difference in storage. Estimate it against your real corpus size before committing, not after.</li>
+    <li><strong>Assuming no OCR is needed anywhere.</strong> ColPali removes OCR from the <em>retrieval</em> path. You may still want it for exact term filtering, for displaying the text, or for verifying a number after the page is found.</li>
+    <li><strong>Expecting it to rescue unreadable pages.</strong> If a figure is too small or blurry for a person to read, patch vectors will not recover it either.</li>
+    <li><strong>Stopping at retrieval.</strong> Finding the right page is not answering the question. The generator can still misread the chart it was handed, and multi-page questions remain hard.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>ColPali searches complete page images with late interaction, matching each query token to its best page patch for more detail at a higher storage cost.</p>
@@ -244,9 +294,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

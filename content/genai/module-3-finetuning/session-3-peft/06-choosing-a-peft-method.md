@@ -34,6 +34,27 @@ The practical takeaway: **choose the method that matches your cost, data shape, 
 
 Both are PEFT. They solve the same big problem (cheap adaptation) in different places.
 
+:::note Analogy
+You want a car to handle a mountain road better.
+
+**Soft prompting** is changing how you drive it — the same vehicle, guided differently. Cheap, instant, reversible, and it works well as long as the car is fundamentally capable of the job.
+
+**Adapters** are fitting different suspension. Now the machine itself behaves differently, which reaches things driving style never could — but it costs more and it is a real modification.
+
+Ask which one your problem is. "The model can do this but needs steering" is a prompting problem. "The model does not behave the way this domain requires" is an adapter problem.
+:::
+
+### A practical order to try things
+
+Most teams get there fastest by escalating only when the cheaper option genuinely fails:
+
+1. **Prompting** — free, instant. Surprisingly often enough.
+2. **Prompt or prefix tuning** — smallest trainable footprint; good when the base model is already capable.
+3. **LoRA / adapters** — the reliable workhorse when behaviour must really change. This is where most production fine-tunes land.
+4. **Full fine-tuning** — only with a large dataset, a big domain shift, and budget for the forgetting risk.
+
+The rule of thumb: move down the list only when you have evidence the step above it is not working, not because the next one sounds more serious.
+
 ### Quick reminder of the PEFT efficiency principle
 
 Trainable parameters should stay **much smaller** than total parameters. If your “PEFT” setup is nearly as heavy as full fine-tuning, you have lost the plot.

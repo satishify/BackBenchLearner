@@ -62,6 +62,16 @@ Tiny numbers for the same prompt “Where is Kolkata?”
 
 Without a baseline, “reward = 9” and “reward = 2” are just raw scores. Advantage asks: *better or worse than usual for this state?* That is why the update is less noisy.
 
+:::note Analogy
+Advantage is the difference between a raw score and a *meaningful* score.
+
+If a student gets 70%, is that good? You cannot say. On an exam where the class average was 45%, it is excellent. On one where the average was 85%, it is a warning sign. The raw number alone tells you almost nothing.
+
+The baseline is that class average. Subtracting it converts "you scored 70" into "you did 25 points better than expected here" — which is the only version that tells you whether to do more of the same.
+
+Without it, the model gets praised for easy prompts and punished for hard ones, regardless of how well it actually handled them.
+:::
+
 ### Keep the math light
 
 You do not need to memorize the formula to use the idea. The practical message is:

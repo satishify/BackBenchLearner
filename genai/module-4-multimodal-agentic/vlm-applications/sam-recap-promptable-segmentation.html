@@ -39,6 +39,11 @@
     <p><strong>SAM</strong> (Segment Anything Model) takes an image plus a prompt and returns one or more <strong>pixel-level masks</strong>.</p>
     <p>This is a short recap from lesson 4.1.5 because SAM is useful inside many vision applications.</p>
     <h2 id="intuition">Intuition</h2>
+    <h3 id="why-sam-appears-again-here">Why SAM appears again here</h3>
+    <p>Chapter 4.1 introduced SAM as an architecture. This chapter is about applications, and SAM shows up in almost all of them for one reason: it is the only model in the module that produces <strong>exact pixels</strong>.</p>
+    <p>Every other model gives you something approximate. CLIP gives a score, LLaVA gives a sentence, Qwen-VL gives a rectangle. When an application needs to actually cut something out, measure its area, or overlay it precisely, none of those are sufficient — and SAM gets called in to finish the job.</p>
+    <p>So treat this lesson as the reference page you will keep returning to as the later applications compose SAM with other models.</p>
+    <h3 id="the-mental-model">The mental model</h3>
     <p>Think of selecting an object in a photo editor:</p>
     <ol>
     <li>Upload the image once.</li>
@@ -46,7 +51,8 @@
     <li>The system outlines the exact pixels.</li>
     <li>Add another click to correct the selection.</li>
     </ol>
-    <p>Older segmentation models were often tied to one dataset or object type. SAM was trained as a <strong>promptable foundation model</strong>, so the prompt says what region matters.</p>
+    <p>That interaction contains the whole design. Step 1 happens <strong>once</strong> and is expensive. Steps 2 to 4 happen <strong>many times</strong> and must feel instant. SAM&#x27;s architecture is shaped around exactly that split, which is why the cost table below matters more than any other detail in this lesson.</p>
+    <p>Older segmentation models were tied to one dataset or object type. SAM was trained as a <strong>promptable foundation model</strong>, so the prompt — not a fixed label list — decides which region matters.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>SAM answers <strong>“which pixels belong to this region?”</strong> It does not reliably answer <strong>“what is this object called?”</strong></p>
@@ -165,6 +171,13 @@ flowchart LR
     <p>SAM predicts <strong>three candidate masks</strong> instead of pretending one interpretation is certainly correct. An extra head predicts a quality score for each mask.</p>
     <h3 id="mask-losses-in-simple-language">Mask losses in simple language</h3>
     <p>A mask contains many easy background pixels and relatively few object pixels. A plain pixel loss can therefore learn to say “background” too often.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Imagine an exam where 95 of the 100 questions are trivially easy. A student who answers only the easy ones scores 95% and looks excellent — while failing every question that actually mattered.</p>
+    <p>Most pixels in an image are easy background, so plain pixel-counting rewards exactly that student. <strong>Focal loss</strong> fixes the marking scheme: easy questions are worth almost nothing, and the difficult boundary pixels carry the marks.</p>
+    <p><strong>Dice loss</strong> asks a different question entirely — not &quot;how many pixels did you get right?&quot; but &quot;does your outline have the right shape?&quot; A mask can score well on individual pixels and still have a ragged, unusable edge.</p>
+    <p>The two together are why SAM&#x27;s outlines look clean rather than merely statistically correct.</p>
+    </aside>
     <p>SAM combines:</p>
     <ul>
     <li><strong>Focal loss</strong> — pays extra attention to hard pixels</li>
@@ -263,9 +276,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

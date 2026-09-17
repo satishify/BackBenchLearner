@@ -39,6 +39,12 @@
     <p><strong>Catastrophic forgetting</strong> happens when you fine-tune a pretrained model on a narrow task and the updates overwrite the weights that held broader skills. The new task gets better. Everyday abilities — following instructions, coding, other languages, simple reasoning — can quietly get worse.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Picture a generalist who studies only medical Q&amp;A for weeks and somehow “forgets” how to write Python or speak French. The model did not delete a folder named “French.” The same shared weights store many skills. Push those weights hard toward one narrow dataset, and other skills can fade.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of the model&#x27;s weights as a single lump of clay that has been carefully sculpted into a figure with many fine details — a face, hands, folds in the cloth.</p>
+    <p>Now you need the hands to be more detailed, so you press and reshape that area. Because it is all one piece of clay, pressing the hands pulls material from the wrist, and a little from the arm. Push hard enough and the face distorts too. You never chose to damage the face; the material was shared.</p>
+    <p>This is why the fix is almost always <em>press more gently</em> (lower learning rate, fewer epochs) rather than <em>press somewhere else</em>.</p>
+    </aside>
     <p>Why it is scary:</p>
     <ul>
     <li><strong>Silent failure</strong> — Task metrics go up while general benchmarks fall, unless you measure both.</li>
@@ -76,6 +82,43 @@
     </table>
     <h3 id="measure-before-vs-after">Measure before vs after</h3>
     <p>Imagine a 7B model fully fine-tuned for a few epochs on legal contracts: contract accuracy jumps, while general benchmarks drop. That pattern is the warning light. Keep one fixed general eval set and compare base vs fine-tune every time.</p>
+    <p>A canary table makes the trade visible instead of invisible:</p>
+    <table>
+      <thead><tr>
+        <th>Check</th>
+        <th>Base model</th>
+        <th>After fine-tune</th>
+        <th>Verdict</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Contract clause extraction</td>
+          <td>61%</td>
+          <td>88%</td>
+          <td>The goal — working</td>
+        </tr>
+        <tr>
+          <td>Follows a simple JSON instruction</td>
+          <td>94%</td>
+          <td>71%</td>
+          <td>Instruction-following eroded</td>
+        </tr>
+        <tr>
+          <td>Writes a working Python function</td>
+          <td>78%</td>
+          <td>52%</td>
+          <td>Coding damaged</td>
+        </tr>
+        <tr>
+          <td>Answers a basic factual question</td>
+          <td>89%</td>
+          <td>86%</td>
+          <td>Acceptable</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Without rows 2-4, this run looks like a clear success. With them, it is a model that got much better at one job and noticeably worse at being useful.</p>
+    <p>Your canary set does not need to be sophisticated. Twenty to fifty fixed prompts covering the abilities you would be upset to lose, scored the same way every time, catches most of this.</p>
     <h3 id="mitigation-strategies">Mitigation strategies</h3>
     <table>
       <thead><tr>
@@ -165,9 +208,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

@@ -12,6 +12,16 @@ A **frozen** layer keeps its weights fixed. A **trainable** layer can move.
 - Freeze more → lower compute, less overfitting risk, less adaptation power
 - Tune more → more adaptation, more cost, more forgetting risk
 
+:::note Analogy
+Think of the model as a building. The lower layers are the foundation and structure — they handle general things like grammar and word meaning, and they are useful for almost any task. The upper layers are the interior: they handle the specific, task-shaped decisions.
+
+If you only need the rooms to look different, you redecorate the top floors and leave the foundation alone. Digging into the foundation is possible, but it is expensive, slow, and risks damaging a building that was working perfectly well.
+
+Freezing lower layers is redecorating. Full fine-tuning is touching the foundation too.
+:::
+
+Why does freezing save so much? A frozen layer still passes data forward, but no gradients or optimizer state are stored for it. On a 7B model, the optimizer state alone is usually the largest item in GPU memory — so freezing most of the network can cut memory dramatically even though the model size on disk is unchanged.
+
 :::key
 If the base model is already close and your dataset is small, freeze most layers and adapt cautiously.
 :::
@@ -35,6 +45,22 @@ Start small, then open more of the network:
 3. Optionally unfreeze the next block, and so on
 
 This avoids shocking the entire pretrained network on day one.
+
+```mermaid
+flowchart TB
+    subgraph P1[Phase 1]
+        A1[Layers 1-30: frozen] --> A2[Head: training]
+    end
+    subgraph P2[Phase 2]
+        B1[Layers 1-28: frozen] --> B2[Layers 29-30 + head: training]
+    end
+    subgraph P3[Phase 3]
+        C1[Layers 1-24: frozen] --> C2[Layers 25-30 + head: training]
+    end
+    P1 --> P2 --> P3
+```
+
+A practical detail that is easy to miss: when you unfreeze deeper layers, **lower the learning rate**. Those layers hold the general knowledge you want to keep, so they should move in small steps. Some recipes use a different learning rate per layer for exactly this reason — small near the foundation, larger near the top.
 
 ### Block-wise fine-tuning
 

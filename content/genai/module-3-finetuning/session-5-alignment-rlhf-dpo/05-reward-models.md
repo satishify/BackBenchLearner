@@ -14,6 +14,16 @@ PPO needs a number. Humans do not like assigning `0.73`. They *will* pick “A i
 
 During reward-model training, the **chosen** answer should get a higher score than the **rejected** answer for the same prompt.
 
+:::note Analogy
+Judging a photography competition makes this obvious.
+
+Ask a judge to score a single photo out of 10 and you get unreliable answers. Is it a 7 or an 8? Their answer drifts over the afternoon, and two judges rarely agree on the number.
+
+Ask the same judge "which of these two is better?" and the answer comes instantly and consistently. People are good at comparing and bad at scoring in the abstract.
+
+The reward model's entire job is to convert thousands of those easy comparisons into the hard number that training actually needs.
+:::
+
 :::key
 Pairwise preferences are easier to collect than exact scores — that is why reward models train on chosen vs rejected pairs.
 :::

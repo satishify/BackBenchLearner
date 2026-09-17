@@ -66,6 +66,16 @@
         </tr>
       </tbody>
     </table>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think about how a person learns a new job.</p>
+    <ul>
+    <li><strong>Unsupervised fine-tuning</strong> is sitting in the office for a month, reading old case files and absorbing the vocabulary. Nobody grades you, but you start to <em>sound</em> like the team.</li>
+    <li><strong>Supervised fine-tuning</strong> is working through solved examples: here is the customer&#x27;s question, here is the approved answer. You copy the pattern until it becomes natural.</li>
+    <li><strong>Alignment</strong> is the code of conduct: what you must refuse, what you must escalate, how you behave when you are unsure.</li>
+    </ul>
+    <p>The first two build ability. The third decides how that ability is used.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Full fine-tuning is the most powerful and most expensive. PEFT is often the middle ground between prompting and updating everything.</p>
@@ -73,8 +83,22 @@
     <h2 id="how-it-works">How it works</h2>
     <h3 id="unsupervised-continued-fine-tuning">Unsupervised (continued) fine-tuning</h3>
     <p>Feed lots of domain text (legal corpus, codebase, medical notes) so the model absorbs domain language. There may be no “instruction → answer” labels. Useful for domain familiarity; not the same as teaching a chat format.</p>
+    <p>The data is just raw text, with no question attached:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">The insured party shall indemnify the underwriter against any
+loss arising from misrepresentation of material fact...</code></pre>
+    </div>
+    <p>After enough of this, the model stops being surprised by words like <em>indemnify</em> and <em>underwriter</em>, and predicts legal phrasing more naturally. What it has <strong>not</strong> learned is how to answer your questions — that needs the next approach.</p>
     <h3 id="supervised-fine-tuning">Supervised fine-tuning</h3>
     <p>You provide clear examples: given this input, produce that output. This is the workhorse for task adaptation and instruction-style models (next chapter goes deeper).</p>
+    <p>Here the data always comes in pairs:</p>
+    <div class="code-block" data-lang="json">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-json">{&quot;input&quot;: &quot;Customer says the parcel never arrived. Draft a reply.&quot;,
+ &quot;output&quot;: &quot;Hi Sam, I&#x27;m sorry your parcel hasn&#x27;t arrived...&quot;}</code></pre>
+    </div>
+    <p>The model is graded on how close its answer is to the approved one, so it learns the task, not just the vocabulary.</p>
     <h3 id="safety-alignment-fine-tuning">Safety / alignment fine-tuning</h3>
     <p>After (or alongside) capability training, you further shape the model so it is more helpful, honest, and policy-compliant. Methods vary (preference data, RL-style loops, and related recipes). For now, remember the <strong>goal</strong>: safer, more aligned behavior. Lesson <strong>3.5</strong> goes deep on RLHF and DPO.</p>
     <h3 id="full-fine-tuning">Full fine-tuning</h3>
@@ -112,6 +136,41 @@
       </tbody>
     </table>
     <p>Use PEFT when you want most of the benefit of adaptation without paying full fine-tune cost.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Full fine-tuning is renovating the whole house — every room, every wire. PEFT is fitting a new set of light switches: the building is untouched, but the behaviour you notice every day changes.</p>
+    <p>And because the house itself is unchanged, you can keep several sets of switches and swap them per customer. That is exactly how one base model serves many fine-tuned variants.</p>
+    </aside>
+    <h3 id="which-one-in-practice">Which one, in practice</h3>
+    <table>
+      <thead><tr>
+        <th>Your situation</th>
+        <th>Sensible approach</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>The model does not know your domain&#x27;s <em>language</em></td>
+          <td>Unsupervised / continued pretraining</td>
+        </tr>
+        <tr>
+          <td>You have labelled input→output examples</td>
+          <td>SFT</td>
+        </tr>
+        <tr>
+          <td>The model is capable but occasionally unsafe or unhelpful</td>
+          <td>Alignment</td>
+        </tr>
+        <tr>
+          <td>You have lots of data, budget, and a big behaviour change</td>
+          <td>Full fine-tuning</td>
+        </tr>
+        <tr>
+          <td>You have modest data and want low cost and easy rollback</td>
+          <td>PEFT</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Most teams in practice land on <strong>SFT with PEFT</strong> — enough to change behaviour, cheap enough to repeat when the requirements change.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Calling every training run “SFT” when it was unlabeled domain text.</li>
@@ -156,9 +215,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

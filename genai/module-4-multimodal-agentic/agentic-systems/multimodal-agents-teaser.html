@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="How vision + tools combine: agents that can see screenshots and act.">
+  <meta name="description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html">
-  <meta property="og:title" content="Multimodal Agents (Teaser) | BackbenchLearner">
-  <meta property="og:description" content="How vision + tools combine: agents that can see screenshots and act.">
+  <meta property="og:title" content="Multimodal Agents | BackbenchLearner">
+  <meta property="og:description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -16,12 +16,12 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Multimodal Agents (Teaser) | BackbenchLearner">
-  <meta name="twitter:description" content="How vision + tools combine: agents that can see screenshots and act.">
+  <meta name="twitter:title" content="Multimodal Agents | BackbenchLearner">
+  <meta name="twitter:description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
-  <title>Multimodal Agents (Teaser) | BackbenchLearner</title>
+  <title>Multimodal Agents | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -33,26 +33,96 @@
   <div class="lesson-layout">
     <div class="wrapper">
       <nav><a href="../../../index.html">&larr; Home</a></nav>
-      <h1>Multimodal Agents (Teaser)</h1>
+      <h1>Multimodal Agents</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>Module 4 joins <strong>vision and multimodal retrieval</strong> (4.1–4.3) with <strong>agents</strong> (4.4). A multimodal agent might: read a screenshot -&gt; extract an error code -&gt; call a runbook API -&gt; propose a fix — with a human approval step.</p>
-    <h2 id="building-blocks">Building blocks</h2>
+    <p>A <strong>multimodal agent</strong> is an agent whose inputs are not only text. It can look at a screenshot, a scanned form, or a photo, and then take action based on what it saw.</p>
+    <p>This chapter is where Module 4 comes together: the eyes from 4.1 and 4.2, the retrieval from 4.3, and the agent loop from 4.4.</p>
+    <h2 id="intuition">Intuition</h2>
+    <p>Picture a support engineer handling a ticket that arrives as a screenshot of an error dialog.</p>
+    <p>They read the error code off the image, search the internal runbook for that code, find the documented fix, and either apply it or hand it to someone who can. Four steps, two of which need eyes.</p>
+    <p>A text-only agent cannot start this task at all — the first piece of information is a picture. A vision model alone can read the dialog but cannot then go and find the runbook. You need both.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of vision and tools as eyes and hands.</p>
+    <p>Eyes without hands gives you a very good describer: it tells you precisely what the error says and can do nothing about it. Hands without eyes gives you a capable worker who cannot see the problem and has to be told what is wrong in words first.</p>
+    <p>Most real work — reading a form and filing it, spotting a defect and flagging it, seeing an error and fixing it — needs both in the same loop, because what the eyes find decides what the hands do next.</p>
+    </aside>
+    <h2 id="how-it-works">How it works</h2>
+    <h3 id="a-worked-example">A worked example</h3>
+    <p>The ticket is a screenshot. The agent runs the ordinary loop, but the first perception step is visual:</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    S[Screenshot of error dialog] --> V[VLM reads the image]
+    V --> E["Error code: DB-5012"]
+    E --> R[Search runbook for DB-5012]
+    R --> F[Documented fix found]
+    F --> H{Risky change?}
+    H -->|Yes| A[Ask a human to approve]
+    H -->|No| X[Apply fix]
+    A --> X
+    X --> D[Report what was done]
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Step</th>
+        <th>Which part of Module 4 does it</th>
+        <th>Why it is needed</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Read the dialog</td>
+          <td>VLM with OCR strength, chapter 4.1–4.2</td>
+          <td>The input is pixels, not text</td>
+        </tr>
+        <tr>
+          <td>Find the runbook page</td>
+          <td>Multimodal retrieval, chapter 4.3</td>
+          <td>The fix lives in a document, not the model</td>
+        </tr>
+        <tr>
+          <td>Decide and act</td>
+          <td>Agent loop, chapter 4.4</td>
+          <td>Something has to actually change</td>
+        </tr>
+        <tr>
+          <td>Ask before risky steps</td>
+          <td>Human-in-the-loop</td>
+          <td>Wrong actions cost more than wrong answers</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="the-building-blocks">The building blocks</h3>
     <ul>
-    <li>VLM or vision tool for “what’s on screen.”</li>
-    <li>Text/tools for search, tickets, code.</li>
-    <li>Policies: what the agent may do without asking.</li>
+    <li><strong>A vision model or vision tool</strong> to answer &quot;what is on this screen?&quot; Prefer a grounded, high-resolution model when the evidence is small text, as in chapter 4.2.</li>
+    <li><strong>Retrieval</strong> so the agent can look things up rather than recalling them from training, using the multimodal RAG ideas from chapter 4.3.</li>
+    <li><strong>Text tools</strong> for search, tickets, code, and APIs.</li>
+    <li><strong>Policies</strong> stating plainly which actions the agent may take on its own and which need a person to approve.</li>
     </ul>
+    <h3 id="why-grounding-matters-more-here">Why grounding matters more here</h3>
+    <p>In a text agent, a misread means the model quotes the wrong sentence. In a multimodal agent, a misread means the model acts on something it never actually saw.</p>
+    <p>If the VLM reads <code>DB-5012</code> as <code>DB-5Ol2</code>, every step afterwards is confidently wrong — the same compounding error described in the visual reasoning lesson, except now it ends in an action rather than a sentence.</p>
+    <p>Practical consequence: have the agent <strong>state what it saw</strong> before acting on it. A visible line like <em>&quot;Read error code DB-5012 from the dialog&quot;</em> costs nothing and makes the one failure that matters reviewable.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Teaser only — flesh out architectures and labs when your notes are ready.</p>
+    <p>Multimodal agents use eyes (vision) plus hands (tools). The risk is that a misread image turns into a wrong action, so make the visual observation visible before the agent acts on it.</p>
     </aside>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
+    <ul>
+    <li>Trusting an OCR read of a code, amount, or name without showing it for review.</li>
+    <li>Using a low-resolution vision path for small text, then wondering why the agent acts on the wrong value.</li>
+    <li>Letting the agent both read the screen and take irreversible action with no approval step.</li>
+    <li>Expecting the model to recall internal documentation instead of retrieving it.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Multimodal agents use eyes (vision) plus hands (tools) to complete goals, not only chat.</p>
+    <p>A multimodal agent reads images, retrieves what it needs, and acts — so the visual observation must be exposed and checked before it becomes an action.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Multimodal agent</strong> — agent that consumes non-text inputs.</li>
-    <li><strong>Grounding</strong> — tying actions to observed evidence (image, doc, API).</li>
+    <li><strong>Multimodal agent</strong> — An agent that takes in non-text inputs such as images or scans.</li>
+    <li><strong>Grounding</strong> — Tying actions to observed evidence from an image, document, or API.</li>
+    <li><strong>Human-in-the-loop</strong> — A required approval point before a risky action.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
@@ -83,9 +153,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

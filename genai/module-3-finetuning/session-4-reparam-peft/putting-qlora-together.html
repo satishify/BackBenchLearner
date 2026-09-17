@@ -65,6 +65,17 @@
       </tbody>
     </table>
     <p>The exact numbers depend on hardware and settings. The lesson is the composition: <strong>4-bit weights + small adapters + controlled activations + controlled optimizer spikes</strong>.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Fitting a large model onto one GPU is like fitting a household into a small van. No single trick does it — you win by attacking four different kinds of bulk at once.</p>
+    <ul>
+    <li><strong>4-bit weights</strong> are vacuum-packing the clothes: same items, a fraction of the volume.</li>
+    <li><strong>LoRA</strong> means you only carry the new purchases, because the furniture is already at the destination.</li>
+    <li><strong>Gradient checkpointing</strong> is not laying every item out to look at during the drive; you re-unpack what you need, when you need it.</li>
+    <li><strong>Paged optimizer</strong> is having a small storage unit nearby for the moment when everything briefly has to come out of the van at once.</li>
+    </ul>
+    <p>Skip any one of them and the van door still will not close.</p>
+    </aside>
     <p>What “about 5.2 bits/param” is trying to say:</p>
     <ul>
     <li>Frozen base is stored near <strong>4 bits</strong> (NF4)</li>
@@ -243,9 +254,9 @@ args = TrainingArguments(
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

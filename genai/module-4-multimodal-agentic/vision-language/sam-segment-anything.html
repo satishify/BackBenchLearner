@@ -39,8 +39,16 @@
     <p><strong>SAM</strong> takes an image plus a <strong>prompt</strong> (point, box, mask, or experimental text) and returns a <strong>pixel-level mask</strong> for that region.</p>
     <p>Plain sentence: SAM answers <em>“Where is this region?”</em> more directly than <em>“What is it called?”</em></p>
     <h2 id="intuition">Intuition</h2>
-    <p>Before SAM, segmentation models were often <strong>one domain, one label set</strong> — a medical lung model, a street-scene model, and so on.</p>
-    <p>SAM makes segmentation <strong>promptable</strong>: point, box, or rough mask in → pixel outline out — across many domains.</p>
+    <h3 id="what-segmentation-actually-asks-for">What &quot;segmentation&quot; actually asks for</h3>
+    <p>The models so far answered questions about an image as a whole: does this match that caption, what is happening here, where roughly is the umbrella.</p>
+    <p>Segmentation asks something stricter. For <strong>every single pixel</strong>, it wants a yes or no: is this pixel part of the thing I mean?</p>
+    <p>That is what separates a box from a mask. A box around a cat also contains grass, fence, and sky. A mask contains the cat and nothing else — down to the gaps between its whiskers. If you want to cut the cat out of the photo, or measure exactly how much of a scan is affected, the box is not good enough.</p>
+    <h3 id="why-the-old-approach-did-not-scale">Why the old approach did not scale</h3>
+    <p>Before SAM, segmentation models were built <strong>one domain, one label set</strong> at a time — a model trained for lungs in medical scans, another for street scenes, another for retail products.</p>
+    <p>Each one worked well and only inside its own world. Wanting to segment something new meant collecting a labelled dataset and training another model, which is why segmentation stayed a specialist tool rather than something you could just use.</p>
+    <h3 id="what-sam-changed">What SAM changed</h3>
+    <p>SAM makes segmentation <strong>promptable</strong>. Instead of training a model that knows a fixed list of objects, you give it a hint at the moment you ask: click a point, drag a box, or supply a rough mask. It returns the pixel outline of whatever you indicated.</p>
+    <p>The consequence is that nothing needs to be decided in advance. You do not tell SAM which categories exist, so it never runs out of them — it will outline an object it has no name for just as readily as a common one.</p>
     <p>Photo-editor picture:</p>
     <ul>
     <li><strong>Heavy step:</strong> understand the whole image once (like loading a high-res file into memory)</li>
@@ -276,9 +284,9 @@ mask_bike, scores = segment(box_around_bicycle)  # same cached embedding</code><
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

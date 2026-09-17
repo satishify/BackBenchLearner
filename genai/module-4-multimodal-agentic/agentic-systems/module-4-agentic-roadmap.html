@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="What Module 4.4 covers and where the deeper agent lessons already live in Module 2.9.">
+  <meta name="description" content="What agentic AI means, the perceive-reason-act-observe loop, and how this chapter connects to the deeper agent lessons in Module 2.9.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap.html">
   <meta property="og:title" content="Module 4 Agentic Roadmap | BackbenchLearner">
-  <meta property="og:description" content="What Module 4.4 covers and where the deeper agent lessons already live in Module 2.9.">
+  <meta property="og:description" content="What agentic AI means, the perceive-reason-act-observe loop, and how this chapter connects to the deeper agent lessons in Module 2.9.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Module 4 Agentic Roadmap | BackbenchLearner">
-  <meta name="twitter:description" content="What Module 4.4 covers and where the deeper agent lessons already live in Module 2.9.">
+  <meta name="twitter:description" content="What agentic AI means, the perceive-reason-act-observe loop, and how this chapter connects to the deeper agent lessons in Module 2.9.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,28 +36,94 @@
       <h1>Module 4 Agentic Roadmap</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p><strong>Agentic AI</strong> means systems that plan, call tools, observe results, and loop until a goal is met — not just answer once in chat. Module 4 Chapter 4 focuses on this track.</p>
-    <h2 id="where-to-study-in-depth-today">Where to study in depth today</h2>
-    <p>A full lesson path already exists under <strong>Module 2.9 Agentic AI &amp; Multi-Agent Orchestration</strong> (tools, memory, multi-agent, orchestration). Use that for detailed reading and quizzes.</p>
-    <p>This <strong>4.4</strong> chapter is a <strong>short placeholder</strong> so Module 4 matches the course outline. Swap these stubs for the matching session notes when they arrive.</p>
-    <h2 id="outline-to-fill-later">Outline to fill later</h2>
+    <p><strong>Agentic AI</strong> means a system that works towards a goal over several steps — it plans, uses tools, looks at what came back, and decides what to do next. A plain chat model answers once and stops.</p>
+    <h2 id="intuition">Intuition</h2>
+    <p>Think about the difference between asking a colleague a question and giving them a task.</p>
+    <p>Ask a question and you get an answer: <em>&quot;Our refund policy is 30 days.&quot;</em> Give them a task — <em>&quot;find out why this customer was charged twice and fix it&quot;</em> — and they do something quite different. They look up the account, read the payment log, notice a duplicate charge, issue a refund, and come back to tell you it is done.</p>
+    <p>Nothing about the second job needs more intelligence. It needs the ability to <strong>take a step, look at the result, and choose the next step</strong>. That loop is the whole idea behind an agent.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A chat model is a knowledgeable person on the phone. They can tell you anything they know, but they cannot get up from the chair.</p>
+    <p>An agent is the same person with a laptop, a phone line, and permission to use them. The knowledge has not changed — the ability to act on it has.</p>
+    <p>This is also why agents fail in a new way. A person who cannot act can give you wrong information. A person who can act can give you a wrong <em>refund</em>. The value and the risk arrive together, which is why the lessons keep returning to permissions and human approval.</p>
+    </aside>
+    <h2 id="how-it-works">How it works</h2>
+    <h3 id="the-loop">The loop</h3>
+    <p>Every agent, no matter how it is built, runs some version of four steps:</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    P[Perceive<br/>read the goal and what is known] --> R[Reason<br/>decide the next step]
+    R --> A[Act<br/>call a tool or API]
+    A --> O[Observe<br/>read what came back]
+    O --> D{Goal met?}
+    D -->|No| R
+    D -->|Yes| F[Final answer]
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Step</th>
+        <th>What happens</th>
+        <th>Example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Perceive</strong></td>
+          <td>Take in the goal and current state</td>
+          <td>&quot;Why was this customer charged twice?&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Reason</strong></td>
+          <td>Pick the next useful action</td>
+          <td>&quot;I should look up their recent payments&quot;</td>
+        </tr>
+        <tr>
+          <td><strong>Act</strong></td>
+          <td>Call a tool</td>
+          <td><code>get_payments(customer_id)</code></td>
+        </tr>
+        <tr>
+          <td><strong>Observe</strong></td>
+          <td>Read the result</td>
+          <td>Two identical charges on 3 March</td>
+        </tr>
+        <tr>
+          <td><strong>Loop or stop</strong></td>
+          <td>Continue, or answer</td>
+          <td>Issue refund, then report back</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The model does not do the acting itself. It <strong>requests</strong> an action in a structured form, your code runs it, and the result comes back as new text in the conversation. That separation is what makes an agent controllable.</p>
+    <h3 id="what-this-chapter-covers">What this chapter covers</h3>
     <ol>
-    <li>What makes an agent (perceive -&gt; reason -&gt; act -&gt; observe).</li>
-    <li>Tool calling and governance.</li>
-    <li>Single vs multi-agent patterns.</li>
-    <li>Human-in-the-loop and evaluation.</li>
+    <li><strong>What makes something an agent</strong> — the perceive, reason, act, observe loop above.</li>
+    <li><strong>Tool calling and governance</strong> — how the model requests actions, and which ones it may take without asking a person.</li>
+    <li><strong>Single-agent and multi-agent patterns</strong> — one worker versus a small team with separate jobs.</li>
+    <li><strong>Human-in-the-loop and evaluation</strong> — where a person must approve, and how you tell whether the agent is actually working.</li>
     </ol>
+    <h3 id="where-the-detailed-lessons-live">Where the detailed lessons live</h3>
+    <p>The full agent path — tools, memory, multi-agent orchestration, and the quizzes that go with it — is taught in <strong>Module 2.9, Agentic AI and Multi-Agent Orchestration</strong>. Study that chapter for depth.</p>
+    <p>This chapter&#x27;s job is narrower: it connects those agent ideas to the vision and retrieval work in 4.1 to 4.3, so you can build agents that <strong>see</strong> as well as read.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Placeholder — deepen when the matching agentic-session material is available.</p>
+    <p>An agent is a loop, not a bigger model. Perceive, reason, act, observe — repeat until the goal is met or a person steps in.</p>
     </aside>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
+    <ul>
+    <li>Calling any system with a tool attached an &quot;agent&quot; — without the observe-and-retry loop, it is a single function call with extra steps.</li>
+    <li>Letting the loop run without a stop condition, so it keeps calling tools until it runs out of budget.</li>
+    <li>Giving an agent permission to take actions with real consequences before you can see what it did and why.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Module 4.4 is the course’s agentic chapter; study Module 2.9 for deep content until these stubs are expanded.</p>
+    <p>Agentic AI replaces a single answer with a loop that plans, acts, observes, and repeats until the goal is reached.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Agent</strong> — LLM-centered loop with tools and state.</li>
-    <li><strong>Tool calling</strong> — structured actions the model can request.</li>
-    <li><strong>HITL</strong> — human-in-the-loop checkpoints.</li>
+    <li><strong>Agent</strong> — A model running in a loop with tools and memory of what it has done.</li>
+    <li><strong>Tool calling</strong> — The model requesting a structured action that your code executes.</li>
+    <li><strong>Agent loop</strong> — Perceive, reason, act, observe, repeat.</li>
+    <li><strong>HITL</strong> — Human-in-the-loop; a checkpoint where a person approves before the agent continues.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
@@ -88,9 +154,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

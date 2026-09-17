@@ -19,6 +19,16 @@ Classroom picture:
 - **SFT** = copy the teacher’s sample essay
 - **RL** = write essays, get a grade, write more like the ones that scored well
 
+:::note Analogy
+Think about how someone learns to cook well.
+
+Following a recipe exactly is supervised fine-tuning. It works, and it reliably produces that one dish — but it never teaches you *why* a dish is good, so you cannot handle a request the recipe did not cover.
+
+Cooking for people and listening to their reaction is reinforcement learning. Nobody hands you the perfect dish to copy. You try something, you learn it was a little too salty, and next time you adjust. Over many meals you develop taste, which generalises to dishes you have never made.
+
+Alignment needs the second kind of learning because there is no single "correct" reply to copy for questions like "how should I answer this upset customer?" There is only better and worse.
+:::
+
 :::key
 RL gives a way to reward the kind of behavior we want, even when that behavior is hard to write as one hard label.
 :::

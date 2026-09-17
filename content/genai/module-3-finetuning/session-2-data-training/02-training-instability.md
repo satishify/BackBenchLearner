@@ -35,6 +35,21 @@ Clipping says: “If the gradient is bigger than this cap, shrink it. Keep the d
 - A common default for LLM fine-tuning is `max_grad_norm = 1.0`.
 - Clipping is a seatbelt, not a steering wheel. If more than about 20% of steps hit the clip, your learning rate is probably too high.
 
+:::note Analogy
+Clipping is a speed limiter on a delivery van. The driver still chooses the route — you are not changing where the van goes, only how fast it is allowed to travel. On a normal street the limiter never engages. On a steep downhill it stops the van from running away.
+
+That is exactly the behaviour you want: invisible most of the time, decisive on the one batch that would have wrecked the run.
+:::
+
+What that looks like numerically:
+
+```text
+Typical step:  gradient norm = 0.6  -> unchanged (under the cap)
+Bad batch:     gradient norm = 47.0 -> scaled down to 1.0, same direction
+```
+
+Without the cap, that single step of size 47 would have thrown the weights far outside the useful region — and the next batch would then produce an even larger gradient, which is how one bad batch becomes a dead run.
+
 ### Fix 2: Learning-rate schedule (preview)
 
 A constant high learning rate for a long run often causes late spikes. Warmup (start small) plus a decaying schedule (for example cosine) keeps early steps gentle and late steps careful. The next lesson goes deep on schedules; for stability, remember: **warmup + decay beats “flat and aggressive.”**

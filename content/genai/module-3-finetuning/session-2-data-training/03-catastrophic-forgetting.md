@@ -9,6 +9,14 @@ description: "Why narrow fine-tuning can erase broad skills, how to measure it, 
 
 Picture a generalist who studies only medical Q&A for weeks and somehow “forgets” how to write Python or speak French. The model did not delete a folder named “French.” The same shared weights store many skills. Push those weights hard toward one narrow dataset, and other skills can fade.
 
+:::note Analogy
+Think of the model's weights as a single lump of clay that has been carefully sculpted into a figure with many fine details — a face, hands, folds in the cloth.
+
+Now you need the hands to be more detailed, so you press and reshape that area. Because it is all one piece of clay, pressing the hands pulls material from the wrist, and a little from the arm. Push hard enough and the face distorts too. You never chose to damage the face; the material was shared.
+
+This is why the fix is almost always *press more gently* (lower learning rate, fewer epochs) rather than *press somewhere else*.
+:::
+
 Why it is scary:
 
 - **Silent failure** — Task metrics go up while general benchmarks fall, unless you measure both.
@@ -32,6 +40,19 @@ Always score a fixed general “canary” suite before and after every fine-tune
 ### Measure before vs after
 
 Imagine a 7B model fully fine-tuned for a few epochs on legal contracts: contract accuracy jumps, while general benchmarks drop. That pattern is the warning light. Keep one fixed general eval set and compare base vs fine-tune every time.
+
+A canary table makes the trade visible instead of invisible:
+
+| Check | Base model | After fine-tune | Verdict |
+| --- | --- | --- | --- |
+| Contract clause extraction | 61% | 88% | The goal — working |
+| Follows a simple JSON instruction | 94% | 71% | Instruction-following eroded |
+| Writes a working Python function | 78% | 52% | Coding damaged |
+| Answers a basic factual question | 89% | 86% | Acceptable |
+
+Without rows 2-4, this run looks like a clear success. With them, it is a model that got much better at one job and noticeably worse at being useful.
+
+Your canary set does not need to be sophisticated. Twenty to fifty fixed prompts covering the abilities you would be upset to lose, scored the same way every time, catches most of this.
 
 ### Mitigation strategies
 

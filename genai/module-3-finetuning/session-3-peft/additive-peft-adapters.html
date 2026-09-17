@@ -66,6 +66,21 @@
     </ol>
     <p>In words: <code>new_hidden = old_hidden + up(relu(down(old_hidden)))</code></p>
     <p>Why residual adapters are appealing for generation: they keep the original stream intact and inject task behavior more gently.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A bottleneck adapter works like a note-taker in a meeting. The full discussion is rich and detailed (a 4,096-dimension hidden state). The note-taker writes down only the handful of points that matter for <em>this particular</em> decision (down-project to, say, 64 dimensions), thinks about them, and then contributes one short suggestion back to the room (up-project and add).</p>
+    <p>They never try to replace the meeting. They just nudge it toward the outcome your task needs — which is why so few parameters are enough.</p>
+    </aside>
+    <p>The squeeze is where the savings come from:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">hidden size       = 4096
+bottleneck size   = 64
+
+adapter params ≈ (4096 x 64) + (64 x 4096) ≈ 524,000 per layer
+full layer params                          ≈ 16,800,000 per layer</code></pre>
+    </div>
+    <p>About 3% of the weights of that layer — and the base layer stays frozen. The &quot;near-identity start&quot; matters here too: the up-projection is initialised near zero, so at step 1 the adapter adds almost nothing and the model behaves exactly as before. Training then gradually teaches it what correction to make.</p>
     <h3 id="task-structure-helps">Task structure helps</h3>
     <p>Adapters often work better when the input clearly marks the task — for example special tokens for QA segments (<code>document</code>, <code>question</code>, <code>answer</code>), or similar markers for dialogue and summarization. That structure gives the small module clearer patterns to learn.</p>
     <h3 id="other-ideas-in-the-same-family">Other ideas in the same family</h3>
@@ -140,9 +155,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

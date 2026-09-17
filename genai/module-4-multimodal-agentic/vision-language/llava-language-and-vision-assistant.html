@@ -39,6 +39,15 @@
     <p><strong>LLaVA</strong> teaches an existing language model to <strong>read</strong> image information by translating visual features into the LLM’s embedding space.</p>
     <p>CLIP can say an image matches a caption. LLaVA can <strong>answer open-ended questions</strong> about what it sees.</p>
     <h2 id="intuition">Intuition</h2>
+    <h3 id="the-problem-llava-is-solving">The problem LLaVA is solving</h3>
+    <p>By the end of the last lesson, CLIP could tell you that a photo matches the caption &quot;a dog on a beach.&quot; Ask it <em>&quot;why does the dog look nervous?&quot;</em> and it has nothing to offer — it produces similarity scores, not sentences. It cannot write.</p>
+    <p>Meanwhile you already have a model that writes superbly: an LLM. It just cannot see.</p>
+    <p>So the obvious question is: <strong>why not connect them?</strong> Take CLIP&#x27;s understanding of the image, hand it to the LLM, and let the LLM do the talking.</p>
+    <h3 id="why-connecting-them-is-harder-than-it-sounds">Why connecting them is harder than it sounds</h3>
+    <p>The tempting shortcut is to pass CLIP&#x27;s output vectors straight into the LLM. If the dimensions happen to match, the code even runs.</p>
+    <p>It produces nonsense, and the reason matters. The two models were trained separately and never agreed on what their numbers mean. CLIP&#x27;s vectors live in a space organised around image-caption similarity. The LLM&#x27;s input space is organised around word meanings. A vector that means &quot;beach photograph&quot; to CLIP means nothing in particular to the LLM — same length, different language.</p>
+    <p>What is missing is a <strong>translator</strong>: something that converts CLIP&#x27;s representation into the form the LLM already understands. That translator is the projector, and training it is most of what LLaVA is.</p>
+    <h3 id="the-three-parts">The three parts</h3>
     <p>Reuse two pretrained parts:</p>
     <ul>
     <li>A <strong>frozen CLIP ViT</strong> (eyes)</li>
@@ -78,6 +87,13 @@
       </tbody>
     </table>
     <p>Same vector size is <strong>not</strong> enough — the spaces mean different things. Passing a CLIP vector directly into the LLM is like handing someone a word in a language they do not speak, even if the sentence is the same length.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Picture an expert photographer and an expert novelist who do not share a language.</p>
+    <p>The photographer sees everything in the picture perfectly. The novelist can write beautifully about anything they are told. Put them in a room together and nothing happens — not because either lacks skill, but because there is no shared vocabulary between them.</p>
+    <p>The projector is the interpreter you hire. It is a small role compared with either expert, and it produces none of the final writing itself. But without it, the two talents cannot be combined at all.</p>
+    <p>This is also why LLaVA trains the interpreter first (stage 1) before letting the novelist adjust their own style (stage 2). You get the translation working before you start changing the writer.</p>
+    </aside>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart LR
@@ -254,9 +270,9 @@ response = llm.generate(visual_tokens + text_tokens)</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

@@ -54,6 +54,13 @@
     <li><strong>RLHF</strong> = votes → critic → PPO (with a KL leash)</li>
     <li><strong>DPO</strong> = votes go straight into the policy, compared against a frozen reference</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Imagine training a new writer using reader feedback.</p>
+    <p><strong>RLHF</strong> is the elaborate route: you first hire a critic, train the critic to predict what readers like, and then have the writer work under the critic&#x27;s supervision. It works, but now you have two people to manage — and if the critic develops odd opinions, the writer faithfully learns those odd opinions.</p>
+    <p><strong>DPO</strong> is the direct route: you show the writer the two drafts readers compared and say &quot;they preferred this one.&quot; No critic, no supervision loop, same underlying feedback.</p>
+    <p>Fewer moving parts means fewer things to tune and fewer places to go wrong — which is the main reason DPO became popular.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>DPO: preference data in → aligned policy out, with fewer moving parts than classic RLHF.</p>
@@ -198,9 +205,9 @@ flowchart TB
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

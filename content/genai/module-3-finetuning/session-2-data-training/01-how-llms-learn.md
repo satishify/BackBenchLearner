@@ -27,6 +27,14 @@ One training step = one mini-batch → compute loss → update weights. An epoch
 
 The model never reads letters the way we do. A tokenizer turns text into a list of token IDs. Training packs those IDs into fixed-length windows (the context length) so the GPU can process many examples efficiently.
 
+```text
+"fine-tuning is useful"
+   -> ["fine", "-", "tun", "ing", " is", " useful"]
+   -> [3145, 12, 8823, 278, 374, 5505]
+```
+
+Notice that `tuning` was split into two pieces. Tokens are not words — they are common chunks of characters. A rough rule for English is that 1 token is about 4 characters, so 1,000 words is roughly 1,300 tokens. This is why your cost and context limits are counted in tokens, not words.
+
 ### Mini-batches (the sweet spot)
 
 | Approach | Plain-English idea | Trade-off |
@@ -47,6 +55,22 @@ During training, the model predicts the next token at **every** position in the 
 
 Lower loss means the model is assigning higher probability to the real text.
 
+Seeing the numbers helps. Suppose the correct next token is `mat`:
+
+| The model said | Probability on `mat` | Loss for this token |
+| --- | --- | --- |
+| Very confident and right | 0.90 | 0.11 |
+| Unsure | 0.50 | 0.69 |
+| Confident and wrong | 0.05 | 3.00 |
+
+Two things stand out. Being right earns a small reward, but being **confidently wrong** is punished hard — that steep penalty is what drags the model away from bad habits. And the loss is never exactly zero, because the model can only ever get close to certainty.
+
+:::note Analogy
+Cross-entropy behaves like a strict exam marker who cares about your confidence, not just your answer. Say “I'm 90% sure it's the mat” and be right — barely any penalty. Say “I'm 95% sure it's the roof” and be wrong — heavy penalty. Say “I'm not sure, maybe mat, maybe sofa” — a middling penalty either way.
+
+Over thousands of questions, the fastest way to score well is to be genuinely confident only when you actually know.
+:::
+
 ### Backpropagation and the optimizer step
 
 Backpropagation figures out, for each trainable weight, which way to push it to reduce the loss. Then the optimizer takes a step:
@@ -56,6 +80,24 @@ Backpropagation figures out, for each trainable weight, which way to push it to 
 - **Learning rate** = how big the step is. Too big and training blows up; too small and it crawls.
 - In practice people use adaptive optimizers like **Adam** (not plain old SGD) for LLM fine-tuning.
 - Then load the next mini-batch and repeat.
+
+:::note Analogy
+Picture yourself on a foggy hillside trying to reach the valley. You cannot see the bottom, but you can feel which way the ground slopes under your feet — that slope is the gradient. So you take a step downhill, feel again, step again.
+
+The learning rate is your stride length. Tiny steps are safe but you will still be walking at sunset. Enormous leaps might carry you straight over the valley and up the opposite slope — which is exactly what a loss spike looks like on the chart.
+:::
+
+A concrete step, with real numbers:
+
+```text
+weight          = 0.400
+gradient        = 0.020   (loss increases when this weight increases)
+learning rate   = 0.001
+
+new weight = 0.400 - (0.001 x 0.020) = 0.39998
+```
+
+That change is almost invisible. But a fine-tune runs this for billions of weights across thousands of steps, and those tiny nudges accumulate into genuinely new behaviour.
 
 ### Steps, epochs, and when to stop
 

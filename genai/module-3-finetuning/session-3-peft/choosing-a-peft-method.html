@@ -116,6 +116,22 @@
     <li><strong>Soft prompts</strong> adapt in token / embedding space.</li>
     </ul>
     <p>Both are PEFT. They solve the same big problem (cheap adaptation) in different places.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>You want a car to handle a mountain road better.</p>
+    <p><strong>Soft prompting</strong> is changing how you drive it — the same vehicle, guided differently. Cheap, instant, reversible, and it works well as long as the car is fundamentally capable of the job.</p>
+    <p><strong>Adapters</strong> are fitting different suspension. Now the machine itself behaves differently, which reaches things driving style never could — but it costs more and it is a real modification.</p>
+    <p>Ask which one your problem is. &quot;The model can do this but needs steering&quot; is a prompting problem. &quot;The model does not behave the way this domain requires&quot; is an adapter problem.</p>
+    </aside>
+    <h3 id="a-practical-order-to-try-things">A practical order to try things</h3>
+    <p>Most teams get there fastest by escalating only when the cheaper option genuinely fails:</p>
+    <ol>
+    <li><strong>Prompting</strong> — free, instant. Surprisingly often enough.</li>
+    <li><strong>Prompt or prefix tuning</strong> — smallest trainable footprint; good when the base model is already capable.</li>
+    <li><strong>LoRA / adapters</strong> — the reliable workhorse when behaviour must really change. This is where most production fine-tunes land.</li>
+    <li><strong>Full fine-tuning</strong> — only with a large dataset, a big domain shift, and budget for the forgetting risk.</li>
+    </ol>
+    <p>The rule of thumb: move down the list only when you have evidence the step above it is not working, not because the next one sounds more serious.</p>
     <h3 id="quick-reminder-of-the-peft-efficiency-principle">Quick reminder of the PEFT efficiency principle</h3>
     <p>Trainable parameters should stay <strong>much smaller</strong> than total parameters. If your “PEFT” setup is nearly as heavy as full fine-tuning, you have lost the plot.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
@@ -161,9 +177,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

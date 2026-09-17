@@ -18,6 +18,14 @@ The system must understand:
 - Which date is the invoice date
 - How columns, tables, and pages relate
 
+:::note Analogy
+OCR is a person who can read aloud in a language they do not speak. Every word comes out correctly, and they have no idea which number was the total.
+
+A document VLM is someone who reads *and* understands the form: they know the number in the bottom-right corner under the word "Total" is the amount due, and that the date beside "Due" is not the date beside "Issued."
+
+The difference only matters when meaning depends on position — which, on invoices, forms, and statements, is almost always.
+:::
+
 :::key
 Dedicated OCR reads text. A document VLM also reasons about layout, field relationships, and visual context.
 :::

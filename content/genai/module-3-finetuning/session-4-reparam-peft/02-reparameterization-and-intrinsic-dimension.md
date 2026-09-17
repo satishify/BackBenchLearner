@@ -11,6 +11,23 @@ Imagine you need to nudge a huge weight matrix. You could learn every entry. Or 
 
 Research and practice both point to this: many learning problems can be solved in a much **lower-dimensional subspace** than the raw parameter count suggests. That smaller effective size is called the **intrinsic dimension**.
 
+:::note Analogy
+A mixing desk in a recording studio has hundreds of knobs. In principle, adapting a track means any of them could move.
+
+But if the only problem is "the vocals are too quiet for this room," the actual fix is one direction: vocals up, everything else roughly as it was. You could describe the change with two numbers instead of three hundred.
+
+Intrinsic dimension is the claim that most task adaptations look like that. The model has billions of knobs, but the specific change your task needs points in a surprisingly simple direction — so it is worth learning that direction directly instead of learning every knob independently.
+:::
+
+You can see the saving in the arithmetic. Take one 4,096 × 4,096 weight matrix:
+
+```text
+Full dense update  : 4096 x 4096              = 16,777,216 numbers
+Low-rank update r=8: (4096 x 8) + (8 x 4096)  =     65,536 numbers
+```
+
+That is about 0.4% of the parameters. The bet you are making is that the useful part of the change fits inside that thinner description — and for most fine-tuning tasks it does.
+
 :::key
 If the useful weight change has low intrinsic rank, a low-rank factorization can capture most of the adaptation.
 :::

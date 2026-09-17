@@ -104,6 +104,16 @@ You do not need heavy formulas. Just count grid cells:
 
 Each patch is one “word” of the image. A bigger image → more patches → more tokens → more compute in later models.
 
+:::note Analogy
+Think of a jigsaw puzzle tipped out of the box.
+
+Every piece is still there, and each one carries real detail — a bit of sky, part of a face. But laid out in a random pile, you cannot say what the picture shows, because a piece only means something in relation to where it sits.
+
+Patchifying an image creates that pile. The positional embedding is the grid reference written on the back of each piece: "row 3, column 7." Without it, attention sees 196 unrelated fragments; with it, it sees a scene.
+
+This is why step 3 is not an optional detail. Remove it and the model can still recognise textures but loses any sense of above, below, left, or beside — which is exactly what spatial questions depend on.
+:::
+
 ```mermaid
 flowchart LR
     IMG[224x224 image] --> P[Patchify 16x16]

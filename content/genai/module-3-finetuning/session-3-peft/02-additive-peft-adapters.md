@@ -42,6 +42,24 @@ In words: `new_hidden = old_hidden + up(relu(down(old_hidden)))`
 
 Why residual adapters are appealing for generation: they keep the original stream intact and inject task behavior more gently.
 
+:::note Analogy
+A bottleneck adapter works like a note-taker in a meeting. The full discussion is rich and detailed (a 4,096-dimension hidden state). The note-taker writes down only the handful of points that matter for *this particular* decision (down-project to, say, 64 dimensions), thinks about them, and then contributes one short suggestion back to the room (up-project and add).
+
+They never try to replace the meeting. They just nudge it toward the outcome your task needs — which is why so few parameters are enough.
+:::
+
+The squeeze is where the savings come from:
+
+```text
+hidden size       = 4096
+bottleneck size   = 64
+
+adapter params ≈ (4096 x 64) + (64 x 4096) ≈ 524,000 per layer
+full layer params                          ≈ 16,800,000 per layer
+```
+
+About 3% of the weights of that layer — and the base layer stays frozen. The "near-identity start" matters here too: the up-projection is initialised near zero, so at step 1 the adapter adds almost nothing and the model behaves exactly as before. Training then gradually teaches it what correction to make.
+
 ### Task structure helps
 
 Adapters often work better when the input clearly marks the task — for example special tokens for QA segments (`document`, `question`, `answer`), or similar markers for dialogue and summarization. That structure gives the small module clearer patterns to learn.

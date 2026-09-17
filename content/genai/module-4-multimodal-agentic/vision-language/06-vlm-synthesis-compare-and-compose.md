@@ -25,6 +25,17 @@ flowchart TB
     M -->|Understand + exact pixels| COMP[Compose VLM then SAM]
 ```
 
+:::note Analogy
+Think of these four models as specialists in a hospital.
+
+- **CLIP** is triage at the front desk — fast, sorts things into the right category, does not explain much.
+- **LLaVA** is the doctor who talks with you and describes what is going on in plain language.
+- **Qwen-VL** is the radiologist who points at the exact place on the scan and reads the small print on it.
+- **SAM** is the surgeon who works to precise boundaries but does not diagnose anything.
+
+Nobody asks the surgeon what the illness is called, and nobody asks the triage desk for an operation. Real systems work the same way: you route the job to the specialist whose output shape matches the need, and you combine them when a task genuinely needs two.
+:::
+
 :::key
 Real pipelines often compose models: a language-capable VLM for understanding and location, then SAM for the exact mask.
 :::

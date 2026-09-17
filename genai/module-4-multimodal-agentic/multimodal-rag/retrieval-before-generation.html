@@ -58,6 +58,13 @@ flowchart LR
     G --> A[Grounded answer]
       </div>
     </div>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of a lawyer preparing for a hearing.</p>
+    <p>A model without retrieval is a lawyer arguing from memory — fluent, confident, and occasionally citing a case that does not exist, because recall is imperfect and the pressure to produce an answer is high.</p>
+    <p>RAG is the same lawyer with a paralegal who fetches the actual documents first. The lawyer&#x27;s skill has not changed; what changed is that the argument is now built on paper that can be checked.</p>
+    <p>And the limits are the same too. If the paralegal brings the wrong file, an excellent lawyer will still produce an excellent argument for the wrong conclusion.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>A fluent model cannot repair missing evidence. If retrieval returns the wrong page, even a strong generator is likely to give the wrong answer.</p>
@@ -155,6 +162,13 @@ flowchart TB
     <li><strong>Scale</strong> — search a large collection without reading every item during every request.</li>
     </ul>
     <p>Retrieval reduces hallucination, but it does not remove it. The model may still ignore evidence or make an unsupported claim.</p>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
+    <ul>
+    <li><strong>Treating RAG as a hallucination cure.</strong> It gives the model something true to work from. It does not force the model to use it, and a confident answer can still drift beyond what the page actually says.</li>
+    <li><strong>Blaming the generator for a retrieval problem.</strong> If the right page was never in the top results, rewriting the prompt cannot help. Always check what was retrieved before you touch the prompt.</li>
+    <li><strong>Indexing documents without keeping page identity.</strong> If you cannot say which page an answer came from, you cannot verify it, and the citation becomes decoration.</li>
+    <li><strong>Assuming the retrieved page is the <em>best</em> page.</strong> Top-k returns the nearest matches, not necessarily correct ones. On a question your corpus cannot answer, it still confidently returns five pages.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Multimodal RAG first retrieves the most useful text or visual evidence, then asks a model to answer from that evidence.</p>
     <h2 id="key-terms">Key terms</h2>
@@ -195,9 +209,9 @@ flowchart TB
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

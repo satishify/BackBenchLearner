@@ -15,6 +15,16 @@ A simple picture:
 
 **PEFT** (parameter-efficient fine-tuning) keeps the base model frozen and changes only a small part. **Re-parameterization PEFT** goes one step further: it rewrites the *update itself* into a cheaper form (LoRA and QLoRA are the main examples in this lesson).
 
+:::note Analogy
+Think of a 500-page textbook that you want to adapt for a particular class.
+
+The full fine-tuning approach is to reprint the entire book with your corrections baked in. Do that for 200 different classes and you need a warehouse.
+
+The re-parameterization approach is to keep **one** printed book and write a short errata sheet for each class — "on page 34, read X instead of Y." The book never changes, the errata are a few pages each, and a reader gets the adapted version by reading both together.
+
+That is the whole trick: store the *difference*, not another copy of everything.
+:::
+
 :::key
 Full fine-tuning touches almost everything. Re-parameterization PEFT learns a small update instead of a huge dense one.
 :::

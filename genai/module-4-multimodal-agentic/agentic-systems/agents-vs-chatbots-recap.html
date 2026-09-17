@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Short contrast: one-shot chat vs agent loops that use tools and memory.">
+  <meta name="description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html">
   <meta property="og:title" content="Agents vs Chatbots (Recap) | BackbenchLearner">
-  <meta property="og:description" content="Short contrast: one-shot chat vs agent loops that use tools and memory.">
+  <meta property="og:description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Agents vs Chatbots (Recap) | BackbenchLearner">
-  <meta name="twitter:description" content="Short contrast: one-shot chat vs agent loops that use tools and memory.">
+  <meta name="twitter:description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
@@ -36,28 +36,100 @@
       <h1>Agents vs Chatbots (Recap)</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A <strong>chatbot</strong> typically: user message -&gt; model reply -&gt; done. An <strong>agent</strong> typically: user goal -&gt; plan -&gt; tool call -&gt; observe -&gt; maybe plan again -&gt; final answer.</p>
-    <h2 id="when-you-need-an-agent">When you need an agent</h2>
+    <p>A <strong>chatbot</strong> goes: user message → model reply → done. An <strong>agent</strong> goes: user goal → plan → tool call → observe → maybe plan again → final answer.</p>
+    <p>The difference is not how clever the model is. It is whether the system is allowed to take a step, look at the result, and keep going.</p>
+    <h2 id="intuition">Intuition</h2>
+    <p>Consider one request: <em>&quot;Has my order shipped?&quot;</em></p>
+    <p>A chatbot can explain how shipping works, what the tracking email looks like, and how long delivery usually takes. Everything it says may be correct and none of it answers the question, because the answer lives in a database it cannot reach.</p>
+    <p>An agent looks up the order, sees it shipped on Tuesday, and says so.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A chatbot is a well-briefed receptionist working from a printed manual. Ask anything covered by the manual and you get a fast, accurate answer. Ask something that requires checking a system and the manual cannot help, however thick it is.</p>
+    <p>An agent is a receptionist with access to the booking system. Slower, and you have to be careful what they are allowed to change — but they can answer questions whose answers are not in any manual.</p>
+    <p>Adding more pages to the manual never turns the first into the second. That is the mistake behind most &quot;why doesn&#x27;t our chatbot know this?&quot; complaints: the problem is reach, not knowledge.</p>
+    </aside>
+    <h2 id="how-it-works">How it works</h2>
+    <h3 id="side-by-side">Side by side</h3>
+    <table>
+      <thead><tr>
+        <th></th>
+        <th>Chatbot</th>
+        <th>Agent</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Steps per request</td>
+          <td>One</td>
+          <td>As many as the task needs</td>
+        </tr>
+        <tr>
+          <td>Can reach live data</td>
+          <td>No</td>
+          <td>Yes, through tools</td>
+        </tr>
+        <tr>
+          <td>Can cause side effects</td>
+          <td>No</td>
+          <td>Yes — this is the risk</td>
+        </tr>
+        <tr>
+          <td>Cost per request</td>
+          <td>Predictable</td>
+          <td>Varies with how long the loop runs</td>
+        </tr>
+        <tr>
+          <td>Main failure</td>
+          <td>Confidently wrong text</td>
+          <td>Confidently wrong <strong>action</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph CB["Chatbot"]
+      U1[User message] --> M1[Model] --> R1[Reply]
+    end
+    subgraph AG["Agent"]
+      U2[User goal] --> M2[Model plans]
+      M2 --> T[Call a tool]
+      T --> O[Observe result]
+      O --> C{Done?}
+      C -->|No| M2
+      C -->|Yes| R2[Final answer]
+    end
+      </div>
+    </div>
+    <h3 id="when-you-need-an-agent">When you need an agent</h3>
     <ul>
-    <li>Multi-step workflows (search, then calculate, then file a ticket).</li>
-    <li>Fresh data behind APIs or databases.</li>
-    <li>Actions with side effects that need confirmation.</li>
+    <li><strong>Multi-step workflows</strong> — search, then calculate, then file a ticket. No single reply can do all three.</li>
+    <li><strong>Fresh data behind an API or database</strong> — order status, stock levels, today&#x27;s prices.</li>
+    <li><strong>Actions with real effects</strong> — issuing a refund, sending an email, updating a record.</li>
     </ul>
-    <h2 id="when-a-chatbot-is-enough">When a chatbot is enough</h2>
+    <h3 id="when-a-chatbot-is-enough">When a chatbot is enough</h3>
     <ul>
-    <li>FAQ and drafting inside a fixed context.</li>
-    <li>Single-turn summarization with no tools.</li>
+    <li><strong>FAQ and drafting</strong> where everything needed is already in the prompt.</li>
+    <li><strong>Single-turn summarisation</strong> of text you have already supplied.</li>
+    <li><strong>Anything where a wrong action would be expensive</strong> and the task does not truly need one.</li>
     </ul>
+    <p>The honest default is the simpler one. An agent adds cost, latency, and a category of failure that chatbots cannot have — so reach for it when the task genuinely requires acting, not because it sounds more advanced.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Stub. Expand with diagrams and your Module 4 examples later. See also Module 2.9 for full lessons.</p>
+    <p>Agents add loops, tools, and state. Chatbots generate the next reply. Choose based on whether the answer requires <em>doing</em> something.</p>
     </aside>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
+    <ul>
+    <li>Building an agent for a job a well-prompted chatbot handles, and paying for the loop every request.</li>
+    <li>Building a chatbot for a job that needs live data, then trying to fix it by stuffing more text into the prompt.</li>
+    <li>Giving the loop no step limit, so a confused agent keeps calling tools.</li>
+    </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Agents add loops, tools, and state; chatbots mainly generate the next reply.</p>
+    <p>Agents loop, use tools, and change things; chatbots reply — pick the agent only when the task needs action, not just words.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>One-shot</strong> — single generate step.</li>
-    <li><strong>Agent loop</strong> — repeated reason/act/observe until stop.</li>
+    <li><strong>One-shot</strong> — A single generate step with no follow-up action.</li>
+    <li><strong>Agent loop</strong> — Repeated reason, act, observe until a stop condition.</li>
+    <li><strong>Side effect</strong> — A change the agent makes in a real system.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
@@ -88,9 +160,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

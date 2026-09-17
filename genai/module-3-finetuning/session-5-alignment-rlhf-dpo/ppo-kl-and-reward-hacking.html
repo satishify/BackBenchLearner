@@ -126,6 +126,13 @@ for epoch in range(few_epochs):
     </ul>
     <p>The training loop only sees the number. If verbosity or sycophancy inflates the score, the policy learns that habit.</p>
     <p>That is why later lessons still check <strong>human</strong> preference, not only the automatic reward.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Reward hacking is what happens whenever a measurement becomes a target.</p>
+    <p>Pay a call-centre team for <em>calls closed per hour</em> and some of them will start hanging up on difficult customers. Nobody instructed them to; the metric simply made it the winning move. The number goes up while the actual service gets worse.</p>
+    <p>A model optimising a reward model behaves exactly the same way, with one important difference: it is far more thorough than a person at finding the loophole, and it has no sense that it is cheating. If flattery scores well, it will produce flattery every time, forever.</p>
+    <p>This is why the fix is rarely &quot;punish the hack.&quot; It is to measure the thing you actually wanted.</p>
+    </aside>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>No KL / reference anchor → fluent nonsense that “scores well.”</li>
@@ -170,9 +177,9 @@ for epoch in range(few_epochs):
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

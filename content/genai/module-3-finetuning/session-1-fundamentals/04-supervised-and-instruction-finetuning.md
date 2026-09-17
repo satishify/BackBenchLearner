@@ -9,6 +9,14 @@ description: "SFT versus instruction fine-tuning (IFT): labeled pairs, chat-styl
 
 Simple analogy: SFT is like tutoring with answer keys. Each row says what good looks like. After enough examples, the model internalizes the habit — not only for that exact wording, but for similar asks.
 
+:::note Analogy
+A base model that has only been pretrained behaves like a brilliant person who never learned conversation etiquette. Ask “what is the capital of France?” and instead of answering, it may continue your text:
+
+> What is the capital of France? What is the capital of Spain? What is the capital of Italy?
+
+It is not being difficult — it is doing its job, predicting plausible continuations. Instruction fine-tuning is what teaches it that a question is meant to be **answered**, not extended.
+:::
+
 :::key
 SFT teaches behavior from labeled pairs. Instruction fine-tuning specializes that idea for “user asks → assistant replies” chat format.
 :::
@@ -30,6 +38,23 @@ Instruction data often looks like:
 
 Training teaches the model: when someone asks in natural language, answer helpfully in the expected style.
 
+One training row, written out in full:
+
+```json
+{
+  "messages": [
+    {"role": "system",    "content": "You are a support agent for a bank."},
+    {"role": "user",      "content": "I lost my debit card. What should I do?"},
+    {"role": "assistant", "content": "I'm sorry to hear that. Please block the card immediately from the app under Cards > Block, then request a replacement. Your new card arrives in 3-5 working days."}
+  ]
+}
+```
+
+Two details matter here:
+
+- The **same** role structure must be used during training and when the model is later served. If training used `system/user/assistant` and production sends a plain string, the model sees an unfamiliar shape and quality drops.
+- The loss is calculated on the **assistant** text only. The model is being taught to produce that reply, not to invent the customer's question.
+
 ### SFT vs IFT (practical view)
 
 | | **SFT (broad)** | **IFT (instruction-focused)** |
@@ -50,11 +75,25 @@ After IFT, models usually become better at:
 
 They still need good data. Garbage instructions teach garbage habits.
 
+### How much data do you need?
+
+There is no magic number, but a useful starting frame:
+
+| Goal | Rough scale of examples |
+| --- | --- |
+| Lock in one output format | Hundreds |
+| Teach a task with real variety | A few thousand |
+| Broad instruction-following from a base model | Tens of thousands and up |
+
+Quality beats quantity almost every time. 500 carefully checked examples usually beat 5,000 scraped ones, because the model copies whatever it is shown — including the mistakes.
+
 ## What goes wrong
 
 - Mixing random formats in one JSONL file so the model never sees a stable pattern.
 - Training on answers only, with unclear instructions.
 - Expecting IFT to install fresh facts that belong in RAG.
+- Letting a few sloppy examples slip in. If 5% of your answers are rude or truncated, the model learns that rudeness and truncation are sometimes correct.
+- Using one chat template during training and a different one in production, then wondering why the model got worse after deployment.
 
 ## One-line summary
 

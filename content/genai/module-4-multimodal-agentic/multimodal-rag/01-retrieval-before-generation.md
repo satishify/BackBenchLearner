@@ -27,6 +27,16 @@ flowchart LR
     G --> A[Grounded answer]
 ```
 
+:::note Analogy
+Think of a lawyer preparing for a hearing.
+
+A model without retrieval is a lawyer arguing from memory — fluent, confident, and occasionally citing a case that does not exist, because recall is imperfect and the pressure to produce an answer is high.
+
+RAG is the same lawyer with a paralegal who fetches the actual documents first. The lawyer's skill has not changed; what changed is that the argument is now built on paper that can be checked.
+
+And the limits are the same too. If the paralegal brings the wrong file, an excellent lawyer will still produce an excellent argument for the wrong conclusion.
+:::
+
 :::key
 A fluent model cannot repair missing evidence. If retrieval returns the wrong page, even a strong generator is likely to give the wrong answer.
 :::
@@ -93,6 +103,13 @@ This is faster and easier to update than asking a model to memorise every policy
 - **Scale** — search a large collection without reading every item during every request.
 
 Retrieval reduces hallucination, but it does not remove it. The model may still ignore evidence or make an unsupported claim.
+
+## What goes wrong
+
+- **Treating RAG as a hallucination cure.** It gives the model something true to work from. It does not force the model to use it, and a confident answer can still drift beyond what the page actually says.
+- **Blaming the generator for a retrieval problem.** If the right page was never in the top results, rewriting the prompt cannot help. Always check what was retrieved before you touch the prompt.
+- **Indexing documents without keeping page identity.** If you cannot say which page an answer came from, you cannot verify it, and the citation becomes decoration.
+- **Assuming the retrieved page is the *best* page.** Top-k returns the nearest matches, not necessarily correct ones. On a question your corpus cannot answer, it still confidently returns five pages.
 
 ## One-line summary
 

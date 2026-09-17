@@ -20,6 +20,14 @@ Visual reasoning:
 
 Now the model may need to inspect signs, road markings, vehicle position, time restrictions, and possibly outside knowledge.
 
+:::note Analogy
+Reading a sign is like reading a thermometer. Deciding whether you can park is like diagnosing a patient: you gather several readings, weigh them against rules you know, and reach a judgement that no single observation contained.
+
+The danger is also the same as in medicine. If the first reading is wrong, the diagnosis built on it will be confidently wrong — and it will sound just as reasoned as a correct one. A model that misreads "No Parking 8am-6pm" as "No Parking" will then produce four flawless logical steps to the wrong answer.
+
+That is why verification in visual reasoning focuses on the *observations*, not the argument. The argument is rarely where it breaks.
+:::
+
 :::key
 The vision encoder supplies visual evidence. The LLM backbone and its reasoning training do most of the multi-step inference.
 :::

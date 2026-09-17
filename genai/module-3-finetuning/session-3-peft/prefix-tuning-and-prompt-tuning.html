@@ -75,6 +75,26 @@
     <li>Attractive because it is simple and tiny.</li>
     <li>A warning: quality can vary sharply with small prompt changes, and cost grows if you make the soft prompt very long.</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Both methods brief the same expert, but at different moments.</p>
+    <p><strong>Prompt tuning</strong> is handing over a briefing note at the door. The expert reads it, then gets on with the work — and as the job goes on, that first note matters less and less.</p>
+    <p><strong>Prefix tuning</strong> is having the briefing available in every room, at every stage of the work. The guidance is present when the expert makes the opening decision and when they make the final one.</p>
+    <p>That is why prefix tuning tends to hold up better on long generated answers: the influence does not fade as the output grows.</p>
+    </aside>
+    <p>Where each one lands in the model:</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    subgraph PT[Prompt tuning]
+        P1[Learned vectors at the input only] --> P2[Layer 1] --> P3[Layer 2 ... Layer N]
+    end
+    subgraph PX[Prefix tuning]
+        X1[Layer 1 + its own prefix] --> X2[Layer 2 + its own prefix] --> X3[Layer N + its own prefix]
+    end
+      </div>
+    </div>
+    <p>Prefix tuning therefore trains more parameters than prompt tuning — a prefix for every layer instead of one set at the front — but both remain far smaller than an adapter or a full fine-tune.</p>
     <h3 id="the-cost-of-longer-prompts">The cost of longer prompts</h3>
     <p>If you keep adding soft tokens:</p>
     <ul>
@@ -130,9 +150,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

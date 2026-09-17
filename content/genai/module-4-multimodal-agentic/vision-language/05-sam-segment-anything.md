@@ -9,9 +9,25 @@ Plain sentence: SAM answers *“Where is this region?”* more directly than *�
 
 ## Intuition
 
-Before SAM, segmentation models were often **one domain, one label set** — a medical lung model, a street-scene model, and so on.
+### What "segmentation" actually asks for
 
-SAM makes segmentation **promptable**: point, box, or rough mask in → pixel outline out — across many domains.
+The models so far answered questions about an image as a whole: does this match that caption, what is happening here, where roughly is the umbrella.
+
+Segmentation asks something stricter. For **every single pixel**, it wants a yes or no: is this pixel part of the thing I mean?
+
+That is what separates a box from a mask. A box around a cat also contains grass, fence, and sky. A mask contains the cat and nothing else — down to the gaps between its whiskers. If you want to cut the cat out of the photo, or measure exactly how much of a scan is affected, the box is not good enough.
+
+### Why the old approach did not scale
+
+Before SAM, segmentation models were built **one domain, one label set** at a time — a model trained for lungs in medical scans, another for street scenes, another for retail products.
+
+Each one worked well and only inside its own world. Wanting to segment something new meant collecting a labelled dataset and training another model, which is why segmentation stayed a specialist tool rather than something you could just use.
+
+### What SAM changed
+
+SAM makes segmentation **promptable**. Instead of training a model that knows a fixed list of objects, you give it a hint at the moment you ask: click a point, drag a box, or supply a rough mask. It returns the pixel outline of whatever you indicated.
+
+The consequence is that nothing needs to be decided in advance. You do not tell SAM which categories exist, so it never runs out of them — it will outline an object it has no name for just as readily as a common one.
 
 Photo-editor picture:
 

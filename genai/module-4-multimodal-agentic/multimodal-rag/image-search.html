@@ -38,6 +38,21 @@
 
     <p><strong>Image search</strong> finds matching images from a description or another image.</p>
     <p>It is useful for product catalogs, stock-photo libraries, reverse image search, and content moderation.</p>
+    <h2 id="intuition">Intuition</h2>
+    <h3 id="the-obvious-approach-and-why-it-is-not-used">The obvious approach, and why it is not used</h3>
+    <p>Suppose you have 200,000 product photos and a shopper types &quot;black waterproof hiking backpack.&quot;</p>
+    <p>The instinctive solution is to write a caption for every photo, then run ordinary text search over the captions. That does work, and for years it was how image search was built. It has two stubborn problems.</p>
+    <p>First, the caption is written <strong>before anyone asks anything</strong>. Whoever wrote it decided which details mattered. If the caption says &quot;black backpack&quot; and the shopper cares about side pockets, that information was thrown away at indexing time and no amount of clever searching recovers it.</p>
+    <p>Second, it puts a translation step between the question and the evidence. Every mistake in the caption becomes a permanent, invisible error in the index.</p>
+    <h3 id="the-better-idea-skip-the-words">The better idea: skip the words</h3>
+    <p>Modern image search does not translate pictures into text at all. It converts <strong>both</strong> the photo and the query into vectors, and places them in the same space — so they can be compared directly, without either becoming words first.</p>
+    <p>That is the entire trick, and everything else in this lesson follows from it. A CLIP-style model is what makes it possible, because it was trained specifically so that a picture and its caption land in the same region.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of a shared vector space as a giant map where everything is placed by meaning rather than by type.</p>
+    <p>Photographs of mountains at sunset land in one region of the map. The <em>phrase</em> &quot;snow-capped mountains at sunset&quot; lands in that same region, because CLIP was trained to put matching pictures and words in the same place.</p>
+    <p>Searching then becomes a geography question: drop a pin where the query lands, and return whatever is nearby. The system never has to translate the picture into words — both were already placed on the same map.</p>
+    </aside>
     <h2 id="two-directions">Two directions</h2>
     <h3 id="text-to-image">Text-to-image</h3>
     <p>The user types:</p>
@@ -158,9 +173,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

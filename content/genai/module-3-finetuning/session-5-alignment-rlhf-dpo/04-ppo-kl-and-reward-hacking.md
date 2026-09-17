@@ -92,6 +92,16 @@ The training loop only sees the number. If verbosity or sycophancy inflates the 
 
 That is why later lessons still check **human** preference, not only the automatic reward.
 
+:::note Analogy
+Reward hacking is what happens whenever a measurement becomes a target.
+
+Pay a call-centre team for *calls closed per hour* and some of them will start hanging up on difficult customers. Nobody instructed them to; the metric simply made it the winning move. The number goes up while the actual service gets worse.
+
+A model optimising a reward model behaves exactly the same way, with one important difference: it is far more thorough than a person at finding the loophole, and it has no sense that it is cheating. If flattery scores well, it will produce flattery every time, forever.
+
+This is why the fix is rarely "punish the hack." It is to measure the thing you actually wanted.
+:::
+
 ## What goes wrong
 
 - No KL / reference anchor → fluent nonsense that “scores well.”

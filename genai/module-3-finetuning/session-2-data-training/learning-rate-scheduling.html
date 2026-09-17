@@ -44,6 +44,11 @@
     <li><strong>Low learning rate</strong> — very stable, but you may run out of budget before the model converges.</li>
     </ul>
     <p>You want both stories in one run: bigger steps early, smaller steps later.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of parking a car. You approach the space at a reasonable speed, because crawling from the end of the street wastes everyone&#x27;s time. As you get close, you slow down. In the last few centimetres you move almost imperceptibly, because now precision matters more than progress.</p>
+    <p>Trying to park at full speed means overshooting repeatedly. Approaching the whole street at parking speed means you never arrive. A learning-rate schedule is simply doing what any driver does: fast when far away, slow when close.</p>
+    </aside>
     <p>Training also has phases:</p>
     <ol>
     <li><strong>Fragile start</strong> — New data shocks the pretrained weights. Full-size steps here cause instant spikes → use <strong>warmup</strong> (rise from near zero).</li>
@@ -126,6 +131,46 @@
     <li>Use <strong>constant + warmup</strong> only when the run is short and you are watching carefully.</li>
     <li>If late spikes appear on a flat learning rate, try cosine with the <strong>same peak</strong> — often the late spikes disappear.</li>
     </ul>
+    <h3 id="a-worked-schedule">A worked schedule</h3>
+    <p>A 1,000-step LoRA fine-tune with warmup and cosine decay:</p>
+    <table>
+      <thead><tr>
+        <th>Step</th>
+        <th>Learning rate</th>
+        <th>What is happening</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>0</td>
+          <td>Run begins; no shock to the weights</td>
+        </tr>
+        <tr>
+          <td>30</td>
+          <td>1×10⁻⁴</td>
+          <td>Warmup finished, now at peak</td>
+        </tr>
+        <tr>
+          <td>300</td>
+          <td>9×10⁻⁵</td>
+          <td>Cosine keeps it near the peak while most learning happens</td>
+        </tr>
+        <tr>
+          <td>700</td>
+          <td>4×10⁻⁵</td>
+          <td>Steps shrinking as the model settles</td>
+        </tr>
+        <tr>
+          <td>1000</td>
+          <td>~0</td>
+          <td>Final gentle polish</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Warmup here is 30 steps, roughly 3% of the run. The cosine shape is doing something clever: it lingers near the peak (steps 30-400) where the learning is most productive, then falls away smoothly instead of dropping off a cliff.</p>
+    <h3 id="why-skipping-warmup-hurts">Why skipping warmup hurts</h3>
+    <p>At step 0, your fine-tuning data looks nothing like what the model saw in pretraining, so the very first gradients are large and badly aimed. Taking a full-size step on that first bad signal can knock the weights into a state training never recovers from.</p>
+    <p>You see it on the chart as a loss that jumps in the first few steps and then plateaus high. Warmup exists to make those first few steps almost harmless.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Skipping warmup on a hot peak learning rate.</li>
@@ -170,9 +215,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

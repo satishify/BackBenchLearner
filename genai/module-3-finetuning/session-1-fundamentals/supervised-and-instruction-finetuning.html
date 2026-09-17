@@ -39,6 +39,14 @@
     <p><strong>Supervised fine-tuning (SFT)</strong> means: show the model many examples of “given this input, produce that output,” and update weights so it copies the desired pattern. <strong>Instruction fine-tuning (IFT)</strong> is the chat-friendly version of that idea — teach the model to follow natural-language instructions.</p>
     <h2 id="intuition">Intuition</h2>
     <p>Simple analogy: SFT is like tutoring with answer keys. Each row says what good looks like. After enough examples, the model internalizes the habit — not only for that exact wording, but for similar asks.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A base model that has only been pretrained behaves like a brilliant person who never learned conversation etiquette. Ask “what is the capital of France?” and instead of answering, it may continue your text:</p>
+    <blockquote>
+    <p>What is the capital of France? What is the capital of Spain? What is the capital of Italy?</p>
+    </blockquote>
+    <p>It is not being difficult — it is doing its job, predicting plausible continuations. Instruction fine-tuning is what teaches it that a question is meant to be <strong>answered</strong>, not extended.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>SFT teaches behavior from labeled pairs. Instruction fine-tuning specializes that idea for “user asks → assistant replies” chat format.</p>
@@ -57,6 +65,22 @@
     <li>An ideal assistant response</li>
     </ul>
     <p>Training teaches the model: when someone asks in natural language, answer helpfully in the expected style.</p>
+    <p>One training row, written out in full:</p>
+    <div class="code-block" data-lang="json">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-json">{
+  &quot;messages&quot;: [
+    {&quot;role&quot;: &quot;system&quot;,    &quot;content&quot;: &quot;You are a support agent for a bank.&quot;},
+    {&quot;role&quot;: &quot;user&quot;,      &quot;content&quot;: &quot;I lost my debit card. What should I do?&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;I&#x27;m sorry to hear that. Please block the card immediately from the app under Cards &gt; Block, then request a replacement. Your new card arrives in 3-5 working days.&quot;}
+  ]
+}</code></pre>
+    </div>
+    <p>Two details matter here:</p>
+    <ul>
+    <li>The <strong>same</strong> role structure must be used during training and when the model is later served. If training used <code>system/user/assistant</code> and production sends a plain string, the model sees an unfamiliar shape and quality drops.</li>
+    <li>The loss is calculated on the <strong>assistant</strong> text only. The model is being taught to produce that reply, not to invent the customer&#x27;s question.</li>
+    </ul>
     <h3 id="sft-vs-ift-practical-view">SFT vs IFT (practical view)</h3>
     <table>
       <thead><tr>
@@ -91,11 +115,36 @@
     <li>Sticking to requested formats</li>
     </ul>
     <p>They still need good data. Garbage instructions teach garbage habits.</p>
+    <h3 id="how-much-data-do-you-need">How much data do you need?</h3>
+    <p>There is no magic number, but a useful starting frame:</p>
+    <table>
+      <thead><tr>
+        <th>Goal</th>
+        <th>Rough scale of examples</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Lock in one output format</td>
+          <td>Hundreds</td>
+        </tr>
+        <tr>
+          <td>Teach a task with real variety</td>
+          <td>A few thousand</td>
+        </tr>
+        <tr>
+          <td>Broad instruction-following from a base model</td>
+          <td>Tens of thousands and up</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Quality beats quantity almost every time. 500 carefully checked examples usually beat 5,000 scraped ones, because the model copies whatever it is shown — including the mistakes.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Mixing random formats in one JSONL file so the model never sees a stable pattern.</li>
     <li>Training on answers only, with unclear instructions.</li>
     <li>Expecting IFT to install fresh facts that belong in RAG.</li>
+    <li>Letting a few sloppy examples slip in. If 5% of your answers are rude or truncated, the model learns that rudeness and truncation are sometimes correct.</li>
+    <li>Using one chat template during training and a different one in production, then wondering why the model got worse after deployment.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>Supervised fine-tuning teaches from labeled examples; instruction fine-tuning is that idea applied to chat-style “follow my request” data.</p>
@@ -134,9 +183,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

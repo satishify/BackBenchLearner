@@ -40,7 +40,40 @@
     <h2 id="intuition">Intuition</h2>
     <p>Core job in one line: predict the next token.</p>
     <p>Example: “The cat sat on the ___”</p>
-    <p>The model assigns probabilities to possible next words (<code>mat</code>, <code>sofa</code>, <code>roof</code>, …). That next-token engine powers autocomplete, chat, translation-style systems, and more.</p>
+    <p>The model assigns probabilities to possible next words:</p>
+    <table>
+      <thead><tr>
+        <th>Next word</th>
+        <th>Probability</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><code>mat</code></td>
+          <td>0.41</td>
+        </tr>
+        <tr>
+          <td><code>sofa</code></td>
+          <td>0.22</td>
+        </tr>
+        <tr>
+          <td><code>floor</code></td>
+          <td>0.18</td>
+        </tr>
+        <tr>
+          <td><code>roof</code></td>
+          <td>0.06</td>
+        </tr>
+        <tr>
+          <td><code>refrigerator</code></td>
+          <td>0.001</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>It then picks one, adds it to the sentence, and repeats the whole process for the following word. Everything an LLM does — chat, summarising, writing code — is this one step run over and over.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Think of someone who has read a huge share of the internet and has become extremely good at finishing your sentences. Ask a question and they keep completing text until the answer is written. They are not looking anything up; they are predicting what usually comes next.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Pretraining teaches general language skill. Fine-tuning shapes that skill for your task, domain, or style.</p>
@@ -79,6 +112,13 @@
         </tr>
       </tbody>
     </table>
+    <p>An easy way to remember the difference:</p>
+    <ul>
+    <li><strong>Encoder-only</strong> is a <em>reader</em>. It sees the whole sentence at once, like you reading a paragraph before answering a comprehension question. Perfect for “is this review positive or negative?”</li>
+    <li><strong>Decoder-only</strong> is a <em>writer</em>. It can only look backwards at what it has already written, like a person speaking a sentence out loud one word at a time. Perfect for chat.</li>
+    <li><strong>Encoder–decoder</strong> is a <em>translator</em>. One half reads the whole input, the other half writes a fresh output. Perfect for “turn this English paragraph into French.”</li>
+    </ul>
+    <p>Almost every chat assistant you use today is decoder-only.</p>
     <h3 id="the-usual-training-stages">The usual training stages</h3>
     <table>
       <thead><tr>
@@ -100,6 +140,11 @@
         </tr>
       </tbody>
     </table>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>This is the same path a new doctor takes. School and college give broad knowledge (<strong>pretraining</strong>). Medical residency turns that into a specific profession (<strong>fine-tuning</strong>). Hospital rules and ethics training decide how they are allowed to behave with patients (<strong>alignment</strong>).</p>
+    <p>You cannot skip to residency without school, and school alone does not make someone ready to treat patients.</p>
+    </aside>
     <h3 id="why-fine-tuning-is-often-necessary">Why fine-tuning is often necessary</h3>
     <p>A general pretrained model is a strong starting point, but many products need:</p>
     <ul>
@@ -108,11 +153,24 @@
     <li>Behavior that should stick across many future prompts, not only one clever instruction</li>
     </ul>
     <p>Fine-tuning updates the model on task-specific data so those habits become part of the weights.</p>
+    <h3 id="a-concrete-example">A concrete example</h3>
+    <p>An insurance company wants every claim note summarised in exactly this shape:</p>
+    <div class="code-block" data-lang="text">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-text">CLAIM: &lt;id&gt;
+LOSS TYPE: &lt;fire | flood | theft | other&gt;
+AMOUNT: &lt;number or unknown&gt;
+NEXT ACTION: &lt;one sentence&gt;</code></pre>
+    </div>
+    <p>With prompting, the model gets it right most of the time, but on maybe 1 note in 12 it adds a friendly sentence at the top, or writes “Fire damage” instead of <code>fire</code>. At 4,000 notes a day, that is hundreds of broken records.</p>
+    <p>After fine-tuning on 2,000 correctly formatted examples, the format becomes a habit instead of a request. The prompt can then be short, because the model has already learned what the answer should look like.</p>
+    <p>That is the real test for fine-tuning: <strong>do you need this behaviour every single time, forever?</strong></p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
     <li>Treating a general chat model as already “done” for a specialist job.</li>
-    <li>Fine-tuning to store facts that change every week (retrieval is usually better for that).</li>
-    <li>Skipping the question “do we need weight updates at all?”</li>
+    <li>Fine-tuning to store facts that change every week (retrieval is usually better for that). Training last month’s price list into the weights means retraining when the prices move.</li>
+    <li>Skipping the question “do we need weight updates at all?” Many teams spend a week fine-tuning a problem that a five-line prompt fix would have solved.</li>
+    <li>Assuming the model “understands” instead of predicting. It has no idea whether the sentence it just produced is true — which is exactly why grounding and evaluation matter.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
     <p>LLMs learn next-token prediction at huge scale; fine-tuning is how you turn that general skill into stable, task-specific behavior.</p>
@@ -152,9 +210,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

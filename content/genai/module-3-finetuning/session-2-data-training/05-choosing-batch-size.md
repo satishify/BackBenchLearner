@@ -15,6 +15,25 @@ description: "Micro-batch, gradient accumulation, effective batch size, and how 
 
 Example: micro-batch 2, accumulate 16, 4 GPUs → effective batch 128. You still fit only 2 examples at a time on each GPU, but each update “sees” 128 examples.
 
+:::note Analogy
+Suppose you want to know the average height of people in a city.
+
+Measure **one** person and act on it, and your estimate swings wildly — you might have found a basketball player. Measure **fifty** and the number is far steadier. Measure **the whole city** and you get the perfect answer, but you have spent a year doing it and could have made many good decisions in that time.
+
+Batch size is that same trade. Each mini-batch gives a noisy estimate of the true direction to move. Bigger batch, cleaner estimate, fewer decisions. Smaller batch, noisier estimate, many more decisions.
+:::
+
+Gradient accumulation is the trick that separates “what fits in memory” from “what the update sees.” Instead of updating after every micro-batch, you keep adding the gradients up:
+
+```text
+micro-batch 1 -> compute gradients, hold them
+micro-batch 2 -> add to the held gradients
+...
+micro-batch 16 -> add, then update the weights once
+```
+
+The GPU never holds more than 2 examples, but the weight update behaves as if it saw 32. This is how people fine-tune large models on modest hardware.
+
 :::key
 If the batch is too small, the loss jitters. If it is too large, you may get too few updates and underfit. When you raise batch size a lot, you often need to rethink the learning rate too.
 :::
@@ -47,6 +66,23 @@ If the batch is too small, the loss jitters. If it is too large, you may get too
 - Accumulate to an effective batch that keeps the loss reasonably smooth.
 - Keep the learning-rate schedule (warmup + decay) in place.
 - Re-check validation — batch size is a tool for stability and speed, not a trophy number.
+
+### Count your updates before you start
+
+This is the check people most often skip:
+
+```text
+dataset          = 4,000 examples
+effective batch  = 128
+epochs           = 3
+
+steps per epoch  = 4000 / 128  = 31
+total updates    = 31 x 3      = 93
+```
+
+Ninety-three updates is very few. The model has barely had a chance to move, which will look like “it didn't learn anything” even though nothing was technically broken. On a small dataset, a smaller effective batch (say 16, giving 750 updates) usually works far better.
+
+The same arithmetic run the other way protects you from the opposite mistake: a huge dataset with a tiny batch gives so many updates that the run takes days for no extra benefit.
 
 ## What goes wrong
 

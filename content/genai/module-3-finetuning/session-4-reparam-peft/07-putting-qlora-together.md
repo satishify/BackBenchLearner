@@ -19,6 +19,17 @@ Rough memory story for a **70B** model:
 
 The exact numbers depend on hardware and settings. The lesson is the composition: **4-bit weights + small adapters + controlled activations + controlled optimizer spikes**.
 
+:::note Analogy
+Fitting a large model onto one GPU is like fitting a household into a small van. No single trick does it — you win by attacking four different kinds of bulk at once.
+
+- **4-bit weights** are vacuum-packing the clothes: same items, a fraction of the volume.
+- **LoRA** means you only carry the new purchases, because the furniture is already at the destination.
+- **Gradient checkpointing** is not laying every item out to look at during the drive; you re-unpack what you need, when you need it.
+- **Paged optimizer** is having a small storage unit nearby for the moment when everything briefly has to come out of the van at once.
+
+Skip any one of them and the van door still will not close.
+:::
+
 What “about 5.2 bits/param” is trying to say:
 
 - Frozen base is stored near **4 bits** (NF4)

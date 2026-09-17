@@ -994,56 +994,56 @@ window.BBL.CURRICULUM = {
         "title": "3.1 Fine-Tuning Fundamentals",
         "quizId": "genai/module-3-finetuning/session-1-fundamentals",
         "hasQuiz": true,
-        "minutes": 19,
+        "minutes": 34,
         "lessons": [
           {
             "slug": "llm-fundamentals-and-why-finetune",
             "hash": "module-3-finetuning/session-1-fundamentals/llm-fundamentals-and-why-finetune",
             "path": "module-3-finetuning/session-1-fundamentals/llm-fundamentals-and-why-finetune.html",
             "label": "LLM Fundamentals and Why Fine-Tune",
-            "minutes": 3
+            "minutes": 6
           },
           {
             "slug": "prompt-vs-rag-vs-finetuning",
             "hash": "module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning",
             "path": "module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html",
             "label": "Prompt vs RAG vs Fine-Tuning",
-            "minutes": 3
+            "minutes": 6
           },
           {
             "slug": "finetuning-approaches",
             "hash": "module-3-finetuning/session-1-fundamentals/finetuning-approaches",
             "path": "module-3-finetuning/session-1-fundamentals/finetuning-approaches.html",
             "label": "Fine-Tuning Approaches",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "supervised-and-instruction-finetuning",
             "hash": "module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning",
             "path": "module-3-finetuning/session-1-fundamentals/supervised-and-instruction-finetuning.html",
             "label": "Supervised and Instruction Fine-Tuning",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "multitask-finetuning",
             "hash": "module-3-finetuning/session-1-fundamentals/multitask-finetuning",
             "path": "module-3-finetuning/session-1-fundamentals/multitask-finetuning.html",
             "label": "Multi-Task Fine-Tuning",
-            "minutes": 2
+            "minutes": 4
           },
           {
             "slug": "curriculum-finetuning",
             "hash": "module-3-finetuning/session-1-fundamentals/curriculum-finetuning",
             "path": "module-3-finetuning/session-1-fundamentals/curriculum-finetuning.html",
             "label": "Curriculum Fine-Tuning",
-            "minutes": 2
+            "minutes": 4
           },
           {
             "slug": "efficient-full-finetuning",
             "hash": "module-3-finetuning/session-1-fundamentals/efficient-full-finetuning",
             "path": "module-3-finetuning/session-1-fundamentals/efficient-full-finetuning.html",
             "label": "Making Full Fine-Tuning Efficient",
-            "minutes": 3
+            "minutes": 4
           }
         ]
       },
@@ -1053,56 +1053,56 @@ window.BBL.CURRICULUM = {
         "title": "3.2 Data Prep & Training Mechanisms",
         "quizId": "genai/module-3-finetuning/session-2-data-training",
         "hasQuiz": true,
-        "minutes": 26,
+        "minutes": 38,
         "lessons": [
           {
             "slug": "how-llms-learn",
             "hash": "module-3-finetuning/session-2-data-training/how-llms-learn",
             "path": "module-3-finetuning/session-2-data-training/how-llms-learn.html",
             "label": "How LLMs Learn",
-            "minutes": 4
+            "minutes": 6
           },
           {
             "slug": "training-instability",
             "hash": "module-3-finetuning/session-2-data-training/training-instability",
             "path": "module-3-finetuning/session-2-data-training/training-instability.html",
             "label": "Training Instability",
-            "minutes": 4
+            "minutes": 5
           },
           {
             "slug": "catastrophic-forgetting",
             "hash": "module-3-finetuning/session-2-data-training/catastrophic-forgetting",
             "path": "module-3-finetuning/session-2-data-training/catastrophic-forgetting.html",
             "label": "Catastrophic Forgetting",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "learning-rate-scheduling",
             "hash": "module-3-finetuning/session-2-data-training/learning-rate-scheduling",
             "path": "module-3-finetuning/session-2-data-training/learning-rate-scheduling.html",
             "label": "Learning Rate Scheduling",
-            "minutes": 4
+            "minutes": 6
           },
           {
             "slug": "choosing-batch-size",
             "hash": "module-3-finetuning/session-2-data-training/choosing-batch-size",
             "path": "module-3-finetuning/session-2-data-training/choosing-batch-size.html",
             "label": "Choosing Batch Size",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "preparing-the-data",
             "hash": "module-3-finetuning/session-2-data-training/preparing-the-data",
             "path": "module-3-finetuning/session-2-data-training/preparing-the-data.html",
             "label": "Preparing the Data",
-            "minutes": 4
+            "minutes": 6
           },
           {
             "slug": "reading-the-loss-curves",
             "hash": "module-3-finetuning/session-2-data-training/reading-the-loss-curves",
             "path": "module-3-finetuning/session-2-data-training/reading-the-loss-curves.html",
             "label": "Reading the Loss Curves",
-            "minutes": 2
+            "minutes": 4
           }
         ]
       },
@@ -1112,49 +1112,49 @@ window.BBL.CURRICULUM = {
         "title": "3.3 PEFT, Adapters & Soft Prompting",
         "quizId": "genai/module-3-finetuning/session-3-peft",
         "hasQuiz": true,
-        "minutes": 18,
+        "minutes": 25,
         "lessons": [
           {
             "slug": "why-peft-exists",
             "hash": "module-3-finetuning/session-3-peft/why-peft-exists",
             "path": "module-3-finetuning/session-3-peft/why-peft-exists.html",
             "label": "Why PEFT Exists",
-            "minutes": 3
+            "minutes": 5
           },
           {
             "slug": "additive-peft-adapters",
             "hash": "module-3-finetuning/session-3-peft/additive-peft-adapters",
             "path": "module-3-finetuning/session-3-peft/additive-peft-adapters.html",
             "label": "Additive PEFT: Adapters",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "soft-prompting",
             "hash": "module-3-finetuning/session-3-peft/soft-prompting",
             "path": "module-3-finetuning/session-3-peft/soft-prompting.html",
             "label": "Soft Prompting",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "prefix-tuning-and-prompt-tuning",
             "hash": "module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning",
             "path": "module-3-finetuning/session-3-peft/prefix-tuning-and-prompt-tuning.html",
             "label": "Prefix Tuning and Prompt Tuning",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "smarter-soft-prompts",
             "hash": "module-3-finetuning/session-3-peft/smarter-soft-prompts",
             "path": "module-3-finetuning/session-3-peft/smarter-soft-prompts.html",
             "label": "Smarter Soft Prompts",
-            "minutes": 3
+            "minutes": 4
           },
           {
             "slug": "choosing-a-peft-method",
             "hash": "module-3-finetuning/session-3-peft/choosing-a-peft-method",
             "path": "module-3-finetuning/session-3-peft/choosing-a-peft-method.html",
             "label": "Choosing a PEFT Method",
-            "minutes": 3
+            "minutes": 4
           }
         ]
       },
@@ -1164,7 +1164,7 @@ window.BBL.CURRICULUM = {
         "title": "3.4 Re-Parameterization PEFT (LoRA & QLoRA)",
         "quizId": "genai/module-3-finetuning/session-4-reparam-peft",
         "hasQuiz": true,
-        "minutes": 35,
+        "minutes": 36,
         "lessons": [
           {
             "slug": "why-reparameterization-peft",
@@ -1213,7 +1213,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together",
             "path": "module-3-finetuning/session-4-reparam-peft/putting-qlora-together.html",
             "label": "Putting QLoRA Together",
-            "minutes": 5
+            "minutes": 6
           }
         ]
       },
@@ -1223,7 +1223,7 @@ window.BBL.CURRICULUM = {
         "title": "3.5 Alignment: RLHF & DPO",
         "quizId": "genai/module-3-finetuning/session-5-alignment-rlhf-dpo",
         "hasQuiz": true,
-        "minutes": 28,
+        "minutes": 32,
         "lessons": [
           {
             "slug": "why-alignment-and-hhh",
@@ -1244,21 +1244,21 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/policy-gradient-and-advantage.html",
             "label": "Policy Gradient and Advantage",
-            "minutes": 4
+            "minutes": 5
           },
           {
             "slug": "ppo-kl-and-reward-hacking",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/ppo-kl-and-reward-hacking.html",
             "label": "PPO, KL Penalty, and Reward Hacking",
-            "minutes": 4
+            "minutes": 5
           },
           {
             "slug": "reward-models",
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/reward-models.html",
             "label": "Reward Models from Human Preferences",
-            "minutes": 4
+            "minutes": 5
           },
           {
             "slug": "rlhf-pipeline-and-instructgpt",
@@ -1272,7 +1272,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo",
             "path": "module-3-finetuning/session-5-alignment-rlhf-dpo/direct-preference-optimization-dpo.html",
             "label": "Direct Preference Optimization (DPO)",
-            "minutes": 4
+            "minutes": 5
           }
         ]
       },
@@ -1282,14 +1282,14 @@ window.BBL.CURRICULUM = {
         "title": "4.1 Vision-Language Model Architectures",
         "quizId": "genai/module-4-multimodal-agentic/vision-language",
         "hasQuiz": true,
-        "minutes": 41,
+        "minutes": 46,
         "lessons": [
           {
             "slug": "foundations-of-vlm",
             "hash": "module-4-multimodal-agentic/vision-language/foundations-of-vlm",
             "path": "module-4-multimodal-agentic/vision-language/foundations-of-vlm.html",
             "label": "Foundations of Vision-Language Models",
-            "minutes": 7
+            "minutes": 8
           },
           {
             "slug": "clip-contrastive-pretraining",
@@ -1303,7 +1303,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-4-multimodal-agentic/vision-language/llava-language-and-vision-assistant",
             "path": "module-4-multimodal-agentic/vision-language/llava-language-and-vision-assistant.html",
             "label": "LLaVA: Large Language and Vision Assistant",
-            "minutes": 6
+            "minutes": 8
           },
           {
             "slug": "qwen-vl-grounded-vlm",
@@ -1317,14 +1317,14 @@ window.BBL.CURRICULUM = {
             "hash": "module-4-multimodal-agentic/vision-language/sam-segment-anything",
             "path": "module-4-multimodal-agentic/vision-language/sam-segment-anything.html",
             "label": "SAM: Segment Anything Model",
-            "minutes": 7
+            "minutes": 8
           },
           {
             "slug": "vlm-synthesis-compare-and-compose",
             "hash": "module-4-multimodal-agentic/vision-language/vlm-synthesis-compare-and-compose",
             "path": "module-4-multimodal-agentic/vision-language/vlm-synthesis-compare-and-compose.html",
             "label": "Synthesis: Compare and Compose VLMs",
-            "minutes": 7
+            "minutes": 8
           }
         ]
       },
@@ -1334,14 +1334,14 @@ window.BBL.CURRICULUM = {
         "title": "4.2 Applications of Vision-Language Models",
         "quizId": "genai/module-4-multimodal-agentic/vlm-applications",
         "hasQuiz": true,
-        "minutes": 41,
+        "minutes": 43,
         "lessons": [
           {
             "slug": "sam-recap-promptable-segmentation",
             "hash": "module-4-multimodal-agentic/vlm-applications/sam-recap-promptable-segmentation",
             "path": "module-4-multimodal-agentic/vlm-applications/sam-recap-promptable-segmentation.html",
             "label": "SAM Recap: Promptable Segmentation",
-            "minutes": 7
+            "minutes": 8
           },
           {
             "slug": "image-understanding-and-captioning",
@@ -1355,7 +1355,7 @@ window.BBL.CURRICULUM = {
             "hash": "module-4-multimodal-agentic/vlm-applications/visual-question-answering",
             "path": "module-4-multimodal-agentic/vlm-applications/visual-question-answering.html",
             "label": "Visual Question Answering (VQA)",
-            "minutes": 6
+            "minutes": 7
           },
           {
             "slug": "document-intelligence",
@@ -1386,49 +1386,49 @@ window.BBL.CURRICULUM = {
         "title": "4.3 Multimodal RAG",
         "quizId": "genai/module-4-multimodal-agentic/multimodal-rag",
         "hasQuiz": true,
-        "minutes": 31,
+        "minutes": 44,
         "lessons": [
           {
             "slug": "retrieval-before-generation",
             "hash": "module-4-multimodal-agentic/multimodal-rag/retrieval-before-generation",
             "path": "module-4-multimodal-agentic/multimodal-rag/retrieval-before-generation.html",
             "label": "Multimodal RAG: Retrieve Before You Answer",
-            "minutes": 4
+            "minutes": 6
           },
           {
             "slug": "text-search",
             "hash": "module-4-multimodal-agentic/multimodal-rag/text-search",
             "path": "module-4-multimodal-agentic/multimodal-rag/text-search.html",
             "label": "Text Search: From Keywords to Meaning",
-            "minutes": 5
+            "minutes": 6
           },
           {
             "slug": "image-search",
             "hash": "module-4-multimodal-agentic/multimodal-rag/image-search",
             "path": "module-4-multimodal-agentic/multimodal-rag/image-search.html",
             "label": "Image Search with a Shared Vector Space",
-            "minutes": 4
+            "minutes": 6
           },
           {
             "slug": "multimodal-rag-for-documents",
             "hash": "module-4-multimodal-agentic/multimodal-rag/multimodal-rag-for-documents",
             "path": "module-4-multimodal-agentic/multimodal-rag/multimodal-rag-for-documents.html",
             "label": "Multimodal RAG for Real Documents",
-            "minutes": 5
+            "minutes": 7
           },
           {
             "slug": "colpali-and-late-interaction",
             "hash": "module-4-multimodal-agentic/multimodal-rag/colpali-and-late-interaction",
             "path": "module-4-multimodal-agentic/multimodal-rag/colpali-and-late-interaction.html",
             "label": "ColPali and Late-Interaction Retrieval",
-            "minutes": 6
+            "minutes": 9
           },
           {
             "slug": "design-evaluate-and-train",
             "hash": "module-4-multimodal-agentic/multimodal-rag/design-evaluate-and-train",
             "path": "module-4-multimodal-agentic/multimodal-rag/design-evaluate-and-train.html",
             "label": "Designing, Evaluating, and Training Multimodal RAG",
-            "minutes": 7
+            "minutes": 10
           }
         ]
       },
@@ -1438,28 +1438,28 @@ window.BBL.CURRICULUM = {
         "title": "4.4 Agentic AI Systems",
         "quizId": "genai/module-4-multimodal-agentic/agentic-systems",
         "hasQuiz": true,
-        "minutes": 3,
+        "minutes": 14,
         "lessons": [
           {
             "slug": "module-4-agentic-roadmap",
             "hash": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap",
             "path": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap.html",
             "label": "Module 4 Agentic Roadmap",
-            "minutes": 1
+            "minutes": 5
           },
           {
             "slug": "agents-vs-chatbots-recap",
             "hash": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap",
             "path": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html",
             "label": "Agents vs Chatbots (Recap)",
-            "minutes": 1
+            "minutes": 4
           },
           {
             "slug": "multimodal-agents-teaser",
             "hash": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser",
             "path": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html",
-            "label": "Multimodal Agents (Teaser)",
-            "minutes": 1
+            "label": "Multimodal Agents",
+            "minutes": 5
           }
         ]
       },

@@ -48,6 +48,12 @@
     <p>Is it safe and legal to park here?</p>
     </blockquote>
     <p>Now the model may need to inspect signs, road markings, vehicle position, time restrictions, and possibly outside knowledge.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Reading a sign is like reading a thermometer. Deciding whether you can park is like diagnosing a patient: you gather several readings, weigh them against rules you know, and reach a judgement that no single observation contained.</p>
+    <p>The danger is also the same as in medicine. If the first reading is wrong, the diagnosis built on it will be confidently wrong — and it will sound just as reasoned as a correct one. A model that misreads &quot;No Parking 8am-6pm&quot; as &quot;No Parking&quot; will then produce four flawless logical steps to the wrong answer.</p>
+    <p>That is why verification in visual reasoning focuses on the <em>observations</em>, not the argument. The argument is rarely where it breaks.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>The vision encoder supplies visual evidence. The LLM backbone and its reasoning training do most of the multi-step inference.</p>
@@ -269,9 +275,9 @@ else:
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

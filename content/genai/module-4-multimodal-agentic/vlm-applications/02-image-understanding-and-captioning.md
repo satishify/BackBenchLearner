@@ -21,6 +21,16 @@ flowchart LR
     NEED -->|One useful sentence| VLM[Generative VLM caption]
 ```
 
+:::note Analogy
+Ask two people to handle the same photograph.
+
+The first sorts it into a bin: *shoes*. Fast, consistent, and enough if all you need is to file it in the right place on the website.
+
+The second writes a line for the product page: *"Brown leather ankle boots with a low block heel and side zip."* Slower, more expensive, and the only option when a customer needs to know what they are buying.
+
+Both are "understanding the image." Which one you need is decided by what happens next — a filter, or a sentence someone reads.
+:::
+
 :::key
 Rule of thumb: need a sentence → generative VLM. Need only a tag → contrastive model such as CLIP.
 :::

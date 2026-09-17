@@ -44,6 +44,13 @@
     <li>The <strong>reward model</strong> is the critic that scores them</li>
     </ul>
     <p>During reward-model training, the <strong>chosen</strong> answer should get a higher score than the <strong>rejected</strong> answer for the same prompt.</p>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Judging a photography competition makes this obvious.</p>
+    <p>Ask a judge to score a single photo out of 10 and you get unreliable answers. Is it a 7 or an 8? Their answer drifts over the afternoon, and two judges rarely agree on the number.</p>
+    <p>Ask the same judge &quot;which of these two is better?&quot; and the answer comes instantly and consistently. People are good at comparing and bad at scoring in the abstract.</p>
+    <p>The reward model&#x27;s entire job is to convert thousands of those easy comparisons into the hard number that training actually needs.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>Pairwise preferences are easier to collect than exact scores — that is why reward models train on chosen vs rejected pairs.</p>
@@ -174,9 +181,9 @@ loss.backward()</code></pre>
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

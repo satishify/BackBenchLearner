@@ -18,6 +18,14 @@ For the same street image:
 
 Everything unrelated to the question can be ignored.
 
+:::note Analogy
+Captioning is a tour guide describing a room: "a bright living room with a blue sofa and a window overlooking the garden." Useful, general, and decided entirely by the guide.
+
+VQA is a detective in the same room being asked "was the window forced?" The detective ignores the sofa and the light completely and goes straight to the window frame.
+
+Same room, same eyes — but the question decides what counts as evidence. This is why a VQA prompt should be specific: a vague question sends the detective wandering.
+:::
+
 :::key
 Captioning describes generally. VQA finds the image evidence needed for one particular question.
 :::

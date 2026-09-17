@@ -20,6 +20,21 @@ It helps with:
 - Keeping more of the general knowledge already in the base model
 - Reducing **catastrophic forgetting** when tasks are narrow or many
 
+:::note Analogy
+A large hospital already employs excellent, fully trained doctors. When a new specialist procedure arrives, you do not send every doctor back to medical school. You run a short course for a handful of people and keep everything else exactly as it was.
+
+PEFT is that short course. The expensive general training stays untouched; you add a small, specific capability on top — and if it turns out badly, you drop the course rather than rebuilding the hospital.
+:::
+
+The saving is not subtle. For a 7B model:
+
+| Approach | Trainable parameters | Saved file per task |
+| --- | --- | --- |
+| Full fine-tuning | ~7,000,000,000 | ~14 GB |
+| LoRA-style PEFT | ~4,000,000 | ~16 MB |
+
+That is roughly 0.06% of the parameters. The practical consequence is what makes PEFT popular: storing 50 fine-tuned variants of a full model means 700 GB, while 50 PEFT adapters fit comfortably on a laptop.
+
 :::key
 PEFT = adapt a big pretrained model by changing only a small part of it.
 :::
@@ -33,6 +48,16 @@ Bigger models can be more capable — but full fine-tuning them gets “astronom
 ### Multi-task fine-tuning pain
 
 If you fully fine-tune one shared model for task after task, later tasks can wipe earlier skills (forgetting). PEFT lets many tasks **share one frozen backbone** and keep only tiny task-specific pieces.
+
+```mermaid
+flowchart TB
+    BASE[One frozen base model<br/>7B parameters, loaded once]
+    BASE --> A1[Adapter: legal summaries<br/>16 MB]
+    BASE --> A2[Adapter: support replies<br/>16 MB]
+    BASE --> A3[Adapter: code review<br/>16 MB]
+```
+
+Because the base model never changes, training the code-review adapter cannot damage the legal one. With full fine-tuning those three jobs would be three separate 14 GB models, each at risk of forgetting whatever it was not trained on most recently.
 
 ### PEFT taxonomy
 

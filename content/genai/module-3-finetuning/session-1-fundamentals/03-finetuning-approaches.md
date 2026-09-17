@@ -15,6 +15,16 @@ description: "Unsupervised, supervised, and safety/alignment fine-tuning — plu
 | **Full fine-tuning** | Almost every weight can update |
 | **PEFT** | Train only a small part (adapters, LoRA, soft prompts, …) |
 
+:::note Analogy
+Think about how a person learns a new job.
+
+- **Unsupervised fine-tuning** is sitting in the office for a month, reading old case files and absorbing the vocabulary. Nobody grades you, but you start to *sound* like the team.
+- **Supervised fine-tuning** is working through solved examples: here is the customer's question, here is the approved answer. You copy the pattern until it becomes natural.
+- **Alignment** is the code of conduct: what you must refuse, what you must escalate, how you behave when you are unsure.
+
+The first two build ability. The third decides how that ability is used.
+:::
+
 :::key
 Full fine-tuning is the most powerful and most expensive. PEFT is often the middle ground between prompting and updating everything.
 :::
@@ -25,9 +35,27 @@ Full fine-tuning is the most powerful and most expensive. PEFT is often the midd
 
 Feed lots of domain text (legal corpus, codebase, medical notes) so the model absorbs domain language. There may be no “instruction → answer” labels. Useful for domain familiarity; not the same as teaching a chat format.
 
+The data is just raw text, with no question attached:
+
+```text
+The insured party shall indemnify the underwriter against any
+loss arising from misrepresentation of material fact...
+```
+
+After enough of this, the model stops being surprised by words like *indemnify* and *underwriter*, and predicts legal phrasing more naturally. What it has **not** learned is how to answer your questions — that needs the next approach.
+
 ### Supervised fine-tuning
 
 You provide clear examples: given this input, produce that output. This is the workhorse for task adaptation and instruction-style models (next chapter goes deeper).
+
+Here the data always comes in pairs:
+
+```json
+{"input": "Customer says the parcel never arrived. Draft a reply.",
+ "output": "Hi Sam, I'm sorry your parcel hasn't arrived..."}
+```
+
+The model is graded on how close its answer is to the approved one, so it learns the task, not just the vocabulary.
 
 ### Safety / alignment fine-tuning
 
@@ -55,6 +83,24 @@ PEFT families you will meet later in Module 3:
 | **Soft prompting** | Learn virtual prompt tokens |
 
 Use PEFT when you want most of the benefit of adaptation without paying full fine-tune cost.
+
+:::note Analogy
+Full fine-tuning is renovating the whole house — every room, every wire. PEFT is fitting a new set of light switches: the building is untouched, but the behaviour you notice every day changes.
+
+And because the house itself is unchanged, you can keep several sets of switches and swap them per customer. That is exactly how one base model serves many fine-tuned variants.
+:::
+
+### Which one, in practice
+
+| Your situation | Sensible approach |
+| --- | --- |
+| The model does not know your domain's *language* | Unsupervised / continued pretraining |
+| You have labelled input→output examples | SFT |
+| The model is capable but occasionally unsafe or unhelpful | Alignment |
+| You have lots of data, budget, and a big behaviour change | Full fine-tuning |
+| You have modest data and want low cost and easy rollback | PEFT |
+
+Most teams in practice land on **SFT with PEFT** — enough to change behaviour, cheap enough to repeat when the requirements change.
 
 ## What goes wrong
 

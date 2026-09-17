@@ -37,14 +37,46 @@
       <div class="lesson-meta" id="lesson-meta"></div>
 
     <p>A good multimodal RAG system is not simply “a VLM plus a vector database.”</p>
-    <p>You must decide:</p>
-    <ul>
-    <li>What evidence to retrieve</li>
-    <li>How to store and combine it</li>
-    <li>How the model should reason over it</li>
-    <li>How to train the components</li>
-    <li>How to detect failure</li>
-    </ul>
+    <h2 id="intuition">Intuition</h2>
+    <h3 id="why-the-pieces-do-not-add-up-on-their-own">Why the pieces do not add up on their own</h3>
+    <p>The previous five lessons each gave you a working component: text search, image search, document retrieval, late interaction. It is reasonable to assume that assembling them produces a working system.</p>
+    <p>It usually does not, and the reason is worth understanding before any of the design advice below makes sense.</p>
+    <p>Each component is individually correct and individually blind. The text retriever returns good passages without knowing whether the answer was actually in a chart. The VLM writes a confident answer without knowing whether the page it was handed was the right one. Nothing in the pipeline is responsible for the thing you actually care about: <strong>was this answer true, and did the evidence support it?</strong></p>
+    <p>So the job of this lesson is the part no single component does — deciding what to retrieve, how to combine it, and how to find out when the whole thing is quietly wrong.</p>
+    <h3 id="the-five-decisions">The five decisions</h3>
+    <table>
+      <thead><tr>
+        <th>Decision</th>
+        <th>The question it answers</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>What to retrieve</strong></td>
+          <td>Does the answer live in text, an image, a page, or a video frame?</td>
+        </tr>
+        <tr>
+          <td><strong>How to combine</strong></td>
+          <td>When two retrievers disagree, which evidence wins?</td>
+        </tr>
+        <tr>
+          <td><strong>How to reason</strong></td>
+          <td>Should the model answer in one step, or search, check, and then answer?</td>
+        </tr>
+        <tr>
+          <td><strong>How to train</strong></td>
+          <td>Do the retriever and generator learn separately or together?</td>
+        </tr>
+        <tr>
+          <td><strong>How to detect failure</strong></td>
+          <td>When the answer is wrong, which component caused it?</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The last one is the one teams skip, and it is the one that determines whether you can improve the system at all. A pipeline you cannot diagnose is a pipeline you can only rebuild.</p>
+    <aside class="callout callout-key">
+      <p class="callout-title">Key idea</p>
+    <p>Retrieval and generation fail for different reasons and need different fixes. If you only measure the final answer, you cannot tell which one to repair.</p>
+    </aside>
     <h2 id="what-can-be-retrieved">What can be retrieved?</h2>
     <table>
       <thead><tr>
@@ -161,6 +193,12 @@ flowchart LR
     <li>Does the system abstain when evidence is missing?</li>
     <li>Can it combine multiple pages correctly?</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>Judging a RAG system by retrieval scores alone is like judging a restaurant by whether the right ingredients arrived.</p>
+    <p>Good delivery is necessary — you cannot cook the dish without it. But nobody eats the ingredients. If the kitchen then burns them or serves the wrong plate, the delivery record still looks perfect while the customer is unhappy.</p>
+    <p>So you measure twice: did the right evidence arrive, and did the answer actually use it. When quality drops, that split immediately tells you whether to fix the supplier or the kitchen.</p>
+    </aside>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>High Recall@5 does not guarantee a faithful answer. A correct page can be retrieved and then misunderstood or ignored.</p>
@@ -222,6 +260,15 @@ flowchart LR
     <li>Abstain or route to review if evidence conflicts.</li>
     </ol>
     <p>This design keeps both exact text and visual evidence instead of forcing one representation to do every job.</p>
+    <h2 id="what-goes-wrong">What goes wrong</h2>
+    <ul>
+    <li><strong>Measuring only the final answer.</strong> When accuracy drops you will have no idea whether retrieval missed the page or the generator misread it, so every fix is guesswork.</li>
+    <li><strong>Building the most sophisticated pipeline available.</strong> Vision-space retrieval and late interaction cost real money. If your documents are clean text, you are paying for detail that was never at risk.</li>
+    <li><strong>Trusting citations without checking them.</strong> A model can cite page 7 while making a claim page 7 does not support. Citations look like evidence and are not, until someone verifies a sample.</li>
+    <li><strong>Never letting the system say &quot;not found&quot;.</strong> Forcing an answer on every question guarantees confident fabrication on the questions your corpus cannot answer.</li>
+    <li><strong>Doing arithmetic in free text.</strong> If the answer involves a calculation, extract the numbers and compute them in code. Models are good at reading the chart and unreliable at the maths that follows.</li>
+    <li><strong>Evaluating only on tidy documents.</strong> Real corpora contain scans, rotations, multiple languages, and pages that answer nothing. A test set without them predicts nothing about production.</li>
+    </ul>
     <h2 id="final-recap">Final recap</h2>
     <ul>
     <li>Text search finds passages by words, meaning, or both.</li>
@@ -272,9 +319,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>

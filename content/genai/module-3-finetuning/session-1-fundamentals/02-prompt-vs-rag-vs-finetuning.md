@@ -13,6 +13,16 @@ Pick the lever that matches the bug.
 
 ## Intuition
 
+:::note Analogy
+Imagine a capable new employee who joined last week.
+
+- **Prompting** is leaving a sticky note on their desk: “reply in three bullet points, keep it polite.” Instant, free, but you must write it every time — and if the note is vague, the work drifts.
+- **RAG** is handing them the company handbook and saying “look it up before answering.” They do not need to memorise anything, and when the handbook is updated, their answers update too.
+- **Fine-tuning** is sending them on a three-week training course. Expensive and slow, but afterwards the behaviour is simply *how they work* — no sticky note required.
+
+Nobody sends an employee on a training course to learn today's cafeteria menu. That belongs on the noticeboard (RAG). But you do train them on how your company writes to customers, because that should never change from one email to the next.
+:::
+
 | Method | What changes | Best when | Main trade-off |
 | --- | --- | --- | --- |
 | **Prompting** | Only the input instruction | Fast experiments, low cost, simple tasks | Can be inconsistent; wording-sensitive |
@@ -33,6 +43,39 @@ If knowledge changes every week, start with RAG. If behavior must stay stable ac
 4. Is this one task or many related tasks? Related tasks can share one multi-task fine-tune later.
 5. Is the base model already almost right? If yes, train less (freeze more / lighter methods).
 
+```mermaid
+flowchart TB
+    START[The model is not doing what I want] --> Q1{Is the problem<br/>missing facts?}
+    Q1 -->|Yes| RAG[Use RAG<br/>retrieve the documents]
+    Q1 -->|No| Q2{Is the problem<br/>unclear instructions?}
+    Q2 -->|Yes| PROMPT[Fix the prompt first]
+    Q2 -->|No| Q3{Is the behaviour<br/>needed every time?}
+    Q3 -->|No| PROMPT
+    Q3 -->|Yes| FT[Fine-tune]
+```
+
+### Three ways the same bug looks
+
+Suppose a banking assistant gives a bad answer. The cause decides the cure:
+
+| What actually went wrong | Symptom | Right fix |
+| --- | --- | --- |
+| It did not know the new overdraft fee | Confidently quotes last year's fee | **RAG** — the fee lives in a document, not in the weights |
+| It answered in a paragraph when you needed JSON | Correct facts, unusable format | **Prompting** — say the format explicitly |
+| It writes JSON correctly 9 times out of 10 | Occasional format break at scale | **Fine-tuning** — make the format a habit |
+
+Notice that only the third row needs training. The first two are cheaper and faster to fix, which is why they come first.
+
+### Cost and speed, roughly
+
+| Method | Setup time | Cost per change | How fast you can undo it |
+| --- | --- | --- | --- |
+| Prompting | Minutes | Nearly zero | Instantly |
+| RAG | Days | Low | Update the documents |
+| Fine-tuning | Days to weeks | High (GPU time + data work) | Retrain or roll back the model |
+
+This is the honest reason prompting and RAG are tried first: when you are wrong, you find out cheaply.
+
 ### Split workflows are normal
 
 One product can use **both**:
@@ -41,6 +84,8 @@ One product can use **both**:
 - Permanent email tone → fine-tuning
 
 You do not have to force one tool for every workflow.
+
+A support assistant might combine all three in a single reply: a **prompt** sets the tone and the answer format, **RAG** pulls today's refund policy, and a **fine-tuned** model makes sure the reply always ends with a structured summary block for the ticketing system.
 
 ### Where knowledge should live
 

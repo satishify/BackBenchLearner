@@ -50,6 +50,32 @@
     <li>Keeping more of the general knowledge already in the base model</li>
     <li>Reducing <strong>catastrophic forgetting</strong> when tasks are narrow or many</li>
     </ul>
+    <aside class="callout callout-note">
+      <p class="callout-title">Analogy</p>
+    <p>A large hospital already employs excellent, fully trained doctors. When a new specialist procedure arrives, you do not send every doctor back to medical school. You run a short course for a handful of people and keep everything else exactly as it was.</p>
+    <p>PEFT is that short course. The expensive general training stays untouched; you add a small, specific capability on top — and if it turns out badly, you drop the course rather than rebuilding the hospital.</p>
+    </aside>
+    <p>The saving is not subtle. For a 7B model:</p>
+    <table>
+      <thead><tr>
+        <th>Approach</th>
+        <th>Trainable parameters</th>
+        <th>Saved file per task</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td>Full fine-tuning</td>
+          <td>~7,000,000,000</td>
+          <td>~14 GB</td>
+        </tr>
+        <tr>
+          <td>LoRA-style PEFT</td>
+          <td>~4,000,000</td>
+          <td>~16 MB</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>That is roughly 0.06% of the parameters. The practical consequence is what makes PEFT popular: storing 50 fine-tuned variants of a full model means 700 GB, while 50 PEFT adapters fit comfortably on a laptop.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
     <p>PEFT = adapt a big pretrained model by changing only a small part of it.</p>
@@ -59,6 +85,16 @@
     <p>Bigger models can be more capable — but full fine-tuning them gets “astronomically costly.” You may need many high-end GPUs just to update all weights. PEFT is the practical escape hatch: keep the big brain, train a small skill module.</p>
     <h3 id="multi-task-fine-tuning-pain">Multi-task fine-tuning pain</h3>
     <p>If you fully fine-tune one shared model for task after task, later tasks can wipe earlier skills (forgetting). PEFT lets many tasks <strong>share one frozen backbone</strong> and keep only tiny task-specific pieces.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart TB
+    BASE[One frozen base model<br/>7B parameters, loaded once]
+    BASE --> A1[Adapter: legal summaries<br/>16 MB]
+    BASE --> A2[Adapter: support replies<br/>16 MB]
+    BASE --> A3[Adapter: code review<br/>16 MB]
+      </div>
+    </div>
+    <p>Because the base model never changes, training the code-review adapter cannot damage the legal one. With full fine-tuning those three jobs would be three separate 14 GB models, each at risk of forgetting whatever it was not trained on most recently.</p>
     <h3 id="peft-taxonomy">PEFT taxonomy</h3>
     <table>
       <thead><tr>
@@ -133,9 +169,9 @@
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260915a"></script>
-  <script src="../../../scripts/progress.js?v=20260915a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260915a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260915a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
+  <script src="../../../scripts/progress.js?v=20260917a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
 </body>
 </html>
