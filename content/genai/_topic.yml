@@ -64,7 +64,7 @@ modules:
       - id: multimodal-rag
         title: "4.3 Multimodal RAG"
       - id: agentic-systems
-        title: "4.4 Agentic AI Systems"
+        title: "4.4 RAG to Assistants and Agents"
   - id: module-5-deployment-safety
     title: "Module 5 - Deployment, Optimisation & AI Safety"
     blurb: "Turning a prototype into something you can operate."

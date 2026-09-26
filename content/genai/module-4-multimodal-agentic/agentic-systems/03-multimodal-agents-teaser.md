@@ -1,86 +1,170 @@
 ---
-title: "Multimodal Agents"
-description: "Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw."
+title: "Assistants, Context, Tools, and MCP"
+description: "Add conversation state and external capabilities, understand who really executes a tool call, and see how MCP standardises tool discovery."
 ---
 
-A **multimodal agent** is an agent whose inputs are not only text. It can look at a screenshot, a scanned form, or a photo, and then take action based on what it saw.
+RAG gives an answer from external knowledge. An **assistant** carries that knowledge through a conversation. A **tool-using assistant** can also request actions from the outside world.
 
-This chapter is where Module 4 comes together: the eyes from 4.1 and 4.2, the retrieval from 4.3, and the agent loop from 4.4.
+These are separate upgrades: knowledge, context, and capabilities.
 
 ## Intuition
 
-Picture a support engineer handling a ticket that arrives as a screenshot of an error dialog.
+### Context makes follow-up questions possible
 
-They read the error code off the image, search the internal runbook for that code, find the documented fix, and either apply it or hand it to someone who can. Four steps, two of which need eyes.
+Consider this conversation:
 
-A text-only agent cannot start this task at all — the first piece of information is a picture. A vision model alone can read the dialog but cannot then go and find the runbook. You need both.
+> **User:** I am travelling to Paris next week for four days. What does the policy allow?
+> **Assistant:** Economy class, and booking must be at least seven days ahead. [§4.2]
+> **User:** And the hotel?
+> **Assistant:** Up to ₹8,000 per night in Paris. [§4.7]
+> **User:** Find me one under that.
+
+The phrase **"the hotel"** means a hotel in Paris, for four nights, below ₹8,000 per night. None of that appears in the last sentence. It comes from earlier turns.
+
+Turn three is impossible without turn one. That is why context is **state**, not merely "a longer prompt."
+
+### Context still cannot search a hotel
+
+Even after remembering the full conversation, the assistant has no live hotel inventory. Memory tells it *what* to search for. A tool gives it the capability to perform the search.
 
 :::note Analogy
-Think of vision and tools as eyes and hands.
+Knowledge, context, and tools are like three things a human assistant needs.
 
-Eyes without hands gives you a very good describer: it tells you precisely what the error says and can do nothing about it. Hands without eyes gives you a capable worker who cannot see the problem and has to be told what is wrong in words first.
+- The **policy binder** tells them the rules.
+- Their **notebook** remembers what you already discussed.
+- Their **phone and booking system** let them check what is available.
 
-Most real work — reading a form and filing it, spotting a defect and flagging it, seeing an error and fixing it — needs both in the same loop, because what the eyes find decides what the hands do next.
+Giving them a bigger notebook does not create a phone. Giving them a phone does not teach the company policy. A reliable assistant needs the right combination.
 :::
 
-## How it works
+## Three layers
 
-### A worked example
+| Layer | What it adds | Paris example |
+| --- | --- | --- |
+| **Knowledge** | Retrieval over trusted documents | Finds cabin and hotel rules |
+| **Context** | State carried across turns | Remembers Paris, dates, and budget |
+| **Capabilities** | Tools that reach outside systems | Searches live flights and hotels |
 
-The ticket is a screenshot. The agent runs the ordinary loop, but the first perception step is visual:
+## How tool calling actually works
+
+The model never directly touches the flight API.
+
+It emits a structured request:
+
+```json
+{
+  "name": "search_flights",
+  "arguments": {
+    "origin": "BOM",
+    "dest": "CDG",
+    "date": "2026-08-22",
+    "cabin": "economy"
+  }
+}
+```
+
+Your application code validates the request, runs the API call using real credentials, and returns the result to the model.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant M as Model
+    participant H as Your application
+    participant F as Flight API
+    U->>M: Find me a flight to Paris
+    M->>H: search_flights(arguments)
+    H->>H: Validate tool and arguments
+    H->>F: Execute API request
+    F-->>H: Live fares and availability
+    H-->>M: Tool result
+    M-->>U: Explain the options
+```
+
+The `cabin: economy` argument is important. The user did not say "economy." The model filled it from the retrieved policy. Knowledge is now shaping an action.
+
+:::key
+The model proposes a tool call; your application validates and executes it. The model never receives raw authority or secret API credentials.
+:::
+
+## The problem with hand-written tool schemas
+
+Without a standard interface, developers describe every tool inside the application:
+
+```python
+tools = [{
+    "name": "search_flights",
+    "description": "Search current flight fares",
+    "parameters": {
+        "origin": "string",
+        "dest": "string",
+        "date": "string",
+        "cabin": ["economy", "business"]
+    }
+}]
+```
+
+For one tool this is manageable. With dozens of changing tools:
+
+- Schemas are copied into several agents.
+- A field change requires code and prompt updates.
+- Adding a tool usually means redeploying the application.
+- Each integration invents its own connection style.
+
+## MCP: one standard interface
+
+The **Model Context Protocol (MCP)** makes tools and resources discoverable through a common interface.
 
 ```mermaid
 flowchart LR
-    S[Screenshot of error dialog] --> V[VLM reads the image]
-    V --> E["Error code: DB-5012"]
-    E --> R[Search runbook for DB-5012]
-    R --> F[Documented fix found]
-    F --> H{Risky change?}
-    H -->|Yes| A[Ask a human to approve]
-    H -->|No| X[Apply fix]
-    A --> X
-    X --> D[Report what was done]
+    A[Agent<br/>MCP client] -->|list_tools| F[Flights MCP server]
+    A -->|list_tools| C[Calendar MCP server]
+    A -->|read resources| P[Policy MCP server]
+    A -->|call_tool| F
+    A -->|call_tool| C
 ```
 
-| Step | Which part of Module 4 does it | Why it is needed |
-| --- | --- | --- |
-| Read the dialog | VLM with OCR strength, chapter 4.1–4.2 | The input is pixels, not text |
-| Find the runbook page | Multimodal retrieval, chapter 4.3 | The fix lives in a document, not the model |
-| Decide and act | Agent loop, chapter 4.4 | Something has to actually change |
-| Ask before risky steps | Human-in-the-loop | Wrong actions cost more than wrong answers |
+The server owns the schemas. The client asks what is available at runtime:
 
-### The building blocks
+```python
+session = connect("travel.corp/mcp")
+tools = session.list_tools()
 
-- **A vision model or vision tool** to answer "what is on this screen?" Prefer a grounded, high-resolution model when the evidence is small text, as in chapter 4.2.
-- **Retrieval** so the agent can look things up rather than recalling them from training, using the multimodal RAG ideas from chapter 4.3.
-- **Text tools** for search, tickets, code, and APIs.
-- **Policies** stating plainly which actions the agent may take on its own and which need a person to approve.
+result = session.call_tool(
+    "search_flights",
+    {"origin": "BOM", "dest": "CDG"}
+)
+```
 
-### Why grounding matters more here
+Add a new tool to the server and it appears during discovery. The agent application does not need a hand-copied schema or a redeploy simply to learn that the tool exists.
 
-In a text agent, a misread means the model quotes the wrong sentence. In a multimodal agent, a misread means the model acts on something it never actually saw.
+### What MCP changes — and what it does not
 
-If the VLM reads `DB-5012` as `DB-5Ol2`, every step afterwards is confidently wrong — the same compounding error described in the visual reasoning lesson, except now it ends in an action rather than a sentence.
+MCP standardises **how capabilities are exposed and called**. It does not decide:
 
-Practical consequence: have the agent **state what it saw** before acting on it. A visible line like *"Read error code DB-5012 from the dialog"* costs nothing and makes the one failure that matters reviewable.
+- Whether a tool is safe for this user.
+- Whether arguments satisfy company policy.
+- Whether a write action needs approval.
+- Which tool should be called next.
 
-:::key
-Multimodal agents use eyes (vision) plus hands (tools). The risk is that a misread image turns into a wrong action, so make the visual observation visible before the agent acts on it.
-:::
+Those remain responsibilities of your application and agent design.
 
 ## What goes wrong
 
-- Trusting an OCR read of a code, amount, or name without showing it for review.
-- Using a low-resolution vision path for small text, then wondering why the agent acts on the wrong value.
-- Letting the agent both read the screen and take irreversible action with no approval step.
-- Expecting the model to recall internal documentation instead of retrieving it.
+- Saying "the model called the API" and hiding the application code that actually owns execution and security.
+- Trusting model-generated arguments without schema and business-rule validation.
+- Giving a tool secrets in the prompt instead of keeping credentials in the host application.
+- Treating MCP as a safety layer; it standardises connections, not permissions or policy.
+- Returning huge tool results that fill the context window.
 
 ## One-line summary
 
-A multimodal agent reads images, retrieves what it needs, and acts — so the visual observation must be exposed and checked before it becomes an action.
+Context remembers the thread, tools reach the outside world, your code executes every action, and MCP provides a standard way to discover and call capabilities.
 
 ## Key terms
 
-- **Multimodal agent** — An agent that takes in non-text inputs such as images or scans.
-- **Grounding** — Tying actions to observed evidence from an image, document, or API.
-- **Human-in-the-loop** — A required approval point before a risky action.
+- **Conversation state** — Information carried across turns in one thread.
+- **Tool call** — A structured action request emitted by the model.
+- **Host application** — Code that validates and executes tool requests.
+- **MCP** — Model Context Protocol, a standard interface for tools and resources.
+- **Tool discovery** — Asking a connected server which capabilities are available.
+- **Resource** — Readable context, such as policy documents, exposed by an MCP server.

@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Revision for VLM architectures, applications, multimodal retrieval, and model composition.">
+  <meta name="description" content="Revision for VLM architectures, applications, multimodal retrieval, agents, state, tools, and orchestration.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
-  <meta property="og:title" content="Module 4 - VLM architectures, applications, and multimodal RAG revision | Cheat Sheet | BackbenchLearner">
-  <meta property="og:description" content="Revision for VLM architectures, applications, multimodal retrieval, and model composition.">
+  <meta property="og:title" content="Module 4 - VLM, multimodal RAG, and agentic AI revision | Cheat Sheet | BackbenchLearner">
+  <meta property="og:description" content="Revision for VLM architectures, applications, multimodal retrieval, agents, state, tools, and orchestration.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/cheatsheets/genai/module-4-multimodal-agentic.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
-  <title>Module 4 - VLM architectures, applications, and multimodal RAG revision | Cheat Sheet | BackbenchLearner</title>
+  <title>Module 4 - VLM, multimodal RAG, and agentic AI revision | Cheat Sheet | BackbenchLearner</title>
   <link rel="icon" href="../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,8 +39,8 @@
 <body class="cheatsheet-page" data-topic="genai" data-cheatsheet="genai/module-4-multimodal-agentic">
   <div class="wrapper">
     <nav><a href="../../index.html#cheatsheet">&larr; Cheat sheets</a></nav>
-    <h1>Module 4 - VLM architectures, applications, and multimodal RAG revision</h1>
-    <p class="cheat-banner">Revision guide · ~30 min · dense bullets, not full lessons</p>
+    <h1>Module 4 - VLM, multimodal RAG, and agentic AI revision</h1>
+    <p class="cheat-banner">Revision guide · ~40 min · dense bullets, not full lessons</p>
 
     <p>Chapter <strong>4.1</strong> follows the lecture map: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.</p>
     <h2 id="foundations">Foundations</h2>
@@ -176,6 +176,104 @@
         </tr>
       </tbody>
     </table>
+    <h2 id="44-rag-to-assistants-and-agents">4.4 RAG to assistants and agents</h2>
+    <h3 id="capability-ladder">Capability ladder</h3>
+    <table>
+      <thead><tr>
+        <th>Stage</th>
+        <th>What is added</th>
+        <th>Travel example</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>LLM</strong></td>
+          <td>Language generation</td>
+          <td>Writes a plausible itinerary</td>
+        </tr>
+        <tr>
+          <td><strong>RAG</strong></td>
+          <td>External knowledge</td>
+          <td>Retrieves company policy</td>
+        </tr>
+        <tr>
+          <td><strong>Assistant</strong></td>
+          <td>Conversation context</td>
+          <td>Remembers dates and budget</td>
+        </tr>
+        <tr>
+          <td><strong>Tool-using assistant</strong></td>
+          <td>External capabilities</td>
+          <td>Calls flight and hotel APIs</td>
+        </tr>
+        <tr>
+          <td><strong>Agent</strong></td>
+          <td>Runtime decisions</td>
+          <td>Replans after a failed policy check</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-agent</strong></td>
+          <td>Delegation</td>
+          <td>Splits flights, hotels, meetings, expenses</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+    <li><strong>RAG answers; agents finish.</strong> Use RAG for grounded questions and an agent for a goal whose steps depend on results.</li>
+    <li>A model only <strong>requests</strong> a tool call. Application code validates and executes it.</li>
+    <li><strong>MCP</strong> standardises tool/resource discovery and calls; it does not replace permissions or safety checks.</li>
+    </ul>
+    <h3 id="workflow-vs-agent">Workflow vs agent</h3>
+    <ul>
+    <li><strong>Workflow</strong> — developer fixes the order at build time.</li>
+    <li><strong>Agent</strong> — model chooses the next step at runtime.</li>
+    <li>Main test: if the full flowchart can be drawn before the request arrives, start with a workflow.</li>
+    <li>Practical systems combine both: fixed validation and approval around one genuinely dynamic agent step.</li>
+    </ul>
+    <h3 id="agent-loop">Agent loop</h3>
+    <p><code>think → act → observe → remember → repeat</code></p>
+    <ul>
+    <li>Must be <strong>bounded</strong> by steps, time, and cost.</li>
+    <li>Must be <strong>observable</strong> through replayable traces.</li>
+    <li>Must be <strong>recoverable</strong> when a tool returns an error.</li>
+    <li>A failed tool or policy check is an observation that may trigger replanning.</li>
+    </ul>
+    <h3 id="agent-patterns">Agent patterns</h3>
+    <table>
+      <thead><tr>
+        <th>Pattern</th>
+        <th>Shape</th>
+        <th>Good fit</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>ReAct</strong></td>
+          <td>Think, act, observe, repeat</td>
+          <td>Short tasks driven by latest result</td>
+        </tr>
+        <tr>
+          <td><strong>Plan-and-execute</strong></td>
+          <td>Plan first, execute, replan failures</td>
+          <td>Long tasks and parallel substeps</td>
+        </tr>
+        <tr>
+          <td><strong>Reflection</strong></td>
+          <td>Draft, critique, revise</td>
+          <td>Reports, code, and final write-ups</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Context cost grows because each model call often resends the goal, tools, and earlier history. Truncate observations, summarise old decisions, and keep structured task state outside the transcript.</p>
+    <h3 id="retrieval-state-and-multiple-agents">Retrieval, state, and multiple agents</h3>
+    <ul>
+    <li>Inside an agent, retrieval is a <strong>tool</strong> that can be called, skipped, repeated, or given a rewritten query.</li>
+    <li><strong>Conversation state</strong> lives for one thread.</li>
+    <li><strong>Task state</strong> lives for one run and tracks what is done or pending.</li>
+    <li><strong>Long-term memory</strong> survives across sessions and should contain only durable facts.</li>
+    <li>Start with one agent. Split into specialists only when tool overload, context crowding, or separate failure domains are measured problems.</li>
+    <li>Handoffs should be typed artifacts with amounts, dates, status, and source references.</li>
+    </ul>
+    <h3 id="framework-rule">Framework rule</h3>
+    <p>Choose by your technology stack and operational needs, not hype. Keep goals, tool policies, state, traces, approvals, and evaluation portable outside any one SDK.</p>
     <h2 id="20-minute-drill">20-minute drill</h2>
     <ol>
     <li>Walk through ViT patch count for 224×224 and 16×16 patches.</li>
@@ -188,6 +286,13 @@
     <li>Sketch text query → page retrieval → VLM answer → page citation.</li>
     <li>Explain late interaction without using the formula.</li>
     <li>Diagnose separately: the right page was retrieved, but the answer invented a number.</li>
+    <li>Explain the six stages from LLM to multi-agent using the Paris request.</li>
+    <li>Decide workflow or agent for monthly expense reporting and justify the choice.</li>
+    <li>Trace the Paris loop through the failed seven-day booking check.</li>
+    <li>Compare ReAct, plan-and-execute, and reflection using one sentence each.</li>
+    <li>Classify a fact as conversation state, task state, or long-term memory.</li>
+    <li>Explain why MCP discovery does not make a tool safe.</li>
+    <li>Give one reason to keep a single agent and one reason to split into specialists.</li>
     </ol>
 
     <footer>

@@ -1435,31 +1435,66 @@ window.BBL.CURRICULUM = {
       {
         "id": "module-4-multimodal-agentic/agentic-systems",
         "module": "module-4-multimodal-agentic",
-        "title": "4.4 Agentic AI Systems",
+        "title": "4.4 RAG to Assistants and Agents",
         "quizId": "genai/module-4-multimodal-agentic/agentic-systems",
         "hasQuiz": true,
-        "minutes": 14,
+        "minutes": 47,
         "lessons": [
           {
             "slug": "module-4-agentic-roadmap",
             "hash": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap",
             "path": "module-4-multimodal-agentic/agentic-systems/module-4-agentic-roadmap.html",
-            "label": "Module 4 Agentic Roadmap",
-            "minutes": 5
+            "label": "From LLM to Multi-Agent Systems",
+            "minutes": 6
           },
           {
             "slug": "agents-vs-chatbots-recap",
             "hash": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap",
             "path": "module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html",
-            "label": "Agents vs Chatbots (Recap)",
-            "minutes": 4
+            "label": "Why RAG Is Not Enough",
+            "minutes": 5
           },
           {
             "slug": "multimodal-agents-teaser",
             "hash": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser",
             "path": "module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html",
-            "label": "Multimodal Agents",
-            "minutes": 5
+            "label": "Assistants, Context, Tools, and MCP",
+            "minutes": 6
+          },
+          {
+            "slug": "workflow-vs-agent",
+            "hash": "module-4-multimodal-agentic/agentic-systems/workflow-vs-agent",
+            "path": "module-4-multimodal-agentic/agentic-systems/workflow-vs-agent.html",
+            "label": "Workflow vs Agent",
+            "minutes": 6
+          },
+          {
+            "slug": "agent-loop-in-action",
+            "hash": "module-4-multimodal-agentic/agentic-systems/agent-loop-in-action",
+            "path": "module-4-multimodal-agentic/agentic-systems/agent-loop-in-action.html",
+            "label": "The Agent Loop in Action",
+            "minutes": 6
+          },
+          {
+            "slug": "agent-patterns-cost-and-context",
+            "hash": "module-4-multimodal-agentic/agentic-systems/agent-patterns-cost-and-context",
+            "path": "module-4-multimodal-agentic/agentic-systems/agent-patterns-cost-and-context.html",
+            "label": "Agent Patterns, Cost, and Context",
+            "minutes": 6
+          },
+          {
+            "slug": "rag-state-and-multi-agent-systems",
+            "hash": "module-4-multimodal-agentic/agentic-systems/rag-state-and-multi-agent-systems",
+            "path": "module-4-multimodal-agentic/agentic-systems/rag-state-and-multi-agent-systems.html",
+            "label": "RAG, State, and Multi-Agent Systems",
+            "minutes": 6
+          },
+          {
+            "slug": "frameworks-and-final-recap",
+            "hash": "module-4-multimodal-agentic/agentic-systems/frameworks-and-final-recap",
+            "path": "module-4-multimodal-agentic/agentic-systems/frameworks-and-final-recap.html",
+            "label": "Agent Frameworks and Final Recap",
+            "minutes": 6
           }
         ]
       },

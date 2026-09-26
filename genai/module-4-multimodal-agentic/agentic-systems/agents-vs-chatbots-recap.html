@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
+  <meta name="description" content="See the dividing line between answering a question and completing a task with changing data, actions, constraints, and feedback.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html">
-  <meta property="og:title" content="Agents vs Chatbots (Recap) | BackbenchLearner">
-  <meta property="og:description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
+  <meta property="og:title" content="Why RAG Is Not Enough | BackbenchLearner">
+  <meta property="og:description" content="See the dividing line between answering a question and completing a task with changing data, actions, constraints, and feedback.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/agents-vs-chatbots-recap.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -16,12 +16,12 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Agents vs Chatbots (Recap) | BackbenchLearner">
-  <meta name="twitter:description" content="The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs.">
+  <meta name="twitter:title" content="Why RAG Is Not Enough | BackbenchLearner">
+  <meta name="twitter:description" content="See the dividing line between answering a question and completing a task with changing data, actions, constraints, and feedback.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
-  <title>Agents vs Chatbots (Recap) | BackbenchLearner</title>
+  <title>Why RAG Is Not Enough | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -33,103 +33,151 @@
   <div class="lesson-layout">
     <div class="wrapper">
       <nav><a href="../../../index.html">&larr; Home</a></nav>
-      <h1>Agents vs Chatbots (Recap)</h1>
+      <h1>Why RAG Is Not Enough</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A <strong>chatbot</strong> goes: user message → model reply → done. An <strong>agent</strong> goes: user goal → plan → tool call → observe → maybe plan again → final answer.</p>
-    <p>The difference is not how clever the model is. It is whether the system is allowed to take a step, look at the result, and keep going.</p>
+    <p>RAG can answer:</p>
+    <blockquote>
+    <p>What does our policy allow for flights to Paris?</p>
+    </blockquote>
+    <p>It cannot, by itself, complete:</p>
+    <blockquote>
+    <p>Plan my Paris trip for next week for four days, within policy and ₹80,000.</p>
+    </blockquote>
+    <p>The second request needs more than evidence. It needs decisions, actions, and a way to recover when a choice fails.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Consider one request: <em>&quot;Has my order shipped?&quot;</em></p>
-    <p>A chatbot can explain how shipping works, what the tracking email looks like, and how long delivery usually takes. Everything it says may be correct and none of it answers the question, because the answer lives in a database it cannot reach.</p>
-    <p>An agent looks up the order, sees it shipped on Tuesday, and says so.</p>
+    <h3 id="change-one-word-change-the-system">Change one word, change the system</h3>
+    <p>The first request is a <strong>question</strong>. One retrieval and one answer may be enough.</p>
+    <p>The second request is a <strong>goal</strong>. To reach it, the system may need to:</p>
+    <ol>
+    <li>Retrieve the travel policy.</li>
+    <li>Search live flights.</li>
+    <li>Search live hotels.</li>
+    <li>Compare prices with the budget.</li>
+    <li>Check policy constraints.</li>
+    <li>Revisit earlier choices if the check fails.</li>
+    <li>Present a recommendation for approval.</li>
+    </ol>
+    <p>There is no guaranteed straight line through those steps. A compliance failure near the end may send the system back to the flight search with different dates.</p>
     <aside class="callout callout-note">
       <p class="callout-title">Analogy</p>
-    <p>A chatbot is a well-briefed receptionist working from a printed manual. Ask anything covered by the manual and you get a fast, accurate answer. Ask something that requires checking a system and the manual cannot help, however thick it is.</p>
-    <p>An agent is a receptionist with access to the booking system. Slower, and you have to be careful what they are allowed to change — but they can answer questions whose answers are not in any manual.</p>
-    <p>Adding more pages to the manual never turns the first into the second. That is the mistake behind most &quot;why doesn&#x27;t our chatbot know this?&quot; complaints: the problem is reach, not knowledge.</p>
+    <p>RAG is like asking a librarian, &quot;What does this rulebook say?&quot;</p>
+    <p>An agentic task is like asking an event planner, &quot;Use that rulebook, today&#x27;s prices, and my budget to arrange the event.&quot;</p>
+    <p>The librarian&#x27;s job ends when the correct passage is found and explained. The planner&#x27;s job ends only when all the pieces fit together — and if the venue is unavailable, the planner must change the plan rather than repeat the rulebook.</p>
     </aside>
-    <h2 id="how-it-works">How it works</h2>
-    <h3 id="side-by-side">Side by side</h3>
+    <h2 id="answering-a-question-versus-completing-a-task">Answering a question versus completing a task</h2>
     <table>
       <thead><tr>
         <th></th>
-        <th>Chatbot</th>
-        <th>Agent</th>
+        <th>Question answering</th>
+        <th>Task completion</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Steps per request</td>
-          <td>One</td>
-          <td>As many as the task needs</td>
+          <td><strong>Input</strong></td>
+          <td>A question</td>
+          <td>A goal plus constraints</td>
         </tr>
         <tr>
-          <td>Can reach live data</td>
-          <td>No</td>
-          <td>Yes, through tools</td>
+          <td><strong>Work</strong></td>
+          <td>Usually one retrieval and one generation</td>
+          <td>Many steps, with order chosen at runtime</td>
         </tr>
         <tr>
-          <td>Can cause side effects</td>
-          <td>No</td>
-          <td>Yes — this is the risk</td>
+          <td><strong>Output</strong></td>
+          <td>Text</td>
+          <td>A decision or a change in the world</td>
         </tr>
         <tr>
-          <td>Cost per request</td>
-          <td>Predictable</td>
-          <td>Varies with how long the loop runs</td>
+          <td><strong>Failure</strong></td>
+          <td>A wrong sentence</td>
+          <td>A booking that breaks policy</td>
         </tr>
         <tr>
-          <td>Main failure</td>
-          <td>Confidently wrong text</td>
-          <td>Confidently wrong <strong>action</strong></td>
+          <td><strong>Ends when</strong></td>
+          <td>The model stops generating</td>
+          <td>The goal is satisfied or judged impossible</td>
         </tr>
       </tbody>
     </table>
+    <p>Three capabilities appear only on the task side:</p>
+    <ul>
+    <li><strong>Actions</strong> — call external tools such as flight search or calendar APIs.</li>
+    <li><strong>Decisions</strong> — select which action should happen next.</li>
+    <li><strong>Interaction</strong> — ask the user for missing information or approval.</li>
+    </ul>
+    <h2 id="why-a-fixed-rag-pipeline-breaks">Why a fixed RAG pipeline breaks</h2>
+    <p>A basic RAG flow is predictable:</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    Q[Question] --> R[Retrieve once]
+    R --> G[Generate once]
+    G --> A[Answer]
+      </div>
+    </div>
+    <p>That is the right design when the user wants an answer from documents.</p>
+    <p>The travel goal behaves differently:</p>
     <div class="diagram-wrap">
       <div class="mermaid">
 flowchart TB
-    subgraph CB["Chatbot"]
-      U1[User message] --> M1[Model] --> R1[Reply]
-    end
-    subgraph AG["Agent"]
-      U2[User goal] --> M2[Model plans]
-      M2 --> T[Call a tool]
-      T --> O[Observe result]
-      O --> C{Done?}
-      C -->|No| M2
-      C -->|Yes| R2[Final answer]
-    end
+    G[Goal: compliant Paris trip<br/>under ₹80,000] --> P[Retrieve policy]
+    P --> F[Search flights]
+    F --> H[Search hotels]
+    H --> B[Check total budget]
+    B --> C{Policy compliant?}
+    C -->|Yes| O[Present options]
+    C -->|No| R[Revise dates or choices]
+    R --> F
       </div>
     </div>
-    <h3 id="when-you-need-an-agent">When you need an agent</h3>
+    <p>The backward arrow is the important part. A pipeline runs forward. An agent can loop.</p>
+    <h3 id="the-policy-check-that-changes-everything">The policy check that changes everything</h3>
+    <p>Suppose the first search finds:</p>
     <ul>
-    <li><strong>Multi-step workflows</strong> — search, then calculate, then file a ticket. No single reply can do all three.</li>
-    <li><strong>Fresh data behind an API or database</strong> — order status, stock levels, today&#x27;s prices.</li>
-    <li><strong>Actions with real effects</strong> — issuing a refund, sending an email, updating a record.</li>
+    <li>Flight: ₹38,400</li>
+    <li>Hotel: ₹6,800 × four nights = ₹27,200</li>
+    <li>Total: ₹65,600</li>
     </ul>
-    <h3 id="when-a-chatbot-is-enough">When a chatbot is enough</h3>
-    <ul>
-    <li><strong>FAQ and drafting</strong> where everything needed is already in the prompt.</li>
-    <li><strong>Single-turn summarisation</strong> of text you have already supplied.</li>
-    <li><strong>Anything where a wrong action would be expensive</strong> and the task does not truly need one.</li>
-    </ul>
-    <p>The honest default is the simpler one. An agent adds cost, latency, and a category of failure that chatbots cannot have — so reach for it when the task genuinely requires acting, not because it sounds more advanced.</p>
+    <p>The trip is ₹14,400 below budget, so a price-only system declares success.</p>
+    <p>Then the policy checker finds that departure is five days away, but company policy requires booking seven days ahead. The itinerary is affordable and invalid.</p>
+    <p>A fixed retrieve-search-return design has no answer for this new observation. An agent can decide to shift the dates and search again.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Agents add loops, tools, and state. Chatbots generate the next reply. Choose based on whether the answer requires <em>doing</em> something.</p>
+    <p>RAG answers from evidence. An agent works toward a goal and can change its next action when new evidence invalidates the current plan.</p>
     </aside>
+    <h2 id="when-rag-is-exactly-enough">When RAG is exactly enough</h2>
+    <p>Do not turn every RAG application into an agent.</p>
+    <p>Use ordinary RAG when:</p>
+    <ul>
+    <li>The user wants an answer, summary, or citation.</li>
+    <li>One retrieval step is normally enough.</li>
+    <li>The system does not need to act on external services.</li>
+    <li>The work ends after grounded text is produced.</li>
+    </ul>
+    <p>Add agent behavior when:</p>
+    <ul>
+    <li>The number or order of steps depends on results.</li>
+    <li>Tools can fail and recovery must be chosen dynamically.</li>
+    <li>A later check can invalidate an earlier decision.</li>
+    <li>The system must stop based on a real goal, not merely the end of a response.</li>
+    </ul>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li>Building an agent for a job a well-prompted chatbot handles, and paying for the loop every request.</li>
-    <li>Building a chatbot for a job that needs live data, then trying to fix it by stuffing more text into the prompt.</li>
-    <li>Giving the loop no step limit, so a confused agent keeps calling tools.</li>
+    <li>Adding an agent loop to simple policy Q&amp;A and making a cheap, predictable request slower and less reliable.</li>
+    <li>Calling a fixed seven-step script an agent even though the model never chooses the order.</li>
+    <li>Checking the budget but forgetting that several constraints must hold at the same time.</li>
+    <li>Treating &quot;the model finished writing&quot; as proof that the task is complete.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>Agents loop, use tools, and change things; chatbots reply — pick the agent only when the task needs action, not just words.</p>
+    <p>RAG is enough for grounded answers; task completion needs actions, runtime decisions, feedback, and a goal-based stopping condition.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>One-shot</strong> — A single generate step with no follow-up action.</li>
-    <li><strong>Agent loop</strong> — Repeated reason, act, observe until a stop condition.</li>
-    <li><strong>Side effect</strong> — A change the agent makes in a real system.</li>
+    <li><strong>Question answering</strong> — Producing grounded text in response to a question.</li>
+    <li><strong>Task completion</strong> — Taking enough steps to satisfy a goal and its constraints.</li>
+    <li><strong>Control flow</strong> — The order in which steps run.</li>
+    <li><strong>Hard constraint</strong> — A condition that must be satisfied, not merely preferred.</li>
+    <li><strong>Replanning</strong> — Changing earlier choices after a new observation or failure.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
@@ -160,9 +208,9 @@ flowchart TB
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
-  <script src="../../../scripts/progress.js?v=20260917a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260926a"></script>
+  <script src="../../../scripts/progress.js?v=20260926a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260926a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260926a"></script>
 </body>
 </html>

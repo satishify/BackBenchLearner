@@ -1,109 +1,181 @@
-title: "4.4 Agentic AI Systems"
+title: "4.4 RAG to Assistants and Agents"
 questions:
-  - q: "What is the main difference between a simple chatbot turn and an agent?"
+  - q: "Why can a base LLM not reliably answer a question about a private company travel policy?"
     options:
-      - "Agents never use language models"
-      - "Agents can plan, call tools, observe results, and loop toward a goal"
-      - "Chatbots always use GPUs; agents never do"
-      - "Agents cannot ask for human approval"
-    answer: 1
-    why: "Agentic systems add tool use and iterative control flow beyond a single reply."
+      - "LLMs cannot produce sentences about travel"
+      - "Paris cannot be represented with tokens"
+      - "Private documents are always images"
+      - "Private, versioned policy was not present in its training data"
+    answer: 3
+    why: "The policy is internal and can change, so it must be supplied through retrieval rather than assumed to be in model weights."
 
-  - q: "Where can you find the deeper BackbenchLearner lessons on agents today?"
+  - q: "Which capability is added when moving from an LLM to RAG?"
     options:
-      - "Only in Backend HTTP methods"
-      - "Module 2.9 Agentic AI & Multi-Agent Orchestration"
-      - "Exclusively in Module 5 Capstone"
-      - "There is no agent content yet"
-    answer: 1
-    why: "Module 4.4 connects agents to vision and retrieval; Module 2.9 holds the full agent track."
+      - "Pixel-level segmentation"
+      - "Permission to book a flight"
+      - "Automatic multi-agent delegation"
+      - "Access to external knowledge at answer time"
+    answer: 3
+    why: "RAG retrieves relevant external evidence and places it in context before generation."
 
-  - q: "A multimodal agent might..."
+  - q: "What separates task completion from ordinary question answering?"
     options:
-      - "Only sort CSV files offline forever"
-      - "Read a screenshot with vision, then call tools to act on what it saw"
-      - "Delete all embeddings on startup"
-      - "Refuse any API call by definition"
-    answer: 1
-    why: "Combining VLMs with tools is the Module 4 bridge between vision and agency."
+      - "Task completion may require several actions, runtime decisions, and a goal-based stop condition"
+      - "Task completion always uses a larger model"
+      - "Question answering never uses documents"
+      - "Task completion cannot return text"
+    answer: 0
+    why: "A task can require many steps whose order changes with observations and ends only when the goal is satisfied or impossible."
 
-  - q: "What are the four steps of the agent loop?"
+  - q: "A travel plan is under ₹80,000 but violates the seven-day booking rule. What should an agent do?"
     options:
-      - "Compress, quantize, decode, serve"
-      - "Perceive, reason, act, observe"
-      - "Tokenize, embed, rank, answer"
-      - "Train, validate, test, deploy"
-    answer: 1
-    why: "The loop takes in the goal, decides a step, runs a tool, reads the result, then repeats or stops."
+      - "Return it because the budget is the only important condition"
+      - "Remove the policy citation"
+      - "Use the failed check as an observation and replan"
+      - "Increase model temperature"
+    answer: 2
+    why: "Hard constraints must all hold. A failed compliance observation should cause a new action, such as shifting the dates."
 
-  - q: "When the model requests a tool call, who actually executes it?"
+  - q: "Why does the follow-up 'Find me one under that' require conversation state?"
     options:
-      - "The model runs the code inside its own weights"
-      - "Your surrounding code runs the action and returns the result to the model"
-      - "The tokenizer executes it during encoding"
-      - "Nothing executes; the call is only descriptive"
-    answer: 1
-    why: "The model only requests a structured action. That separation is what makes an agent controllable."
+      - "The final turn does not repeat Paris, four nights, or the ₹8,000 hotel cap"
+      - "Tool calls only work after three messages"
+      - "RAG cannot search policy documents"
+      - "Conversation state provides live hotel availability"
+    answer: 0
+    why: "The referents and constraints come from earlier turns; context carries them forward."
 
-  - q: "Which task genuinely needs an agent rather than a chatbot?"
+  - q: "When a model emits a search_flights tool call, who actually executes the flight API request?"
     options:
-      - "Summarising a paragraph that is already in the prompt"
-      - "Looking up whether a specific customer order has shipped"
-      - "Rewriting supplied text in a friendlier tone"
-      - "Answering an FAQ covered by the system prompt"
-    answer: 1
-    why: "The answer lives in a live system the model cannot reach without a tool call."
+      - "The tokenizer"
+      - "The model's weights"
+      - "The host application after validation"
+      - "The vector database"
+    answer: 2
+    why: "The model proposes a structured call. Application code validates it, uses credentials, executes it, and returns the result."
 
-  - q: "Why is adding more text to a chatbot's prompt not a substitute for an agent?"
+  - q: "What problem does MCP mainly solve?"
     options:
-      - "Prompts are always too expensive to extend"
-      - "The problem is reach into live systems, not missing knowledge"
-      - "Chatbots ignore anything after the first sentence"
-      - "Longer prompts disable tool calling"
-    answer: 1
-    why: "No amount of manual content answers a question whose answer sits in a database."
+      - "It makes every tool call safe automatically"
+      - "It replaces the need for application code"
+      - "It stores all model weights in one server"
+      - "It provides a standard way to discover and call tools and resources"
+    answer: 3
+    why: "MCP lets clients discover server-owned tool schemas and call them through a common interface."
 
-  - q: "What new category of failure do agents have that chatbots do not?"
+  - q: "What is the best test for deciding whether a system needs an agent?"
     options:
-      - "Slower token generation"
-      - "Confidently wrong actions with real side effects"
-      - "Higher embedding dimensionality"
-      - "Inability to produce fluent text"
-    answer: 1
-    why: "A chatbot can give wrong information; an agent can issue a wrong refund."
+      - "Whether the model has more than one billion parameters"
+      - "Whether a diagram looks impressive"
+      - "Whether the full flow can be fixed before the request arrives"
+      - "Whether the user asked a question"
+    answer: 2
+    why: "If the full flow is known in advance, a deterministic workflow is usually simpler and safer."
 
-  - q: "In the screenshot-to-runbook example, which capability handles the first step?"
+  - q: "Which situation most clearly justifies an agent instead of a workflow?"
     options:
-      - "A text-only LLM reading the ticket body"
-      - "A VLM reading the error code out of the image"
-      - "A reward model scoring the ticket"
-      - "A quantized base model"
-    answer: 1
-    why: "The first piece of information is pixels, so a text-only agent cannot start the task at all."
+      - "A monthly report always follows the same five steps"
+      - "Auditors require exactly the same path each time"
+      - "An extra tool call is irreversible"
+      - "A later tool result can invalidate an earlier choice and require a new route"
+    answer: 3
+    why: "Agents are useful when control flow must change from runtime observations."
 
-  - q: "Why is a misread image especially dangerous in a multimodal agent?"
+  - q: "What happens immediately after an agent acts?"
     options:
-      - "It doubles GPU memory use"
-      - "The wrong observation compounds into a wrong action, not just a wrong sentence"
-      - "It corrupts the vision encoder weights"
-      - "It prevents the loop from ever terminating"
-    answer: 1
-    why: "Every later step inherits the bad read, and the chain ends in something being changed."
+      - "The run always ends"
+      - "The base model is retrained"
+      - "The agent observes the result and updates state"
+      - "All tools are removed"
+    answer: 2
+    why: "The closed loop is think, act, observe, remember, and decide again."
 
-  - q: "What is the cheapest practical safeguard against a bad visual read?"
-    options: 
-      - "Retrain the vision encoder after each ticket"
-      - "Have the agent state what it saw before acting on it"
-      - "Disable retrieval entirely"
-      - "Increase the temperature setting"
-    answer: 1
-    why: "Exposing the observation costs nothing and makes the one failure that matters reviewable."
-
-  - q: "Why should an agent retrieve internal documentation instead of recalling it?"
+  - q: "Why must an agent loop have a step budget?"
     options:
-      - "Retrieval is always faster than generation"
-      - "Documentation changes, and retrieved content can be cited and checked"
-      - "Models cannot store any facts at all"
-      - "Retrieval removes the need for tool permissions"
+      - "To prevent a confused loop from running indefinitely and spending without limit"
+      - "To make policy documents shorter"
+      - "To improve image resolution"
+      - "To force every task to use eight steps"
+    answer: 0
+    why: "A budget bounds time, cost, and repeated actions; it is a maximum, not a required number of steps."
+
+  - q: "Why does agent context cost grow quickly over a long run?"
+    options:
+      - "Every tool permanently enlarges the model"
+      - "MCP duplicates model weights"
+      - "The vector index is retrained after every action"
+      - "Each step often resends the goal, tools, and relevant earlier history"
+    answer: 3
+    why: "Models are normally stateless, so the application rebuilds context for each step and pays for earlier information repeatedly."
+
+  - q: "Which agent pattern interleaves one thought, one action, and one observation?"
+    options:
+      - "ReAct"
+      - "Plan-and-execute"
+      - "Reflection"
+      - "Static RAG"
+    answer: 0
+    why: "ReAct repeatedly reasons, acts once, reads the observation, and decides again."
+
+  - q: "When is plan-and-execute attractive?"
+    options:
+      - "When a longer task has planned substeps that may run in parallel"
+      - "When no plan can be made before any evidence"
+      - "When only a final draft needs rewriting"
+      - "When one tool call answers the question"
+    answer: 0
+    why: "Plan-and-execute provides structure and potential parallelism, with replanning when later evidence breaks the plan."
+
+  - q: "What does reflection loop over?"
+    options:
+      - "The vector database schema"
+      - "A draft that is critiqued and revised"
+      - "Model pretraining data"
+      - "MCP server discovery"
     answer: 1
-    why: "This is the same argument as Module 4.3 — volatile knowledge belongs in retrieval, not weights."
+    why: "Reflection produces a draft, critiques it, and revises it until it is acceptable or reaches a limit."
+
+  - q: "How does retrieval change inside an agent?"
+    options:
+      - "It always runs exactly once with the user's complete request"
+      - "The agent can rewrite the query, call retrieval more than once, or skip it"
+      - "It is replaced by long-term memory"
+      - "It can only retrieve images"
+    answer: 1
+    why: "Retrieval becomes one available tool whose timing and query are selected from task state."
+
+  - q: "Which information belongs in task state rather than long-term memory?"
+    options:
+      - "The employee's home airport"
+      - "A durable preference for direct flights"
+      - "The current run's selected ₹34,900 flight and pending compliance check"
+      - "The employee's grade"
+    answer: 2
+    why: "Task state records temporary progress and unresolved work for one active run."
+
+  - q: "When should a team first consider splitting one agent into multiple specialised agents?"
+    options:
+      - "Before the first single-agent prototype"
+      - "When measured tool overload, context crowding, or independent failure domains justify it"
+      - "Whenever more than two tools exist"
+      - "Whenever a framework supports handoffs"
+    answer: 1
+    why: "Multi-agent handoffs add cost and context-loss risk, so specialisation should solve a demonstrated limitation."
+
+  - q: "What should cross-agent handoffs prefer?"
+    options:
+      - "Long, informal chat summaries"
+      - "Typed artifacts with dates, amounts, status, and source references"
+      - "Hidden model thoughts only"
+      - "A fresh model with no shared state"
+    answer: 1
+    why: "Structured artifacts preserve constraints and provenance more reliably than vague free-form messages."
+
+  - q: "What is the most durable lesson when choosing an agent framework?"
+    options:
+      - "Pick the framework with the longest feature list"
+      - "Keep goals, tools, state, controls, and evaluations portable"
+      - "Framework guardrails remove the need for server-side permissions"
+      - "Always choose a multi-agent SDK"
+    answer: 1
+    why: "SDKs change quickly; the core architecture and evaluation criteria should remain under the application's control."

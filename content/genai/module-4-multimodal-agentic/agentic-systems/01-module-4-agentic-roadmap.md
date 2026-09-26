@@ -1,82 +1,150 @@
 ---
-title: "Module 4 Agentic Roadmap"
-description: "What agentic AI means, the perceive-reason-act-observe loop, and how this chapter connects to the deeper agent lessons in Module 2.9."
+title: "From LLM to Multi-Agent Systems"
+description: "Follow one constrained travel request as it grows from a language question into RAG, an assistant, an agent, and finally a multi-agent system."
 ---
 
-**Agentic AI** means a system that works towards a goal over several steps — it plans, uses tools, looks at what came back, and decides what to do next. A plain chat model answers once and stops.
+Consider one user goal:
+
+> Plan my Paris trip for next week for four days, staying within the company travel policy and a ₹80,000 budget.
+
+This sounds like one request. In reality, it combines private rules, live prices, hard constraints, and decisions that depend on earlier results.
 
 ## Intuition
 
-Think about the difference between asking a colleague a question and giving them a task.
+### Why this is not a normal question
 
-Ask a question and you get an answer: *"Our refund policy is 30 days."* Give them a task — *"find out why this customer was charged twice and fix it"* — and they do something quite different. They look up the account, read the payment log, notice a duplicate charge, issue a refund, and come back to tell you it is done.
+Four separate difficulties are hiding inside the sentence:
 
-Nothing about the second job needs more intelligence. It needs the ability to **take a step, look at the result, and choose the next step**. That loop is the whole idea behind an agent.
+| Difficulty | What it means in this example |
+| --- | --- |
+| **Private knowledge** | The travel policy is an internal document. It was never part of the model's training data. |
+| **Time-varying data** | Flight fares and hotel availability change every hour. Model weights cannot keep them current. |
+| **Hard constraints** | The itinerary must satisfy both company policy and the ₹80,000 budget. Passing one is not enough. |
+| **Unknown control flow** | If a policy check fails, the system must decide what to change and try again. |
+
+A plain LLM can write a convincing Paris itinerary. It cannot know whether the flight is still available, whether the fare is real, or whether the trip follows the private policy.
 
 :::note Analogy
-A chat model is a knowledgeable person on the phone. They can tell you anything they know, but they cannot get up from the chair.
+Imagine asking a talented travel writer to act as your travel desk.
 
-An agent is the same person with a laptop, a phone line, and permission to use them. The knowledge has not changed — the ability to act on it has.
+The writer knows Paris and can produce a beautiful four-day plan. But they cannot open your company's policy file, see today's fares, hold a seat, or notice that your departure is only five days away when policy requires seven.
 
-This is also why agents fail in a new way. A person who cannot act can give you wrong information. A person who can act can give you a wrong *refund*. The value and the risk arrive together, which is why the lessons keep returning to permissions and human approval.
+Each new system capability is like giving that writer another part of the travel desk: first the policy folder, then memory of your conversation, then access to booking tools, and finally permission to decide what to do next.
 :::
 
-## How it works
-
-### The loop
-
-Every agent, no matter how it is built, runs some version of four steps:
+## The six stages
 
 ```mermaid
 flowchart LR
-    P[Perceive<br/>read the goal and what is known] --> R[Reason<br/>decide the next step]
-    R --> A[Act<br/>call a tool or API]
-    A --> O[Observe<br/>read what came back]
-    O --> D{Goal met?}
-    D -->|No| R
-    D -->|Yes| F[Final answer]
+    L[LLM<br/>language] --> R[RAG<br/>external knowledge]
+    R --> A[Assistant<br/>conversation context]
+    A --> T[Tool-using assistant<br/>external actions]
+    T --> G[Agent<br/>runtime decisions]
+    G --> M[Multi-agent<br/>delegation]
 ```
 
-| Step | What happens | Example |
+### 1. LLM: generate a language response
+
+The base model can answer public, stable questions:
+
+> **User:** What is the capital of France?
+> **Model:** Paris.
+
+That fact is public, stable, and likely present in training data.
+
+Ask about the private travel policy and the same fluent model may invent a plausible rule:
+
+> Employees may book business class on international routes...
+
+Fluency is not evidence. The model has four limits here:
+
+- **Knowledge cutoff** — it knows nothing added after training.
+- **No private data** — it cannot see internal policies, wikis, or tickets.
+- **Hallucination** — it may fill missing knowledge with convincing text.
+- **No traceability** — it cannot point to the source behind the claim.
+
+### 2. RAG: add external knowledge
+
+Retrieval-Augmented Generation gives the model the relevant policy clauses before it answers.
+
+```mermaid
+flowchart LR
+    P[travel_policy_2026.pdf] --> I[Split into chunks<br/>and index]
+    Q[User question] --> S[Retrieve top clauses]
+    I --> S
+    S --> C[Add clauses to prompt]
+    C --> G[Generate grounded answer<br/>with citation]
+```
+
+For example:
+
+1. Ingest the 40-page policy and split it into 118 searchable chunks.
+2. Retrieve clauses such as §4.2 for cabin class and §4.7 for the hotel cap.
+3. Place those clauses beside the question.
+4. Answer only from that evidence and cite the page and section.
+
+The user can now see:
+
+> Economy class only for flights under eight hours, and bookings must be made at least seven days in advance.
+> *travel_policy_2026.pdf, page 12, §4.2*
+
+The core principle is simple: **retrieve before you generate**.
+
+### 3. Assistant: add conversation context
+
+An assistant carries the thread across turns:
+
+> **User:** I am travelling to Paris next week for four days. What does policy allow?
+> **Assistant:** Economy class, booked at least seven days ahead.
+> **User:** And the hotel?
+> **Assistant:** Up to ₹8,000 per night in Paris.
+
+The second question makes sense only because the assistant remembers Paris, four nights, and the earlier policy discussion.
+
+### 4. Tool-using assistant: add capabilities
+
+The next request is not a knowledge question:
+
+> Find me a hotel under that limit.
+
+The system must call a live hotel search tool. Retrieval cannot tell it today's rooms and prices.
+
+### 5. Agent: add runtime decisions
+
+An agent chooses the next step after seeing what the previous step returned. If the best itinerary fails policy, it decides whether to change dates, search again, or ask the user.
+
+### 6. Multi-agent system: add delegation
+
+As the goal grows, specialised workers can handle flights, hotels, meetings, and expenses, while an orchestrator combines their results.
+
+| Stage | What was added | Paris example |
 | --- | --- | --- |
-| **Perceive** | Take in the goal and current state | "Why was this customer charged twice?" |
-| **Reason** | Pick the next useful action | "I should look up their recent payments" |
-| **Act** | Call a tool | `get_payments(customer_id)` |
-| **Observe** | Read the result | Two identical charges on 3 March |
-| **Loop or stop** | Continue, or answer | Issue refund, then report back |
-
-The model does not do the acting itself. It **requests** an action in a structured form, your code runs it, and the result comes back as new text in the conversation. That separation is what makes an agent controllable.
-
-### What this chapter covers
-
-1. **What makes something an agent** — the perceive, reason, act, observe loop above.
-2. **Tool calling and governance** — how the model requests actions, and which ones it may take without asking a person.
-3. **Single-agent and multi-agent patterns** — one worker versus a small team with separate jobs.
-4. **Human-in-the-loop and evaluation** — where a person must approve, and how you tell whether the agent is actually working.
-
-### Where the detailed lessons live
-
-The full agent path — tools, memory, multi-agent orchestration, and the quizzes that go with it — is taught in **Module 2.9, Agentic AI and Multi-Agent Orchestration**. Study that chapter for depth.
-
-This chapter's job is narrower: it connects those agent ideas to the vision and retrieval work in 4.1 to 4.3, so you can build agents that **see** as well as read.
+| LLM | Language generation | Writes a plausible itinerary |
+| RAG | External knowledge | Retrieves the travel policy |
+| Assistant | Conversation context | Remembers dates and budget |
+| Tool-using assistant | Tools | Calls flight and hotel APIs |
+| Agent | Decisions | Replans after a compliance failure |
+| Multi-agent | Delegation | Splits flights, hotels, meetings, and expenses |
 
 :::key
-An agent is a loop, not a bigger model. Perceive, reason, act, observe — repeat until the goal is met or a person steps in.
+Each stage keeps the capabilities below it. An agent still retrieves, remembers, and calls tools; it additionally chooses the next action at runtime.
 :::
 
 ## What goes wrong
 
-- Calling any system with a tool attached an "agent" — without the observe-and-retry loop, it is a single function call with extra steps.
-- Letting the loop run without a stop condition, so it keeps calling tools until it runs out of budget.
-- Giving an agent permission to take actions with real consequences before you can see what it did and why.
+- Calling a fluent itinerary "planned" when no live prices or policy checks were used.
+- Using RAG for live fares even though the answer belongs in an API, not a document store.
+- Assuming conversation history gives the system tools; memory and capability are separate.
+- Jumping to multiple agents before one agent can complete the trip reliably.
 
 ## One-line summary
 
-Agentic AI replaces a single answer with a loop that plans, acts, observes, and repeats until the goal is reached.
+LLMs generate, RAG retrieves, assistants remember, tools act, agents decide, and multi-agent systems delegate.
 
 ## Key terms
 
-- **Agent** — A model running in a loop with tools and memory of what it has done.
-- **Tool calling** — The model requesting a structured action that your code executes.
-- **Agent loop** — Perceive, reason, act, observe, repeat.
-- **HITL** — Human-in-the-loop; a checkpoint where a person approves before the agent continues.
+- **RAG** — Retrieves external evidence before the model writes an answer.
+- **Assistant** — A conversational system that carries context across turns.
+- **Tool-using assistant** — A system whose application code can execute model-requested tools.
+- **Agent** — A system that chooses and revises its own next step from observations.
+- **Multi-agent system** — Several specialised agents coordinated around one larger goal.

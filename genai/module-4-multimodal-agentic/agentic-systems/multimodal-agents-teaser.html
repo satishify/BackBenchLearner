@@ -4,11 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
+  <meta name="description" content="Add conversation state and external capabilities, understand who really executes a tool call, and see how MCP standardises tool discovery.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html">
-  <meta property="og:title" content="Multimodal Agents | BackbenchLearner">
-  <meta property="og:description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
+  <meta property="og:title" content="Assistants, Context, Tools, and MCP | BackbenchLearner">
+  <meta property="og:description" content="Add conversation state and external capabilities, understand who really executes a tool call, and see how MCP standardises tool discovery.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://backbenchlearner.com/genai/module-4-multimodal-agentic/agentic-systems/multimodal-agents-teaser.html">
   <meta property="og:image" content="https://backbenchlearner.com/assets/og-card.png">
@@ -16,12 +16,12 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BackbenchLearner">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Multimodal Agents | BackbenchLearner">
-  <meta name="twitter:description" content="Joining the vision and retrieval work from 4.1-4.3 with the agent loop: systems that can see a screen and then act on what they saw.">
+  <meta name="twitter:title" content="Assistants, Context, Tools, and MCP | BackbenchLearner">
+  <meta name="twitter:description" content="Add conversation state and external capabilities, understand who really executes a tool call, and see how MCP standardises tool discovery.">
   <meta name="twitter:image" content="https://backbenchlearner.com/assets/og-card.png">
   <link rel="icon" href="../../../assets/logo-mark.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
-  <title>Multimodal Agents | BackbenchLearner</title>
+  <title>Assistants, Context, Tools, and MCP | BackbenchLearner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -33,96 +33,166 @@
   <div class="lesson-layout">
     <div class="wrapper">
       <nav><a href="../../../index.html">&larr; Home</a></nav>
-      <h1>Multimodal Agents</h1>
+      <h1>Assistants, Context, Tools, and MCP</h1>
       <div class="lesson-meta" id="lesson-meta"></div>
 
-    <p>A <strong>multimodal agent</strong> is an agent whose inputs are not only text. It can look at a screenshot, a scanned form, or a photo, and then take action based on what it saw.</p>
-    <p>This chapter is where Module 4 comes together: the eyes from 4.1 and 4.2, the retrieval from 4.3, and the agent loop from 4.4.</p>
+    <p>RAG gives an answer from external knowledge. An <strong>assistant</strong> carries that knowledge through a conversation. A <strong>tool-using assistant</strong> can also request actions from the outside world.</p>
+    <p>These are separate upgrades: knowledge, context, and capabilities.</p>
     <h2 id="intuition">Intuition</h2>
-    <p>Picture a support engineer handling a ticket that arrives as a screenshot of an error dialog.</p>
-    <p>They read the error code off the image, search the internal runbook for that code, find the documented fix, and either apply it or hand it to someone who can. Four steps, two of which need eyes.</p>
-    <p>A text-only agent cannot start this task at all — the first piece of information is a picture. A vision model alone can read the dialog but cannot then go and find the runbook. You need both.</p>
+    <h3 id="context-makes-follow-up-questions-possible">Context makes follow-up questions possible</h3>
+    <p>Consider this conversation:</p>
+    <blockquote>
+    <p><strong>User:</strong> I am travelling to Paris next week for four days. What does the policy allow? <strong>Assistant:</strong> Economy class, and booking must be at least seven days ahead. [§4.2] <strong>User:</strong> And the hotel? <strong>Assistant:</strong> Up to ₹8,000 per night in Paris. [§4.7] <strong>User:</strong> Find me one under that.</p>
+    </blockquote>
+    <p>The phrase <strong>&quot;the hotel&quot;</strong> means a hotel in Paris, for four nights, below ₹8,000 per night. None of that appears in the last sentence. It comes from earlier turns.</p>
+    <p>Turn three is impossible without turn one. That is why context is <strong>state</strong>, not merely &quot;a longer prompt.&quot;</p>
+    <h3 id="context-still-cannot-search-a-hotel">Context still cannot search a hotel</h3>
+    <p>Even after remembering the full conversation, the assistant has no live hotel inventory. Memory tells it <em>what</em> to search for. A tool gives it the capability to perform the search.</p>
     <aside class="callout callout-note">
       <p class="callout-title">Analogy</p>
-    <p>Think of vision and tools as eyes and hands.</p>
-    <p>Eyes without hands gives you a very good describer: it tells you precisely what the error says and can do nothing about it. Hands without eyes gives you a capable worker who cannot see the problem and has to be told what is wrong in words first.</p>
-    <p>Most real work — reading a form and filing it, spotting a defect and flagging it, seeing an error and fixing it — needs both in the same loop, because what the eyes find decides what the hands do next.</p>
+    <p>Knowledge, context, and tools are like three things a human assistant needs.</p>
+    <ul>
+    <li>The <strong>policy binder</strong> tells them the rules.</li>
+    <li>Their <strong>notebook</strong> remembers what you already discussed.</li>
+    <li>Their <strong>phone and booking system</strong> let them check what is available.</li>
+    </ul>
+    <p>Giving them a bigger notebook does not create a phone. Giving them a phone does not teach the company policy. A reliable assistant needs the right combination.</p>
     </aside>
-    <h2 id="how-it-works">How it works</h2>
-    <h3 id="a-worked-example">A worked example</h3>
-    <p>The ticket is a screenshot. The agent runs the ordinary loop, but the first perception step is visual:</p>
-    <div class="diagram-wrap">
-      <div class="mermaid">
-flowchart LR
-    S[Screenshot of error dialog] --> V[VLM reads the image]
-    V --> E["Error code: DB-5012"]
-    E --> R[Search runbook for DB-5012]
-    R --> F[Documented fix found]
-    F --> H{Risky change?}
-    H -->|Yes| A[Ask a human to approve]
-    H -->|No| X[Apply fix]
-    A --> X
-    X --> D[Report what was done]
-      </div>
-    </div>
+    <h2 id="three-layers">Three layers</h2>
     <table>
       <thead><tr>
-        <th>Step</th>
-        <th>Which part of Module 4 does it</th>
-        <th>Why it is needed</th>
+        <th>Layer</th>
+        <th>What it adds</th>
+        <th>Paris example</th>
       </tr></thead>
       <tbody>
         <tr>
-          <td>Read the dialog</td>
-          <td>VLM with OCR strength, chapter 4.1–4.2</td>
-          <td>The input is pixels, not text</td>
+          <td><strong>Knowledge</strong></td>
+          <td>Retrieval over trusted documents</td>
+          <td>Finds cabin and hotel rules</td>
         </tr>
         <tr>
-          <td>Find the runbook page</td>
-          <td>Multimodal retrieval, chapter 4.3</td>
-          <td>The fix lives in a document, not the model</td>
+          <td><strong>Context</strong></td>
+          <td>State carried across turns</td>
+          <td>Remembers Paris, dates, and budget</td>
         </tr>
         <tr>
-          <td>Decide and act</td>
-          <td>Agent loop, chapter 4.4</td>
-          <td>Something has to actually change</td>
-        </tr>
-        <tr>
-          <td>Ask before risky steps</td>
-          <td>Human-in-the-loop</td>
-          <td>Wrong actions cost more than wrong answers</td>
+          <td><strong>Capabilities</strong></td>
+          <td>Tools that reach outside systems</td>
+          <td>Searches live flights and hotels</td>
         </tr>
       </tbody>
     </table>
-    <h3 id="the-building-blocks">The building blocks</h3>
-    <ul>
-    <li><strong>A vision model or vision tool</strong> to answer &quot;what is on this screen?&quot; Prefer a grounded, high-resolution model when the evidence is small text, as in chapter 4.2.</li>
-    <li><strong>Retrieval</strong> so the agent can look things up rather than recalling them from training, using the multimodal RAG ideas from chapter 4.3.</li>
-    <li><strong>Text tools</strong> for search, tickets, code, and APIs.</li>
-    <li><strong>Policies</strong> stating plainly which actions the agent may take on its own and which need a person to approve.</li>
-    </ul>
-    <h3 id="why-grounding-matters-more-here">Why grounding matters more here</h3>
-    <p>In a text agent, a misread means the model quotes the wrong sentence. In a multimodal agent, a misread means the model acts on something it never actually saw.</p>
-    <p>If the VLM reads <code>DB-5012</code> as <code>DB-5Ol2</code>, every step afterwards is confidently wrong — the same compounding error described in the visual reasoning lesson, except now it ends in an action rather than a sentence.</p>
-    <p>Practical consequence: have the agent <strong>state what it saw</strong> before acting on it. A visible line like <em>&quot;Read error code DB-5012 from the dialog&quot;</em> costs nothing and makes the one failure that matters reviewable.</p>
+    <h2 id="how-tool-calling-actually-works">How tool calling actually works</h2>
+    <p>The model never directly touches the flight API.</p>
+    <p>It emits a structured request:</p>
+    <div class="code-block" data-lang="json">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-json">{
+  &quot;name&quot;: &quot;search_flights&quot;,
+  &quot;arguments&quot;: {
+    &quot;origin&quot;: &quot;BOM&quot;,
+    &quot;dest&quot;: &quot;CDG&quot;,
+    &quot;date&quot;: &quot;2026-08-22&quot;,
+    &quot;cabin&quot;: &quot;economy&quot;
+  }
+}</code></pre>
+    </div>
+    <p>Your application code validates the request, runs the API call using real credentials, and returns the result to the model.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant M as Model
+    participant H as Your application
+    participant F as Flight API
+    U->>M: Find me a flight to Paris
+    M->>H: search_flights(arguments)
+    H->>H: Validate tool and arguments
+    H->>F: Execute API request
+    F-->>H: Live fares and availability
+    H-->>M: Tool result
+    M-->>U: Explain the options
+      </div>
+    </div>
+    <p>The <code>cabin: economy</code> argument is important. The user did not say &quot;economy.&quot; The model filled it from the retrieved policy. Knowledge is now shaping an action.</p>
     <aside class="callout callout-key">
       <p class="callout-title">Key idea</p>
-    <p>Multimodal agents use eyes (vision) plus hands (tools). The risk is that a misread image turns into a wrong action, so make the visual observation visible before the agent acts on it.</p>
+    <p>The model proposes a tool call; your application validates and executes it. The model never receives raw authority or secret API credentials.</p>
     </aside>
+    <h2 id="the-problem-with-hand-written-tool-schemas">The problem with hand-written tool schemas</h2>
+    <p>Without a standard interface, developers describe every tool inside the application:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">tools = [{
+    &quot;name&quot;: &quot;search_flights&quot;,
+    &quot;description&quot;: &quot;Search current flight fares&quot;,
+    &quot;parameters&quot;: {
+        &quot;origin&quot;: &quot;string&quot;,
+        &quot;dest&quot;: &quot;string&quot;,
+        &quot;date&quot;: &quot;string&quot;,
+        &quot;cabin&quot;: [&quot;economy&quot;, &quot;business&quot;]
+    }
+}]</code></pre>
+    </div>
+    <p>For one tool this is manageable. With dozens of changing tools:</p>
+    <ul>
+    <li>Schemas are copied into several agents.</li>
+    <li>A field change requires code and prompt updates.</li>
+    <li>Adding a tool usually means redeploying the application.</li>
+    <li>Each integration invents its own connection style.</li>
+    </ul>
+    <h2 id="mcp-one-standard-interface">MCP: one standard interface</h2>
+    <p>The <strong>Model Context Protocol (MCP)</strong> makes tools and resources discoverable through a common interface.</p>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A[Agent<br/>MCP client] -->|list_tools| F[Flights MCP server]
+    A -->|list_tools| C[Calendar MCP server]
+    A -->|read resources| P[Policy MCP server]
+    A -->|call_tool| F
+    A -->|call_tool| C
+      </div>
+    </div>
+    <p>The server owns the schemas. The client asks what is available at runtime:</p>
+    <div class="code-block" data-lang="python">
+      <button class="code-copy" type="button" aria-label="Copy code">Copy</button>
+      <pre><code class="language-python">session = connect(&quot;travel.corp/mcp&quot;)
+tools = session.list_tools()
+
+result = session.call_tool(
+    &quot;search_flights&quot;,
+    {&quot;origin&quot;: &quot;BOM&quot;, &quot;dest&quot;: &quot;CDG&quot;}
+)</code></pre>
+    </div>
+    <p>Add a new tool to the server and it appears during discovery. The agent application does not need a hand-copied schema or a redeploy simply to learn that the tool exists.</p>
+    <h3 id="what-mcp-changes-and-what-it-does-not">What MCP changes — and what it does not</h3>
+    <p>MCP standardises <strong>how capabilities are exposed and called</strong>. It does not decide:</p>
+    <ul>
+    <li>Whether a tool is safe for this user.</li>
+    <li>Whether arguments satisfy company policy.</li>
+    <li>Whether a write action needs approval.</li>
+    <li>Which tool should be called next.</li>
+    </ul>
+    <p>Those remain responsibilities of your application and agent design.</p>
     <h2 id="what-goes-wrong">What goes wrong</h2>
     <ul>
-    <li>Trusting an OCR read of a code, amount, or name without showing it for review.</li>
-    <li>Using a low-resolution vision path for small text, then wondering why the agent acts on the wrong value.</li>
-    <li>Letting the agent both read the screen and take irreversible action with no approval step.</li>
-    <li>Expecting the model to recall internal documentation instead of retrieving it.</li>
+    <li>Saying &quot;the model called the API&quot; and hiding the application code that actually owns execution and security.</li>
+    <li>Trusting model-generated arguments without schema and business-rule validation.</li>
+    <li>Giving a tool secrets in the prompt instead of keeping credentials in the host application.</li>
+    <li>Treating MCP as a safety layer; it standardises connections, not permissions or policy.</li>
+    <li>Returning huge tool results that fill the context window.</li>
     </ul>
     <h2 id="one-line-summary">One-line summary</h2>
-    <p>A multimodal agent reads images, retrieves what it needs, and acts — so the visual observation must be exposed and checked before it becomes an action.</p>
+    <p>Context remembers the thread, tools reach the outside world, your code executes every action, and MCP provides a standard way to discover and call capabilities.</p>
     <h2 id="key-terms">Key terms</h2>
     <ul>
-    <li><strong>Multimodal agent</strong> — An agent that takes in non-text inputs such as images or scans.</li>
-    <li><strong>Grounding</strong> — Tying actions to observed evidence from an image, document, or API.</li>
-    <li><strong>Human-in-the-loop</strong> — A required approval point before a risky action.</li>
+    <li><strong>Conversation state</strong> — Information carried across turns in one thread.</li>
+    <li><strong>Tool call</strong> — A structured action request emitted by the model.</li>
+    <li><strong>Host application</strong> — Code that validates and executes tool requests.</li>
+    <li><strong>MCP</strong> — Model Context Protocol, a standard interface for tools and resources.</li>
+    <li><strong>Tool discovery</strong> — Asking a connected server which capabilities are available.</li>
+    <li><strong>Resource</strong> — Readable context, such as policy documents, exposed by an MCP server.</li>
     </ul>
 
       <div class="lesson-actions" id="lesson-actions"></div>
@@ -153,9 +223,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260917a"></script>
-  <script src="../../../scripts/progress.js?v=20260917a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260917a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260917a"></script>
+  <script src="../../../scripts/curriculum.js?v=20260926a"></script>
+  <script src="../../../scripts/progress.js?v=20260926a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20260926a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20260926a"></script>
 </body>
 </html>

@@ -351,3 +351,103 @@ questions:
       - "Image-to-image search"
     answer: 1
     why: "Multimodal complexity should be added only when visual evidence solves a real task failure."
+
+  - q: "A base LLM confidently invents an internal travel rule. Which system capability directly addresses this failure?"
+    section: "Agentic Systems - Capability Levels"
+    options:
+      - "RAG over the versioned policy store"
+      - "A higher temperature"
+      - "More conversation turns without retrieval"
+      - "A segmentation model"
+    answer: 0
+    why: "Private, changing policy belongs in an external source that can be retrieved and cited."
+
+  - q: "A travel system finds an affordable itinerary, then learns it violates the seven-day advance-booking rule. What makes the problem agentic?"
+    section: "Agentic Systems - Task Completion"
+    options:
+      - "The answer contains a number."
+      - "The model must choose a new action after an observation invalidates its plan."
+      - "The policy was stored as a PDF."
+      - "The user mentioned Paris."
+    answer: 1
+    why: "Runtime replanning from feedback is the key difference between a one-way pipeline and an agent."
+
+  - q: "The model outputs search_flights(origin='BOM', dest='CDG'). What must happen next?"
+    section: "Agentic Systems - Tool Calling"
+    options:
+      - "The model directly opens the airline network."
+      - "The tokenizer converts the call into a fare."
+      - "The host validates the call, executes the API, and returns the result."
+      - "The vector database books the flight."
+    answer: 2
+    why: "Tool calling is a structured request; real execution and credentials remain in application code."
+
+  - q: "What does MCP change in a tool-using system?"
+    section: "Agentic Systems - MCP"
+    options:
+      - "It guarantees that every discovered tool is safe."
+      - "It standardises discovery and invocation of server-owned tools and resources."
+      - "It removes the need for argument validation."
+      - "It makes the model stateful."
+    answer: 1
+    why: "MCP standardises the interface; permissions, validation, and policy still belong to the application."
+
+  - q: "A monthly report always imports, validates, totals, formats, and requests approval in the same order. What should the team build first?"
+    section: "Agentic Systems - Workflow vs Agent"
+    options:
+      - "A deterministic workflow"
+      - "A five-agent debate"
+      - "A reflection-only loop"
+      - "An unconstrained ReAct agent"
+    answer: 0
+    why: "When the full path is known in advance, a workflow is cheaper, more predictable, and easier to audit."
+
+  - q: "Which production property ensures an agent cannot retry forever?"
+    section: "Agentic Systems - Agent Loop"
+    options:
+      - "A larger context window"
+      - "A step, time, and cost budget"
+      - "A longer system prompt"
+      - "More available tools"
+    answer: 1
+    why: "A bounded loop has explicit limits that end confused or unproductive runs."
+
+  - q: "An eight-step agent keeps resending all prior observations and becomes expensive. What is the best response?"
+    section: "Agentic Systems - Context"
+    options:
+      - "Store every tool response twice"
+      - "Truncate observations, summarise old decisions, and keep structured state"
+      - "Remove the task goal from later prompts"
+      - "Convert the agent into a larger model"
+    answer: 1
+    why: "Context engineering preserves relevant constraints and progress without repeatedly sending raw history."
+
+  - q: "Which pattern is most directly focused on improving a completed itinerary draft?"
+    section: "Agentic Systems - Patterns"
+    options:
+      - "Reflection: draft, critique, revise"
+      - "Static retrieval only"
+      - "Image-to-image search"
+      - "Tool discovery"
+    answer: 0
+    why: "Reflection loops over an output to identify and repair quality problems."
+
+  - q: "Inside an agent, when should retrieval be skipped?"
+    section: "Agentic Systems - Agentic RAG"
+    options:
+      - "When the question asks for today's live fare"
+      - "Whenever the policy is private"
+      - "Whenever citations are required"
+      - "When the model can rewrite a search query"
+    answer: 0
+    why: "Live fares belong in a current API; a document index cannot supply real-time availability."
+
+  - q: "A single travel agent has fourteen tools, crowded context, and calendar failures that block fare search. What is the sound next step?"
+    section: "Agentic Systems - Multi-Agent"
+    options:
+      - "Add more tools to the same prompt"
+      - "Split clear subgoals among specialists with typed shared state and an orchestrator"
+      - "Remove all task state"
+      - "Let specialists exchange only free-form chat"
+    answer: 1
+    why: "Measured tool overload and independent failure domains justify specialisation, but structured handoffs are needed to preserve constraints."

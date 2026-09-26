@@ -1,86 +1,140 @@
 ---
-title: "Agents vs Chatbots (Recap)"
-description: "The practical difference between a one-shot reply and a loop that uses tools, and how to tell which one your problem needs."
+title: "Why RAG Is Not Enough"
+description: "See the dividing line between answering a question and completing a task with changing data, actions, constraints, and feedback."
 ---
 
-A **chatbot** goes: user message → model reply → done.
-An **agent** goes: user goal → plan → tool call → observe → maybe plan again → final answer.
+RAG can answer:
 
-The difference is not how clever the model is. It is whether the system is allowed to take a step, look at the result, and keep going.
+> What does our policy allow for flights to Paris?
+
+It cannot, by itself, complete:
+
+> Plan my Paris trip for next week for four days, within policy and ₹80,000.
+
+The second request needs more than evidence. It needs decisions, actions, and a way to recover when a choice fails.
 
 ## Intuition
 
-Consider one request: *"Has my order shipped?"*
+### Change one word, change the system
 
-A chatbot can explain how shipping works, what the tracking email looks like, and how long delivery usually takes. Everything it says may be correct and none of it answers the question, because the answer lives in a database it cannot reach.
+The first request is a **question**. One retrieval and one answer may be enough.
 
-An agent looks up the order, sees it shipped on Tuesday, and says so.
+The second request is a **goal**. To reach it, the system may need to:
+
+1. Retrieve the travel policy.
+2. Search live flights.
+3. Search live hotels.
+4. Compare prices with the budget.
+5. Check policy constraints.
+6. Revisit earlier choices if the check fails.
+7. Present a recommendation for approval.
+
+There is no guaranteed straight line through those steps. A compliance failure near the end may send the system back to the flight search with different dates.
 
 :::note Analogy
-A chatbot is a well-briefed receptionist working from a printed manual. Ask anything covered by the manual and you get a fast, accurate answer. Ask something that requires checking a system and the manual cannot help, however thick it is.
+RAG is like asking a librarian, "What does this rulebook say?"
 
-An agent is a receptionist with access to the booking system. Slower, and you have to be careful what they are allowed to change — but they can answer questions whose answers are not in any manual.
+An agentic task is like asking an event planner, "Use that rulebook, today's prices, and my budget to arrange the event."
 
-Adding more pages to the manual never turns the first into the second. That is the mistake behind most "why doesn't our chatbot know this?" complaints: the problem is reach, not knowledge.
+The librarian's job ends when the correct passage is found and explained. The planner's job ends only when all the pieces fit together — and if the venue is unavailable, the planner must change the plan rather than repeat the rulebook.
 :::
 
-## How it works
+## Answering a question versus completing a task
 
-### Side by side
-
-| | Chatbot | Agent |
+| | Question answering | Task completion |
 | --- | --- | --- |
-| Steps per request | One | As many as the task needs |
-| Can reach live data | No | Yes, through tools |
-| Can cause side effects | No | Yes — this is the risk |
-| Cost per request | Predictable | Varies with how long the loop runs |
-| Main failure | Confidently wrong text | Confidently wrong **action** |
+| **Input** | A question | A goal plus constraints |
+| **Work** | Usually one retrieval and one generation | Many steps, with order chosen at runtime |
+| **Output** | Text | A decision or a change in the world |
+| **Failure** | A wrong sentence | A booking that breaks policy |
+| **Ends when** | The model stops generating | The goal is satisfied or judged impossible |
+
+Three capabilities appear only on the task side:
+
+- **Actions** — call external tools such as flight search or calendar APIs.
+- **Decisions** — select which action should happen next.
+- **Interaction** — ask the user for missing information or approval.
+
+## Why a fixed RAG pipeline breaks
+
+A basic RAG flow is predictable:
+
+```mermaid
+flowchart LR
+    Q[Question] --> R[Retrieve once]
+    R --> G[Generate once]
+    G --> A[Answer]
+```
+
+That is the right design when the user wants an answer from documents.
+
+The travel goal behaves differently:
 
 ```mermaid
 flowchart TB
-    subgraph CB["Chatbot"]
-      U1[User message] --> M1[Model] --> R1[Reply]
-    end
-    subgraph AG["Agent"]
-      U2[User goal] --> M2[Model plans]
-      M2 --> T[Call a tool]
-      T --> O[Observe result]
-      O --> C{Done?}
-      C -->|No| M2
-      C -->|Yes| R2[Final answer]
-    end
+    G[Goal: compliant Paris trip<br/>under ₹80,000] --> P[Retrieve policy]
+    P --> F[Search flights]
+    F --> H[Search hotels]
+    H --> B[Check total budget]
+    B --> C{Policy compliant?}
+    C -->|Yes| O[Present options]
+    C -->|No| R[Revise dates or choices]
+    R --> F
 ```
 
-### When you need an agent
+The backward arrow is the important part. A pipeline runs forward. An agent can loop.
 
-- **Multi-step workflows** — search, then calculate, then file a ticket. No single reply can do all three.
-- **Fresh data behind an API or database** — order status, stock levels, today's prices.
-- **Actions with real effects** — issuing a refund, sending an email, updating a record.
+### The policy check that changes everything
 
-### When a chatbot is enough
+Suppose the first search finds:
 
-- **FAQ and drafting** where everything needed is already in the prompt.
-- **Single-turn summarisation** of text you have already supplied.
-- **Anything where a wrong action would be expensive** and the task does not truly need one.
+- Flight: ₹38,400
+- Hotel: ₹6,800 × four nights = ₹27,200
+- Total: ₹65,600
 
-The honest default is the simpler one. An agent adds cost, latency, and a category of failure that chatbots cannot have — so reach for it when the task genuinely requires acting, not because it sounds more advanced.
+The trip is ₹14,400 below budget, so a price-only system declares success.
+
+Then the policy checker finds that departure is five days away, but company policy requires booking seven days ahead. The itinerary is affordable and invalid.
+
+A fixed retrieve-search-return design has no answer for this new observation. An agent can decide to shift the dates and search again.
 
 :::key
-Agents add loops, tools, and state. Chatbots generate the next reply. Choose based on whether the answer requires *doing* something.
+RAG answers from evidence. An agent works toward a goal and can change its next action when new evidence invalidates the current plan.
 :::
+
+## When RAG is exactly enough
+
+Do not turn every RAG application into an agent.
+
+Use ordinary RAG when:
+
+- The user wants an answer, summary, or citation.
+- One retrieval step is normally enough.
+- The system does not need to act on external services.
+- The work ends after grounded text is produced.
+
+Add agent behavior when:
+
+- The number or order of steps depends on results.
+- Tools can fail and recovery must be chosen dynamically.
+- A later check can invalidate an earlier decision.
+- The system must stop based on a real goal, not merely the end of a response.
 
 ## What goes wrong
 
-- Building an agent for a job a well-prompted chatbot handles, and paying for the loop every request.
-- Building a chatbot for a job that needs live data, then trying to fix it by stuffing more text into the prompt.
-- Giving the loop no step limit, so a confused agent keeps calling tools.
+- Adding an agent loop to simple policy Q&A and making a cheap, predictable request slower and less reliable.
+- Calling a fixed seven-step script an agent even though the model never chooses the order.
+- Checking the budget but forgetting that several constraints must hold at the same time.
+- Treating "the model finished writing" as proof that the task is complete.
 
 ## One-line summary
 
-Agents loop, use tools, and change things; chatbots reply — pick the agent only when the task needs action, not just words.
+RAG is enough for grounded answers; task completion needs actions, runtime decisions, feedback, and a goal-based stopping condition.
 
 ## Key terms
 
-- **One-shot** — A single generate step with no follow-up action.
-- **Agent loop** — Repeated reason, act, observe until a stop condition.
-- **Side effect** — A change the agent makes in a real system.
+- **Question answering** — Producing grounded text in response to a question.
+- **Task completion** — Taking enough steps to satisfy a goal and its constraints.
+- **Control flow** — The order in which steps run.
+- **Hard constraint** — A condition that must be satisfied, not merely preferred.
+- **Replanning** — Changing earlier choices after a new observation or failure.

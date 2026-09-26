@@ -79,9 +79,9 @@ window.BBL.CHEATSHEETS = {
     {
       "id": "genai/module-4-multimodal-agentic",
       "slug": "module-4-multimodal-agentic",
-      "title": "Module 4 - VLM architectures, applications, and multimodal RAG revision",
-      "description": "Revision for VLM architectures, applications, multimodal retrieval, and model composition.",
-      "minutes": 30,
+      "title": "Module 4 - VLM, multimodal RAG, and agentic AI revision",
+      "description": "Revision for VLM architectures, applications, multimodal retrieval, agents, state, tools, and orchestration.",
+      "minutes": 40,
       "module": "Module 4",
       "path": "cheatsheets/genai/module-4-multimodal-agentic.html"
     }
