@@ -134,7 +134,7 @@ SAM combines:
 - **Focal loss** — pays extra attention to hard pixels
 - **Dice loss** — rewards the overlap and overall shape of the region
 
-The lecture’s mask-loss weighting is:
+SAM's mask-loss weighting is:
 
 `Mask loss = 20 × Focal loss + 1 × Dice loss`
 
@@ -160,7 +160,7 @@ A separate MSE loss trains the mask-quality (IoU) prediction head.
 | **Semi-automatic** | SAM proposes confident masks; people add missed objects |
 | **Fully automatic** | A 32 × 32 point grid prompts SAM; stable masks are kept and duplicates removed |
 
-The result described in the lecture: about **11 million licensed images** and **1.1 billion masks** — roughly **100 masks per image**.
+The reported training set: about **11 million licensed images** and **1.1 billion masks** — roughly **100 masks per image**.
 
 ## Where SAM fits
 

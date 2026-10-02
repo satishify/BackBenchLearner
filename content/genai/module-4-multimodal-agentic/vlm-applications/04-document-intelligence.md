@@ -172,7 +172,7 @@ Why combine specialist + generalist?
 - Specialist preserves structure and layout.
 - Generalist preserves broad visual meaning.
 
-The lecture reports **+10.5% average over SigLIP2** on document/web vision-language benchmarks and **+5% on Mind2Web**, without losing general VQA ability. Treat such numbers as paper-specific results, not a guarantee for every dataset.
+The paper reports **+10.5% average over SigLIP2** on document/web vision-language benchmarks and **+5% on Mind2Web**, without losing general VQA ability. Treat such numbers as paper-specific results, not a guarantee for every dataset.
 
 ### DocVLM: OCR + 2D layout compression
 

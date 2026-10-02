@@ -183,7 +183,7 @@ flowchart LR
     <li><strong>Focal loss</strong> — pays extra attention to hard pixels</li>
     <li><strong>Dice loss</strong> — rewards the overlap and overall shape of the region</li>
     </ul>
-    <p>The lecture’s mask-loss weighting is:</p>
+    <p>SAM&#x27;s mask-loss weighting is:</p>
     <p><code>Mask loss = 20 × Focal loss + 1 × Dice loss</code></p>
     <p>Dice loss is based on:</p>
     <p><code>Dice loss = 1 − 2 × overlap / (predicted area + true area)</code></p>
@@ -216,7 +216,7 @@ flowchart LR
         </tr>
       </tbody>
     </table>
-    <p>The result described in the lecture: about <strong>11 million licensed images</strong> and <strong>1.1 billion masks</strong> — roughly <strong>100 masks per image</strong>.</p>
+    <p>The reported training set: about <strong>11 million licensed images</strong> and <strong>1.1 billion masks</strong> — roughly <strong>100 masks per image</strong>.</p>
     <h2 id="where-sam-fits">Where SAM fits</h2>
     <p>SAM is useful for background removal, medical annotation, robotics, rotoscoping, AR, and geospatial mapping.</p>
     <p>For language + exact pixels, compose models:</p>
@@ -276,9 +276,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260926a"></script>
-  <script src="../../../scripts/progress.js?v=20260926a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260926a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260926a"></script>
+  <script src="../../../scripts/curriculum.js?v=20261002a"></script>
+  <script src="../../../scripts/progress.js?v=20261002a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20261002a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20261002a"></script>
 </body>
 </html>

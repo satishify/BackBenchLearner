@@ -185,7 +185,7 @@ This teaches the model what a page that actually answers a question looks likeâ€
 - Allows fine-grained matching against local page areas.
 - Simplifies offline indexing compared with pipelines containing many parsers.
 
-The lecture notes report that query-time matching can remain fast with suitable indexing, while offline indexing is simpler than several traditional pipelines. Actual latency depends on hardware, page resolution, index design, and corpus size.
+Reports say that query-time matching can remain fast with suitable indexing, while offline indexing is simpler than several traditional pipelines. Actual latency depends on hardware, page resolution, index design, and corpus size.
 
 ## The cost
 
@@ -202,7 +202,7 @@ This is the main trade-off: **local detail versus storage and compute**.
 
 **ViDoRe** evaluates visual document retrieval across domains, languages, layouts, and visual styles. It contains visually rich PDF pages and asks systems to rank the page that answers each query.
 
-The main metric highlighted in the lecture is **nDCG@5**:
+The main metric highlighted here is **nDCG@5**:
 
 - Correct pages near rank 1 receive more credit.
 - Correct pages below the first few results receive less credit.

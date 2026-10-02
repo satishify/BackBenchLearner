@@ -3,10 +3,10 @@ title: "Module 4 - VLM, multimodal RAG, and agentic AI revision"
 slug: module-4-multimodal-agentic
 module: "Module 4"
 minutes: 40
-description: "Revision for VLM architectures, applications, multimodal retrieval, agents, state, tools, and orchestration."
+description: "Revision for VLM architectures, applications, multimodal retrieval, agents, and multi-agent coordination."
 ---
 
-Chapter **4.1** follows the lecture map: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.
+Chapter **4.1** follows this path: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.
 
 ## Foundations
 
@@ -141,6 +141,76 @@ Context cost grows because each model call often resends the goal, tools, and ea
 
 Choose by your technology stack and operational needs, not hype. Keep goals, tool policies, state, traces, approvals, and evaluation portable outside any one SDK.
 
+## 4.5 Multi-agent systems
+
+A team is not a bigger model. It is specialists plus a coordinator that owns the goal.
+
+### When to split
+
+- One agent hides a trade-off (cheap vs comfortable vs policy).
+- Good local choices clash (23:50 arrival vs 23:00 check-in).
+- Specialisation, parallelism, smaller context, or a checker would help.
+
+Several tools can still belong to one agent. Start with one loop.
+
+### Roles, contracts, handoffs
+
+An agent = **role + model + tools + state + contract**.
+
+If you cannot say "this agent owns X and returns Y," do not delegate yet.
+
+Handoffs stay small: goal, constraints, expected format. Not the whole chat.
+
+### Coordination cycle
+
+`decompose → execute → attribute → reconcile` (repeat)
+
+Bound it with a **round limit**, a **token budget**, and a **deadlock check**. Escalate a repeated conflict instead of looping forever.
+
+Search flights and hotels together when they do not need each other. Run budget and policy after a pair is chosen.
+
+### Supervisor, state, validation
+
+- Default pattern: **supervisor–worker**. One hub owns the goal and the audit trail.
+- Peer-to-peer is for debate or review, not for spending money.
+- Validate schema, money, and times before a result enters shared state.
+- Send each specialist a **slice**, not the full state.
+- Record failures as structured errors, not empty text.
+
+### Permissions, trust, logs
+
+| Work | Rule |
+| --- | --- |
+| Search / policy / budget | Automatic, read-only |
+| Book / send | Human confirms first |
+
+Treat another agent's text as **untrusted data**. Wrap it, check it, reject "ignore the budget," and still require approval for writes.
+
+Log delegation, tool call, raw result, validation, latency/retries, and who approved the write.
+
+### Cost, eval, standards
+
+One round of 4 specialists ≈ 8 model-facing messages plus their tool calls.
+
+Score **selection, arguments, task completion, groundedness, conflicts caught, rounds/cost**. A fluent itinerary is not a pass.
+
+| Standard | Connects |
+| --- | --- |
+| **A2A** | Agent ↔ agent |
+| **MCP** | Agent ↔ tools and data |
+| **ANP** | Agents on the open web (proposed) |
+| **AGNTCY** | Directory, identity, messaging |
+
+Neither A2A nor MCP makes a booking safe.
+
+### Five rules
+
+1. Specialise only when it helps.
+2. Contract every agent.
+3. Coordinate in a bounded loop.
+4. Keep handoffs small and checked.
+5. Treat every extra agent as extra risk.
+
 ## 20-minute drill
 
 1. Walk through ViT patch count for 224×224 and 16×16 patches.
@@ -160,3 +230,8 @@ Choose by your technology stack and operational needs, not hype. Keep goals, too
 15. Classify a fact as conversation state, task state, or long-term memory.
 16. Explain why MCP discovery does not make a tool safe.
 17. Give one reason to keep a single agent and one reason to split into specialists.
+18. Rewrite `travel_agent: handle the trip` into a contract with inputs, outputs, and limits.
+19. Sketch the coordination cycle and name one stop condition.
+20. Decide supervisor vs peer-to-peer for a booking desk and justify it.
+21. Treat "ignore the budget" from hotel_agent as data and say what gets logged.
+22. Split A2A from MCP in one sentence each.

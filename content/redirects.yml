@@ -284,7 +284,7 @@
   to: genai/module-3-finetuning/session-2-data-training/catastrophic-forgetting.html
 - from: genai/module-3-finetuning/finetuning-fundamentals/alignment-overview-rlhf-dpo.html
   to: genai/module-3-finetuning/session-5-alignment-rlhf-dpo/rlhf-pipeline-and-instructgpt.html
-# Module 3 Session 1 chapter rename (old fundamentals pages -> lecture chapters)
+# Module 3 Session 1 chapter rename (old fundamentals pages -> session chapters)
 - from: genai/module-3-finetuning/session-1-fundamentals/when-to-finetune-vs-prompt-vs-rag.html
   to: genai/module-3-finetuning/session-1-fundamentals/prompt-vs-rag-vs-finetuning.html
 - from: genai/module-3-finetuning/session-1-fundamentals/sft-supervised-fine-tuning.html
@@ -303,7 +303,7 @@
   to: genai/module-3-finetuning/session-4-reparam-peft/quantization-and-qlora.html
 - from: genai/module-3-finetuning/peft/serving-merged-vs-adapter-weights.html
   to: genai/module-3-finetuning/session-4-reparam-peft/multi-tenant-lora-serving.html
-# Module 3 Session 3 chapter rename (old PEFT pages -> lecture chapters)
+# Module 3 Session 3 chapter rename (old PEFT pages -> session chapters)
 - from: genai/module-3-finetuning/session-3-peft/why-peft-adapters-intuition.html
   to: genai/module-3-finetuning/session-3-peft/why-peft-exists.html
 - from: genai/module-3-finetuning/session-3-peft/lora-and-qlora.html
@@ -322,7 +322,7 @@
   to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
 - from: genai/module-3-finetuning/lab-sprint/module-3-review-checklist.html
   to: genai/module-3-finetuning/session-2-data-training/reading-the-loss-curves.html
-# Module 3 Session 2 chapter rename (lab-style pages -> lecture chapters)
+# Module 3 Session 2 chapter rename (lab-style pages -> session chapters)
 - from: genai/module-3-finetuning/session-2-data-training/datasets-labels-and-instruction-format.html
   to: genai/module-3-finetuning/session-2-data-training/preparing-the-data.html
 - from: genai/module-3-finetuning/session-2-data-training/eval-catastrophic-forgetting-and-overfit.html

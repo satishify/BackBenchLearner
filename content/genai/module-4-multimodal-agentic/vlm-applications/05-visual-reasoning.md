@@ -150,7 +150,7 @@ The verifier can be a second prompt, another model, OCR, a rule engine, or a hum
 | NLVR2 | Relationships across image pairs |
 | Winoground | Difficult compositional language–image reasoning |
 
-The lecture notes that visual reasoning still has a large gap between current models and human experts. Reported benchmark gains can also be affected by test-data contamination.
+Keep in mind that visual reasoning still has a large gap between current models and human experts. Reported benchmark gains can also be affected by test-data contamination.
 
 ### Training patterns
 

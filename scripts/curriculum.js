@@ -1499,6 +1499,65 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-4-multimodal-agentic/multi-agent-systems",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.5 Multi-Agent Systems",
+        "quizId": "genai/module-4-multimodal-agentic/multi-agent-systems",
+        "hasQuiz": true,
+        "minutes": 41,
+        "lessons": [
+          {
+            "slug": "from-one-agent-to-a-team",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/from-one-agent-to-a-team",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/from-one-agent-to-a-team.html",
+            "label": "From One Agent to a Team",
+            "minutes": 7
+          },
+          {
+            "slug": "roles-contracts-and-handoffs",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/roles-contracts-and-handoffs",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/roles-contracts-and-handoffs.html",
+            "label": "Roles, Contracts, and Handoffs",
+            "minutes": 5
+          },
+          {
+            "slug": "the-coordination-cycle",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/the-coordination-cycle",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/the-coordination-cycle.html",
+            "label": "The Coordination Cycle",
+            "minutes": 6
+          },
+          {
+            "slug": "supervisor-patterns-and-shared-state",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/supervisor-patterns-and-shared-state",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/supervisor-patterns-and-shared-state.html",
+            "label": "Failures, Supervisor Patterns, and Shared State",
+            "minutes": 7
+          },
+          {
+            "slug": "permissions-trust-and-logging",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/permissions-trust-and-logging",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/permissions-trust-and-logging.html",
+            "label": "Permissions, Untrusted Messages, and Logging",
+            "minutes": 6
+          },
+          {
+            "slug": "cost-evaluation-and-standards",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/cost-evaluation-and-standards",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/cost-evaluation-and-standards.html",
+            "label": "Cost, Evaluation, and Agent Standards",
+            "minutes": 6
+          },
+          {
+            "slug": "five-things-to-carry-forward",
+            "hash": "module-4-multimodal-agentic/multi-agent-systems/five-things-to-carry-forward",
+            "path": "module-4-multimodal-agentic/multi-agent-systems/five-things-to-carry-forward.html",
+            "label": "Five Things to Carry Forward",
+            "minutes": 4
+          }
+        ]
+      },
+      {
         "id": "module-5-deployment-safety/serving-and-apis",
         "module": "module-5-deployment-safety",
         "title": "5.2 Model Serving & API Development",

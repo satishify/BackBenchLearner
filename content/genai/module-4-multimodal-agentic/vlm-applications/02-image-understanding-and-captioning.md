@@ -91,7 +91,7 @@ The answer names the main subject and setting without guessing the location or w
 
 ### Why different models describe the same image differently
 
-The lecture compares models on a motorcycle image:
+This chapter compares models on a motorcycle image:
 
 - One model notices the **large satellite dish**.
 - Another invents a **handbag** and says the people are “enjoying their ride.”

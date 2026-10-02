@@ -205,7 +205,7 @@ flowchart LR
     <li>Allows fine-grained matching against local page areas.</li>
     <li>Simplifies offline indexing compared with pipelines containing many parsers.</li>
     </ul>
-    <p>The lecture notes report that query-time matching can remain fast with suitable indexing, while offline indexing is simpler than several traditional pipelines. Actual latency depends on hardware, page resolution, index design, and corpus size.</p>
+    <p>Reports say that query-time matching can remain fast with suitable indexing, while offline indexing is simpler than several traditional pipelines. Actual latency depends on hardware, page resolution, index design, and corpus size.</p>
     <h2 id="the-cost">The cost</h2>
     <p>One page represented by hundreds of patch vectors needs much more storage than one page represented by one vector.</p>
     <table>
@@ -233,7 +233,7 @@ flowchart LR
     <p>This is the main trade-off: <strong>local detail versus storage and compute</strong>.</p>
     <h2 id="vidore">ViDoRe</h2>
     <p><strong>ViDoRe</strong> evaluates visual document retrieval across domains, languages, layouts, and visual styles. It contains visually rich PDF pages and asks systems to rank the page that answers each query.</p>
-    <p>The main metric highlighted in the lecture is <strong>nDCG@5</strong>:</p>
+    <p>The main metric highlighted here is <strong>nDCG@5</strong>:</p>
     <ul>
     <li>Correct pages near rank 1 receive more credit.</li>
     <li>Correct pages below the first few results receive less credit.</li>
@@ -294,9 +294,9 @@ flowchart LR
     if (window.hljs) { hljs.highlightAll(); }
     if (window.self !== window.top) { document.body.classList.add('in-iframe'); }
   </script>
-  <script src="../../../scripts/curriculum.js?v=20260926a"></script>
-  <script src="../../../scripts/progress.js?v=20260926a"></script>
-  <script src="../../../scripts/pull-refresh.js?v=20260926a"></script>
-  <script src="../../../scripts/lesson-page.js?v=20260926a"></script>
+  <script src="../../../scripts/curriculum.js?v=20261002a"></script>
+  <script src="../../../scripts/progress.js?v=20261002a"></script>
+  <script src="../../../scripts/pull-refresh.js?v=20261002a"></script>
+  <script src="../../../scripts/lesson-page.js?v=20261002a"></script>
 </body>
 </html>

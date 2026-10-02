@@ -122,7 +122,7 @@ Training uses mask losses (focal, dice-style) and IoU-head regression (e.g. MSE)
 | **2. Semi-automatic** | SAM proposes masks; humans fill gaps |
 | **3. Fully automatic** | 32×32 point grid prompts SAM; keep stable masks, drop near-duplicates |
 
-Scale from the lecture: ~**11M** images, ~**1.1B** masks (~**100 masks per image** on average).
+Reported scale: ~**11M** images, ~**1.1B** masks (~**100 masks per image** on average).
 
 The data engine and the model **co-evolve** — better SAM speeds labeling, more labels improve SAM.
 

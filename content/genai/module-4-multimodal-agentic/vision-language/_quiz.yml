@@ -162,7 +162,7 @@ questions:
     answer: 0
     why: "A fixed visual token budget makes sequence length more predictable, but the compression can sacrifice fine spatial information."
 
-  - q: "Which statement best separates the main outputs of the four lecture models?"
+  - q: "Which statement best separates the main outputs of the four models in this chapter?"
     options:
       - "CLIP emits masks, LLaVA emits only similarity scores, Qwen-VL emits no coordinates, and SAM writes essays."
       - "All four use the same objective and differ only in image resolution."
@@ -171,7 +171,7 @@ questions:
     answer: 2
     why: "The models are distinguished by their consumers and outputs: match, generate, ground, and segment."
 
-  - q: "A robotics pipeline needs to identify an object, understand a language instruction, and then isolate its exact pixels for grasp planning. Which design uses the lecture's composition idea most directly?"
+  - q: "A robotics pipeline needs to identify an object, understand a language instruction, and then isolate its exact pixels for grasp planning. Which design uses this chapter's composition idea most directly?"
     options:
       - "Use only CLIP because similarity scores contain the final pixel boundary."
       - "Use only SAM because it assigns semantic names and follows multi-turn instructions by itself."
