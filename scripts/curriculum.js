@@ -1558,6 +1558,79 @@ window.BBL.CURRICULUM = {
         ]
       },
       {
+        "id": "module-4-multimodal-agentic/langchain-langgraph",
+        "module": "module-4-multimodal-agentic",
+        "title": "4.6 LangChain & LangGraph",
+        "quizId": "genai/module-4-multimodal-agentic/langchain-langgraph",
+        "hasQuiz": true,
+        "minutes": 48,
+        "lessons": [
+          {
+            "slug": "why-a-loop-is-not-enough",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/why-a-loop-is-not-enough",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/why-a-loop-is-not-enough.html",
+            "label": "Why a Loop Is Not Enough",
+            "minutes": 5
+          },
+          {
+            "slug": "langchain-building-blocks",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/langchain-building-blocks",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/langchain-building-blocks.html",
+            "label": "LangChain Building Blocks",
+            "minutes": 6
+          },
+          {
+            "slug": "from-chains-to-graphs",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/from-chains-to-graphs",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/from-chains-to-graphs.html",
+            "label": "From Chains to Graphs",
+            "minutes": 5
+          },
+          {
+            "slug": "state-nodes-and-reducers",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/state-nodes-and-reducers",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/state-nodes-and-reducers.html",
+            "label": "State, Nodes, and Reducers",
+            "minutes": 5
+          },
+          {
+            "slug": "edges-graphs-and-super-steps",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/edges-graphs-and-super-steps",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/edges-graphs-and-super-steps.html",
+            "label": "Edges, Graphs, and Super-steps",
+            "minutes": 5
+          },
+          {
+            "slug": "checkpoints-threads-and-human-approval",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/checkpoints-threads-and-human-approval",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/checkpoints-threads-and-human-approval.html",
+            "label": "Checkpoints, Threads, and Human Approval",
+            "minutes": 5
+          },
+          {
+            "slug": "multi-agent-graphs-and-handoffs",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/multi-agent-graphs-and-handoffs",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/multi-agent-graphs-and-handoffs.html",
+            "label": "Multi-Agent Graphs and Handoffs",
+            "minutes": 5
+          },
+          {
+            "slug": "production-failures-and-safe-recovery",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/production-failures-and-safe-recovery",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/production-failures-and-safe-recovery.html",
+            "label": "Production Failures and Safe Recovery",
+            "minutes": 7
+          },
+          {
+            "slug": "tracing-middleware-and-takeaways",
+            "hash": "module-4-multimodal-agentic/langchain-langgraph/tracing-middleware-and-takeaways",
+            "path": "module-4-multimodal-agentic/langchain-langgraph/tracing-middleware-and-takeaways.html",
+            "label": "Tracing, Middleware, and Key Takeaways",
+            "minutes": 5
+          }
+        ]
+      },
+      {
         "id": "module-5-deployment-safety/serving-and-apis",
         "module": "module-5-deployment-safety",
         "title": "5.2 Model Serving & API Development",

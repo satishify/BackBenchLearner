@@ -205,6 +205,16 @@
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/multi-agent-systems/cost-evaluation-and-standards.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/multi-agent-systems/five-things-to-carry-forward.html</loc></url>
   <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-4-multimodal-agentic/multi-agent-systems</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/why-a-loop-is-not-enough.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/langchain-building-blocks.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/from-chains-to-graphs.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/state-nodes-and-reducers.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/edges-graphs-and-super-steps.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/checkpoints-threads-and-human-approval.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/multi-agent-graphs-and-handoffs.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/production-failures-and-safe-recovery.html</loc></url>
+  <url><loc>https://backbenchlearner.com/genai/module-4-multimodal-agentic/langchain-langgraph/tracing-middleware-and-takeaways.html</loc></url>
+  <url><loc>https://backbenchlearner.com/quiz.html?t=genai&amp;c=module-4-multimodal-agentic/langchain-langgraph</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-5-deployment-safety/serving-and-apis/apis-for-models.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-5-deployment-safety/serving-and-apis/basic-python-for-experimentation.html</loc></url>
   <url><loc>https://backbenchlearner.com/genai/module-5-deployment-safety/serving-and-apis/workflow-automation-concepts.html</loc></url>

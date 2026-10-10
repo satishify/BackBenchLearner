@@ -2,8 +2,8 @@
 title: "Module 4 - VLM, multimodal RAG, and agentic AI revision"
 slug: module-4-multimodal-agentic
 module: "Module 4"
-minutes: 40
-description: "Revision for VLM architectures, applications, multimodal retrieval, agents, and multi-agent coordination."
+minutes: 50
+description: "Revision for VLM architectures, applications, multimodal retrieval, agents, multi-agent coordination, LangChain, and LangGraph."
 ---
 
 Chapter **4.1** follows this path: Foundations → CLIP → LLaVA → Qwen-VL → SAM → Synthesis.
@@ -211,6 +211,65 @@ Neither A2A nor MCP makes a booking safe.
 4. Keep handoffs small and checked.
 5. Treat every extra agent as extra risk.
 
+## 4.6 LangChain and LangGraph
+
+### The split
+
+- **LangChain** standardises models, tools, messages, typed output, and runnable components.
+- **LangGraph** controls order, loops, branches, pauses, state, and resumption.
+- `create_agent` is a high-level API built on a LangGraph graph.
+- Use low-level LangGraph when exact state, routes, or pause points matter.
+
+### Core graph
+
+`state → nodes → edges`, with a **checkpointer** saving every super-step.
+
+- **State** — one typed shared record.
+- **Node** — reads state, does one job, returns only changed fields.
+- **Reducer** — merge rule: append messages, accumulate candidates, overwrite budget/verdict, add attempts.
+- **Fixed edge** — always follows one route.
+- **Conditional edge** — chooses a route from current state.
+- **Super-step** — run active nodes, merge updates, checkpoint, follow edges.
+- `recursion_limit` is a safety ceiling, not a target.
+
+### Persistence and people
+
+- Same `thread_id` → same continuing run after a restart.
+- Persist checkpoints in a database such as Postgres, not one process.
+- Interrupt before `book_flight`; resume from the exact approved state.
+- Time travel can re-run from an earlier checkpoint, but cannot undo an external booking.
+- Stream tokens, node updates, or custom progress events.
+
+### Multi-agent graphs
+
+- Each specialist can be a tested **subgraph** used as one node.
+- Keep working detail private; return a small summary to shared state.
+- **Handoff** = next agent + state update travel together.
+- **Fan-out** = one runtime branch per independent subtask; reducers merge results.
+
+### Production reliability
+
+| Problem | Response |
+| --- | --- |
+| Temporary timeout / 503 | Limited retry with backoff |
+| No fare under cap | Semantic result: replan or answer honestly |
+| Expired credential | Repair or escalate |
+| Repeated booking | Idempotency key + human approval |
+| Hanging dependency | Tool 5 s → node 30 s → run 90 s |
+| Live source unavailable | Label stale cache, ask user, or fail clearly |
+| Endless replanning | Attempt, deadline, and recursion limits |
+
+Trace the parent run and child nodes: latency, cost, retries, policy verdict, replanning, and approval. Middleware can add summarisation, approval, and call limits without rewriting the main loop.
+
+### Six rules
+
+1. LangChain standardises; LangGraph orchestrates.
+2. A graph is typed state, small nodes, and explicit edges.
+3. Chaining, routing, fan-out, and loops are edge patterns.
+4. Checkpoints give memory, resumption, approval, and time travel.
+5. Middleware adds reusable behaviour.
+6. Reliability determines whether the agent is deployable.
+
 ## 20-minute drill
 
 1. Walk through ViT patch count for 224×224 and 16×16 patches.
@@ -235,3 +294,11 @@ Neither A2A nor MCP makes a booking safe.
 20. Decide supervisor vs peer-to-peer for a booking desk and justify it.
 21. Treat "ignore the budget" from hotel_agent as data and say what gets logged.
 22. Split A2A from MCP in one sentence each.
+23. Explain LangChain versus LangGraph using the Paris agent.
+24. Pick reducers for messages, budget, candidates, and attempt count.
+25. Trace one super-step: active nodes → merge → checkpoint → edges.
+26. Explain how one thread survives a server restart and waits for approval.
+27. Choose handoff or fan-out for flights, hotels, and three client meetings.
+28. Classify timeout, no-result, bad argument, and expired credential failures.
+29. Explain why a booking retry needs an idempotency key.
+30. Read a trace and identify the slow node, retries, policy failure, and approval.

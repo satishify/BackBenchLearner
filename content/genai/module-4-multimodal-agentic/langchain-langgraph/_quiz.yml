@@ -1,0 +1,181 @@
+title: "4.6 LangChain & LangGraph"
+questions:
+  - q: "Which capability lets the Paris plan survive a server crash?"
+    options:
+      - "A higher model temperature"
+      - "Durable saved state"
+      - "A longer tool description"
+      - "A larger candidate list"
+    answer: 1
+    why: "State stored outside one Python process can be loaded by another process after a restart."
+
+  - q: "Why is a simple think-act-remember loop not enough for manager approval?"
+    options:
+      - "It cannot call a model"
+      - "It has no durable pause point that can resume hours later"
+      - "It cannot store a Python list"
+      - "It always books two hotels"
+    answer: 1
+    why: "A production run must checkpoint before booking, wait, and resume from that exact state."
+
+  - q: "What is the main split between LangChain and LangGraph?"
+    options:
+      - "LangChain trains models; LangGraph stores embeddings"
+      - "LangChain standardises components; LangGraph orchestrates control flow"
+      - "LangChain is for images; LangGraph is for text"
+      - "LangGraph replaces models and tools"
+    answer: 1
+    why: "LangChain provides common model, tool, message, and output interfaces; LangGraph controls order, loops, branches, pauses, and state."
+
+  - q: "What does LangChain build from a tool function's type hints and docstring?"
+    options:
+      - "A new model checkpoint"
+      - "The tool's argument schema and description"
+      - "A human approval"
+      - "A vector index"
+    answer: 1
+    why: "The schema describes typed arguments, and the docstring helps the model understand when to choose the tool."
+
+  - q: "Why is a typed PolicyVerdict safer than a paragraph saying the itinerary is 'mostly fine'?"
+    options:
+      - "It uses fewer Python files"
+      - "It gives code explicit fields such as compliant and violated_clause"
+      - "It makes policy retrieval unnecessary"
+      - "It guarantees that the policy itself is correct"
+    answer: 1
+    why: "A validated field can route the graph directly; code does not need to guess the meaning of loose prose."
+
+  - q: "What is the main control-flow limit of a runnable chain such as prompt | model | parser?"
+    options:
+      - "It cannot pass data between components"
+      - "It only supports images"
+      - "It flows left to right and does not naturally express loops, pauses, or saved state"
+      - "It cannot produce structured output"
+    answer: 2
+    why: "Chains are good for straight-line data flow. Agents need explicit repetition, branches, and resumption."
+
+  - q: "When is the lower-level LangGraph API most justified?"
+    options:
+      - "When a standard model-and-tools agent already fits"
+      - "When exact routes, pause points, and state merge rules must be controlled"
+      - "Whenever fewer than two tools exist"
+      - "Only when no model is used"
+    answer: 1
+    why: "Direct graph construction adds code but exposes the control needed for custom orchestration."
+
+  - q: "Which list contains the four core LangGraph ideas?"
+    options:
+      - "Prompt, tokenizer, embedding, vector store"
+      - "State, nodes, edges, checkpointer"
+      - "Model, retriever, reranker, generator"
+      - "Flight, hotel, meeting, payment"
+    answer: 1
+    why: "State holds knowledge, nodes do work, edges route, and the checkpointer saves progress."
+
+  - q: "What should the reducer for a messages field normally do?"
+    options:
+      - "Replace the entire conversation with the newest message"
+      - "Append new messages to the existing conversation"
+      - "Convert every message into a budget"
+      - "Delete messages after each node"
+    answer: 1
+    why: "Messages accumulate. Overwriting would lose the earlier conversation and tool observations."
+
+  - q: "What should a well-designed node return?"
+    options:
+      - "A copy of the whole state every time"
+      - "Only the fields it changed"
+      - "Only free-form prose"
+      - "A new graph definition"
+    answer: 1
+    why: "LangGraph merges a node's partial update into state using each field's reducer."
+
+  - q: "Which edge should route check_policy to draft, replan, or escalate?"
+    options:
+      - "A fixed edge"
+      - "A conditional edge that reads the verdict"
+      - "No edge"
+      - "An image embedding"
+    answer: 1
+    why: "The next step depends on current state, so routing must inspect the compliance result."
+
+  - q: "What happens during one LangGraph super-step?"
+    options:
+      - "Run active nodes, merge updates, save a checkpoint, then follow edges"
+      - "Retrain the model and rebuild every tool"
+      - "Delete state and start a new thread"
+      - "Run exactly one tool and always finish"
+    answer: 0
+    why: "Independent active nodes may run together, their updates merge, state is saved, and edges select the next work."
+
+  - q: "What does recursion_limit = 25 mean?"
+    options:
+      - "The graph should always use exactly 25 steps"
+      - "The graph may run at most 25 super-steps before stopping"
+      - "Each tool receives 25 retries"
+      - "The model can return only 25 tokens"
+    answer: 1
+    why: "The recursion limit is a safety ceiling, not a desired run length."
+
+  - q: "What connects checkpoints from the same continuing Paris run?"
+    options:
+      - "The model name"
+      - "The thread_id"
+      - "The hotel price"
+      - "The output parser"
+    answer: 1
+    why: "Using the same thread ID lets another process load and continue the same saved state."
+
+  - q: "What does LangGraph time travel not do?"
+    options:
+      - "Inspect an earlier checkpoint"
+      - "Re-run forward from an earlier state"
+      - "Automatically undo a ticket already issued in the real world"
+      - "Apply a changed input to an earlier state"
+    answer: 2
+    why: "Rewinding graph state cannot reverse an external side effect that already happened."
+
+  - q: "Why might a specialist subgraph keep private state?"
+    options:
+      - "To hide every result from the coordinator"
+      - "To keep raw searches and discarded options out of the small shared state"
+      - "To bypass the team budget"
+      - "To remove the need for checkpoints"
+    answer: 1
+    why: "The specialist can return a compact contract result while keeping its working detail isolated."
+
+  - q: "When should the coordinator use fan-out rather than a handoff?"
+    options:
+      - "When one specialist needs the exact result of the previous specialist"
+      - "When several independent client-meeting tasks can run in parallel"
+      - "When a booking must wait for approval"
+      - "When a tool credential has expired"
+    answer: 1
+    why: "Fan-out creates one independent branch per runtime subtask and reducers merge the results."
+
+  - q: "The fare API returns 'no flights under ₹50,000.' How should the graph treat it?"
+    options:
+      - "As a temporary infrastructure error to retry forever"
+      - "As a valid semantic result the model must plan around"
+      - "As permission to invent a fare"
+      - "As proof the graph should delete its state"
+    answer: 1
+    why: "No matching fare is useful information, not an exception."
+
+  - q: "Why should book_flight use an idempotency key?"
+    options:
+      - "To make the fare cheaper"
+      - "To prevent a lost reply and retry from creating a second ticket"
+      - "To increase model context"
+      - "To replace manager approval"
+    answer: 1
+    why: "The same stable key lets the booking service return the original result instead of repeating the side effect."
+
+  - q: "Which reliability design is correct?"
+    options:
+      - "One 90-second timeout only, with no tool timeout"
+      - "Invent a current fare when all fare tools fail"
+      - "Nest tool, node, and run timeouts; label stale fallbacks; trace retries and approval"
+      - "Retry every error with no limit"
+    answer: 2
+    why: "Nested clocks identify stalls, honest fallbacks preserve trust, and traces show how the run recovered."

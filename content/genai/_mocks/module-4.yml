@@ -571,3 +571,133 @@ questions:
       - "ANP is the only production-safe booking layer"
     answer: 2
     why: "A2A is peer task passing. MCP is tool and data access. Safety still belongs to your app."
+
+  - q: "A travel agent keeps its plan only in a Python list. What happens if the server stops?"
+    section: "LangChain and LangGraph - Reliability"
+    options:
+      - "The plan automatically moves to Postgres"
+      - "The in-memory plan is lost unless it was checkpointed"
+      - "The manager approval is created automatically"
+      - "The model reconstructs the exact state for free"
+    answer: 1
+    why: "Process memory is not durable. A checkpointer saves state outside the running process."
+
+  - q: "Which responsibility belongs mainly to LangGraph?"
+    section: "LangChain and LangGraph - Control Flow"
+    options:
+      - "Declaring a typed search_flights tool"
+      - "Representing a provider-neutral model call"
+      - "Routing a failed policy check back to replan and pausing before booking"
+      - "Defining a Pydantic output model"
+    answer: 2
+    why: "Loops, branches, pauses, and resumption are control-flow responsibilities."
+
+  - q: "Why should check_policy return a typed PolicyVerdict?"
+    section: "LangChain and LangGraph - Structured Output"
+    options:
+      - "So the graph can route on an explicit compliant field"
+      - "So policy retrieval is no longer needed"
+      - "So every model provider gives the same answer"
+      - "So the booking tool can skip validation"
+    answer: 0
+    why: "Explicit fields let code make deterministic routing decisions without interpreting vague prose."
+
+  - q: "What merge rules fit messages, budget_left, candidates, and attempts?"
+    section: "LangGraph - State and Reducers"
+    options:
+      - "Overwrite all four fields"
+      - "Append messages, overwrite budget, accumulate candidates, add attempts"
+      - "Append budget and overwrite messages"
+      - "Delete candidates after every node"
+    answer: 1
+    why: "Each field needs a rule matching its meaning; one default rule would lose or corrupt state."
+
+  - q: "A node retrieves the policy. What should it return?"
+    section: "LangGraph - Nodes"
+    options:
+      - "A full copy of every state field"
+      - "Only the policy_clauses update"
+      - "A new thread ID"
+      - "The complete graph object"
+    answer: 1
+    why: "Nodes return partial updates, which reducers merge into the shared state."
+
+  - q: "A compliance result may pass, require replanning, or require escalation. Which graph feature expresses this?"
+    section: "LangGraph - Edges"
+    options:
+      - "A fixed edge"
+      - "A conditional edge that reads the verdict"
+      - "A model fallback"
+      - "An idempotency key"
+    answer: 1
+    why: "The next node depends on current state, so the route is conditional."
+
+  - q: "Two independent search nodes run in one super-step. What happens before the graph follows their outgoing edges?"
+    section: "LangGraph - Super-steps"
+    options:
+      - "Their updates merge with reducers and the state is checkpointed"
+      - "The model is retrained"
+      - "The thread ID is discarded"
+      - "Every earlier checkpoint is deleted"
+    answer: 0
+    why: "A super-step runs active nodes, merges their changes, saves state, and then routes onward."
+
+  - q: "Approval arrives four hours after the Paris plan was prepared. How should the graph continue?"
+    section: "LangGraph - Checkpoints and Approval"
+    options:
+      - "Start a new trip with a new thread ID"
+      - "Use the same thread ID and resume from the saved interrupt"
+      - "Repeat the booking before checking approval"
+      - "Ask the model to guess the earlier fare"
+    answer: 1
+    why: "The same thread loads the paused state and continues from the exact approval point."
+
+  - q: "What is the safest state design for a flights specialist subgraph?"
+    section: "LangGraph - Multi-Agent"
+    options:
+      - "Expose every discarded search page to the whole team"
+      - "Keep raw work private and return a small ranked-fares summary"
+      - "Use no state because it is a subgraph"
+      - "Give it permission to change every team's decision"
+    answer: 1
+    why: "Private working state keeps the shared record small while the contract result carries what the coordinator needs."
+
+  - q: "The calendar contains five independent client meetings. Which pattern should create one branch per meeting at run time?"
+    section: "LangGraph - Fan-out"
+    options:
+      - "Sequential handoff"
+      - "Dynamic fan-out"
+      - "Time travel"
+      - "One fixed edge to END"
+    answer: 1
+    why: "Fan-out creates independent parallel branches whose results are merged by reducers."
+
+  - q: "The fare API says there are no flights under ₹50,000. What is the best response?"
+    section: "LangGraph - Error Handling"
+    options:
+      - "Retry forever because every empty result is infrastructure failure"
+      - "Pass the valid no-result observation to the model so it can change dates or answer honestly"
+      - "Invent a ₹49,900 fare"
+      - "Book the last cached fare without labelling it"
+    answer: 1
+    why: "A no-result response is a semantic fact, not a temporary exception."
+
+  - q: "The airline issued a ticket, but its reply was lost. What prevents a retry from creating another ticket?"
+    section: "LangGraph - Safe Writes"
+    options:
+      - "A longer system prompt"
+      - "The same idempotency key on the retry"
+      - "A higher recursion limit"
+      - "Streaming tokens"
+    answer: 1
+    why: "The service recognises the stable key and returns the first booking result."
+
+  - q: "Which observation best shows that a deployed Paris agent recovered safely?"
+    section: "LangGraph - Tracing"
+    options:
+      - "The final itinerary sounds polished"
+      - "The trace shows two bounded fare retries, a §5.1 failure, replanning, and approval before booking"
+      - "The graph has many nodes"
+      - "The model produced more tokens"
+    answer: 1
+    why: "A hierarchical trace connects recovery and human control to specific steps instead of judging fluent output alone."
